@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button"
 import { IconCheck } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 
-export default function BillingPage() {
+import { Suspense } from "react"
+
+function BillingContent() {
     const searchParams = useSearchParams()
     const plan = searchParams.get("plan")
     const [selectedPlan, setSelectedPlan] = useState<string | null>(plan)
@@ -63,6 +65,14 @@ export default function BillingPage() {
                 <p className="text-sm text-neutral-500">No billing history available.</p>
             </div>
         </div>
+    )
+}
+
+export default function BillingPage() {
+    return (
+        <Suspense>
+            <BillingContent />
+        </Suspense>
     )
 }
 

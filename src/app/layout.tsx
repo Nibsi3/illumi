@@ -8,14 +8,14 @@ import { Toaster } from "sonner";
 const hedvigSans = Hedvig_Letters_Sans({
   variable: "--font-hedvig-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: "400",
 });
 
 // Hedvig Letters Serif for headings (300 / 400 / 500)
 const hedvigSerif = Hedvig_Letters_Serif({
   variable: "--font-hedvig-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: "400",
 });
 
 const geistMono = Geist_Mono({
