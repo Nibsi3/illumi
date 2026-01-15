@@ -70,7 +70,7 @@ export default function NewInvoicePage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white font-sans pb-20">
+        <div className="min-h-screen bg-[#0d0d0d] text-white font-sans pb-20">
             {/* Nav Header (Pic 5 Refined) */}
             <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 bg-black/80 backdrop-blur-md z-50">
                 <div className="flex items-center gap-6">

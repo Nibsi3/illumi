@@ -59,9 +59,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             icon: <IconClock className="h-6 w-6 shrink-0" />,
         },
         {
-            label: "Clients",
+            label: "Customers",
             href: "/clients",
             icon: <IconUsers className="h-6 w-6 shrink-0" />,
+        },
+        {
+            label: "Products",
+            href: "/products",
+            icon: <IconBrandTabler className="h-6 w-6 shrink-0" />,
         },
         {
             label: "Apps",
@@ -162,72 +167,91 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-w-0 relative z-10 overflow-hidden">
-                {/* Dashboard Top Header (Pic 2 & 3) */}
+                {/* Dashboard Top Header (Pic 1) */}
                 <header className="h-16 flex items-center justify-between px-8 bg-[#0d0d0d]/50 backdrop-blur-sm border-b border-white/5">
-                    <div className="flex items-center gap-4 text-neutral-400 hover:text-white transition-colors cursor-pointer group">
-                        <IconSearch className="h-4 w-4" />
-                        <span className="text-sm font-medium">Find anything...</span>
+                    <div className="flex items-center gap-4">
+                        {/* Sun Logo Icon */}
+                        <div className="w-5 h-5 flex items-center justify-center">
+                            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                        <div className="flex items-center gap-4 text-neutral-400 hover:text-white transition-colors cursor-pointer group">
+                            <IconSearch className="h-4 w-4" />
+                            <span className="text-sm font-medium">Find anything...</span>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* Pro Trial Banner (Pic 2) */}
-                        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#111] border border-white/10 text-[10px] uppercase tracking-wider font-bold text-white">
-                            Pro trial - 12 days left
-                        </div>
+                        {/* Pro Trial Banner - Clickable (Pic 2) */}
+                        <Link href="/pricing">
+                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#111] border border-white/10 text-[10px] uppercase tracking-wider font-bold text-white hover:bg-white/5 transition-colors cursor-pointer">
+                                Pro trial - 11 days left
+                            </div>
+                        </Link>
 
-                        <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-white/5 rounded-none">
-                            <IconBell className="h-5 w-5" />
-                        </Button>
+                        <Link href="/notifications">
+                            <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-white/5 rounded-none relative">
+                                <IconBell className="h-5 w-5" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full" />
+                            </Button>
+                        </Link>
 
                         {/* Interactive User Menu (Pic 3) */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <div className="cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2 outline-none">
                                     <Avatar className="h-8 w-8 border border-white/10 shadow-lg rounded-full">
-                                        <AvatarImage src="https://github.com/shadcn.png" className="rounded-full" />
-                                        <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-[10px] text-white font-bold rounded-full">CA</AvatarFallback>
+                                        <AvatarImage src="https://lh3.googleusercontent.com/a/default-user=s96-c" className="rounded-full" />
+                                        <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-[10px] text-white font-bold rounded-full">CF</AvatarFallback>
                                     </Avatar>
                                 </div>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[240px] bg-[#09090b] border-white/10 text-white p-2 p-y-4 shadow-2xl rounded-none mt-2">
+                            <DropdownMenuContent align="end" className="w-[240px] bg-[#09090b] border-white/10 text-white p-2 shadow-2xl rounded-lg mt-2">
                                 <DropdownMenuLabel className="px-3 pt-3 pb-4">
                                     <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-bold leading-none">Cameron .F</p>
-                                        <p className="text-xs leading-none text-neutral-500">cameron@example.com</p>
+                                        <p className="text-sm font-bold leading-none">Cameron.F</p>
+                                        <p className="text-xs leading-none text-neutral-500">cameronfalck03@gmail.com</p>
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator className="bg-white/5 mx-2" />
                                 <div className="py-2">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-none flex items-center gap-3">
-                                        <IconUserCircle className="h-4 w-4 text-neutral-400" />
-                                        <span>Account</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-none flex items-center gap-3">
-                                        <IconMessageCircle className="h-4 w-4 text-neutral-400" />
-                                        <span>Support</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-none flex items-center gap-3">
-                                        <IconUsersGroup className="h-4 w-4 text-neutral-400" />
-                                        <span>Teams</span>
-                                    </DropdownMenuItem>
+                                    <Link href="/settings/account">
+                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
+                                            <IconUserCircle className="h-4 w-4 text-neutral-400" />
+                                            <span>Account</span>
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link href="/settings/support">
+                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
+                                            <IconMessageCircle className="h-4 w-4 text-neutral-400" />
+                                            <span>Support</span>
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link href="/settings/members">
+                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
+                                            <IconUsersGroup className="h-4 w-4 text-neutral-400" />
+                                            <span>Teams</span>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </div>
                                 <DropdownMenuSeparator className="bg-white/5 mx-2" />
                                 <div className="py-2">
-                                    <div className="flex items-center justify-between px-3 py-2.5 text-sm text-neutral-400">
+                                    <div className="flex items-center justify-between px-3 py-2.5 text-sm">
                                         <div className="flex items-center gap-3 text-white">
                                             <IconMoon className="h-4 w-4 text-neutral-400" />
                                             <span>Theme</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-none bg-white/5 border border-white/10 text-[11px] text-white">
-                                            <IconMoon className="h-3 w-3" />
-                                            <span>System</span>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] text-white">
+                                            <span>Dark</span>
                                             <IconChevronDown className="h-3 w-3 opacity-50" />
                                         </div>
                                     </div>
                                 </div>
                                 <DropdownMenuSeparator className="bg-white/5 mx-2" />
                                 <div className="py-2">
-                                    <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-neutral-400 cursor-pointer px-3 py-2.5 rounded-none flex items-center gap-3 transition-colors">
+                                    <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-neutral-400 cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors">
                                         <IconLogout className="h-4 w-4" />
                                         <span>Sign out</span>
                                     </DropdownMenuItem>

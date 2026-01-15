@@ -72,8 +72,8 @@ export default function ClientsPage() {
         <div className="flex flex-col gap-y-10 font-sans px-6 max-w-7xl mx-auto pb-20">
             {/* Header Section */}
             <div>
-                <h1 className="text-4xl font-serif text-white tracking-tight italic">Clients</h1>
-                <p className="text-neutral-500 mt-1">Manage your customer relationships and detailed billing information.</p>
+                <h1 className="text-4xl font-serif text-white tracking-tight italic">Customers</h1>
+                <p className="text-neutral-500 mt-1">Manage your customers and the invoices you send to them.</p>
             </div>
 
             {/* Filter & Actions Bar */}

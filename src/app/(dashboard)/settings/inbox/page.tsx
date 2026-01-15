@@ -22,66 +22,8 @@ import {
 import { toast } from "sonner"
 
 export default function InboxSettings() {
-    const [email] = useState("kvg2mzdsau@inbox.midday.ai")
-
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(email)
-        toast.success("Email address copied to clipboard")
-    }
-
     return (
         <div className="space-y-12">
-            {/* Email Address Section */}
-            <div className="space-y-4">
-                <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-medium text-white">Email Address</h3>
-                    <p className="text-sm text-neutral-500 max-w-xl">
-                        Use this unique email address for online purchases and receipts. Emails sent to this address will automatically appear in your Inbox and can be matched against transactions.
-                    </p>
-                </div>
-                <div className="flex items-center gap-2 max-w-md">
-                    <div className="flex-1 bg-black border border-white/5 rounded-lg px-4 py-2.5 text-sm font-mono text-neutral-400">
-                        {email}
-                    </div>
-                    <Button variant="ghost" size="icon" className="border border-white/5 bg-black hover:bg-white/5" onClick={copyToClipboard}>
-                        <Copy className="h-4 w-4" />
-                    </Button>
-                </div>
-            </div>
-
-            {/* Blocklist Section */}
-            <div className="space-y-6 pt-10 border-t border-white/5">
-                <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-medium text-white">Blocklist</h3>
-                    <p className="text-sm text-neutral-500 max-w-xl">
-                        Block specific email addresses or domains from appearing in your inbox. For example, block "netflix.com" to prevent Netflix receipts from showing up.
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-3 max-w-md">
-                    <Input placeholder="example.com" className="bg-black border-white/5 h-10 focus-visible:ring-white/10" />
-                    <Select defaultValue="domain">
-                        <SelectTrigger className="w-32 bg-black border-white/5 h-10 focus:ring-white/10">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                            <SelectItem value="domain">Domain</SelectItem>
-                            <SelectItem value="email">Email</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 h-10 px-6">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add
-                </Button>
-
-                <div className="flex justify-end pt-4">
-                    <Button className="bg-white text-black hover:bg-neutral-200 h-10">
-                        Save changes
-                    </Button>
-                </div>
-            </div>
-
             {/* Email Connections Section */}
             <div className="space-y-6 pt-10 border-t border-white/5">
                 <div className="flex flex-col gap-1">
