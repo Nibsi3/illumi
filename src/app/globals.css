@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Hedvig Letters Sans';
+  src: url('https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/font/HedvigLettersSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -36,6 +44,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --font-hedvig-sans: 'Hedvig Letters Sans';
 }
 
 .dark {

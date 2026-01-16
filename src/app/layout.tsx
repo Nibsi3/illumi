@@ -5,11 +5,8 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
 
-// Hedvig Letters Sans for body text
-const hedvigSans = localFont({
-  src: "../assets/fonts/HedvigLettersSans-Regular.ttf",
-  variable: "--font-hedvig-sans",
-});
+// Hedvig Letters Sans for body text is now loaded via globals.css @font-face
+
 
 // Using Hedvig Letters Serif from Google as no local file provided for it
 import { Hedvig_Letters_Serif, Geist_Mono } from "next/font/google";
@@ -41,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
+        className={`${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
         suppressHydrationWarning
       >
         {children}
