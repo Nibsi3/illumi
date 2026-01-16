@@ -11,29 +11,44 @@ import {
     IconMail,
     IconWallet,
     IconFileExport,
+    IconBrandWhatsapp,
+    IconLink,
+    IconRefresh,
+    IconCalendar,
 } from "@tabler/icons-react"
 
 const stats = [
-    { label: "Invoices sent", value: "15,000+" },
-    { label: "Active users", value: "2,500+" },
-    { label: "Transactions", value: "1.2M" },
-    { label: "Total value", value: "R412M" },
+    { label: "Invoices created", value: "15,000+" },
+    { label: "Active businesses", value: "2,500+" },
+    { label: "Clients managed", value: "8,400+" },
+    { label: "Products saved", value: "12,000+" },
 ]
 
 const invoicingFeatures = [
-    "Create Customers",
-    "Add VAT & Sales tax",
-    "Add discount",
-    "Add Logo",
-    "Send web invoices",
-    "Export as PDF",
-    "See if invoice is viewed",
+    "Build your client database",
+    "Create product catalog",
+    "Professional invoice templates",
+    "Send via WhatsApp, Email or Link",
+    "Schedule invoices for later",
+    "Recurring invoices (Pro)",
+    "Client Payment Portal (Pro)",
 ]
 
-const inboxFeatures = [
-    "Personalized email",
-    "Smart search receipts and invoices content",
-    "Automatically saves invoices and receipt in your vault",
+const freeFeatures = [
+    "Unlimited invoices",
+    "Client database",
+    "Product catalog",
+    "Copy & paste invoices",
+    "Sort by company (folders)",
+    "Export as PDF",
+]
+
+const proFeatures = [
+    "Custom business logo",
+    "PayGate integration",
+    "Client payment portal",
+    "Recurring emails",
+    "Auto-update invoice status",
 ]
 
 export default function LandingPage() {
@@ -50,25 +65,36 @@ export default function LandingPage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-[60px] leading-[1.2] text-[#fafafa] mb-8 font-sans font-medium">
-                                Invoicing & Finance for South Africa,{" "}
-                                <span className="text-[#878787]">that simplifies your business.</span>
+                                The Invoicing App for South African Businesses,{" "}
+                                <span className="text-[#878787]">simplified.</span>
                             </h1>
 
+                            <p className="text-lg text-[#878787] mb-8 max-w-lg">
+                                Build your client database, manage products, create beautiful invoices, and get paid faster with WhatsApp, Email, or a shareable link.
+                            </p>
+
                             <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                                <Button
+                                    asChild
+                                    className="rounded-lg px-8 h-12 bg-white text-black hover:bg-white/90 font-sans font-medium"
+                                >
+                                    <Link href="/login">Start Free</Link>
+                                </Button>
                                 <Button
                                     asChild
                                     variant="outline"
                                     className="rounded-lg px-8 h-12 border-white/20 text-white hover:bg-white/5 font-sans"
                                 >
-                                    <Link href="/login">Get Started</Link>
+                                    <Link href="/docs">View Docs</Link>
                                 </Button>
                             </div>
 
                             <p className="text-sm text-[#878787] mb-12 font-sans">
-                                14 day trial (No credit card required)
+                                Free forever • No credit card required
                             </p>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-white/5">
+
                                 {stats.map((stat, i) => (
                                     <div key={i}>
                                         <div className="text-[10px] uppercase tracking-wider text-[#878787] mb-1 font-sans">
@@ -126,7 +152,6 @@ export default function LandingPage() {
                             </div>
                         </div>
                     </div>
-                </div>
             </section>
 
             {/* Everything you need - Boxed Sections */}
@@ -134,53 +159,39 @@ export default function LandingPage() {
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mb-16">
                         <h2 className="text-[60px] font-medium text-[#fafafa] mb-4 font-sans leading-none">Everything you need</h2>
-                        <p className="text-[#878787] text-lg font-sans">From automated invoicing to conversing with your financials and consolidating all your files.</p>
+                        <p className="text-[#878787] text-lg font-sans">Create invoices, manage clients, track products — all in one place.</p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-6">
-                        {/* Financial Overview - Large Box */}
+                        {/* Invoicing - Large Box */}
                         <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
                             <div className="p-8 lg:p-12 bg-zinc-950/50 flex items-center justify-center border-r border-white/5">
                                 <div className="relative w-full max-w-md aspect-video rounded-xl border border-white/10 bg-black overflow-hidden shadow-2xl">
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-                                    <div className="p-4 border-b border-white/5">
+                                    <div className="p-4 border-b border-white/5 flex items-center justify-between">
                                         <div className="w-1/3 h-2 bg-white/10 rounded" />
+                                        <div className="flex gap-2">
+                                            <IconBrandWhatsapp className="h-4 w-4 text-green-500/50" />
+                                            <IconMail className="h-4 w-4 text-white/30" />
+                                            <IconLink className="h-4 w-4 text-white/30" />
+                                        </div>
                                     </div>
                                     <div className="p-8 flex flex-col justify-center h-full">
-                                        <div className="text-2xl font-serif text-white mb-2">R 19,548.52</div>
-                                        <div className="h-24 flex items-end gap-1">
-                                            {[30, 50, 40, 70, 45, 60, 55, 80, 60, 75].map((h, i) => (
-                                                <div key={i} className="flex-1 bg-white/10 rounded-t" style={{ height: `${h}%` }} />
-                                            ))}
+                                        <div className="text-2xl font-serif text-white mb-2">Invoice #INV-0042</div>
+                                        <div className="text-lg text-[#878787] mb-4">R 5,250.00</div>
+                                        <div className="flex gap-2">
+                                            <span className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-white/80 uppercase tracking-wider">Scheduled</span>
+                                            <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-white/40 uppercase tracking-wider">Recurring</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="p-8 lg:p-12 flex flex-col justify-center">
-                                <h3 className="text-2xl font-medium text-white mb-6">Financial overview</h3>
+                                <h3 className="text-2xl font-medium text-white mb-6">Professional Invoicing</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Keep tabs on your expenses and income, and gain a clearer picture of your business's financial track record and current situation.
+                                    Create beautiful invoices in seconds. Send via WhatsApp, Email, or share a link. Schedule for later or set up recurring invoices.
                                 </p>
                                 <ul className="space-y-4">
-                                    {["Revenue", "Burnrate", "Expenses", "Unified currency overview across all your accounts"].map((item, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-white/80">
-                                            <IconCheck className="h-4 w-4 text-white/40" />
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-
-                        {/* Invoicing & Inbox - Two Boxes */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Invoicing */}
-                            <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                                <h3 className="text-2xl font-medium text-white mb-6">Invoicing</h3>
-                                <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Create and send invoices to your customers, monitor your sent balance, track overdue payments and send reminders.
-                                </p>
-                                <ul className="space-y-4 mb-12">
                                     {invoicingFeatures.map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-white/80">
                                             <IconCheck className="h-4 w-4 text-white/40" />
@@ -188,43 +199,58 @@ export default function LandingPage() {
                                         </li>
                                     ))}
                                 </ul>
-                                <Link href="/features/invoice" className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors">
-                                    Send your first invoice in seconds
-                                    <IconArrowRight className="h-4 w-4" />
-                                </Link>
-
-                                {/* Invoice Mini Preview float */}
-                                <div className="absolute bottom-0 right-0 w-64 h-64 translate-x-12 translate-y-12 opacity-50">
-                                    <div className="w-full h-full bg-white rounded-t-xl p-4 shadow-2xl">
-                                        <div className="w-1/2 h-4 bg-zinc-200 rounded mb-4" />
-                                        <div className="space-y-2">
-                                            <div className="w-full h-2 bg-zinc-100 rounded" />
-                                            <div className="w-full h-2 bg-zinc-100 rounded" />
-                                            <div className="w-2/3 h-2 bg-zinc-100 rounded" />
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
 
-                            {/* Inbox */}
-                            <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12">
-                                <h3 className="text-2xl font-medium text-white mb-6">Inbox</h3>
+                        {/* Free vs Pro - Two Boxes */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Free */}
+                            <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                                <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium mb-6">Free Forever</div>
+                                <h3 className="text-2xl font-medium text-white mb-6">Get started for free</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Use your personalized email address for your invoices and receipts. Illumi gives you a transaction suggestion to match it with.
+                                    Everything you need to create and send professional invoices. No credit card required.
                                 </p>
                                 <ul className="space-y-4 mb-12">
-                                    {inboxFeatures.map((item, i) => (
+                                    {freeFeatures.map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-white/80">
                                             <IconCheck className="h-4 w-4 text-white/40" />
                                             {item}
                                         </li>
                                     ))}
                                 </ul>
+                                <Link href="/login" className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors">
+                                    Start for free
+                                    <IconArrowRight className="h-4 w-4" />
+                                </Link>
+                            </div>
+
+                            {/* Pro */}
+                            <div className="bg-[#0a0a0a] border border-white/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent" />
+                                <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium mb-6">Pro</div>
+                                <h3 className="text-2xl font-medium text-white mb-6">Automate your payments</h3>
+                                <p className="text-[#878787] text-sm mb-8 leading-relaxed">
+                                    Client payment portal with PayGate integration. Invoices update automatically when paid.
+                                </p>
+                                <ul className="space-y-4 mb-12">
+                                    {proFeatures.map((item, i) => (
+                                        <li key={i} className="flex items-center gap-3 text-sm text-white/80">
+                                            <IconCheck className="h-4 w-4 text-white/40" />
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
+                                <Link href="/pricing" className="inline-flex items-center gap-2 text-sm text-white hover:text-white/80 transition-colors">
+                                    View Pricing
+                                    <IconArrowRight className="h-4 w-4" />
+                                </Link>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* Reorganized Vault Section */}
             <section className="py-24 border-t border-white/5">
