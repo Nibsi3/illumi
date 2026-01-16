@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono&display=swap');
 @import "tailwindcss";
 
 @font-face {
@@ -45,6 +47,8 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --font-hedvig-sans: 'Hedvig Letters Sans';
+  --font-hedvig-serif: 'Hedvig Letters Serif', serif;
+  --font-geist-mono: 'Geist Mono', monospace;
 }
 
 .dark {

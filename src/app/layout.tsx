@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 
 import { Toaster } from "sonner";
@@ -9,18 +8,7 @@ import { SettingsProvider } from "@/lib/settings-context";
 
 
 // Using Hedvig Letters Serif from Google as no local file provided for it
-import { Hedvig_Letters_Serif, Geist_Mono } from "next/font/google";
-
-const hedvigSerif = Hedvig_Letters_Serif({
-  variable: "--font-hedvig-serif",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Google Fonts are now loaded via globals.css @import
 
 export const metadata: Metadata = {
   title: "Illumi | Invoicing & Finance for South Africa",
@@ -38,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
+        className="antialiased bg-black text-white font-serif"
         suppressHydrationWarning
       >
         {children}
