@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
+        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
         suppressHydrationWarning
       >
         {children}
