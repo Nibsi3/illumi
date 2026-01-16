@@ -6,16 +6,17 @@ import { IconMenu2, IconX, IconChevronDown } from "@tabler/icons-react"
 import { useState } from "react"
 
 const featureDropdownItems = [
-    { name: "Financial Overview", href: "/features/overview" },
     { name: "Invoicing", href: "/features/invoice" },
-    { name: "Magic Inbox", href: "/features/inbox" },
-    { name: "File Vault", href: "/features/vault" },
+    { name: "Client Database", href: "/clients" },
+    { name: "Product Catalog", href: "/products" },
 ]
 
 const navigation = [
     { name: "Pricing", href: "/pricing" },
     { name: "Story", href: "/story" },
+    { name: "Docs", href: "/docs" },
 ]
+
 
 export function MarketingHeader() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
