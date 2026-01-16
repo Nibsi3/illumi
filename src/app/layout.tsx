@@ -4,11 +4,24 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
 
-// Hedvig Letters Sans for body text is now loaded via globals.css @font-face
+import localFont from "next/font/local";
+import { Hedvig_Letters_Serif, Geist_Mono } from "next/font/google";
 
+const hedvigSans = localFont({
+  src: "./fonts/HedvigLettersSans-Regular.ttf",
+  variable: "--font-hedvig-sans",
+});
 
-// Using Hedvig Letters Serif from Google as no local file provided for it
-// Google Fonts are now loaded via globals.css @import
+const hedvigSerif = Hedvig_Letters_Serif({
+  variable: "--font-hedvig-serif",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Illumi | Invoicing & Finance for South Africa",
@@ -26,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className="antialiased bg-black text-white font-serif"
+        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
         suppressHydrationWarning
       >
         {children}

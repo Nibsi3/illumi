@@ -1,14 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono&display=swap');
 @import "tailwindcss";
-
-@font-face {
-  font-family: 'Hedvig Letters Sans';
-  src: url('https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/font/HedvigLettersSans-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
 
 @custom-variant dark (&:is(.dark *));
 
