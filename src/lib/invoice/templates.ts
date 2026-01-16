@@ -10,7 +10,7 @@ export interface TemplateMetadata {
 export const INVOICE_TEMPLATES: TemplateMetadata[] = [
     {
         id: 'noir',
-        name: 'Emini Noir',
+        name: 'Illumi Noir',
         description: 'The signature high-contrast dark aesthetic for premium brands.',
     },
     {

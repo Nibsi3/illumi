@@ -2,15 +2,51 @@
 
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { IconCheck } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
+import {
+    IconCheck,
+    IconPlus,
+    IconCreditCard,
+    IconDots,
+    IconTrash,
+    IconCircleCheckFilled,
+    IconStarFilled,
+    IconReceipt
+} from "@tabler/icons-react"
+import { useEffect, useState, Suspense } from "react"
+import { useSubscription } from "@/lib/subscription/hooks"
+import { cn } from "@/lib/utils"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-import { Suspense } from "react"
+const mockCards = [
+    {
+        id: "1",
+        brand: "Visa",
+        last4: "4242",
+        expMonth: 12,
+        expYear: 2025,
+        isDefault: true,
+    },
+    {
+        id: "2",
+        brand: "Mastercard",
+        last4: "8888",
+        expMonth: 8,
+        expYear: 2026,
+        isDefault: false,
+    }
+]
 
 function BillingContent() {
     const searchParams = useSearchParams()
     const plan = searchParams.get("plan")
+    const { isPro, trialDaysLeft } = useSubscription()
     const [selectedPlan, setSelectedPlan] = useState<string | null>(plan)
+    const [cards, setCards] = useState(mockCards)
 
     useEffect(() => {
         if (plan) {
@@ -18,51 +54,141 @@ function BillingContent() {
         }
     }, [plan])
 
+    const setDefaultCard = (id: string) => {
+        setCards(cards.map(card => ({
+            ...card,
+            isDefault: card.id === id
+        })))
+    }
+
+    const removeCard = (id: string) => {
+        setCards(cards.filter(card => card.id !== id))
+    }
+
     return (
-        <div className="max-w-4xl mx-auto pb-32">
-            <div className="mb-8">
+        <div className="pb-32">
+            <div className="mb-12">
                 <h1 className="text-4xl font-serif font-medium mb-1">Billing</h1>
-                <p className="text-muted-foreground">Manage your subscription and billing information.</p>
+                <p className="text-muted-foreground">Manage your subscription, payment methods, and billing history.</p>
             </div>
 
-            {/* Current Plan */}
-            <div className="mb-8 p-6 border border-white/5 rounded-xl bg-[#09090b]">
-                <h3 className="text-lg font-medium text-white mb-4">Current Plan</h3>
-                <div className="flex items-center justify-between">
+            {/* Current Plan Card (High Contrast) */}
+            <div className="mb-12 p-8 border border-white/5 rounded-2xl bg-[#09090b] relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <IconReceipt size={120} />
+                </div>
+                <div className="flex items-center justify-between relative z-10">
                     <div>
-                        <p className="text-2xl font-bold text-white mb-1">Pro Trial</p>
-                        <p className="text-sm text-neutral-500">11 days remaining</p>
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">Pro Trial</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{trialDaysLeft} days remaining</span>
+                        </div>
+                        <p className="text-3xl font-serif italic text-white mb-2">Illumi Professional</p>
+                        <p className="text-sm text-neutral-400 max-w-md">Access to all features including recurring invoices, client portal, and up to 10 team members.</p>
+
+                        <div className="mt-8 flex items-center gap-4">
+                            <Button
+                                onClick={() => {
+                                    if (confirm(`Cancel subscription? You have ${trialDaysLeft} days remaining on your pro-rata balance.`)) {
+                                        alert("Subscription cancelled. Your access will remain active until the end of the period.");
+                                    }
+                                }}
+                                variant="ghost"
+                                className="h-9 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-red-500 hover:bg-red-500/5 px-4"
+                            >
+                                Cancel Plan
+                            </Button>
+                        </div>
                     </div>
-                    <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-6">
-                        Upgrade Now
+                    <Button
+                        onClick={() => window.open('https://billing.illumi.co.za', '_blank')}
+                        className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-xs shadow-2xl"
+                    >
+                        Manage Plan
                     </Button>
                 </div>
             </div>
 
-            {/* Plan Selection */}
-            {selectedPlan && (
-                <div className="mb-8 p-6 border border-white/5 rounded-xl bg-[#09090b]">
-                    <h3 className="text-lg font-medium text-white mb-4">Selected Plan: {selectedPlan === "pro" ? "Pro" : "Starter"}</h3>
-                    <p className="text-sm text-neutral-500 mb-4">Complete your subscription to continue using Emini.</p>
-                    <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-6">
-                        Complete Subscription
-                    </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Payment Methods */}
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-white">Payment Methods</h3>
+                        <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest text-[#878787] hover:text-white px-0">
+                            <IconPlus size={14} className="mr-1" />
+                            Add New
+                        </Button>
+                    </div>
+
+                    <div className="space-y-3">
+                        {cards.map((card) => (
+                            <div
+                                key={card.id}
+                                className={cn(
+                                    "p-4 rounded-xl border transition-all flex items-center justify-between group",
+                                    card.isDefault ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b] hover:bg-white/[0.02]"
+                                )}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-8 rounded bg-black border border-white/10 flex items-center justify-center">
+                                        <IconCreditCard size={18} className="text-neutral-500" />
+                                    </div>
+                                    <div>
+                                        <div className="flex items-center gap-2 text-sm font-bold text-white">
+                                            <span>{card.brand} •••• {card.last4}</span>
+                                            {card.isDefault && (
+                                                <span className="text-[8px] font-bold uppercase tracking-widest text-white border border-white/20 px-1.5 py-0.5 rounded">Active</span>
+                                            )}
+                                        </div>
+                                        <p className="text-[10px] text-neutral-500">Expires {card.expMonth}/{card.expYear}</p>
+                                    </div>
+                                </div>
+
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white group-hover:opacity-100 opacity-0 transition-opacity">
+                                            <IconDots size={16} />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="bg-[#09090b] border-white/10 text-white p-2 rounded-xl">
+                                        {!card.isDefault && (
+                                            <DropdownMenuItem
+                                                onClick={() => setDefaultCard(card.id)}
+                                                className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs font-bold"
+                                            >
+                                                Make Default
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuItem
+                                            onClick={() => removeCard(card.id)}
+                                            className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer text-xs font-bold"
+                                        >
+                                            <IconTrash size={14} className="mr-2" />
+                                            Remove Card
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            )}
 
-            {/* Payment Method */}
-            <div className="mb-8 p-6 border border-white/5 rounded-xl bg-[#09090b]">
-                <h3 className="text-lg font-medium text-white mb-4">Payment Method</h3>
-                <p className="text-sm text-neutral-500 mb-4">No payment method on file.</p>
-                <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 h-11 px-6">
-                    Add Payment Method
-                </Button>
-            </div>
-
-            {/* Billing History */}
-            <div className="p-6 border border-white/5 rounded-xl bg-[#09090b]">
-                <h3 className="text-lg font-medium text-white mb-4">Billing History</h3>
-                <p className="text-sm text-neutral-500">No billing history available.</p>
+                {/* Billing History / Details */}
+                <div className="space-y-6">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Billing History</h3>
+                    <div className="border border-white/5 rounded-xl bg-[#09090b] divide-y divide-white/5">
+                        <div className="p-4 flex items-center justify-between group hover:bg-white/[0.01] transition-colors cursor-pointer">
+                            <div>
+                                <p className="text-xs font-bold text-white">PRO_SUBSCRIPTION_JAN_2024</p>
+                                <p className="text-[10px] text-neutral-500 uppercase tracking-tighter">Jan 15, 2024 • ZAR 299.00</p>
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 group-hover:text-white transition-colors">Receipt</span>
+                        </div>
+                        <div className="p-8 text-center">
+                            <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">No further history</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
@@ -75,4 +201,3 @@ export default function BillingPage() {
         </Suspense>
     )
 }
-

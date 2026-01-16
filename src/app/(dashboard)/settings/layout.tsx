@@ -9,7 +9,8 @@ import {
     IconUsers,
     IconCreditCard,
     IconShieldLock,
-    IconBell
+    IconBell,
+    IconMessageCircle
 } from "@tabler/icons-react"
 
 const settingsNavItems = [
@@ -22,8 +23,8 @@ const settingsNavItems = [
         href: "/settings/billing",
     },
     {
-        title: "Bank Connections",
-        href: "/settings/bank",
+        title: "PayGate",
+        href: "/settings/paygate",
     },
     {
         title: "Members",
@@ -34,8 +35,8 @@ const settingsNavItems = [
         href: "/settings/notifications",
     },
     {
-        title: "Developer",
-        href: "/settings/developer",
+        title: "Support",
+        href: "/settings/support",
     },
 ]
 
@@ -43,9 +44,9 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     const pathname = usePathname()
 
     return (
-        <div className="max-w-6xl mx-auto pb-32">
+        <div className="w-full pb-32">
             {/* Horizontal Tabs Navigation */}
-            <div className="flex items-center gap-1 border-b border-white/5 mb-8 overflow-x-auto">
+            <div className="flex items-center gap-1 border-b border-white/5 mb-8 no-scrollbar">
                 {settingsNavItems.map((item) => (
                     <Link
                         key={item.href}

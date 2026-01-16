@@ -37,7 +37,7 @@ export function AuthForm() {
     return (
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
             <CardHeader className="space-y-1 text-center">
-                <CardTitle className="text-3xl font-serif">Welcome to Emini</CardTitle>
+                <CardTitle className="text-3xl font-serif">Welcome to Illumi</CardTitle>
                 <CardDescription>
                     Enter your email to receive a magic link to sign in.
                 </CardDescription>

@@ -1,64 +1,109 @@
 "use client"
-
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Mail, MessageCircle, Book } from "lucide-react"
+import { IconChevronRight, IconMessageCircle, IconBook } from "@tabler/icons-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 import Link from "next/link"
 
 export default function SupportPage() {
+    const [isContactOpen, setIsContactOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleSendMessage = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsLoading(true)
+        // Simulate sending
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        setIsLoading(false)
+        setIsContactOpen(false)
+        toast.success("Message Sent", { description: "We'll get back to you shortly." })
+    }
+
     return (
-        <div className="max-w-4xl mx-auto pb-32">
-            <div className="mb-8">
-                <h1 className="text-4xl font-serif font-medium mb-1">Support</h1>
-                <p className="text-muted-foreground">Get help and contact our support team.</p>
+        <div className="max-w-5xl mx-auto space-y-8">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">Support & Help</h1>
+                <p className="text-neutral-400">Get help with your account or browse our documentation.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div className="p-6 border border-white/5 rounded-xl bg-[#09090b] hover:bg-white/5 transition-colors">
-                    <Mail className="h-6 w-6 text-white mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">Email Support</h3>
-                    <p className="text-sm text-neutral-500 mb-4">Send us an email and we'll get back to you within 24 hours.</p>
-                    <Button variant="outline" className="w-full border-white/10 bg-white/5 hover:bg-white/10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Contact Option */}
+                <div className="p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-white/10 transition-colors flex flex-col items-start gap-4">
+                    <div className="p-3 bg-blue-500/10 rounded-2xl">
+                        <IconMessageCircle className="h-8 w-8 text-blue-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold mb-2">Contact Support</h3>
+                        <p className="text-neutral-400 text-sm leading-relaxed">
+                            Need help with your account or have a payment issue? Not to worry, we are here to help.
+                        </p>
+                    </div>
+                    <Button
+                        onClick={() => setIsContactOpen(true)}
+                        className="w-full mt-auto bg-white text-black hover:bg-neutral-200 font-bold h-12 rounded-xl gap-2"
+                    >
                         Contact Support
+                        <IconChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
 
-                <div className="p-6 border border-white/5 rounded-xl bg-[#09090b] hover:bg-white/5 transition-colors">
-                    <MessageCircle className="h-6 w-6 text-white mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">Live Chat</h3>
-                    <p className="text-sm text-neutral-500 mb-4">Chat with our support team in real-time.</p>
-                    <Button variant="outline" className="w-full border-white/10 bg-white/5 hover:bg-white/10">
-                        Start Chat
-                    </Button>
-                </div>
-
-                <div className="p-6 border border-white/5 rounded-xl bg-[#09090b] hover:bg-white/5 transition-colors">
-                    <Book className="h-6 w-6 text-white mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">Documentation</h3>
-                    <p className="text-sm text-neutral-500 mb-4">Browse our help center and documentation.</p>
-                    <Button variant="outline" className="w-full border-white/10 bg-white/5 hover:bg-white/10">
-                        View Docs
-                    </Button>
+                {/* Documentation Option */}
+                <div className="p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-white/10 transition-colors flex flex-col items-start gap-4">
+                    <div className="p-3 bg-emerald-500/10 rounded-2xl">
+                        <IconBook className="h-8 w-8 text-emerald-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold mb-2">Documentation</h3>
+                        <p className="text-neutral-400 text-sm leading-relaxed">
+                            Browse our detailed guides and API reference to get the most out of the platform.
+                        </p>
+                    </div>
+                    <Link href="/docs" className="w-full mt-auto">
+                        <Button
+                            variant="outline"
+                            className="w-full bg-transparent border-white/10 hover:bg-white/5 text-white font-bold h-12 rounded-xl gap-2"
+                        >
+                            View Documentation
+                            <IconChevronRight className="h-4 w-4" />
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
-            <div className="p-6 border border-white/5 rounded-xl bg-[#09090b]">
-                <h3 className="text-lg font-medium text-white mb-4">Frequently Asked Questions</h3>
-                <div className="space-y-4">
-                    <div>
-                        <h4 className="text-sm font-medium text-white mb-1">How do I create an invoice?</h4>
-                        <p className="text-sm text-neutral-500">Navigate to the Invoices page and click "Create Invoice". Fill in the details and send it to your customer.</p>
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-medium text-white mb-1">How do I track payments?</h4>
-                        <p className="text-sm text-neutral-500">Connect your email or WhatsApp to automatically receive payment notifications. You can also manually mark invoices as paid.</p>
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-medium text-white mb-1">Can I customize invoice templates?</h4>
-                        <p className="text-sm text-neutral-500">Yes! Go to Invoice Settings to customize templates, add your logo, and configure payment terms.</p>
-                    </div>
-                </div>
-            </div>
+            <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
+                <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>Contact Support</DialogTitle>
+                        <DialogDescription className="text-neutral-400">
+                            Fill out the form below and we'll help you resolve your issue.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSendMessage} className="space-y-6 pt-4">
+                        <div className="space-y-2">
+                            <Label>Subject</Label>
+                            <Input placeholder="What do you need help with?" className="bg-white/5 border-white/10" required />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Message</Label>
+                            <Textarea placeholder="Describe your issue in detail..." className="bg-white/5 border-white/10 min-h-[150px]" required />
+                        </div>
+                        <div className="flex justify-end gap-3">
+                            <Button type="button" variant="ghost" onClick={() => setIsContactOpen(false)} className="hover:bg-white/5">
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={isLoading} className="bg-white text-black hover:bg-neutral-200">
+                                {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                                Send Message
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
-

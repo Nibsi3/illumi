@@ -43,7 +43,7 @@ export function MarketingFooter() {
             {/* CTA Section */}
             <div className="py-24 text-center">
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                    Stress free by <span className="font-serif italic">emini.</span>
+                    Stress free by <span className="font-serif italic">illumi.</span>
                 </h2>
                 <p className="text-white/50 text-sm max-w-xl mx-auto mb-8">
                     Invoicing. Time tracking. File reconciliation. Storage. Financial Overview.
@@ -161,7 +161,7 @@ export function MarketingFooter() {
             {/* Bottom watermark */}
             <div className="relative overflow-hidden py-12">
                 <div className="text-[12rem] md:text-[18rem] font-bold text-white/[0.02] text-center leading-none tracking-tighter select-none">
-                    emini
+                    illumi
                 </div>
             </div>
         </footer>

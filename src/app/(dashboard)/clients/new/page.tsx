@@ -17,7 +17,9 @@ import {
     MapPin,
     Tag,
     Hash,
-    FileText
+    FileText,
+    Eye,
+    Trash
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -34,6 +36,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 export default function NewClientPage() {
     const router = useRouter()
@@ -49,125 +52,96 @@ export default function NewClientPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0d0d0d] text-white font-sans pb-20">
-            {/* Header (Matching Invoice Editor) */}
-            <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 bg-black/80 backdrop-blur-md z-50">
-                <div className="flex items-center gap-6">
-                    <Link href="/clients" className="text-neutral-500 hover:text-white transition-colors">
-                        <ChevronLeft className="h-5 w-5" />
+        <div className="h-full bg-black text-white font-sans flex overflow-hidden">
+            {/* Main Form Area */}
+            <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
+                <div className="max-w-4xl mx-auto pt-16 px-12">
+                    {/* Back Link */}
+                    <Link href="/clients" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
+                        <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Back to Customers</span>
                     </Link>
-                    <div className="flex flex-col">
-                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Customer</span>
-                        <span className="text-sm font-medium">New Customer</span>
+
+                    <div className="flex items-center justify-between mb-20">
+                        <div>
+                            <h1 className="text-5xl font-serif text-white mb-2 italic">New Customer</h1>
+                            <p className="text-neutral-500 font-mono text-sm tracking-widest">Add a new client to your workspace</p>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-4">
-                    <Button
-                        variant="ghost"
-                        className="text-neutral-400 hover:text-white font-medium"
-                        onClick={() => router.back()}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleCreate}
-                        disabled={isLoading}
-                        className="bg-white text-black hover:bg-neutral-200 transition-colors font-semibold px-8 rounded-lg"
-                    >
-                        {isLoading ? "Creating..." : "Create"}
-                    </Button>
-                </div>
-            </header>
-
-            {/* Form Content */}
-            <main className="max-w-2xl mx-auto mt-12 px-6">
-                <div className="flex items-center justify-between mb-10">
-                    <h1 className="text-3xl font-serif italic text-white">Create Customer</h1>
-                    <button onClick={() => router.back()} className="text-neutral-500 hover:text-white transition-colors">
-                        <X className="h-6 w-6" />
-                    </button>
-                </div>
-
-                <Accordion type="multiple" defaultValue={["general", "details"]} className="space-y-6">
-                    {/* General Section */}
-                    <AccordionItem value="general" className="border border-white/5 bg-[#09090b] rounded-xl overflow-hidden px-6">
-                        <AccordionTrigger className="hover:no-underline py-6">
-                            <div className="flex items-center gap-3">
-                                <span className="text-sm font-bold uppercase tracking-widest text-white">General</span>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-8 space-y-6 pt-2">
-                            <div className="grid gap-6">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Name</Label>
-                                    <Input placeholder="Acme Inc" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                    <div className="space-y-12">
+                        {/* General Section */}
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">General Information</h2>
+                            <div className="grid gap-8">
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Company / Client Name</Label>
+                                    <Input
+                                        placeholder="Acme Inc"
+                                        spellCheck={false}
+                                        className="bg-transparent border-white/10 h-12 text-lg font-bold focus-visible:ring-white/20"
+                                    />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Email</Label>
-                                        <Input placeholder="acme@example.com" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Email Address</Label>
+                                        <Input
+                                            placeholder="acme@example.com"
+                                            spellCheck={false}
+                                            className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                        />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Billing Email</Label>
-                                        <Input placeholder="finance@example.com" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                        <p className="text-[10px] text-neutral-500">This is an additional email that will be used to send invoices to.</p>
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Billing Email</Label>
+                                        <Input
+                                            placeholder="finance@example.com"
+                                            spellCheck={false}
+                                            className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                        />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Phone</Label>
-                                        <Input placeholder="+1 (555) 123-4567" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Phone Number</Label>
+                                        <Input placeholder="+27 12 345 6789" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Website</Label>
-                                        <Input placeholder="acme.com" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Website</Label>
+                                        <Input placeholder="acme.com" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Contact person</Label>
-                                    <Input placeholder="John Doe" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Contact Person</Label>
+                                    <Input
+                                        placeholder="John Doe"
+                                        spellCheck={false}
+                                        className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                    />
                                 </div>
                             </div>
-                        </AccordionContent>
-                    </AccordionItem>
+                        </div>
 
-                    {/* Details Section */}
-                    <AccordionItem value="details" className="border border-white/5 bg-[#09090b] rounded-xl overflow-hidden px-6">
-                        <AccordionTrigger className="hover:no-underline py-6">
-                            <div className="flex items-center gap-3">
-                                <span className="text-sm font-bold uppercase tracking-widest text-white">Details</span>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-8 space-y-6 pt-2">
-                            <div className="grid gap-6">
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Address</Label>
-                                    <div className="relative group">
-                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
-                                        <Input placeholder="Search for an address" className="pl-10 bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                    </div>
+                        {/* Location Section */}
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Address & Localization</h2>
+                            <div className="grid gap-8">
+                                <div className="space-y-3">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Full Address</Label>
+                                    <textarea
+                                        placeholder="Line 1, Line 2, City, State, ZIP"
+                                        spellCheck={false}
+                                        className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none"
+                                    />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Address Line 1</Label>
-                                        <Input placeholder="123 Main St" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Address Line 2</Label>
-                                        <Input placeholder="Suite 100" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Country</Label>
-                                        <Select>
-                                            <SelectTrigger className="bg-transparent border-white/10 h-11 focus:ring-white/10">
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Country</Label>
+                                        <Select defaultValue="za">
+                                            <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
                                                 <SelectValue placeholder="Select country" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
@@ -177,52 +151,96 @@ export default function NewClientPage() {
                                             </SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">City</Label>
-                                        <Input placeholder="New York" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
+                                    <div className="space-y-3">
+                                        <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Tax ID / VAT Number</Label>
+                                        <Input placeholder="Enter VAT number" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
                                     </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">State / Province</Label>
-                                        <Input placeholder="NY" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">ZIP / Postal Code</Label>
-                                        <Input placeholder="10001" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Expense Tags</Label>
-                                    <Select>
-                                        <SelectTrigger className="bg-transparent border-white/10 h-11 focus:ring-white/10">
-                                            <SelectValue placeholder="Select tags" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                            <SelectItem value="marketing">Marketing</SelectItem>
-                                            <SelectItem value="sales">Sales</SelectItem>
-                                            <SelectItem value="support">Support</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <p className="text-[10px] text-neutral-500">Tags help categorize and track customer expenses.</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Tax ID / VAT Number</Label>
-                                    <Input placeholder="Enter VAT number" className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10" />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Note</Label>
-                                    <textarea placeholder="Add a private note" className="w-full bg-transparent border border-white/10 rounded-lg p-3 h-32 focus:ring-1 focus:ring-white/10 transition-all text-sm resize-none outline-none" />
                                 </div>
                             </div>
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </main>
+                        </div>
+
+                        {/* Notes Section */}
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Private Notes</h2>
+                            <textarea placeholder="Add any private details about this client..." className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Side Action Bar (Centrally Sticky) */}
+            <div className="w-80 border-l border-white/10 bg-[#050505] flex flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
+                {/* Status at Top */}
+                <div className="p-8 shrink-0">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787] mb-1">Creation</span>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-sm font-bold text-white uppercase tracking-tighter">Ready to Save</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Vertically Centered Content */}
+                <div className="flex-1 flex flex-col justify-center px-8 min-h-[500px] gap-10 py-12">
+                    <div className="space-y-8">
+                        {/* Help & Categories Above */}
+                        <div className="space-y-6">
+                            <div className="space-y-4 text-left">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Information</span>
+                                <p className="text-[10px] text-neutral-500 leading-relaxed font-medium">
+                                    Creating a customer allows you to assign invoices, track expenses, and manage communications in one place. Ensure the contact person is correct for automated reminders.
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Categories</span>
+                                <div className="space-y-2">
+                                    <Label className="text-xs text-neutral-500 font-medium">Industry</Label>
+                                    <Select>
+                                        <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white rounded-lg">
+                                            <SelectValue placeholder="Select industry" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                            <SelectItem value="tech">Technology</SelectItem>
+                                            <SelectItem value="finance">Finance</SelectItem>
+                                            <SelectItem value="health">Healthcare</SelectItem>
+                                            <SelectItem value="retail">Retail</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Actions at the bottom of the centered block */}
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                            <Button
+                                className="w-full h-12 bg-white text-black hover:bg-neutral-200 transition-colors font-black uppercase tracking-tighter text-xs"
+                                onClick={handleCreate}
+                                disabled={isLoading}
+                            >
+                                <Plus className="h-4 w-4 mr-2" />
+                                {isLoading ? "Saving..." : "Create Customer"}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full h-12 border-white/10 bg-transparent hover:bg-white/5 text-white transition-colors font-bold uppercase tracking-tighter text-xs"
+                                onClick={() => router.back()}
+                            >
+                                Cancel
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Discard at Bottom */}
+                <div className="p-8 shrink-0">
+                    <button className="flex items-center gap-3 text-red-500/60 hover:text-red-500 transition-colors text-xs font-bold uppercase tracking-tighter">
+                        <Trash className="h-4 w-4" />
+                        Discard
+                    </button>
+                </div>
+            </div>
         </div>
     )
 }

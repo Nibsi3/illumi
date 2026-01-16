@@ -20,7 +20,7 @@ const mockInvoice = {
     notes: "Please pay within 15 days of receiving this invoice. Thank you for your business!",
     status: "sent",
     brandColor: "#0070F3",
-    logo: "https://emini.co.za/logo.png"
+    logo: "https://illumi.co.za/logo.png"
 }
 
 export default function PublicInvoicePage() {
@@ -34,7 +34,7 @@ export default function PublicInvoicePage() {
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-serif font-bold">E</div>
-                        <span className="font-serif text-lg font-bold tracking-tight">Emini</span>
+                        <span className="font-serif text-lg font-bold tracking-tight">Illumi</span>
                     </div>
                     <div className="text-sm text-muted-foreground flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-green-500" />
@@ -143,7 +143,7 @@ export default function PublicInvoicePage() {
                             </div>
 
                             <div className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold">
-                                Protected by Emini Secure Pay
+                                Protected by Illumi Secure Pay
                             </div>
                         </CardContent>
                     </Card>

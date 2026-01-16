@@ -16,7 +16,7 @@ const testimonials = [
         role: "VC, TechStart • South Africa",
     },
     {
-        quote: "Emini has transformed how we handle invoicing. It's incredibly helpful for finding past transactions and staying organized quickly.",
+        quote: "Illumi has transformed how we handle invoicing. It's incredibly helpful for finding past transactions and staying organized quickly.",
         author: "Michael Torres",
         role: "Founder, DesignCo • Cape Town",
     },
@@ -92,7 +92,7 @@ export default function LoginPage() {
                 <div className="absolute top-12 left-12">
                     <Image
                         src="/logo.png"
-                        alt="Emini Logo"
+                        alt="Illumi Logo"
                         width={32}
                         height={32}
                         className="w-8 h-8"
@@ -119,7 +119,7 @@ export default function LoginPage() {
             <div className="w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col items-center justify-center p-8">
                 <div className="w-full max-w-[350px]">
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-medium text-[#fafafa] mb-2">Welcome to Emini</h1>
+                        <h1 className="text-2xl font-medium text-[#fafafa] mb-2">Welcome to Illumi</h1>
                         <p className="text-sm text-[#878787]">Sign in or create an account</p>
                     </div>
 

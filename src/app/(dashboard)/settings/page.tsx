@@ -21,8 +21,21 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
+import { motion, AnimatePresence } from "framer-motion"
+import { useSettings } from "@/lib/settings-context"
+import { toast } from "sonner"
+
 export default function GeneralSettings() {
-    const [logo, setLogo] = useState<string | null>(null)
+    const {
+        logo, setLogo,
+        companyName, setCompanyName,
+        fromEmail, setFromEmail,
+        currency, setCurrency,
+        dateFormat, setDateFormat,
+        taxRate, setTaxRate
+    } = useSettings()
+
+    const [industry, setIndustry] = useState("tech")
 
     const handleLogoUpload = () => {
         // Mock upload
@@ -32,11 +45,20 @@ export default function GeneralSettings() {
         input.onchange = (e: any) => {
             const file = e.target.files[0]
             if (file) {
-                const url = URL.createObjectURL(file)
-                setLogo(url)
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                    if (event.target?.result) {
+                        setLogo(event.target.result as string)
+                    }
+                }
+                reader.readAsDataURL(file)
             }
         }
         input.click()
+    }
+
+    const handleSave = () => {
+        toast.success("Settings saved successfully")
     }
 
     return (
@@ -87,19 +109,24 @@ export default function GeneralSettings() {
                 <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Name</Label>
-                        <Input placeholder="My Professional Co." className="bg-black border-white/5 h-11 focus-visible:ring-white/10" />
+                        <Input
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            placeholder="My Professional Co."
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Industry</Label>
-                        <Select defaultValue="tech">
+                        <Select defaultValue={industry} onValueChange={(val) => setIndustry(val)}>
                             <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                <SelectItem value="tech">Technology</SelectItem>
-                                <SelectItem value="marketing">Marketing</SelectItem>
-                                <SelectItem value="finance">Finance</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
+                                <SelectItem value="tech">Technology & Software</SelectItem>
+                                <SelectItem value="marketing">Marketing & Advertising</SelectItem>
+                                <SelectItem value="finance">Finance & Accounting</SelectItem>
+                                <SelectItem value="consulting">Professional Consulting</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -108,19 +135,49 @@ export default function GeneralSettings() {
                 <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
-                        <Input placeholder="support@myco.com" className="bg-black border-white/5 h-11 focus-visible:ring-white/10" />
+                        <Input
+                            value={fromEmail}
+                            onChange={(e) => setFromEmail(e.target.value)}
+                            placeholder="support@myco.com"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
-                        <Select defaultValue="zar">
+                        <Select value={currency} onValueChange={setCurrency}>
                             <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                <SelectItem value="zar">South African Rand (ZAR)</SelectItem>
-                                <SelectItem value="usd">US Dollar (USD)</SelectItem>
-                                <SelectItem value="eur">Euro (EUR)</SelectItem>
-                                <SelectItem value="gbp">British Pound (GBP)</SelectItem>
+                                <SelectItem value="ZAR">South African Rand (ZAR)</SelectItem>
+                                <SelectItem value="USD">US Dollar (USD)</SelectItem>
+                                <SelectItem value="EUR">Euro (EUR)</SelectItem>
+                                <SelectItem value="GBP">British Pound (GBP)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Tax Rate (%)</Label>
+                        <Input
+                            type="number"
+                            value={taxRate}
+                            onChange={(e) => setTaxRate(Number(e.target.value))}
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Date Format</Label>
+                        <Select value={dateFormat} onValueChange={setDateFormat}>
+                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
+                                <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
+                                <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -129,7 +186,7 @@ export default function GeneralSettings() {
 
             {/* Footer Actions */}
             <div className="flex justify-end pt-10 border-t border-white/5">
-                <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
+                <Button onClick={handleSave} className="bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
                     Save everything
                 </Button>
             </div>

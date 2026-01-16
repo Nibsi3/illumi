@@ -1,5 +1,7 @@
 "use client"
 
+import { StatusDot } from "@/components/status-dot"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Check, Download, X } from "lucide-react"
@@ -63,6 +65,12 @@ export default function InvoicesPage() {
 
     return (
         <div className="flex flex-col gap-y-10 pb-32">
+            {/* Header Section */}
+            <div>
+                <h1 className="text-4xl font-serif text-white tracking-tight italic">Invoices</h1>
+                <p className="text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
+            </div>
+
             {/* Status Cards (Pic 4) */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
@@ -145,113 +153,123 @@ export default function InvoicesPage() {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <Link href="/invoices/new">
-                        <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Create Invoice
-                        </Button>
-                    </Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create
+                                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48 bg-[#0d0d0d] border-white/10 rounded-none text-white p-1">
+                            <Link href="/invoices/new">
+                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer px-3 py-2.5 text-xs font-medium">
+                                    New Invoice
+                                </DropdownMenuItem>
+                            </Link>
+                            <Link href="/recurring/new">
+                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer px-3 py-2.5 text-xs font-medium">
+                                    New Recurring
+                                </DropdownMenuItem>
+                            </Link>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 
-            {/* Invoices Table (Pic 4) */}
-            <div className="rounded-none border border-white/5 overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="border-b border-white/5 bg-white/[0.01] text-neutral-500">
-                        <tr>
-                            <th className="px-6 py-4 w-10">
-                                <div
-                                    onClick={toggleSelectAll}
-                                    className="w-4 h-4 rounded-none border border-white/10 flex items-center justify-center cursor-pointer"
-                                >
-                                    {selectedIds.length === allInvoices.length && <Check className="h-3 w-3 text-white" />}
-                                </div>
-                            </th>
-                            {columnsList.filter(c => visibleColumns.includes(c.id)).map(col => (
-                                <th key={col.id} className="px-6 py-4 font-medium uppercase text-[10px] tracking-widest">
-                                    {col.label}
-                                </th>
-                            ))}
-                            <th className="px-6 py-4 font-medium uppercase text-[10px] tracking-widest text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                        {filteredInvoices.map((invoice) => (
-                            <tr key={invoice.id} className="hover:bg-white/2 transition-colors group">
-                                <td className="px-6 py-5">
+            {/* Invoices Table (Redesigned with 1px Grid) */}
+            <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-left text-[13px]">
+                        <thead>
+                            <tr className="bg-white/[0.02] border-b border-white/10">
+                                <th className="px-5 py-3 w-10 border-r border-white/10">
                                     <div
-                                        onClick={() => toggleSelect(invoice.id)}
-                                        className={cn(
-                                            "w-4 h-4 rounded-none border border-white/10 group-hover:border-white/30 transition-colors flex items-center justify-center cursor-pointer",
-                                            selectedIds.includes(invoice.id) && "bg-white border-white"
-                                        )}
+                                        onClick={toggleSelectAll}
+                                        className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors"
                                     >
-                                        {selectedIds.includes(invoice.id) && <Check className="h-3 w-3 text-black" />}
+                                        {selectedIds.length === allInvoices.length && <Check className="h-3 w-3 text-white" />}
                                     </div>
-                                </td>
-                                {visibleColumns.includes("id") && <td className="px-6 py-5 font-medium text-white tracking-tight">{invoice.id}</td>}
-                                {visibleColumns.includes("status") && (
-                                    <td className="px-6 py-5">
-                                        <span className={cn(
-                                            "inline-flex items-center px-2 py-0.5 rounded-none text-[10px] font-bold uppercase tracking-wider",
-                                            invoice.status === 'Draft' ? 'bg-white/5 text-neutral-400' : 'bg-white/10 text-white'
-                                        )}>
-                                            {invoice.status}
-                                        </span>
-                                    </td>
-                                )}
-                                {visibleColumns.includes("dueDate") && (
-                                    <td className="px-6 py-5">
-                                        <div className="flex flex-col gap-1 items-end">
-                                            <div className="flex h-8 w-8 items-center justify-center bg-linear-to-tr from-[#3b82f6] to-[#6366f1] text-white rounded-none">
-                                                {invoice.dueDate}</div>
-                                            <div className="text-[9px] text-muted-foreground">In 28 days</div>
+                                </th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Invoice ID</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Status</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Customer</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10 text-right">Amount</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Due Date</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Score</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredInvoices.map((invoice) => (
+                                <tr key={invoice.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                                    <td className="px-5 py-4 border-r border-white/10">
+                                        <div
+                                            onClick={() => toggleSelect(invoice.id)}
+                                            className={cn(
+                                                "w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40",
+                                                selectedIds.includes(invoice.id) && "bg-white border-white"
+                                            )}
+                                        >
+                                            {selectedIds.includes(invoice.id) && <Check className="h-3 w-3 text-black" />}
                                         </div>
                                     </td>
-                                )}
-                                {visibleColumns.includes("customer") && (
-                                    <td className="px-6 py-5">
+                                    <td className="px-5 py-4 border-r border-white/10 font-bold text-[#fafafa] tracking-tight">
+                                        #{invoice.id}
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10">
+                                        <StatusDot
+                                            variant={
+                                                invoice.status === 'Paid' ? 'success' :
+                                                    invoice.status === 'Draft' ? 'neutral' :
+                                                        'warning'
+                                            }
+                                        >
+                                            {invoice.status}
+                                        </StatusDot>
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 rounded-none bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-neutral-400">
+                                            <div className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787]">
                                                 {invoice.customer.charAt(0).toUpperCase()}
                                             </div>
-                                            <span className="text-neutral-400">{invoice.customer}</span>
+                                            <span className="text-[#fafafa] font-medium">{invoice.customer}</span>
                                         </div>
                                     </td>
-                                )}
-                                {visibleColumns.includes("amount") && <td className="px-6 py-5 text-white font-medium">{invoice.amount}</td>}
-                                {visibleColumns.includes("vatRate") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("vatAmount") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("taxRate") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("taxAmount") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("exclVat") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("exclTax") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("internalNote") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("issueDate") && <td className="px-6 py-5 text-neutral-400">{invoice.issueDate}</td>}
-                                {visibleColumns.includes("type") && <td className="px-6 py-5 text-neutral-400">{invoice.type}</td>}
-                                {visibleColumns.includes("sentAt") && <td className="px-6 py-5 text-neutral-500">-</td>}
-
-                                <td className="px-6 py-5 text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white rounded-none">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-none shadow-2xl">
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Edit</DropdownMenuItem>
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Open</DropdownMenuItem>
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Copy link</DropdownMenuItem>
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Duplicate</DropdownMenuItem>
-                                            <DropdownMenuSeparator className="bg-white/5" />
-                                            <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-none cursor-pointer">Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                    <td className="px-5 py-4 border-r border-white/10 text-right text-white font-bold text-sm">
+                                        {invoice.amount}
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        {invoice.dueDate}
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10">
+                                        <div className="flex items-end gap-[1px] h-4">
+                                            {[2, 4, 3, 6, 8, 10, 7].map((h, i) => (
+                                                <div key={i} className="w-[2px] bg-white/20 rounded-t-[1px]" style={{ height: `${h}px` }} />
+                                            ))}
+                                        </div>
+                                    </td>
+                                    <td className="px-5 py-4 text-center">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
+                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
+                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
+                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Download PDF</DropdownMenuItem>
+                                                <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Selection Toolbar (Pic 4) */}

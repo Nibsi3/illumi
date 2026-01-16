@@ -1,183 +1,226 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ChevronLeft, X, Package } from "lucide-react"
+import {
+  ChevronLeft,
+  X,
+  Package,
+  Plus,
+  Trash,
+  Hash,
+  Banknote,
+  Clock,
+  Scale,
+  Eye
+} from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { cn } from "@/lib/utils"
+import { NumberInput } from "@/components/ui/number-input"
 
 export default function NewProductPage() {
   const router = useRouter()
-  const [isSaving, setIsSaving] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSave = () => {
-    setIsSaving(true)
-    // Simulate save then return to list
+    setIsLoading(true)
+    // Simulate save
     setTimeout(() => {
-      setIsSaving(false)
+      setIsLoading(false)
       router.push("/products")
-    }, 800)
+    }, 1000)
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white font-sans pb-20">
-      {/* Header */}
-      <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 bg-[#0d0d0d]/90 backdrop-blur-md z-50">
-        <div className="flex items-center gap-6">
-          <Link
-            href="/products"
-            className="text-neutral-500 hover:text-white transition-colors"
-          >
-            <ChevronLeft className="h-5 w-5" />
+    <div className="h-full bg-black text-white font-sans flex overflow-hidden">
+      {/* Main Form Area */}
+      <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
+        <div className="max-w-4xl mx-auto pt-16 px-12">
+          {/* Back Link */}
+          <Link href="/products" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
+            <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-xs font-bold uppercase tracking-widest">Back to Products</span>
           </Link>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-              Product
-            </span>
-            <span className="text-sm font-medium">New product</span>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            className="text-neutral-400 hover:text-white font-medium"
-            onClick={() => router.back()}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-white text-black hover:bg-neutral-200 transition-colors font-semibold px-8 rounded-lg"
-          >
-            {isSaving ? "Saving..." : "Save product"}
-          </Button>
-        </div>
-      </header>
-
-      {/* Form */}
-      <main className="max-w-2xl mx-auto mt-12 px-6">
-        <div className="flex items-center justify-between mb-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-none bg-neutral-900 border border-white/10 flex items-center justify-center">
-              <Package className="h-5 w-5 text-neutral-400" />
+          <div className="flex items-center justify-between mb-20">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 rounded-2xl bg-[#09090b] border border-white/5 flex items-center justify-center shadow-2xl">
+                <Package className="h-8 w-8 text-neutral-400" />
+              </div>
+              <div>
+                <h1 className="text-5xl font-serif text-white mb-2 italic">New Product</h1>
+                <p className="text-neutral-500 font-mono text-sm tracking-widest">Add a new item or service to your catalog</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-serif italic text-white">
-              Create Product
-            </h1>
           </div>
-          <button
-            onClick={() => router.back()}
-            className="text-neutral-500 hover:text-white transition-colors"
-          >
-            <X className="h-6 w-6" />
+
+          <div className="space-y-12">
+            {/* Basic Info */}
+            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Basic Information</h2>
+              <div className="grid gap-8">
+                <div className="space-y-3">
+                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Product / Service Name</Label>
+                  <Input
+                    placeholder="E.g. Website Design Package"
+                    spellCheck={false}
+                    className="bg-transparent border-white/10 h-12 text-lg font-bold focus-visible:ring-white/20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Price (ZAR)</Label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 font-mono text-sm">R</span>
+                      <NumberInput
+                        value={0}
+                        onChange={() => { }}
+                        className="h-12 border border-white/10 rounded-md pl-12 pr-4 focus-within:ring-1 focus-within:ring-white/20"
+                        placeholder="5000"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">SKU / ID</Label>
+                    <Input placeholder="WEB-001" className="bg-transparent border-white/10 h-12 font-mono focus-visible:ring-white/20 uppercase" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Inventory & Billing */}
+            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Billing & Units</h2>
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-3">
+                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Unit Label</Label>
+                  <Select defaultValue="service">
+                    <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
+                      <SelectValue placeholder="Select unit" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                      <SelectItem value="service">Service</SelectItem>
+                      <SelectItem value="hour">Per Hour</SelectItem>
+                      <SelectItem value="seat">Per Seat</SelectItem>
+                      <SelectItem value="month">Per Month</SelectItem>
+                      <SelectItem value="kg">Kilogram</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Billing Mode</Label>
+                  <Select defaultValue="one-off">
+                    <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
+                      <SelectValue placeholder="Select mode" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                      <SelectItem value="one-off">One-off Payment</SelectItem>
+                      <SelectItem value="recurring">Recurring Subscription</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Description Section */}
+            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Public Description</h2>
+              <textarea
+                placeholder="Describe this product for your clients..."
+                spellCheck={false}
+                className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Side Action Bar (Centrally Sticky) */}
+      <div className="w-80 border-l border-white/10 bg-[#050505] flex flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
+        {/* Status at Top */}
+        <div className="p-8 shrink-0">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787] mb-1">Status</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-sm font-bold text-white uppercase tracking-tighter">Ready</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Vertically Centered Content */}
+        <div className="flex-1 flex flex-col justify-center px-8 min-h-[500px] gap-10 py-12">
+          <div className="space-y-8">
+            {/* Tax & Visibility Above */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Tax Configuration</span>
+                <div className="space-y-2">
+                  <Label className="text-xs text-neutral-500 font-medium">Tax Treatment</Label>
+                  <Select defaultValue="standard">
+                    <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white rounded-lg">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                      <SelectItem value="standard">Standard Rate (15%)</SelectItem>
+                      <SelectItem value="exempt">Exempt</SelectItem>
+                      <SelectItem value="zero">Zero-Rated</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Catalog Visibility</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-neutral-400">Show on portal</span>
+                  <div className="w-10 h-5 bg-emerald-500/20 rounded-full relative cursor-pointer">
+                    <div className="absolute right-1 top-1 w-3 h-3 bg-emerald-500 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions at the bottom of the centered block */}
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <Button
+                className="w-full h-12 bg-white text-black hover:bg-neutral-200 transition-colors font-black uppercase tracking-tighter text-xs"
+                onClick={handleSave}
+                disabled={isLoading}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {isLoading ? "Saving..." : "Save Product"}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full h-12 border-white/10 bg-transparent hover:bg-white/5 text-white transition-colors font-bold uppercase tracking-tighter text-xs"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Delete at Bottom */}
+        <div className="p-8 shrink-0">
+          <button className="flex items-center gap-3 text-red-500/60 hover:text-red-500 transition-colors text-xs font-bold uppercase tracking-tighter">
+            <Trash className="h-4 w-4" />
+            Delete Product
           </button>
         </div>
-
-        <div className="space-y-8">
-          <section className="border border-white/5 bg-[#09090b] rounded-xl p-6 space-y-6">
-            <div className="grid gap-6">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                  Name
-                </Label>
-                <Input
-                  placeholder="Website design package"
-                  className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                    SKU
-                  </Label>
-                  <Input
-                    placeholder="WEB-DESIGN-01"
-                    className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                    Default price
-                  </Label>
-                  <Input
-                    placeholder="5000"
-                    className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                    Currency
-                  </Label>
-                  <Input
-                    placeholder="ZAR"
-                    className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                    Billing
-                  </Label>
-                  <Input
-                    placeholder="One-time / Recurring"
-                    className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                  Description
-                </Label>
-                <textarea
-                  placeholder="Short internal description of what this product or service includes."
-                  className="w-full bg-transparent border border-white/10 rounded-lg p-3 h-28 focus:ring-1 focus:ring-white/10 transition-all text-sm resize-none outline-none"
-                />
-              </div>
-            </div>
-          </section>
-
-          <section className="border border-white/5 bg-[#09090b] rounded-xl p-6 space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-white">
-              Accounting
-            </h2>
-            <p className="text-xs text-neutral-500 max-w-md">
-              Optional details that help you and your customer understand how
-              this product appears on invoices. No accountant jargon.
-            </p>
-
-            <div className="grid grid-cols-2 gap-6 mt-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                  Unit label
-                </Label>
-                <Input
-                  placeholder="Hours, months, seats..."
-                  className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                  Tax treatment
-                </Label>
-                <Input
-                  placeholder="Standard / Exempt"
-                  className="bg-transparent border-white/10 h-11 focus-visible:ring-white/10"
-                />
-              </div>
-            </div>
-          </section>
-        </div>
-      </main>
+      </div>
     </div>
   )
 }
-
-

@@ -9,9 +9,12 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { allProducts } from "@/lib/data"
 
 type Product = {
   id: string
@@ -24,28 +27,10 @@ type Product = {
   status: "Active" | "Archived"
 }
 
-const initialProducts: Product[] = [
-  {
-    id: "PROD-0001",
-    name: "Retainer Package",
-    sku: "RET-5000",
-    description: "Monthly consulting retainer",
-    price: "ZAR 5,000.00",
-    currency: "ZAR",
-    billingType: "Recurring",
-    status: "Active",
-  },
-  {
-    id: "PROD-0002",
-    name: "Implementation Project",
-    sku: "IMP-ONCE",
-    description: "Implementation and onboarding once-off",
-    price: "ZAR 12,500.00",
-    currency: "ZAR",
-    billingType: "One-time",
-    status: "Active",
-  },
-]
+const initialProducts = allProducts.map(p => ({
+  ...p,
+  price: typeof p.price === 'number' ? `ZAR ${p.price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}` : p.price
+})) as Product[]
 
 const productColumns = [
   { id: "name", label: "Name" },
@@ -66,7 +51,7 @@ export default function ProductsPage() {
   ])
 
   return (
-    <div className="flex flex-col gap-y-10 font-sans px-6 max-w-7xl mx-auto pb-20">
+    <div className="flex flex-col gap-y-10 font-sans pb-20">
       {/* Header */}
       <div>
         <h1 className="text-4xl font-serif text-white tracking-tight italic">
@@ -133,115 +118,73 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      {/* Products table */}
-      <div className="rounded-none border border-white/5 overflow-hidden">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-white/5 bg-white/[0.01] text-neutral-500 uppercase text-[10px] tracking-widest font-bold">
-            <tr>
-              <th className="px-6 py-4 w-10">
-                <div className="w-4 h-4 rounded-none border border-white/10" />
-              </th>
-              {productColumns
-                .filter((c) => visibleColumns.includes(c.id))
-                .map((col) => (
-                  <th key={col.id} className="px-6 py-4">
-                    {col.label}
-                  </th>
-                ))}
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {products.map((product) => (
-              <tr
-                key={product.id}
-                className="hover:bg-white/[0.02] transition-colors group cursor-pointer"
-              >
-                <td className="px-6 py-5">
-                  <div className="w-4 h-4 rounded-none border border-white/10 group-hover:border-white/30 transition-colors" />
-                </td>
-
-                {visibleColumns.includes("name") && (
-                  <td className="px-6 py-5">
+      {/* Products Table (Redesigned with 1px Grid) */}
+      <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-[13px]">
+            <thead>
+              <tr className="bg-white/[0.02] border-b border-white/10">
+                <th className="px-5 py-3 w-10 border-r border-white/10">
+                  <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors" />
+                </th>
+                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Product</th>
+                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">SKU</th>
+                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Status</th>
+                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10 text-right">Price</th>
+                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                  <td className="px-5 py-4 border-r border-white/10">
+                    <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
+                  </td>
+                  <td className="px-5 py-4 border-r border-white/10">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-none bg-neutral-900 border border-white/10 flex items-center justify-center">
-                        <Package className="h-5 w-5 text-neutral-400" />
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787]">
+                        {product.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-white">
-                          {product.name}
-                        </span>
-                        {product.description && (
-                          <span className="text-xs text-neutral-500">
-                            {product.description}
-                          </span>
-                        )}
+                        <span className="font-bold text-[#fafafa] tracking-tight">{product.name}</span>
+                        <span className="text-[10px] text-[#878787] truncate max-w-[200px]">{product.description}</span>
                       </div>
                     </div>
                   </td>
-                )}
-
-                {visibleColumns.includes("sku") && (
-                  <td className="px-6 py-5 text-neutral-500">
-                    {product.sku ?? "—"}
+                  <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                    {product.sku}
                   </td>
-                )}
-
-                {visibleColumns.includes("price") && (
-                  <td className="px-6 py-5 text-white font-medium">
-                    {product.price}
-                  </td>
-                )}
-
-                {visibleColumns.includes("billingType") && (
-                  <td className="px-6 py-5 text-neutral-400">
-                    {product.billingType}
-                  </td>
-                )}
-
-                {visibleColumns.includes("status") && (
-                  <td className="px-6 py-5">
-                    <span
-                      className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded-none text-[10px] font-bold uppercase tracking-wider",
-                        product.status === "Active"
-                          ? "bg-white/10 text-white"
-                          : "bg-white/5 text-neutral-500",
-                      )}
-                    >
+                  <td className="px-5 py-4 border-r border-white/10">
+                    <span className={cn(
+                      "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border",
+                      product.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-white/5 text-neutral-400 border-white/10'
+                    )}>
                       {product.status}
                     </span>
                   </td>
-                )}
-
-                <td className="px-6 py-5 text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-neutral-500 hover:text-white transition-colors rounded-none"
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-48 bg-black border-white/10 rounded-none shadow-2xl"
-                    >
-                      <DropdownMenuCheckboxItem
-                        checked={false}
-                        className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer"
-                      >
-                        Edit
-                      </DropdownMenuCheckboxItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  <td className="px-5 py-4 border-r border-white/10 text-right text-white font-bold text-sm">
+                    {product.price}
+                  </td>
+                  <td className="px-5 py-4 text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
+                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Product</DropdownMenuItem>
+                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Duplicate</DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                        <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Archive</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

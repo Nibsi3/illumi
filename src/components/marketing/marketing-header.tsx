@@ -29,7 +29,7 @@ export function MarketingHeader() {
                 <Link href="/" className="flex items-center">
                     <Image
                         src="/logo.png"
-                        alt="Emini Logo"
+                        alt="Illumi Logo"
                         width={24}
                         height={24}
                         className="w-6 h-6"

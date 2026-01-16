@@ -15,36 +15,7 @@ import {
     DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu"
 
-const allClients = [
-    {
-        id: "1",
-        name: "Acme Corp",
-        contact: "John Doe",
-        email: "billing@acme.com",
-        status: "Active",
-        totalInvoiced: "ZAR 12,500.00",
-        lastActivity: "2 mins ago",
-        tags: ["Gold", "Tech"],
-        country: "South Africa",
-        industry: "Technology",
-        revenue: "ZAR 155,000.00",
-        outstanding: "ZAR 0.00",
-    },
-    {
-        id: "2",
-        name: "Globex Corporation",
-        contact: "Hank Scorpio",
-        email: "finance@globex.co",
-        status: "Active",
-        totalInvoiced: "ZAR 8,400.00",
-        lastActivity: "1 day ago",
-        tags: ["Enterprise"],
-        country: "USA",
-        industry: "Global Domination",
-        revenue: "ZAR 2M",
-        outstanding: "ZAR 55,000.00",
-    },
-]
+import { allClients } from "@/lib/data"
 
 const customerColumns = [
     { label: "Name", id: "name" },
@@ -69,7 +40,7 @@ export default function ClientsPage() {
     ])
 
     return (
-        <div className="flex flex-col gap-y-10 font-sans px-6 max-w-7xl mx-auto pb-20">
+        <div className="flex flex-col gap-y-10 font-sans pb-20">
             {/* Header Section */}
             <div>
                 <h1 className="text-4xl font-serif text-white tracking-tight italic">Customers</h1>
@@ -126,96 +97,76 @@ export default function ClientsPage() {
                 </div>
             </div>
 
-            {/* Clients Table */}
-            <div className="rounded-none border border-white/5 overflow-hidden">
-                <table className="w-full text-left text-sm">
-                    <thead className="border-b border-white/5 bg-white/[0.01] text-neutral-500 uppercase text-[10px] tracking-widest font-bold">
-                        <tr>
-                            <th className="px-6 py-4 w-10">
-                                <div className="w-4 h-4 rounded-none border border-white/10" />
-                            </th>
-                            {customerColumns.filter(c => visibleColumns.includes(c.id)).map(col => (
-                                <th key={col.id} className="px-6 py-4">{col.label}</th>
-                            ))}
-                            {visibleColumns.includes("status") && <th className="px-6 py-4">Status</th>}
-                            {visibleColumns.includes("totalInvoiced") && <th className="px-6 py-4">Total Invoiced</th>}
-                            {visibleColumns.includes("lastActivity") && <th className="px-6 py-4">Last Activity</th>}
-                            <th className="px-6 py-4 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                        {allClients.map((client) => (
-                            <tr key={client.id} className="hover:bg-white/[0.02] transition-colors group cursor-pointer">
-                                <td className="px-6 py-5">
-                                    <div className="w-4 h-4 rounded-none border border-white/10 group-hover:border-white/30 transition-colors" />
-                                </td>
-                                {visibleColumns.includes("name") && (
-                                    <td className="px-6 py-5">
+            {/* Clients Table (Redesigned with 1px Grid) */}
+            <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+                <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-left text-[13px]">
+                        <thead>
+                            <tr className="bg-white/[0.02] border-b border-white/10">
+                                <th className="px-5 py-3 w-10 border-r border-white/10">
+                                    <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors">
+                                        {/* Select All Checkbox */}
+                                    </div>
+                                </th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Name</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Email</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Status</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Total Invoiced</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Last Activity</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {allClients.map((client) => (
+                                <tr key={client.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                                    <td className="px-5 py-4 border-r border-white/10">
+                                        <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-none bg-neutral-900 border border-white/10 flex items-center justify-center">
-                                                <Building2 className="h-5 w-5 text-neutral-400" />
+                                            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787]">
+                                                {client.name.charAt(0).toUpperCase()}
                                             </div>
-                                            <span className="font-semibold text-white">{client.name}</span>
+                                            <span className="font-bold text-[#fafafa] tracking-tight">{client.name}</span>
                                         </div>
                                     </td>
-                                )}
-                                {visibleColumns.includes("contact") && <td className="px-6 py-5 text-neutral-400">{client.contact}</td>}
-                                {visibleColumns.includes("email") && <td className="px-6 py-5 text-neutral-500">{client.email}</td>}
-                                {visibleColumns.includes("invoices") && <td className="px-6 py-5 text-neutral-400">-</td>}
-                                {visibleColumns.includes("projects") && <td className="px-6 py-5 text-neutral-400">-</td>}
-                                {visibleColumns.includes("industry") && <td className="px-6 py-5 text-neutral-400">{client.industry}</td>}
-                                {visibleColumns.includes("country") && <td className="px-6 py-5 text-neutral-400">{client.country}</td>}
-                                {visibleColumns.includes("financeEmail") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("language") && <td className="px-6 py-5 text-neutral-400">-</td>}
-                                {visibleColumns.includes("revenue") && <td className="px-6 py-5 text-white font-medium">{client.revenue}</td>}
-                                {visibleColumns.includes("outstanding") && <td className="px-6 py-5 text-red-400">{client.outstanding}</td>}
-                                {visibleColumns.includes("lastInvoice") && <td className="px-6 py-5 text-neutral-400">-</td>}
-                                {visibleColumns.includes("website") && <td className="px-6 py-5 text-neutral-500">-</td>}
-                                {visibleColumns.includes("tags") && (
-                                    <td className="px-6 py-5">
-                                        <div className="flex gap-1">
-                                            {client.tags.map(tag => (
-                                                <span key={tag} className="text-[10px] text-neutral-400 bg-white/5 px-1.5 py-0.5 rounded-none border border-white/5">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
+                                    <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        {client.email}
                                     </td>
-                                )}
-
-                                {visibleColumns.includes("status") && (
-                                    <td className="px-6 py-5">
+                                    <td className="px-5 py-4 border-r border-white/10">
                                         <span className={cn(
-                                            "inline-flex items-center px-2 py-0.5 rounded-none text-[10px] font-bold uppercase tracking-wider",
-                                            client.status === 'Active' ? 'bg-white/10 text-white' : 'bg-white/5 text-neutral-500'
+                                            "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border",
+                                            client.status === 'Active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-white/5 text-neutral-400 border-white/10'
                                         )}>
                                             {client.status}
                                         </span>
                                     </td>
-                                )}
-                                {visibleColumns.includes("totalInvoiced") && <td className="px-6 py-5 font-mono text-white">{client.totalInvoiced}</td>}
-                                {visibleColumns.includes("lastActivity") && <td className="px-6 py-5 text-neutral-500">{client.lastActivity}</td>}
-
-                                <td className="px-6 py-5 text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white transition-colors rounded-none">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-none shadow-2xl">
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Edit</DropdownMenuItem>
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">View Details</DropdownMenuItem>
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">Invoices</DropdownMenuItem>
-                                            <DropdownMenuSeparator className="bg-white/5" />
-                                            <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-none cursor-pointer">Delete</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                    <td className="px-5 py-4 border-r border-white/10 text-white font-bold">
+                                        {client.totalInvoiced}
+                                    </td>
+                                    <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        {client.lastActivity}
+                                    </td>
+                                    <td className="px-5 py-4 text-center">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
+                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Customer</DropdownMenuItem>
+                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View History</DropdownMenuItem>
+                                                <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Delete</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     )

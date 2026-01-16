@@ -70,7 +70,7 @@ export default function NotificationsSettingsPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto pb-32">
+        <div className="pb-32">
             <div className="mb-8">
                 <h1 className="text-4xl font-serif font-medium mb-1">Notifications</h1>
                 <p className="text-muted-foreground">Manage your personal notification settings for this team.</p>

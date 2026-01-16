@@ -45,7 +45,7 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
                             <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6">
-                                <span className="text-white/70">Emini v1.1</span>
+                                <span className="text-white/70">Illumi v1.1</span>
                                 <IconArrowRight className="h-4 w-4" />
                             </div>
 
@@ -210,7 +210,7 @@ export default function LandingPage() {
                             <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12">
                                 <h3 className="text-2xl font-medium text-white mb-6">Inbox</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Use your personalized email address for your invoices and receipts. Emini gives you a transaction suggestion to match it with.
+                                    Use your personalized email address for your invoices and receipts. Illumi gives you a transaction suggestion to match it with.
                                 </p>
                                 <ul className="space-y-4 mb-12">
                                     {inboxFeatures.map((item, i) => (
@@ -261,7 +261,7 @@ export default function LandingPage() {
                         {/* Vault Main Info */}
                         <div className="lg:col-span-2 p-8 lg:p-12 flex flex-col justify-center">
                             <h2 className="text-3xl font-medium text-white mb-6">Vault</h2>
-                            <p className="text-[#878787] text-sm mb-6 max-w-md">Store your files securely in Emini.</p>
+                            <p className="text-[#878787] text-sm mb-6 max-w-md">Store your files securely in Illumi.</p>
                             <p className="text-[#878787] text-sm mb-8 leading-relaxed max-w-md">
                                 There's no need to scramble for things across different drives. Keep all of your files, such as contracts and agreements safe in one place.
                             </p>

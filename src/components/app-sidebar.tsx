@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import React, { useState, useEffect } from "react";
 import {
     IconBrandTabler,
     IconSettings,
     IconReceipt,
     IconClock,
-    IconInbox,
     IconUsers,
     IconSearch,
-    IconBell,
     IconLogout,
     IconUserCircle,
     IconMessageCircle,
@@ -19,6 +16,7 @@ import {
     IconChevronDown,
     IconPlus,
 } from "@tabler/icons-react";
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,244 +28,347 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
     const [showSwitcher, setShowSwitcher] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const [isWorkspaceDialogOpen, setIsWorkspaceDialogOpen] = useState(false);
+    const [newWorkspaceName, setNewWorkspaceName] = useState("");
+    const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+
+    const supabase = createClient();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        getUser();
+    }, [supabase.auth]);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push("/login");
+    };
+
+    const handleCreateWorkspace = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsCreatingWorkspace(true);
+        // Simulate creation for now
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        toast.success("Workspace Created", { description: `${newWorkspaceName} is ready.` });
+        setIsWorkspaceDialogOpen(false);
+        setNewWorkspaceName("");
+        setIsCreatingWorkspace(false);
+    };
 
     const links = [
         {
             label: "Overview",
             href: "/overview",
-            icon: <IconBrandTabler className="h-6 w-6 shrink-0" />,
+            icon: <IconBrandTabler className="h-5 w-5 shrink-0" rotate={-45} />,
         },
         {
             label: "Invoices",
             href: "/invoices",
-            icon: <IconReceipt className="h-6 w-6 shrink-0" />,
-        },
-        {
-            label: "Inbox",
-            href: "/inbox",
-            icon: <IconInbox className="h-6 w-6 shrink-0" />,
+            icon: <IconReceipt className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Recurring",
             href: "/recurring",
-            icon: <IconClock className="h-6 w-6 shrink-0" />,
+            icon: <IconClock className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Customers",
             href: "/clients",
-            icon: <IconUsers className="h-6 w-6 shrink-0" />,
+            icon: <IconUsers className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Products",
             href: "/products",
-            icon: <IconBrandTabler className="h-6 w-6 shrink-0" />,
-        },
-        {
-            label: "Apps",
-            href: "/apps",
-            icon: <IconBrandTabler className="h-6 w-6 shrink-0" />,
+            icon: <IconBrandTabler className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Settings",
             href: "/settings",
-            icon: <IconSettings className="h-6 w-6 shrink-0" />,
+            icon: <IconSettings className="h-5 w-5 shrink-0" />,
         },
     ];
 
+    const userEmail = user?.email || "cameronfalck03@gmail.com";
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0];
+    const userImage = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+    const initials = userName.substring(0, 2).toUpperCase();
+
     return (
-        <div className="flex h-screen bg-[#0d0d0d] text-white selection:bg-primary/30 overflow-hidden relative font-serif">
-            {/* Sidebar Component */}
-            <Sidebar open={open} setOpen={setOpen} animate={true}>
-                <SidebarBody className="justify-between gap-10 bg-[#0d0d0d] border-r border-white/5 h-full py-6 transition-all duration-300 rounded-none overflow-hidden">
-                    <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden pt-2 no-scrollbar">
-                        {/* Logo Section */}
-                        <div className="flex items-center px-4 mb-8">
-                            <Link href="/overview" className="flex items-center hover:opacity-80 transition-opacity">
-                                <img src="/logo.png" alt="Logo" className="w-11 h-11 object-contain shrink-0" />
-                            </Link>
-                        </div>
+        <div className="flex flex-col h-screen bg-black text-white selection:bg-white/10 overflow-hidden relative font-sans">
+            {/* Global Top Header Line */}
+            <div className="h-px w-full bg-white/10 shrink-0" />
 
-                        {/* Active Workspace Header */}
-                        <div className="flex items-center px-4 mb-10">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-none bg-neutral-900 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white shadow-[inset_0_1px_rgba(255,255,255,0.05)]">
-                                    OR
-                                </div>
-                                {open && (
-                                    <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-white whitespace-nowrap tracking-tight">orbify</span>
-                                        <span className="text-[10px] text-muted-foreground/60 leading-none">Pro Plan</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Navigation Links */}
-                        <div className="flex flex-col gap-1 px-4">
-                            {links.map((link, idx) => (
-                                <SidebarLink
-                                    key={idx}
-                                    link={link}
-                                    className="text-neutral-500 hover:text-white transition-colors py-2.5 px-0 rounded-none hover:bg-white/5 w-full flex justify-start items-center gap-4 group/sidebar"
-                                />
-                            ))}
-                        </div>
+            <div className="flex flex-1 overflow-hidden relative">
+                {/* Sidebar rewritten from scratch with hover logic */}
+                <motion.aside
+                    initial={false}
+                    animate={{ width: open ? 260 : 72 }}
+                    onMouseEnter={() => setOpen(true)}
+                    onMouseLeave={() => {
+                        setOpen(false);
+                        setShowSwitcher(false);
+                    }}
+                    className="h-full bg-black border-r border-white/10 flex flex-col z-50 transition-colors duration-300 absolute left-0 top-0 shadow-2xl"
+                >
+                    {/* Logo Section - Centered and Icon only */}
+                    <div className="h-20 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
+                        <Link href="/overview" className="flex items-center justify-center w-full">
+                            <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                        </Link>
                     </div>
 
-                    {/* Organization Switcher at Bottom */}
-                    <div className="flex flex-col gap-2 p-4 pt-10 border-t border-white/5 relative">
-                        <AnimatePresence>
-                            {showSwitcher && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="flex flex-col gap-2 mb-2"
+                    {/* Navigation Links */}
+                    <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar pt-2">
+                        {links.map((link) => {
+                            const isActive = pathname === link.href;
+                            return (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={cn(
+                                        "flex items-center px-3 py-2.5 transition-all duration-200 group relative",
+                                        isActive ? "text-white" : "text-neutral-500 hover:text-white",
+                                        isActive && "bg-white/5"
+                                    )}
                                 >
-                                    <Button variant="ghost" className="w-8 h-8 p-0 rounded-none bg-neutral-900 border border-white/10 hover:bg-white/5 text-white/50 hover:text-white transition-all shadow-lg">
-                                        <IconPlus className="h-4 w-4" />
-                                    </Button>
-                                    <div className="w-8 h-8 rounded-none bg-neutral-900 border border-white/10 flex items-center justify-center text-[8px] font-bold text-white cursor-pointer hover:bg-white/5 transition-all shadow-lg">
-                                        OR
+                                    <div className={cn(
+                                        "w-11 h-6 flex items-center justify-center shrink-0 transition-colors duration-200",
+                                        isActive ? "text-white" : "text-neutral-500 group-hover:text-white"
+                                    )}>
+                                        {link.icon}
                                     </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        <div
-                            onClick={() => setShowSwitcher(!showSwitcher)}
-                            className="flex items-center gap-3 cursor-pointer group/switcher"
-                        >
-                            <div className={cn(
-                                "w-8 h-8 rounded-none border flex items-center justify-center text-[10px] font-bold transition-all shadow-md",
-                                showSwitcher
-                                    ? "bg-white text-black border-white"
-                                    : "bg-neutral-900 text-white border-white/10 hover:border-white/20"
-                            )}>
-                                ED
-                            </div>
-                            {open && (
-                                <span className={cn(
-                                    "text-xs font-bold transition-colors",
-                                    showSwitcher ? "text-white" : "text-white/60 group-hover/switcher:text-white"
-                                )}>
-                                    edwf
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </SidebarBody>
-            </Sidebar>
-
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 relative z-10 overflow-hidden">
-                {/* Dashboard Top Header (Pic 1) */}
-                <header className="h-16 flex items-center justify-between px-8 bg-[#0d0d0d]/50 backdrop-blur-sm border-b border-white/5">
-                    <div className="flex items-center gap-4">
-                        {/* Sun Logo Icon */}
-                        <div className="w-5 h-5 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="12" cy="12" r="3" fill="currentColor"/>
-                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                            </svg>
-                        </div>
-                        <div className="flex items-center gap-4 text-neutral-400 hover:text-white transition-colors cursor-pointer group">
-                            <IconSearch className="h-4 w-4" />
-                            <span className="text-sm font-medium">Find anything...</span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        {/* Pro Trial Banner - Clickable (Pic 2) */}
-                        <Link href="/pricing">
-                            <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#111] border border-white/10 text-[10px] uppercase tracking-wider font-bold text-white hover:bg-white/5 transition-colors cursor-pointer">
-                                Pro trial - 11 days left
-                            </div>
-                        </Link>
-
-                        <Link href="/notifications">
-                            <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white hover:bg-white/5 rounded-none relative">
-                                <IconBell className="h-5 w-5" />
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-yellow-500 rounded-full" />
-                            </Button>
-                        </Link>
-
-                        {/* Interactive User Menu (Pic 3) */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <div className="cursor-pointer hover:opacity-80 transition-opacity flex items-center gap-2 outline-none">
-                                    <Avatar className="h-8 w-8 border border-white/10 shadow-lg rounded-full">
-                                        <AvatarImage src="https://lh3.googleusercontent.com/a/default-user=s96-c" className="rounded-full" />
-                                        <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-[10px] text-white font-bold rounded-full">CF</AvatarFallback>
-                                    </Avatar>
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[240px] bg-[#09090b] border-white/10 text-white p-2 shadow-2xl rounded-lg mt-2">
-                                <DropdownMenuLabel className="px-3 pt-3 pb-4">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-bold leading-none">Cameron.F</p>
-                                        <p className="text-xs leading-none text-neutral-500">cameronfalck03@gmail.com</p>
+                                    <div className="flex-1 overflow-hidden">
+                                        <AnimatePresence initial={false}>
+                                            {open && (
+                                                <motion.span
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    exit={{ opacity: 0, x: -10 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="text-sm font-medium whitespace-nowrap ml-4"
+                                                >
+                                                    {link.label}
+                                                </motion.span>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-white/5 mx-2" />
-                                <div className="py-2">
-                                    <Link href="/settings/account">
-                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
-                                            <IconUserCircle className="h-4 w-4 text-neutral-400" />
-                                            <span>Account</span>
-                                        </DropdownMenuItem>
-                                    </Link>
-                                    <Link href="/settings/support">
-                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
-                                            <IconMessageCircle className="h-4 w-4 text-neutral-400" />
-                                            <span>Support</span>
-                                        </DropdownMenuItem>
-                                    </Link>
-                                    <Link href="/settings/members">
-                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3">
-                                            <IconUsersGroup className="h-4 w-4 text-neutral-400" />
-                                            <span>Teams</span>
-                                        </DropdownMenuItem>
-                                    </Link>
-                                </div>
-                                <DropdownMenuSeparator className="bg-white/5 mx-2" />
-                                <div className="py-2">
-                                    <div className="flex items-center justify-between px-3 py-2.5 text-sm">
-                                        <div className="flex items-center gap-3 text-white">
-                                            <IconMoon className="h-4 w-4 text-neutral-400" />
-                                            <span>Theme</span>
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="active-pill"
+                                            className="absolute left-0 w-[2.5px] h-6 bg-white rounded-r-full"
+                                        />
+                                    )}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+
+                    {/* Bottom Section: Organization Switcher */}
+                    <div className="pb-6 w-full">
+                        <div className="relative px-3">
+                            <AnimatePresence>
+                                {showSwitcher && open && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-[60]"
+                                    >
+                                        <div className="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors">
+                                            <div className="w-8 h-8 rounded bg-white text-black flex items-center justify-center text-[10px] font-bold">OR</div>
+                                            <span className="text-xs font-medium">orbify</span>
                                         </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] text-white">
-                                            <span>Dark</span>
-                                            <IconChevronDown className="h-3 w-3 opacity-50" />
-                                        </div>
+                                        <DropdownMenuSeparator className="bg-white/5" />
+                                        <Button
+                                            onClick={() => setIsWorkspaceDialogOpen(true)}
+                                            variant="ghost"
+                                            className="w-full justify-start h-10 px-2 hover:bg-white/5 rounded-lg text-neutral-400 hover:text-white text-xs gap-3"
+                                        >
+                                            <IconPlus className="h-4 w-4" />
+                                            <span>Add workspace</span>
+                                        </Button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            <div
+                                onClick={() => open && setShowSwitcher(!showSwitcher)}
+                                className={cn(
+                                    "flex items-center transition-all duration-200 cursor-pointer h-14 w-full px-4 group justify-center",
+                                    showSwitcher ? "text-white" : "text-neutral-500 hover:text-white"
+                                )}
+                            >
+                                <div className="flex items-center justify-center shrink-0">
+                                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40 uppercase group-hover:text-white group-hover:bg-white/10 group-hover:border-white/20 transition-all">
+                                        ED
                                     </div>
                                 </div>
-                                <DropdownMenuSeparator className="bg-white/5 mx-2" />
-                                <div className="py-2">
-                                    <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-neutral-400 cursor-pointer px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors">
-                                        <IconLogout className="h-4 w-4" />
-                                        <span>Sign out</span>
-                                    </DropdownMenuItem>
+                                <div className="flex-1 overflow-hidden">
+                                    <AnimatePresence initial={false}>
+                                        {open && (
+                                            <motion.div
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -10 }}
+                                                className="flex flex-col flex-1 overflow-hidden ml-4"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis">edwf</span>
+                                                    <IconChevronDown className={cn("h-3 w-3 text-neutral-500 transition-transform", showSwitcher && "rotate-180")} />
+                                                </div>
+                                                <span className="text-[10px] text-neutral-500 font-sans">Pro Plan</span>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                            </div>
+                        </div>
                     </div>
-                </header>
+                </motion.aside>
 
-                {/* Dashboard Scrollable Content */}
-                <main className="flex-1 overflow-y-auto p-12 bg-[#0d0d0d]">
-                    <div className="max-w-[1600px] mx-auto h-full">
-                        {children}
-                    </div>
-                </main>
+                {/* Content Spacer for Overlay Sidebar */}
+                <div className="w-[72px] shrink-0" />
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col min-w-0 bg-black relative">
+                    {/* Header (Stayed relatively similar but polished) */}
+                    <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 backdrop-blur-md bg-black/50 sticky top-0 z-40">
+                        <div className="flex items-center gap-6 flex-1">
+                            <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-pointer max-w-md w-full">
+                                <IconSearch className="h-4 w-4" />
+                                <span className="text-sm font-medium">Find anything...</span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <Link href="/pricing" className="text-[11px] text-neutral-500 hover:text-white transition-colors">
+                                Pro trial · 11 days left
+                            </Link>
+
+                            <NotificationDropdown />
+
+                            {/* Interactive User Menu with real image */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="outline-none focus:ring-0">
+                                        <Avatar className="h-8 w-8 border border-white/10 hover:border-white/20 transition-colors cursor-pointer">
+                                            <AvatarImage src={userImage} />
+                                            <AvatarFallback className="bg-white/5 text-[10px] font-bold text-white border border-white/10">
+                                                {initials}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[240px] bg-black border border-white/10 text-white p-2 shadow-2xl rounded-xl mt-2 animate-in fade-in zoom-in-95">
+                                    <DropdownMenuLabel className="px-3 pt-3 pb-3">
+                                        <div className="flex flex-col">
+                                            <p className="text-sm font-bold truncate">{userName}</p>
+                                            <p className="text-[10px] text-neutral-500 truncate">{userEmail}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <div className="py-1">
+                                        <Link href="/settings/account">
+                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconUserCircle className="h-4 w-4 text-neutral-400" />
+                                                <span className="text-xs">Account Settings</span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <Link href="/settings/support">
+                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconMessageCircle className="h-4 w-4 text-neutral-400" />
+                                                <span className="text-xs">Support</span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                        <Link href="/settings/members">
+                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconUsersGroup className="h-4 w-4 text-neutral-400" />
+                                                <span className="text-xs">Manage Team</span>
+                                            </DropdownMenuItem>
+                                        </Link>
+                                    </div>
+                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <div className="py-1">
+                                        <div className="flex items-center justify-between px-3 py-2 text-xs">
+                                            <div className="flex items-center gap-3">
+                                                <IconMoon className="h-4 w-4 text-neutral-400" />
+                                                <span>Display</span>
+                                            </div>
+                                            <span className="text-[10px] text-neutral-500">Dark</span>
+                                        </div>
+                                    </div>
+                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <div className="py-1">
+                                        <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 focus:text-red-500 text-neutral-400 cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                            <IconLogout className="h-4 w-4" />
+                                            <span className="text-xs">Sign out</span>
+                                        </DropdownMenuItem>
+                                    </div>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    </header>
+
+                    {/* Dashboard content with refined padding (Pic 3) */}
+                    <main className="flex-1 overflow-y-auto w-full no-scrollbar">
+                        <div className="p-6 md:p-10 h-full">
+                            {children}
+                        </div>
+                    </main>
+                </div>
             </div>
+
+            {/* Workspace Creation Dialog */}
+            <Dialog open={isWorkspaceDialogOpen} onOpenChange={setIsWorkspaceDialogOpen}>
+                <DialogContent className="bg-[#09090b] border-white/10 text-white">
+                    <DialogHeader>
+                        <DialogTitle>Create Workspace</DialogTitle>
+                        <DialogDescription className="text-neutral-400">
+                            Create a new workspace to organize your team and projects.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleCreateWorkspace} className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                            <Label>Workspace Name</Label>
+                            <Input
+                                value={newWorkspaceName}
+                                onChange={(e) => setNewWorkspaceName(e.target.value)}
+                                placeholder="My New Workspace"
+                                className="bg-white/5 border-white/10"
+                                required
+                            />
+                        </div>
+                        <div className="flex justify-end gap-3 pt-4">
+                            <Button type="button" variant="ghost" onClick={() => setIsWorkspaceDialogOpen(false)} className="hover:bg-white/5">
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={isCreatingWorkspace} className="bg-white text-black hover:bg-neutral-200">
+                                {isCreatingWorkspace && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                                Create Workspace
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

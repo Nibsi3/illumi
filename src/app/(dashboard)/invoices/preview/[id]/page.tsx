@@ -159,7 +159,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </div>
 
                     <div className="mt-40 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.emini.io</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.illumi.co.za</p>
                     </div>
                 </div>
             </main>

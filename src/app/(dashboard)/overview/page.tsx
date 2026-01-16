@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { StatusDot } from "@/components/status-dot"
 import {
     IconTrendingUp,
     IconWallet,
@@ -15,10 +16,14 @@ import {
     IconArrowUpRight,
     IconPlus,
     IconSparkles,
-    IconChevronDown
+    IconChevronDown,
+    IconX,
+    IconSend,
+    IconMessage2
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import React, { useState } from "react"
+import Link from "next/link"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,22 +34,31 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { calculateMetrics } from "@/lib/metrics"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState("1 year");
     const [query, setQuery] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [messages, setMessages] = useState<{ role: string, content: string }[]>([]);
 
     // Real metrics state
     const metrics = calculateMetrics();
 
-    const handleChatSubmit = async (e?: React.FormEvent) => {
+    const handleChatSubmit = async (e?: React.FormEvent, customQuery?: string) => {
         if (e) e.preventDefault();
-        if (!query.trim() || isLoading) return;
+        const activeQuery = customQuery || query;
+        if (!activeQuery.trim() || isLoading) return;
 
         setIsLoading(true);
-        const userQuery = query;
+        if (!isChatOpen) setIsChatOpen(true);
+
+        const userMessage = { role: "user", content: activeQuery };
+        setMessages(prev => [...prev, userMessage]);
         setQuery("");
 
         try {
@@ -52,17 +66,14 @@ export default function DashboardPage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    messages: [{ role: "user", content: userQuery }]
+                    messages: [...messages, userMessage]
                 })
             });
 
             if (!response.ok) throw new Error("Failed to call assistant");
 
             const data = await response.json();
-            toast.success("Emini Assistant", {
-                description: data.content,
-                duration: 10000,
-            });
+            setMessages(prev => [...prev, { role: "assistant", content: data.content }]);
         } catch (error) {
             toast.error("Assistant Error", {
                 description: "Failed to process your request."
@@ -73,12 +84,12 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="flex flex-col gap-y-6 animate-in fade-in duration-700 pb-32 font-serif -mt-6">
+        <div className="flex flex-col gap-y-6 animate-in fade-in duration-700 min-h-full font-serif -mt-6">
             {/* Header: Greeting (Left) & Controls (Right) */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
-                    <h1 className="text-3xl font-serif font-bold tracking-tight italic">Afternoon <span className="text-muted-foreground not-italic">Cameron,</span></h1>
-                    <p className="text-muted-foreground text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
+                    <h1 className="text-4xl font-serif font-medium tracking-tight italic">Morning <span className="text-white/40 not-italic">Cameron,</span></h1>
+                    <p className="text-white/40 text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -131,128 +142,128 @@ export default function DashboardPage() {
             </div>
 
             {view === "overview" ? (
-                /* Compact Overview Grid */
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[1px] bg-white/5 border border-white/5 rounded-none overflow-hidden">
+                /* Compact Overview Grid - Full Width */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                     {/* Grid items use #0c0c0c */}
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconClock className="h-3 w-3" />
-                                Cash Runway
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-[11px] text-muted-foreground">Your cash runway in months</div>
-                                <div className="text-3xl font-serif font-bold tracking-tight italic">{metrics.runway}</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View runway</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconWallet className="h-3 w-3" />
-                                Cash Flow
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-[11px] text-muted-foreground">Net cash position - {period}</div>
-                                <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.cashFlow.toLocaleString()}</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View analysis</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconWallet className="h-3 w-3" />
-                                Account Balances
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-[11px] text-muted-foreground">No accounts connected</div>
-                                <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR 0</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View balances</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconTrendingUp className="h-3 w-3" />
-                                Profit & Loss
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-3xl font-serif font-bold tracking-tight truncate italic">ZAR {metrics.revenue.toLocaleString()}</div>
-                                <div className="text-[9px] uppercase font-bold text-muted-foreground/50">{period} · Net</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors block mt-2">See detailed analysis</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col h-full justify-between">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconChartBar className="h-3 w-3" />
-                                Forecast
-                            </div>
-                            <div className="space-y-4">
-                                <div className="text-[11px] text-muted-foreground">Revenue projection</div>
-                                <div className="h-px w-full bg-white/10" />
-                                <div className="text-[11px] font-bold">Next month <span className="text-primary ml-2">+ZAR 0.00</span></div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View forecast</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconChartBar className="h-3 w-3" />
-                                Revenue Summary
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-[11px] text-muted-foreground">Net revenue - {period}</div>
-                                <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.revenue.toLocaleString()}</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View trends</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconTrendingUp className="h-3 w-3" />
-                                Growth Rate
-                            </div>
-                            <div className="space-y-2">
-                                <div className="text-[11px] text-muted-foreground">Net growth - {period}</div>
-                                <div className="text-3xl font-serif font-bold tracking-tight italic">{metrics.growth.toFixed(1)}%</div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View growth analysis</Button>
-                            </div>
-                        </div>
-                    </Card>
-
-                    <Card className="bg-[#0c0c0c] border-none rounded-none p-6 hover:bg-white/[0.01] transition-colors group h-[220px]">
-                        <div className="flex flex-col justify-between h-full">
-                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                <IconUsers className="h-3 w-3" />
-                                Customer Value
-                            </div>
-                            <div className="space-y-3 pt-2">
-                                <div className="text-2xl font-serif font-bold tracking-tight italic">ZAR {metrics.clv.toLocaleString()} <span className="text-[8px] uppercase font-bold text-muted-foreground font-sans ml-1 not-italic">avg. CLV</span></div>
-                                <div className="space-y-1 pt-2">
-                                    <div className="flex justify-between text-[9px] uppercase text-muted-foreground"><span>Total</span><span className="text-white">1</span></div>
-                                    <div className="flex justify-between text-[9px] uppercase text-muted-foreground"><span>Active</span><span className="text-white">1 (100%)</span></div>
+                    <Link href="/invoices" className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconReceipt className="h-4 w-4" />
+                                    Invoices
                                 </div>
-                                <Button variant="ghost" className="p-0 h-auto text-[9px] uppercase font-bold text-muted-foreground/50 hover:bg-transparent hover:text-white transition-colors">View all</Button>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Net revenue - {period}</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.revenue.toLocaleString()}</div>
+                                    <div className="text-[9px] uppercase font-bold text-emerald-500/80 mt-1 flex items-center gap-1.5">
+                                        <IconTrendingUp className="h-3 w-3" />
+                                        +12.5% vs last year
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Link href="/clients" className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconUsers className="h-4 w-4" />
+                                    Customers
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Total active customers</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">128</div>
+                                    <div className="text-[10px] text-neutral-500 font-medium">8 new this month</div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Link href="/recurring" className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconClock className="h-4 w-4" />
+                                    Recurring
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR 45,200</div>
+                                    <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Next run: Tomorrow</div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Link href="/inbox" className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconWallet className="h-4 w-4" />
+                                    Inbox
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Unprocessed documents</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">14</div>
+                                    <StatusDot variant="warning" className="mt-1">Requires focus</StatusDot>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Link href="/products" className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconLayoutGrid className="h-4 w-4" />
+                                    Products
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Managed services & items</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">42</div>
+                                    <div className="text-[10px] text-neutral-500 font-medium">Top seller: Consulting</div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Link href="/overview" onClick={(e) => { e.preventDefault(); setView("metrics"); }} className="block transform transition-transform hover:scale-[1.02]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.01] transition-colors group h-[220px] shadow-2xl">
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconTrendingUp className="h-4 w-4" />
+                                    Revenue Summaries
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="text-[11px] text-muted-foreground">Estimated gross - {period}</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR 1.2M</div>
+                                    <div className="text-[9px] uppercase font-bold text-muted-foreground/30">Tax: ZAR 180,000</div>
+                                </div>
+                            </div>
+                        </Card>
+                    </Link>
+
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.01] transition-colors group h-[220px] shadow-2xl col-span-1 md:col-span-2">
+                        <div className="flex flex-col justify-between h-full">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                    <IconFileAnalytics className="h-4 w-4" />
+                                    Account Performance
+                                </div>
+                                <div className="text-[9px] text-white/20">Updated 10m ago</div>
+                            </div>
+                            <div className="flex items-end gap-x-2 h-32 pt-4">
+                                {[40, 70, 45, 90, 65, 80, 50, 60, 100, 85].map((h, i) => (
+                                    <div key={i} className="flex-1 bg-white/5 hover:bg-white/20 transition-all rounded-sm cursor-pointer" style={{ height: `${h}%` }} />
+                                ))}
                             </div>
                         </div>
                     </Card>
                 </div>
             ) : (
-                /* Metrics View (Charts Placeholder) */
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#0d0d0d]">
+                /* Metrics View - Full Width */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10 w-full">
                     {[
                         "Net Revenue", "Monthly Burn Rate", "Monthly Expenses",
                         "Profit & Loss", "Revenue Forecast", "Runway", "Expense Breakdown"
@@ -271,8 +282,8 @@ export default function DashboardPage() {
                                     )}
                                 </div>
                                 <div className="flex-1 min-h-[200px] flex items-end justify-between border-b border-white/5 pb-2">
-                                    {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"].map((m) => (
-                                        <div key={m} className="flex flex-col items-center gap-2">
+                                    {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"].map((m, i) => (
+                                        <div key={`${m}-${i}`} className="flex flex-col items-center gap-2">
                                             <div className="w-[1px] h-32 border-l border-dashed border-white/5" />
                                             <span className="text-[8px] text-muted-foreground">{m}</span>
                                         </div>
@@ -285,52 +296,147 @@ export default function DashboardPage() {
             )}
 
             {/* AI Assistant Chat Input - Fixed at Bottom (Pic 3) */}
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-4xl px-6 z-40">
-                {/* Action Buttons Row */}
-                <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-                    {[
-                        { label: "Burn rate analysis", icon: IconChartBar },
-                        { label: "Latest transactions", icon: IconLayoutGrid },
-                        { label: "Expense Breakdown", icon: IconFileAnalytics },
-                        { label: "Balance Sheet", icon: IconFileAnalytics },
-                        { label: "Spending Analysis", icon: IconTrendingUp },
-                        { label: "Runway", icon: IconClock },
-                    ].map((action) => (
-                        <Button key={action.label} variant="outline" className="h-11 rounded-none px-6 bg-[#0c0c0c] border border-white/10 hover:bg-white/5 hover:border-white/20 text-[10px] uppercase font-bold tracking-[0.2em] space-x-2.5 transition-all shadow-xl">
-                            <action.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="whitespace-nowrap">{action.label}</span>
-                        </Button>
-                    ))}
-                </div>
-
-                <form onSubmit={handleChatSubmit} className="bg-[#0d0d0d]/90 backdrop-blur-2xl border border-white/10 p-3 shadow-2xl flex items-center gap-4 group focus-within:border-white/20 transition-all rounded-none min-h-[72px]">
-                    <div className="p-3 text-muted-foreground group-focus-within:text-white transition-colors">
-                        <IconSparkles className={cn("h-5 w-5", isLoading && "animate-pulse text-primary")} />
+            <div className="fixed bottom-12 left-[calc(50%+36px)] -translate-x-1/2 w-full max-w-5xl px-6 z-40">
+                <div
+                    onClick={() => setIsChatOpen(true)}
+                    className="sticky bottom-0 -mx-4 md:-mx-10 -mb-6 md:-mb-10 bg-[#080808]/95 backdrop-blur-3xl border-t border-white/10 p-2 shadow-[0_-10px_40px_-15px_rgba(0,0,0,1)] flex items-center gap-4 group hover:border-white/20 focus-within:border-white/20 focus-within:translate-y-[-4px] transition-all min-h-[80px] cursor-text z-40 mt-auto"
+                >
+                    <div className="w-10 h-10 flex items-center justify-center shrink-0 ml-4">
+                        <div className="w-5 h-5 border-2 border-white/20 border-t-white/80 rounded-full animate-spin invisible group-hover:visible" />
+                        <IconMessage2 className="h-5 w-5 text-white absolute group-hover:invisible" />
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Ask anything..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        disabled={isLoading}
-                        className="flex-1 bg-transparent border-none outline-none text-base text-white placeholder:text-muted-foreground/40 disabled:opacity-50"
-                    />
-                    <div className="flex items-center gap-3 pr-2">
-                        <div className="flex items-center gap-1">
-                            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-white hover:bg-white/5 rounded-none">
-                                <IconPlus className="h-5 w-5" />
-                            </Button>
-                            {/* Additional placeholders based on Pic 3 icons */}
-                            <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-muted-foreground hover:text-white hover:bg-white/5 rounded-none">
-                                <IconFileAnalytics className="h-5 w-5" />
-                            </Button>
-                        </div>
-                        <Button type="submit" variant="ghost" size="icon" disabled={isLoading} className="h-10 w-10 bg-white text-black hover:bg-neutral-200 rounded-none transition-colors">
+                    <div className="flex-1 text-sm text-white/20 font-sans tracking-tight">
+                        Ask anything...
+                    </div>
+                    <div className="flex items-center gap-2 pr-2 mr-4">
+                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5 rounded-none">
+                            <IconPlus className="h-5 w-5" />
+                        </Button>
+                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5 rounded-none">
+                            <IconFileAnalytics className="h-5 w-5" />
+                        </Button>
+                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 bg-white text-black hover:bg-neutral-200 rounded-none transition-all ml-2">
                             <IconArrowUpRight className="h-5 w-5" />
                         </Button>
                     </div>
-                </form>
+                </div>
             </div>
+
+            {/* Full-Page AI Chat Overlay */}
+            <AnimatePresence>
+                {isChatOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex flex-col items-center"
+                    >
+                        {/* Header */}
+                        <div className="w-full max-w-5xl flex items-center justify-between p-8">
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                                    <IconSparkles className="h-6 w-6 text-white" />
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-serif italic text-white">Illumi Assistant</h2>
+                                    <p className="text-xs text-white/40 font-sans">Powered by advanced AI for your business</p>
+                                </div>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsChatOpen(false)}
+                                className="h-12 w-12 rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-all"
+                            >
+                                <IconX className="h-6 w-6" />
+                            </Button>
+                        </div>
+
+                        {/* Chat History */}
+                        <div className="flex-1 w-full max-w-3xl overflow-y-auto no-scrollbar px-6 py-12 space-y-8">
+                            {messages.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
+                                    <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center animate-pulse">
+                                        <IconSparkles className="h-10 w-10 text-white/20" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-3xl font-serif italic text-white/80">How can I help you today?</h3>
+                                        <p className="text-white/40 max-w-md mx-auto">Ask about invoices, customers, financial analysis, or anything else in your business.</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3 w-full max-w-lg mt-8">
+                                        {[
+                                            "What's my revenue this month?",
+                                            "Show me unpaid invoices",
+                                            "Who are my top customers?",
+                                            "Connect my Stripe account"
+                                        ].map((suggestion) => (
+                                            <button
+                                                key={suggestion}
+                                                onClick={() => handleChatSubmit(undefined, suggestion)}
+                                                className="p-4 bg-white/5 border border-white/10 hover:border-white/20 rounded-2xl text-xs text-white/60 hover:text-white transition-all text-left"
+                                            >
+                                                {suggestion}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                messages.map((m, i) => (
+                                    <motion.div
+                                        key={i}
+                                        initial={{ opacity: 0, x: m.role === 'user' ? 20 : -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className={cn(
+                                            "flex flex-col max-w-[80%] space-y-2",
+                                            m.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
+                                        )}
+                                    >
+                                        <div className={cn(
+                                            "p-6 rounded-3xl text-sm leading-relaxed",
+                                            m.role === 'user'
+                                                ? "bg-white text-black font-medium rounded-tr-none"
+                                                : "bg-white/5 border border-white/10 text-white/90 rounded-tl-none"
+                                        )}>
+                                            {m.content}
+                                        </div>
+                                        <span className="text-[10px] text-white/20 uppercase font-black tracking-widest">
+                                            {m.role === 'user' ? 'You' : 'Assistant'}
+                                        </span>
+                                    </motion.div>
+                                ))
+                            )}
+                            {isLoading && (
+                                <div className="flex flex-col items-start space-y-2 mr-auto">
+                                    <div className="p-6 rounded-3xl bg-white/5 border border-white/10 text-white/40 rounded-tl-none animate-pulse">
+                                        Thinking...
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Overlay Input Area */}
+                        <div className="w-full max-w-4xl p-8 pb-12">
+                            <form onSubmit={handleChatSubmit} className="bg-white/5 border border-white/10 p-2 pr-4 focus-within:border-white/20 transition-all rounded-2xl flex items-center gap-4">
+                                <div className="p-4 text-white/20">
+                                    <IconSparkles className="h-6 w-6" />
+                                </div>
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Type your message..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    disabled={isLoading}
+                                    className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder:text-white/10 disabled:opacity-50 font-sans py-4"
+                                />
+                                <Button type="submit" disabled={isLoading || !query.trim()} className="h-12 w-12 bg-white text-black hover:bg-neutral-200 rounded-xl transition-all shadow-2xl">
+                                    <IconSend className="h-5 w-5" />
+                                </Button>
+                            </form>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

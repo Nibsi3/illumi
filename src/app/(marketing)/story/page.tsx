@@ -11,7 +11,7 @@ export default function StoryPage() {
                 <div className="relative mx-auto max-w-4xl px-6 lg:px-8">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-center">
                         This is why we're building{" "}
-                        <span className="font-serif italic">Emini.</span>
+                        <span className="font-serif italic">Illumi.</span>
                     </h1>
                 </div>
             </section>
@@ -37,51 +37,56 @@ export default function StoryPage() {
                     {/* Solution */}
                     <div className="mb-16">
                         <h2 className="text-xl font-bold text-white mb-6">Solution</h2>
-                        <p className="text-white/70 leading-relaxed mb-4">
-                            So we asked ourselves: why not create our own comprehensive tool? Inspired by
-                            companies like Midday that revolutionised what an all-in-one business tool can be,
-                            we embarked on developing an all-in-one solution.
-                        </p>
-                        <p className="text-white/70 leading-relaxed">
-                            Emini serves as a bridge between you and your accountant, allowing you to focus on the
-                            enjoyable aspects of your work. Whether it's through for internal use only, building in
-                            public, or open-sourcing all our solutions — we want to share our experience of how far
-                            you can go.
-                        </p>
-                    </div>
+                        <div className="space-y-6 text-white/70 leading-relaxed">
+                            <p>
+                                We built this because we needed it ourselves. As a small business owner in South Africa,
+                                managing invoices, tracking expenses, and keeping everything organized felt like a
+                                full-time job on its own.
+                            </p>
+                            <p>
+                                Traditional accounting software was either too complex, too expensive, or simply not
+                                designed for the way we work. We wanted something that just worked — something that felt
+                                natural and didn't require a degree in accounting to use.
+                            </p>
+                            <p>
+                                So we built it. A tool that handles invoicing, tracks your finances, and keeps everything
+                                in one place. No unnecessary features, no bloat — just what you need to run your business
+                                smoothly.
+                            </p>
+                            <p>
+                                Illumi serves as a bridge between you and your accountant, allowing you to focus on the
+                                work that matters. It's designed to be simple, fast, and reliable — because that's what
+                                we needed, and we figured you might need it too.
+                            </p>
+                            <p>
+                                We're not trying to replace your accountant or become your CFO. We're just here to make
+                                the day-to-day easier, so you can spend less time on admin and more time growing your
+                                business.
+                            </p>
+                            <p>
+                                With users in mind, we've designed Illumi to work seamlessly with South African
+                                regulations, banking systems, and business practices. Because local context matters, and
+                                generic solutions often miss the mark.
+                            </p>
+                            <p>
+                                This isn't just another SaaS product built in Silicon Valley and adapted for the world —
+                                for us — Illumi is built for us, by us.
+                            </p>
+                        </div>
 
-                    {/* Open Source */}
-                    <div className="mb-16">
-                        <h2 className="text-xl font-bold text-white mb-6">Built for South Africa</h2>
-                        <p className="text-white/70 leading-relaxed mb-4">
-                            We believe great tools should empower local businesses and entrepreneurs.
-                            With users in mind, we've designed Emini to work seamlessly with South African
-                            payment providers, banking systems, and tax requirements.
-                        </p>
-                        <p className="text-white/70 leading-relaxed">
-                            From ZAR-first invoicing to SARS-compliant reporting, every feature is built
-                            with our local context in mind. No more adapting international tools to work
-                            for us — Emini is built for us, by us.
-                        </p>
-                    </div>
-
-                    {/* Founder Image Placeholder */}
-                    <div className="mb-16">
-                        <div className="aspect-[4/3] rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <div className="text-center">
-                                <div className="w-24 h-24 rounded-full bg-white/10 mx-auto mb-4 flex items-center justify-center">
-                                    <span className="text-2xl font-bold text-white/50">E</span>
+                        <div className="mt-12 pt-8 border-t border-white/10">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-white/5" />
+                                <div>
+                                    <div className="text-white/50 text-sm">The Illumi Team</div>
                                 </div>
-                                <div className="text-white/50 text-sm">The Emini Team</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Signature */}
-                    <div className="mb-16">
-                        <div className="text-white/50 text-sm mb-2">With purpose & vision,</div>
-                        <div className="font-serif italic text-2xl text-white">The Emini Team</div>
-                    </div>
+                <div className="text-center mt-16">
+                    <div className="font-serif italic text-2xl text-white">The Illumi Team</div>
                 </div>
             </section>
 
