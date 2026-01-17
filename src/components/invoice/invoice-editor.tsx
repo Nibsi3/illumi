@@ -3,11 +3,13 @@
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Plus, Trash2, ChevronDown, Sparkles, FileText, Calendar, Clock, Send } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, ChevronDown, Sparkles, FileText, Calendar, Clock, Send, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { EditableText, EditableNumber } from "@/components/invoice/inline-fields"
 import { InvoiceSettings } from "@/components/invoice/settings-dropdown"
 import { CustomerDrawer } from "@/components/customer-drawer"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -28,9 +30,17 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
     const [paymentDetails, setPaymentDetails] = useState("Example")
     const [note, setNote] = useState("Notes example")
     const [currency, setCurrency] = useState("ZAR")
+
+    // UI State
     const [drawerOpen, setDrawerOpen] = useState(false)
     const [selectedTemplate, setSelectedTemplate] = useState("Default")
 
+    // Supabase State
+    const [customerId, setCustomerId] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+    const supabase = createClient()
+
+    // Helper Functions
     const addItem = () => {
         setItems([...items, { id: Date.now(), description: "", quantity: 1, price: 0 }])
     }
@@ -47,6 +57,77 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
 
     const subtotal = useMemo(() => items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [items])
     const total = subtotal
+
+    const formatDateForDB = (dateStr: string) => {
+        // Assuming formatted as DD/MM/YYYY or similar in UI but DB needs YYYY-MM-DD
+        // Simple heuristic: if it contains /, split and reverse.
+        if (dateStr.includes('/')) {
+            const [day, month, year] = dateStr.split('/')
+            return `${year}-${month}-${day}`
+        }
+        return dateStr
+    }
+
+    const handleCreate = async () => {
+        setIsLoading(true)
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (!user) {
+                toast.error("You must be logged in")
+                return
+            }
+
+            // 1. Create Invoice
+            const { data: invoice, error: invoiceError } = await supabase
+                .from('invoices')
+                .insert({
+                    user_id: user.id,
+                    customer_id: customerId,
+                    invoice_number: invoiceNumber,
+                    issue_date: formatDateForDB(issueDate),
+                    due_date: formatDateForDB(dueDate),
+                    status: 'draft',
+                    subtotal,
+                    total,
+                    currency,
+                    notes: note,
+                    terms: paymentDetails,
+                    payment_provider: 'bank_transfer'
+                })
+                .select()
+                .single()
+
+            if (invoiceError) throw invoiceError
+
+            // 2. Create Invoice Items
+            if (items.length > 0) {
+                const { error: itemsError } = await supabase
+                    .from('invoice_items')
+                    .insert(items.map((item, index) => ({
+                        invoice_id: invoice.id,
+                        description: item.description,
+                        quantity: item.quantity,
+                        unit_price: item.price,
+                        total: item.quantity * item.price,
+                        sort_order: index
+                    })))
+
+                if (itemsError) throw itemsError
+            }
+
+            toast.success("Invoice created successfully")
+            if (onClose) onClose()
+
+        } catch (error: any) {
+            console.error(error)
+            toast.error("Failed to create invoice", {
+                description: error.message
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     return (
         <div className="flex flex-col h-full bg-[#09090b] text-white selection:bg-primary/30 relative">
@@ -243,7 +324,12 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                     </div>
 
                     <div className="flex items-center overflow-hidden rounded-[2rem] bg-white text-black h-14 shadow-lg group">
-                        <Button className="h-full px-8 rounded-none bg-white text-black hover:bg-neutral-200 font-bold transition-colors">
+                        <Button
+                            className="h-full px-8 rounded-none bg-white text-black hover:bg-neutral-200 font-bold transition-colors"
+                            onClick={handleCreate}
+                            disabled={isLoading}
+                        >
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create
                         </Button>
                         <div className="w-px h-8 bg-neutral-200" />
@@ -280,7 +366,14 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                 </div>
             </div>
 
-            <CustomerDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
+            <CustomerDrawer
+                open={drawerOpen}
+                onOpenChange={setDrawerOpen}
+                onCustomerCreated={(customer) => {
+                    setCustomerEmail(customer.email)
+                    setCustomerId(customer.id)
+                }}
+            />
         </div>
     )
 }
