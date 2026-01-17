@@ -8,7 +8,12 @@ export function cn(...inputs: ClassValue[]) {
 export const getURL = () => {
     // 1. If we're in the browser, window.location.origin is the absolute source of truth
     if (typeof window !== 'undefined') {
-        return window.location.origin;
+        let origin = window.location.origin;
+        // Sanitize 0.0.0.0 for local development redirection
+        if (origin.includes('0.0.0.0')) {
+            origin = origin.replace('0.0.0.0', 'localhost');
+        }
+        return origin;
     }
 
     // 2. If we're on the server (SSG/SSR), use env vars
