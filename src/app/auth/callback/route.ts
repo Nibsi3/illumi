@@ -1,35 +1,22 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getURL } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest) {
-    const requestUrl = new URL(request.url)
-    const code = requestUrl.searchParams.get('code')
-    const next = requestUrl.searchParams.get('next') ?? '/overview'
+export async function GET(request: Request) {
+    const { searchParams, origin } = new URL(request.url)
+    const code = searchParams.get('code')
+    const next = searchParams.get('next') ?? '/overview'
 
-    try {
-        if (code) {
-            const supabase = await createClient()
-            const { error } = await supabase.auth.exchangeCodeForSession(code)
-            if (!error) {
-                let redirectOrigin = requestUrl.origin
-                if (redirectOrigin.includes('0.0.0.0')) {
-                    redirectOrigin = redirectOrigin.replace('0.0.0.0', 'localhost')
-                }
-                return NextResponse.redirect(`${redirectOrigin}${next}`)
-            }
-            console.error('Auth code exchange error:', error)
+    if (code) {
+        const supabase = await createClient()
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (!error) {
+            return NextResponse.redirect(`${origin}${next}`)
         }
-    } catch (err) {
-        console.error('Unexpected error in auth callback:', err)
+        console.error('Auth code exchange error:', error)
     }
 
-    // return the user to an error page with instructions
-    let errorOrigin = requestUrl.origin
-    if (errorOrigin.includes('0.0.0.0')) {
-        errorOrigin = errorOrigin.replace('0.0.0.0', 'localhost')
-    }
-    return NextResponse.redirect(`${errorOrigin}/auth/auth-code-error`)
+    // Return the user to an error page with instructions
+    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
