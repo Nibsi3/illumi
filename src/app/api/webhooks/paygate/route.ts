@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
-// Create a service role client for webhook processing (bypasses RLS)
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
-)
-
 // PayGate webhook handler
 export async function POST(req: Request) {
+    // Create service role client inside function to avoid build-time errors
+    const supabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_KEY!
+    )
+
     try {
         const payload = await req.json()
         const { invoiceId, status, transactionId, amount, provider } = payload
