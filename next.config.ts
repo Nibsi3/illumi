@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  // output: 'standalone',
 
   // Generate a consistent build ID based on timestamp
   generateBuildId: async () => {
