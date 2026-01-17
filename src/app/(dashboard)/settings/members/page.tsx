@@ -5,7 +5,7 @@ import { StatusDot } from "@/components/status-dot"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2 } from "lucide-react"
+import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2, Loader2 } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,6 +18,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 const mockMembers = [
     {
@@ -43,13 +45,61 @@ export default function MembersPage() {
     const [members, setMembers] = useState(mockMembers)
     const [showInviteForm, setShowInviteForm] = useState(false)
     const [inviteEmail, setInviteEmail] = useState("")
+    const [isInviting, setIsInviting] = useState(false)
+    const supabase = createClient()
 
     const reachedLimit = members.length >= limits.maxUsers
 
-    const handleInvite = () => {
+    const handleInvite = async () => {
         if (reachedLimit) return
+        if (!inviteEmail) return
 
-        if (inviteEmail) {
+        setIsInviting(true)
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error("Not authenticated")
+
+            // Get current workspace (for now, use the first one or create if none exists)
+            let { data: workspace } = await supabase
+                .from('workspaces')
+                .select('id, name')
+                .eq('owner_id', user.id)
+                .limit(1)
+                .single()
+
+            // Save to workspace_members
+            if (workspace) {
+                const { error: memberError } = await supabase
+                    .from('workspace_members')
+                    .insert([{
+                        workspace_id: workspace.id,
+                        email: inviteEmail,
+                        role: 'member',
+                        status: 'pending'
+                    }])
+
+                if (memberError && !memberError.message.includes('duplicate')) {
+                    throw memberError
+                }
+            }
+
+            // Send invite email via Resend
+            const emailResponse = await fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'invite',
+                    to: inviteEmail,
+                    inviterName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'A team member',
+                    workspaceName: workspace?.name || 'Emini',
+                    inviteLink: `${window.location.origin}/invite?email=${encodeURIComponent(inviteEmail)}`
+                })
+            })
+
+            if (!emailResponse.ok) {
+                console.warn("Email sending may have failed")
+            }
+
             setMembers([
                 ...members,
                 {
@@ -61,8 +111,19 @@ export default function MembersPage() {
                     status: "pending",
                 },
             ])
+
+            toast.success("Invitation sent", {
+                description: `An invite has been sent to ${inviteEmail}`
+            })
+
             setInviteEmail("")
             setShowInviteForm(false)
+        } catch (error: any) {
+            toast.error("Failed to send invitation", {
+                description: error.message
+            })
+        } finally {
+            setIsInviting(false)
         }
     }
 

@@ -1,40 +1,123 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Download, CreditCard, ShieldCheck } from "lucide-react"
+import { CheckCircle2, Download, CreditCard, ShieldCheck, Loader2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
-// Mock data for the public view
-const mockInvoice = {
-    number: "INV-001",
-    date: "Jan 14, 2024",
-    customerName: "Acme Corp",
-    customerEmail: "billing@acme.com",
-    items: [
-        { description: "Premium Design Services", quantity: 1, price: 1500 },
-        { description: "Custom Development", quantity: 2, price: 500 },
-    ],
-    notes: "Please pay within 15 days of receiving this invoice. Thank you for your business!",
-    status: "sent",
-    brandColor: "#0070F3",
-    logo: "https://illumi.co.za/logo.png"
+type Invoice = {
+    id: string
+    invoice_number: string
+    issue_date: string
+    due_date: string | null
+    currency: string
+    subtotal: number
+    tax_amount: number
+    total: number
+    notes: string | null
+    status: string
+    customer?: {
+        name: string
+        email: string
+    }
+}
+
+type InvoiceItem = {
+    id: string
+    description: string
+    quantity: number
+    unit_price: number
+    total: number
 }
 
 export default function PublicInvoicePage() {
-    const subtotal = useMemo(() => mockInvoice.items.reduce((acc, item) => acc + (item.quantity * item.price), 0), [])
-    const total = subtotal
+    const params = useParams()
+    const invoiceId = params.id as string
+    const [invoice, setInvoice] = useState<Invoice | null>(null)
+    const [items, setItems] = useState<InvoiceItem[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const fetchInvoice = async () => {
+            try {
+                const { data: invoiceData, error: invoiceError } = await supabase
+                    .from('invoices')
+                    .select(`*, customer:customers(name, email)`)
+                    .eq('id', invoiceId)
+                    .single()
+
+                if (invoiceError) throw invoiceError
+                if (!invoiceData) throw new Error("Invoice not found")
+
+                setInvoice(invoiceData)
+
+                const { data: itemsData, error: itemsError } = await supabase
+                    .from('invoice_items')
+                    .select('*')
+                    .eq('invoice_id', invoiceId)
+                    .order('sort_order', { ascending: true })
+
+                if (itemsError) throw itemsError
+                setItems(itemsData || [])
+
+                if (invoiceData.status === 'sent') {
+                    await supabase
+                        .from('invoices')
+                        .update({ status: 'viewed', viewed_at: new Date().toISOString() })
+                        .eq('id', invoiceId)
+                }
+            } catch (err: any) {
+                setError(err.message || "Failed to load invoice")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        if (invoiceId) {
+            fetchInvoice()
+        }
+    }, [invoiceId, supabase])
+
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('en-ZA', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        })
+    }
+
+    const formatCurrency = (amount: number, currency: string = 'ZAR') => {
+        return `${currency} ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-muted/5">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        )
+    }
+
+    if (error || !invoice) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-muted/5 p-6">
+                <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+                <h1 className="text-2xl font-bold mb-2">Invoice Not Found</h1>
+                <p className="text-muted-foreground">{error || "This invoice does not exist or has been removed."}</p>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-muted/5 font-sans pb-20">
-            {/* Premium Header */}
             <div className="bg-background border-b py-4">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground font-serif font-bold">E</div>
-                        <span className="font-serif text-lg font-bold tracking-tight">Illumi</span>
+                        <span className="font-serif text-lg font-bold tracking-tight">Emini</span>
                     </div>
                     <div className="text-sm text-muted-foreground flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-green-500" />
@@ -44,35 +127,32 @@ export default function PublicInvoicePage() {
             </div>
 
             <div className="max-w-4xl mx-auto px-6 mt-12 grid gap-8 lg:grid-cols-3">
-                {/* Main Invoice Content */}
                 <div className="lg:col-span-2 space-y-8">
                     <Card className="border-none shadow-xl overflow-hidden rounded-3xl">
-                        <div
-                            className="h-2 w-full"
-                            style={{ backgroundColor: mockInvoice.brandColor }}
-                        />
+                        <div className="h-2 w-full bg-primary" />
                         <CardContent className="p-12">
                             <div className="flex justify-between items-start mb-16">
                                 <div>
-                                    {mockInvoice.logo && <img src={mockInvoice.logo} alt="Logo" className="w-16 h-16 object-contain mb-4" />}
                                     <h2 className="text-4xl font-serif font-bold tracking-tight uppercase">Invoice</h2>
-                                    <p className="text-muted-foreground mt-2">{mockInvoice.number}</p>
+                                    <p className="text-muted-foreground mt-2">{invoice.invoice_number}</p>
                                 </div>
                                 <div className="text-right">
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-1">Date</div>
-                                    <div className="text-lg font-medium">{mockInvoice.date}</div>
+                                    <div className="text-lg font-medium">{formatDate(invoice.issue_date)}</div>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-12 mb-16">
                                 <div>
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2">Billed To</div>
-                                    <div className="text-lg font-bold">{mockInvoice.customerName}</div>
-                                    <div className="text-muted-foreground">{mockInvoice.customerEmail}</div>
+                                    <div className="text-lg font-bold">{invoice.customer?.name || 'Customer'}</div>
+                                    <div className="text-muted-foreground">{invoice.customer?.email || ''}</div>
                                 </div>
                                 <div className="text-right">
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2">Total Due</div>
-                                    <div className="text-4xl font-serif font-bold text-primary">${total.toLocaleString()}</div>
+                                    <div className="text-4xl font-serif font-bold text-primary">
+                                        {formatCurrency(invoice.total, invoice.currency)}
+                                    </div>
                                 </div>
                             </div>
 
@@ -82,11 +162,13 @@ export default function PublicInvoicePage() {
                                     <div className="col-span-1 text-right">Qty</div>
                                     <div className="col-span-3 text-right">Price</div>
                                 </div>
-                                {mockInvoice.items.map((item, i) => (
-                                    <div key={i} className="grid grid-cols-12 gap-4 text-sm items-center">
+                                {items.map((item, i) => (
+                                    <div key={item.id || i} className="grid grid-cols-12 gap-4 text-sm items-center">
                                         <div className="col-span-8 font-medium">{item.description}</div>
                                         <div className="col-span-1 text-right text-muted-foreground">{item.quantity}</div>
-                                        <div className="col-span-3 text-right font-mono">${item.price.toLocaleString()}</div>
+                                        <div className="col-span-3 text-right font-mono">
+                                            {formatCurrency(item.unit_price, invoice.currency)}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -95,26 +177,31 @@ export default function PublicInvoicePage() {
                                 <div className="w-full max-w-[240px] space-y-4">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">Subtotal</span>
-                                        <span className="font-medium">${subtotal.toLocaleString()}</span>
+                                        <span className="font-medium">{formatCurrency(invoice.subtotal, invoice.currency)}</span>
                                     </div>
+                                    {invoice.tax_amount > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Tax</span>
+                                            <span className="font-medium">{formatCurrency(invoice.tax_amount, invoice.currency)}</span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between text-lg font-bold">
                                         <span>Total Due</span>
-                                        <span style={{ color: mockInvoice.brandColor }}>${total.toLocaleString()}</span>
+                                        <span className="text-primary">{formatCurrency(invoice.total, invoice.currency)}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {mockInvoice.notes && (
+                            {invoice.notes && (
                                 <div className="mt-16 pt-8 border-t">
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-4">Notes</div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">{mockInvoice.notes}</p>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">{invoice.notes}</p>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Sidebar Actions */}
                 <div className="space-y-6">
                     <Card className="border-none shadow-lg rounded-3xl overflow-hidden">
                         <CardHeader className="bg-primary text-primary-foreground p-6">
@@ -122,35 +209,45 @@ export default function PublicInvoicePage() {
                         </CardHeader>
                         <CardContent className="p-6 space-y-6">
                             <div className="flex items-center gap-3 p-4 bg-muted/20 rounded-2xl">
-                                <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                                <div className={cn(
+                                    "w-10 h-10 rounded-full flex items-center justify-center",
+                                    invoice.status === 'paid' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'
+                                )}>
                                     <CheckCircle2 className="h-6 w-6" />
                                 </div>
                                 <div className="text-sm">
-                                    <div className="font-bold">Outstanding</div>
-                                    <div className="text-muted-foreground text-xs">Awaiting payment</div>
+                                    <div className="font-bold capitalize">{invoice.status === 'paid' ? 'Paid' : 'Outstanding'}</div>
+                                    <div className="text-muted-foreground text-xs">
+                                        {invoice.status === 'paid' ? 'Thank you for your payment' : 'Awaiting payment'}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <Button className="w-full h-12 rounded-full font-bold text-base bg-blue-600 hover:bg-blue-700">
-                                    <CreditCard className="mr-2 h-5 w-5" />
-                                    Pay with Stripe
-                                </Button>
-                                <Button variant="outline" className="w-full h-12 rounded-full font-semibold">
-                                    <Download className="mr-2 h-5 w-5" />
-                                    Download PDF
-                                </Button>
-                            </div>
+                            {invoice.status !== 'paid' && (
+                                <div className="space-y-3">
+                                    <Button className="w-full h-12 rounded-full font-bold text-base bg-blue-600 hover:bg-blue-700">
+                                        <CreditCard className="mr-2 h-5 w-5" />
+                                        Pay Now
+                                    </Button>
+                                </div>
+                            )}
+
+                            <Button variant="outline" className="w-full h-12 rounded-full font-semibold">
+                                <Download className="mr-2 h-5 w-5" />
+                                Download PDF
+                            </Button>
 
                             <div className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold">
-                                Protected by Illumi Secure Pay
+                                Protected by Emini Secure Pay
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card className="border-none shadow-none bg-muted/10 rounded-3xl p-6">
                         <h4 className="font-bold text-sm mb-4">Need help?</h4>
-                        <p className="text-sm text-muted-foreground mb-4">If you have any questions regarding this invoice, please contact the sender directly.</p>
+                        <p className="text-sm text-muted-foreground mb-4">
+                            If you have any questions regarding this invoice, please contact the sender directly.
+                        </p>
                         <Button variant="ghost" className="w-full justify-start px-0 text-primary font-bold hover:bg-transparent">
                             Contact Support
                         </Button>

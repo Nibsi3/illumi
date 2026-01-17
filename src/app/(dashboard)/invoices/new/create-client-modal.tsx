@@ -9,13 +9,13 @@ import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
-interface CreateClientModalProps {
+interface CreateCustomerModalProps {
     isOpen: boolean
     onClose: () => void
-    onSuccess?: (client: any) => void
+    onSuccess?: (customer: any) => void
 }
 
-export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientModalProps) {
+export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomerModalProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
@@ -30,12 +30,12 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                toast.error("You must be logged in to create a client")
+                toast.error("You must be logged in to create a customer")
                 return
             }
 
             const { data, error } = await supabase
-                .from('clients')
+                .from('customers')
                 .insert([{
                     name,
                     email,
@@ -48,7 +48,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
 
             if (error) throw error
 
-            toast.success("Client created successfully")
+            toast.success("Customer created successfully")
             if (onSuccess) {
                 onSuccess(data)
             }
@@ -57,7 +57,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
             setEmail("")
             setAddress("")
         } catch (error: any) {
-            toast.error("Failed to create client", {
+            toast.error("Failed to create customer", {
                 description: error.message
             })
         } finally {
@@ -69,11 +69,11 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Create New Client</DialogTitle>
+                    <DialogTitle>Create New Customer</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6 pt-4">
                     <div className="space-y-2">
-                        <Label>Client Name</Label>
+                        <Label>Customer Name</Label>
                         <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -108,7 +108,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateClientMo
                         </Button>
                         <Button type="submit" disabled={isLoading} className="bg-white text-black hover:bg-neutral-200">
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                            Create Client
+                            Create Customer
                         </Button>
                     </div>
                 </form>

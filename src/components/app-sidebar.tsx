@@ -45,18 +45,34 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [isWorkspaceDialogOpen, setIsWorkspaceDialogOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+    const [workspaces, setWorkspaces] = useState<any[]>([]);
+    const [activeWorkspace, setActiveWorkspace] = useState<any>(null);
 
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        const getUser = async () => {
+        const getUserAndWorkspaces = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
+
+            if (user) {
+                // Fetch user's workspaces
+                const { data: workspaceData } = await supabase
+                    .from('workspaces')
+                    .select('*')
+                    .eq('owner_id', user.id)
+                    .order('created_at', { ascending: true });
+
+                if (workspaceData && workspaceData.length > 0) {
+                    setWorkspaces(workspaceData);
+                    setActiveWorkspace(workspaceData[0]);
+                }
+            }
         };
-        getUser();
-    }, [supabase.auth]);
+        getUserAndWorkspaces();
+    }, [supabase]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -65,13 +81,32 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     const handleCreateWorkspace = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user || !newWorkspaceName.trim()) return;
+
         setIsCreatingWorkspace(true);
-        // Simulate creation for now
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        toast.success("Workspace Created", { description: `${newWorkspaceName} is ready.` });
-        setIsWorkspaceDialogOpen(false);
-        setNewWorkspaceName("");
-        setIsCreatingWorkspace(false);
+        try {
+            const { data, error } = await supabase
+                .from('workspaces')
+                .insert([{
+                    name: newWorkspaceName.trim(),
+                    owner_id: user.id,
+                    slug: newWorkspaceName.toLowerCase().replace(/\s+/g, '-')
+                }])
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            setWorkspaces(prev => [...prev, data]);
+            if (!activeWorkspace) setActiveWorkspace(data);
+            toast.success("Workspace Created", { description: `${newWorkspaceName} is ready.` });
+            setIsWorkspaceDialogOpen(false);
+            setNewWorkspaceName("");
+        } catch (error: any) {
+            toast.error("Failed to create workspace", { description: error.message });
+        } finally {
+            setIsCreatingWorkspace(false);
+        }
     };
 
     const links = [
@@ -191,12 +226,26 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-[60]"
+                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-[60] max-h-64 overflow-y-auto"
                                     >
-                                        <div className="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors">
-                                            <div className="w-8 h-8 rounded bg-white text-black flex items-center justify-center text-[10px] font-bold">OR</div>
-                                            <span className="text-xs font-medium">orbify</span>
-                                        </div>
+                                        {workspaces.map((ws) => (
+                                            <div
+                                                key={ws.id}
+                                                onClick={() => setActiveWorkspace(ws)}
+                                                className={cn(
+                                                    "flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors",
+                                                    activeWorkspace?.id === ws.id && "bg-white/5"
+                                                )}
+                                            >
+                                                <div className="w-8 h-8 rounded bg-white text-black flex items-center justify-center text-[10px] font-bold">
+                                                    {ws.name.substring(0, 2).toUpperCase()}
+                                                </div>
+                                                <span className="text-xs font-medium">{ws.name}</span>
+                                            </div>
+                                        ))}
+                                        {workspaces.length === 0 && (
+                                            <div className="p-3 text-xs text-neutral-500 text-center">No workspaces yet</div>
+                                        )}
                                         <DropdownMenuSeparator className="bg-white/5" />
                                         <Button
                                             onClick={() => setIsWorkspaceDialogOpen(true)}
@@ -219,7 +268,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                             >
                                 <div className="flex items-center justify-center shrink-0">
                                     <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40 uppercase group-hover:text-white group-hover:bg-white/10 group-hover:border-white/20 transition-all">
-                                        ED
+                                        {activeWorkspace?.name?.substring(0, 2).toUpperCase() || user?.email?.substring(0, 2).toUpperCase() || 'WS'}
                                     </div>
                                 </div>
                                 <div className="flex-1 overflow-hidden">
@@ -232,7 +281,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                                 className="flex flex-col flex-1 overflow-hidden ml-4"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis">edwf</span>
+                                                    <span className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis">{activeWorkspace?.name || 'Select Workspace'}</span>
                                                     <IconChevronDown className={cn("h-3 w-3 text-neutral-500 transition-transform", showSwitcher && "rotate-180")} />
                                                 </div>
                                                 <span className="text-[10px] text-neutral-500 font-sans">Pro Plan</span>

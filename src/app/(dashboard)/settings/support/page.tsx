@@ -1,109 +1,300 @@
 "use client"
-import React, { useState } from "react"
+
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { IconChevronRight, IconMessageCircle, IconBook } from "@tabler/icons-react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Loader2, MessageSquare, BookOpen, ExternalLink, Mail, AlertCircle, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
 
-export default function SupportPage() {
-    const [isContactOpen, setIsContactOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
+const categories = [
+    { value: "bug", label: "Bug Report", icon: AlertCircle },
+    { value: "feature", label: "Feature Request", icon: CheckCircle2 },
+    { value: "account", label: "Account Issue", icon: Mail },
+    { value: "billing", label: "Billing", icon: Mail },
+    { value: "other", label: "Other", icon: MessageSquare },
+]
 
-    const handleSendMessage = async (e: React.FormEvent) => {
+const priorities = [
+    { value: "low", label: "Low", description: "General question or minor issue" },
+    { value: "medium", label: "Medium", description: "Important but not urgent" },
+    { value: "high", label: "High", description: "Affecting my workflow" },
+    { value: "urgent", label: "Urgent", description: "Critical issue blocking work" },
+]
+
+export default function SupportSettingsPage() {
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [subject, setSubject] = useState("")
+    const [category, setCategory] = useState("")
+    const [priority, setPriority] = useState("medium")
+    const [description, setDescription] = useState("")
+    const [isSubmitted, setIsSubmitted] = useState(false)
+    const supabase = createClient()
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
-        // Simulate sending
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        setIsLoading(false)
-        setIsContactOpen(false)
-        toast.success("Message Sent", { description: "We'll get back to you shortly." })
+
+        if (!subject || !category || !description) {
+            toast.error("Please fill in all required fields")
+            return
+        }
+
+        setIsSubmitting(true)
+
+        try {
+            // Get current user for context
+            const { data: { user } } = await supabase.auth.getUser()
+
+            // Save to support_tickets table
+            const { error: dbError } = await supabase
+                .from('support_tickets')
+                .insert([{
+                    user_id: user?.id,
+                    subject,
+                    category,
+                    priority,
+                    description,
+                    status: 'open'
+                }])
+
+            if (dbError) throw dbError
+
+            // Send email via Resend API
+            const emailResponse = await fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'support',
+                    to: 'support@emini.co.za',
+                    subject,
+                    category: categories.find(c => c.value === category)?.label,
+                    priority: priorities.find(p => p.value === priority)?.label,
+                    description,
+                    userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
+                    userEmail: user?.email
+                })
+            })
+
+            if (!emailResponse.ok) {
+                console.warn("Email sending failed, but ticket was saved")
+            }
+
+            setIsSubmitted(true)
+            toast.success("Support request submitted", {
+                description: "We'll get back to you as soon as possible."
+            })
+
+            // Reset form
+            setSubject("")
+            setCategory("")
+            setPriority("medium")
+            setDescription("")
+        } catch (error: any) {
+            toast.error("Failed to submit request", {
+                description: error.message
+            })
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">Support & Help</h1>
-                <p className="text-neutral-400">Get help with your account or browse our documentation.</p>
+        <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20 max-w-4xl">
+            <div>
+                <h2 className="text-2xl font-bold text-white tracking-tight">Support</h2>
+                <p className="text-sm text-neutral-500">
+                    Get help from our team or browse our documentation.
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Contact Option */}
-                <div className="p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-white/10 transition-colors flex flex-col items-start gap-4">
-                    <div className="p-3 bg-blue-500/10 rounded-2xl">
-                        <IconMessageCircle className="h-8 w-8 text-blue-500" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold mb-2">Contact Support</h3>
-                        <p className="text-neutral-400 text-sm leading-relaxed">
-                            Need help with your account or have a payment issue? Not to worry, we are here to help.
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => setIsContactOpen(true)}
-                        className="w-full mt-auto bg-white text-black hover:bg-neutral-200 font-bold h-12 rounded-xl gap-2"
-                    >
-                        Contact Support
-                        <IconChevronRight className="h-4 w-4" />
-                    </Button>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Main Support Form */}
+                <Card className="lg:col-span-2 bg-[#0a0a0a] border-white/10">
+                    <CardHeader>
+                        <CardTitle className="text-white flex items-center gap-2">
+                            <MessageSquare className="h-5 w-5" />
+                            Contact Support
+                        </CardTitle>
+                        <CardDescription className="text-neutral-500">
+                            Describe your issue and we'll help you resolve it.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isSubmitted ? (
+                            <div className="text-center py-12">
+                                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-white mb-2">Request Submitted</h3>
+                                <p className="text-neutral-500 mb-6">
+                                    We've received your support request and will respond within 24 hours.
+                                </p>
+                                <Button
+                                    onClick={() => setIsSubmitted(false)}
+                                    variant="outline"
+                                    className="border-white/10 hover:bg-white/5"
+                                >
+                                    Submit Another Request
+                                </Button>
+                            </div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label className="text-white">Subject *</Label>
+                                    <Input
+                                        value={subject}
+                                        onChange={(e) => setSubject(e.target.value)}
+                                        placeholder="Brief description of your issue"
+                                        className="bg-white/5 border-white/10 text-white placeholder:text-neutral-500"
+                                        required
+                                    />
+                                </div>
 
-                {/* Documentation Option */}
-                <div className="p-8 rounded-3xl bg-[#0a0a0a] border border-white/5 hover:border-white/10 transition-colors flex flex-col items-start gap-4">
-                    <div className="p-3 bg-emerald-500/10 rounded-2xl">
-                        <IconBook className="h-8 w-8 text-emerald-500" />
-                    </div>
-                    <div>
-                        <h3 className="text-xl font-bold mb-2">Documentation</h3>
-                        <p className="text-neutral-400 text-sm leading-relaxed">
-                            Browse our detailed guides and API reference to get the most out of the platform.
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label className="text-white">Category *</Label>
+                                        <Select value={category} onValueChange={setCategory} required>
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-[#0a0a0a] border-white/10">
+                                                {categories.map((cat) => (
+                                                    <SelectItem
+                                                        key={cat.value}
+                                                        value={cat.value}
+                                                        className="text-white focus:bg-white/5 focus:text-white"
+                                                    >
+                                                        {cat.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-white">Priority</Label>
+                                        <Select value={priority} onValueChange={setPriority}>
+                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                                <SelectValue placeholder="Select priority" />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-[#0a0a0a] border-white/10">
+                                                {priorities.map((p) => (
+                                                    <SelectItem
+                                                        key={p.value}
+                                                        value={p.value}
+                                                        className="text-white focus:bg-white/5 focus:text-white"
+                                                    >
+                                                        <div className="flex flex-col">
+                                                            <span>{p.label}</span>
+                                                        </div>
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-white">Description *</Label>
+                                    <Textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder="Please provide as much detail as possible about your issue. Include steps to reproduce if reporting a bug."
+                                        className="bg-white/5 border-white/10 text-white placeholder:text-neutral-500 min-h-[150px] resize-none"
+                                        required
+                                    />
+                                    <p className="text-[10px] text-neutral-600">
+                                        The more details you provide, the faster we can help you.
+                                    </p>
+                                </div>
+
+                                <div className="flex justify-end pt-4">
+                                    <Button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="bg-white text-black hover:bg-neutral-200 font-semibold px-8"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Submitting...
+                                            </>
+                                        ) : (
+                                            "Submit Request"
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        )}
+                    </CardContent>
+                </Card>
+
+                {/* Sidebar */}
+                <div className="space-y-4">
+                    <Card className="bg-[#0a0a0a] border-white/10">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-white text-sm flex items-center gap-2">
+                                <BookOpen className="h-4 w-4" />
+                                Documentation
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-xs text-neutral-500 mb-4">
+                                Find answers to common questions and learn how to use Emini effectively.
+                            </p>
+                            <Link href="/docs" target="_blank">
+                                <Button
+                                    variant="outline"
+                                    className="w-full border-white/10 hover:bg-white/5 text-white text-xs"
+                                >
+                                    <ExternalLink className="h-3 w-3 mr-2" />
+                                    View Documentation
+                                </Button>
+                            </Link>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-[#0a0a0a] border-white/10">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-white text-sm flex items-center gap-2">
+                                <Mail className="h-4 w-4" />
+                                Direct Email
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-xs text-neutral-500 mb-4">
+                                Prefer email? Reach us directly at:
+                            </p>
+                            <a
+                                href="mailto:support@emini.co.za"
+                                className="text-sm text-white font-medium hover:underline"
+                            >
+                                support@emini.co.za
+                            </a>
+                        </CardContent>
+                    </Card>
+
+                    <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <p className="text-[10px] text-neutral-500 leading-relaxed">
+                            <strong className="text-neutral-400">Response Times:</strong><br />
+                            Low/Medium: 48 hours<br />
+                            High: 24 hours<br />
+                            Urgent: 4 hours
                         </p>
                     </div>
-                    <Link href="/docs" className="w-full mt-auto">
-                        <Button
-                            variant="outline"
-                            className="w-full bg-transparent border-white/10 hover:bg-white/5 text-white font-bold h-12 rounded-xl gap-2"
-                        >
-                            View Documentation
-                            <IconChevronRight className="h-4 w-4" />
-                        </Button>
-                    </Link>
                 </div>
             </div>
-
-            <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
-                <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Contact Support</DialogTitle>
-                        <DialogDescription className="text-neutral-400">
-                            Fill out the form below and we'll help you resolve your issue.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <form onSubmit={handleSendMessage} className="space-y-6 pt-4">
-                        <div className="space-y-2">
-                            <Label>Subject</Label>
-                            <Input placeholder="What do you need help with?" className="bg-white/5 border-white/10" required />
-                        </div>
-                        <div className="space-y-2">
-                            <Label>Message</Label>
-                            <Textarea placeholder="Describe your issue in detail..." className="bg-white/5 border-white/10 min-h-[150px]" required />
-                        </div>
-                        <div className="flex justify-end gap-3">
-                            <Button type="button" variant="ghost" onClick={() => setIsContactOpen(false)} className="hover:bg-white/5">
-                                Cancel
-                            </Button>
-                            <Button type="submit" disabled={isLoading} className="bg-white text-black hover:bg-neutral-200">
-                                {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                                Send Message
-                            </Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }
