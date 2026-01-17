@@ -10,6 +10,17 @@ import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
+// Get the proper redirect URL (handles 0.0.0.0 issue in local dev)
+const getRedirectUrl = () => {
+    if (typeof window === 'undefined') return '';
+    const origin = window.location.origin;
+    // Replace 0.0.0.0 with localhost for local development
+    if (origin.includes('0.0.0.0')) {
+        return origin.replace('0.0.0.0', 'localhost');
+    }
+    return origin;
+};
+
 export function AuthForm() {
     const [email, setEmail] = useState("")
     const [loading, setLoading] = useState(false)
@@ -22,7 +33,7 @@ export function AuthForm() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/overview`,
+                emailRedirectTo: `${getRedirectUrl()}/auth/callback?next=/overview`,
             },
         })
 
@@ -75,7 +86,7 @@ export function AuthForm() {
                     supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                            redirectTo: `${window.location.origin}/auth/callback?next=/overview`,
+                            redirectTo: `${getRedirectUrl()}/auth/callback?next=/overview`,
                         }
                     })
                 }}>

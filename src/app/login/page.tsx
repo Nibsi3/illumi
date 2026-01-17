@@ -32,6 +32,17 @@ const testimonials = [
     },
 ]
 
+// Get the proper redirect URL (handles 0.0.0.0 issue in local dev)
+const getRedirectUrl = () => {
+    if (typeof window === 'undefined') return '';
+    const origin = window.location.origin;
+    // Replace 0.0.0.0 with localhost for local development
+    if (origin.includes('0.0.0.0')) {
+        return origin.replace('0.0.0.0', 'localhost');
+    }
+    return origin;
+};
+
 export default function LoginPage() {
     const [currentTestimonial, setCurrentTestimonial] = useState(0)
     const [email, setEmail] = useState("")
@@ -52,7 +63,7 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/overview`,
+                redirectTo: `${getRedirectUrl()}/auth/callback?next=/overview`,
             }
         })
 
@@ -70,7 +81,7 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=/overview`,
+                emailRedirectTo: `${getRedirectUrl()}/auth/callback?next=/overview`,
             },
         })
 

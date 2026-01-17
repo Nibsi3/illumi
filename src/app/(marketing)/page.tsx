@@ -152,6 +152,7 @@ export default function LandingPage() {
                             </div>
                         </div>
                     </div>
+                </div>
             </section>
 
             {/* Everything you need - Boxed Sections */}
