@@ -14,7 +14,7 @@ const featureDropdownItems = [
 const navigation = [
     { name: "Pricing", href: "/pricing" },
     { name: "Story", href: "/story" },
-    { name: "Docs", href: "/docs" },
+    { name: "Docs", href: "https://docs.illumi.co.za" },
 ]
 
 

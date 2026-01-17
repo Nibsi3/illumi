@@ -73,19 +73,19 @@ export default function LandingPage() {
                                 Build your client database, manage products, create beautiful invoices, and get paid faster with WhatsApp, Email, or a shareable link.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                            <div className="flex flex-col sm:flex-row gap-4 mb-4">
                                 <Button
                                     asChild
-                                    className="rounded-lg px-8 h-12 bg-white text-black hover:bg-white/90 font-sans font-medium"
+                                    className="bg-white text-black hover:bg-neutral-200 rounded-lg px-8 h-12 font-sans"
                                 >
-                                    <Link href="/login">Start Free</Link>
+                                    <Link href="/login">Get Started for Free</Link>
                                 </Button>
                                 <Button
                                     asChild
                                     variant="outline"
                                     className="rounded-lg px-8 h-12 border-white/20 text-white hover:bg-white/5 font-sans"
                                 >
-                                    <Link href="/docs">View Docs</Link>
+                                    <Link href="/pricing">View Pricing</Link>
                                 </Button>
                             </div>
 
@@ -159,41 +159,37 @@ export default function LandingPage() {
             <section className="py-24 border-t border-white/5">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mb-16">
-                        <h2 className="text-[60px] font-medium text-[#fafafa] mb-4 font-sans leading-none">Everything you need</h2>
-                        <p className="text-[#878787] text-lg font-sans">Create invoices, manage clients, track products — all in one place.</p>
+                        <h2 className="text-[60px] font-medium text-[#fafafa] mb-4 font-sans leading-none">Invoicing made simple</h2>
+                        <p className="text-[#878787] text-lg font-sans">Everything you need to build invoices, manage clients, and get paid faster.</p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-6">
-                        {/* Invoicing - Large Box */}
+                        {/* Client Database - Large Box */}
                         <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
                             <div className="p-8 lg:p-12 bg-zinc-950/50 flex items-center justify-center border-r border-white/5">
-                                <div className="relative w-full max-w-md aspect-video rounded-xl border border-white/10 bg-black overflow-hidden shadow-2xl">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-                                    <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                                        <div className="w-1/3 h-2 bg-white/10 rounded" />
-                                        <div className="flex gap-2">
-                                            <IconBrandWhatsapp className="h-4 w-4 text-green-500/50" />
-                                            <IconMail className="h-4 w-4 text-white/30" />
-                                            <IconLink className="h-4 w-4 text-white/30" />
+                                <div className="space-y-4 w-full max-w-sm">
+                                    {[
+                                        { name: "Acme Corp", contact: "John Doe", email: "john@acme.com" },
+                                        { name: "Global Tech", contact: "Jane Smith", email: "jane@global.com" },
+                                        { name: "Local Shop", contact: "Mike Jones", email: "mike@local.com" },
+                                    ].map((client, i) => (
+                                        <div key={i} className="p-4 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+                                            <div>
+                                                <div className="text-sm font-medium text-white">{client.name}</div>
+                                                <div className="text-[10px] text-neutral-500">{client.email}</div>
+                                            </div>
+                                            <div className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-neutral-400">Active</div>
                                         </div>
-                                    </div>
-                                    <div className="p-8 flex flex-col justify-center h-full">
-                                        <div className="text-2xl font-serif text-white mb-2">Invoice #INV-0042</div>
-                                        <div className="text-lg text-[#878787] mb-4">R 5,250.00</div>
-                                        <div className="flex gap-2">
-                                            <span className="text-[10px] px-2 py-0.5 rounded bg-white/10 text-white/80 uppercase tracking-wider">Scheduled</span>
-                                            <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-white/40 uppercase tracking-wider">Recurring</span>
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
                             <div className="p-8 lg:p-12 flex flex-col justify-center">
-                                <h3 className="text-2xl font-medium text-white mb-6">Professional Invoicing</h3>
+                                <h3 className="text-2xl font-medium text-white mb-6">Client management</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Create beautiful invoices in seconds. Send via WhatsApp, Email, or share a link. Schedule for later or set up recurring invoices.
+                                    Build and manage your client database. Keep track of customer information, billing details, and communication history in one place.
                                 </p>
                                 <ul className="space-y-4">
-                                    {invoicingFeatures.map((item, i) => (
+                                    {["Detailed client profiles", "Multiple contact persons", "Billing history", "Automated payment tracking"].map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-white/80">
                                             <IconCheck className="h-4 w-4 text-white/40" />
                                             {item}
@@ -203,50 +199,69 @@ export default function LandingPage() {
                             </div>
                         </div>
 
-                        {/* Free vs Pro - Two Boxes */}
+                        {/* Invoicing & Inbox - Two Boxes */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Free */}
+                            {/* Invoicing */}
                             <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                                <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium mb-6">Free Forever</div>
-                                <h3 className="text-2xl font-medium text-white mb-6">Get started for free</h3>
+                                <h3 className="text-2xl font-medium text-white mb-6">Invoicing</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Everything you need to create and send professional invoices. No credit card required.
+                                    Create and send invoices to your customers, monitor your sent balance, track overdue payments and send reminders.
                                 </p>
                                 <ul className="space-y-4 mb-12">
-                                    {freeFeatures.map((item, i) => (
+                                    {invoicingFeatures.map((item, i) => (
                                         <li key={i} className="flex items-center gap-3 text-sm text-white/80">
                                             <IconCheck className="h-4 w-4 text-white/40" />
                                             {item}
                                         </li>
                                     ))}
                                 </ul>
-                                <Link href="/login" className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors">
-                                    Start for free
-                                    <IconArrowRight className="h-4 w-4" />
-                                </Link>
                             </div>
+                        </div>
+                    </div>
 
-                            {/* Pro */}
-                            <div className="bg-[#0a0a0a] border border-white/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent" />
-                                <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium mb-6">Pro</div>
-                                <h3 className="text-2xl font-medium text-white mb-6">Automate your payments</h3>
-                                <p className="text-[#878787] text-sm mb-8 leading-relaxed">
-                                    Client payment portal with PayGate integration. Invoices update automatically when paid.
-                                </p>
-                                <ul className="space-y-4 mb-12">
-                                    {proFeatures.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-3 text-sm text-white/80">
-                                            <IconCheck className="h-4 w-4 text-white/40" />
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link href="/pricing" className="inline-flex items-center gap-2 text-sm text-white hover:text-white/80 transition-colors">
-                                    View Pricing
-                                    <IconArrowRight className="h-4 w-4" />
-                                </Link>
-                            </div>
+                    {/* Free vs Pro - Two Boxes */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        {/* Free */}
+                        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                            <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium mb-6">Free Forever</div>
+                            <h3 className="text-2xl font-medium text-white mb-6">Get started for free</h3>
+                            <p className="text-[#878787] text-sm mb-8 leading-relaxed">
+                                Everything you need to create and send professional invoices. No credit card required.
+                            </p>
+                            <ul className="space-y-4 mb-12">
+                                {freeFeatures.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-white/80">
+                                        <IconCheck className="h-4 w-4 text-white/40" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link href="/login" className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors">
+                                Start for free
+                                <IconArrowRight className="h-4 w-4" />
+                            </Link>
+                        </div>
+
+                        {/* Pro */}
+                        <div className="bg-[#0a0a0a] border border-white/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent" />
+                            <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium mb-6">Pro</div>
+                            <h3 className="text-2xl font-medium text-white mb-6">Automate your payments</h3>
+                            <p className="text-[#878787] text-sm mb-8 leading-relaxed">
+                                Client payment portal with PayGate integration. Invoices update automatically when paid.
+                            </p>
+                            <ul className="space-y-4 mb-12">
+                                {proFeatures.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-sm text-white/80">
+                                        <IconCheck className="h-4 w-4 text-white/40" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link href="/pricing" className="inline-flex items-center gap-2 text-sm text-white hover:text-white/80 transition-colors">
+                                View Pricing
+                                <IconArrowRight className="h-4 w-4" />
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -311,7 +326,7 @@ export default function LandingPage() {
                             <div>
                                 <h3 className="text-xl font-medium text-white mb-4">Seamless export</h3>
                                 <p className="text-[#878787] text-xs leading-relaxed mb-8">
-                                    Take the hassle out of preparing exports for your accountant. Just select any time period or transaction you want and hit export.
+                                    Take the hassle out of tax season. Just select your invoicing period and hit export to generate professional reports for your accountant.
                                 </p>
                             </div>
                             <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
