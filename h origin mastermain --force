@@ -1,0 +1,91 @@
+ .gitignore                                         |    41 [32m+[m
+ README.md                                          |    37 [32m+[m[31m-[m
+ components.json                                    |    24 [32m+[m
+ eslint.config.mjs                                  |    18 [32m+[m
+ next.config.ts                                     |     7 [32m+[m
+ package-lock.json                                  | 10419 [32m+++++++++++++++++++[m
+ package.json                                       |    66 [32m+[m
+ postcss.config.mjs                                 |     7 [32m+[m
+ public/assets/features_inbox.png                   |   Bin [31m0[m -> [32m926994[m bytes
+ public/assets/features_invoice.png                 |   Bin [31m0[m -> [32m948934[m bytes
+ public/assets/features_overview.png                |   Bin [31m0[m -> [32m1096953[m bytes
+ public/assets/features_vault.png                   |   Bin [31m0[m -> [32m711901[m bytes
+ public/assets/pricing.png                          |   Bin [31m0[m -> [32m530018[m bytes
+ public/assets/story.png                            |   Bin [31m0[m -> [32m569092[m bytes
+ public/file.svg                                    |     1 [32m+[m
+ public/globe.svg                                   |     1 [32m+[m
+ public/logo.png                                    |   Bin [31m0[m -> [32m85120[m bytes
+ public/midday-logo.png                             |   Bin [31m0[m -> [32m116395[m bytes
+ public/next.svg                                    |     1 [32m+[m
+ public/ref/landing_page.png                        |   Bin [31m0[m -> [32m4579066[m bytes
+ public/vercel.svg                                  |     1 [32m+[m
+ public/window.svg                                  |     1 [32m+[m
+ src/app/(dashboard)/apps/page.tsx                  |   104 [32m+[m
+ src/app/(dashboard)/clients/new/page.tsx           |   228 [32m+[m
+ src/app/(dashboard)/clients/page.tsx               |   222 [32m+[m
+ src/app/(dashboard)/inbox/page.tsx                 |    98 [32m+[m
+ src/app/(dashboard)/inbox/settings/page.tsx        |   102 [32m+[m
+ src/app/(dashboard)/invoices/new/page.tsx          |   467 [32m+[m
+ src/app/(dashboard)/invoices/page.tsx              |   287 [32m+[m
+ src/app/(dashboard)/invoices/preview/[id]/page.tsx |   181 [32m+[m
+ src/app/(dashboard)/layout.tsx                     |    13 [32m+[m
+ src/app/(dashboard)/overview/page.tsx              |   336 [32m+[m
+ src/app/(dashboard)/recurring/page.tsx             |   175 [32m+[m
+ src/app/(dashboard)/settings/inbox/page.tsx        |   120 [32m+[m
+ src/app/(dashboard)/settings/layout.tsx            |    86 [32m+[m
+ src/app/(dashboard)/settings/page.tsx              |   138 [32m+[m
+ src/app/(dashboard)/transactions/page.tsx          |   100 [32m+[m
+ src/app/(marketing)/features/inbox/page.tsx        |   192 [32m+[m
+ src/app/(marketing)/features/invoice/page.tsx      |   185 [32m+[m
+ src/app/(marketing)/features/overview/page.tsx     |   163 [32m+[m
+ src/app/(marketing)/features/vault/page.tsx        |   174 [32m+[m
+ src/app/(marketing)/layout.tsx                     |    18 [32m+[m
+ src/app/(marketing)/page.tsx                       |   303 [32m+[m
+ src/app/(marketing)/pricing/page.tsx               |   231 [32m+[m
+ src/app/(marketing)/story/page.tsx                 |   119 [32m+[m
+ src/app/api/assistant/route.ts                     |    19 [32m+[m
+ src/app/api/chat/route.ts                          |    41 [32m+[m
+ src/app/auth/callback/route.ts                     |    19 [32m+[m
+ src/app/favicon.ico                                |   Bin [31m0[m -> [32m25931[m bytes
+ src/app/globals.css                                |   183 [32m+[m
+ src/app/layout.tsx                                 |    50 [32m+[m
+ src/app/login/page.tsx                             |   189 [32m+[m
+ src/app/logo.png                                   |   Bin [31m0[m -> [32m303352[m bytes
+ src/app/view/[id]/page.tsx                         |   162 [32m+[m
+ src/components/app-sidebar.tsx                     |   249 [32m+[m
+ src/components/auth-form.tsx                       |    87 [32m+[m
+ src/components/customer-drawer.tsx                 |   138 [32m+[m
+ src/components/invoice/editor.tsx                  |   158 [32m+[m
+ src/components/invoice/inline-fields.tsx           |   148 [32m+[m
+ src/components/invoice/invoice-editor.tsx          |   286 [32m+[m
+ src/components/invoice/pdf-document.tsx            |   177 [32m+[m
+ src/components/invoice/settings-dropdown.tsx       |   166 [32m+[m
+ src/components/marketing/marketing-footer.tsx      |   169 [32m+[m
+ src/components/marketing/marketing-header.tsx      |   143 [32m+[m
+ src/components/ui/accordion.tsx                    |    66 [32m+[m
+ src/components/ui/avatar.tsx                       |    50 [32m+[m
+ src/components/ui/button.tsx                       |    56 [32m+[m
+ src/components/ui/card.tsx                         |    75 [32m+[m
+ src/components/ui/dialog.tsx                       |   143 [32m+[m
+ src/components/ui/dropdown-menu.tsx                |   257 [32m+[m
+ src/components/ui/input.tsx                        |    24 [32m+[m
+ src/components/ui/label.tsx                        |    25 [32m+[m
+ src/components/ui/scroll-area.tsx                  |    45 [32m+[m
+ src/components/ui/select.tsx                       |   190 [32m+[m
+ src/components/ui/sheet.tsx                        |   140 [32m+[m
+ src/components/ui/sidebar.tsx                      |   192 [32m+[m
+ src/lib/groq.ts                                    |    25 [32m+[m
+ src/lib/invoice/templates.ts                       |    31 [32m+[m
+ src/lib/metrics.ts                                 |    28 [32m+[m
+ src/lib/mock-data.ts                               |    64 [32m+[m
+ src/lib/ocr/processor.ts                           |    32 [32m+[m
+ src/lib/supabase/client.ts                         |     8 [32m+[m
+ src/lib/supabase/middleware.ts                     |    66 [32m+[m
+ src/lib/supabase/server.ts                         |    29 [32m+[m
+ src/lib/utils.ts                                   |     6 [32m+[m
+ src/middleware.ts                                  |    19 [32m+[m
+ supabase/migrations/20240114000000_magic_inbox.sql |    45 [32m+[m
+ .../20240114000001_client_management.sql           |    42 [32m+[m
+ .../20240114000002_recurring_invoices.sql          |    35 [32m+[m
+ tsconfig.json                                      |    34 [32m+[m
+ 90 files changed, 18776 insertions(+), 1 deletion(-)

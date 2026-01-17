@@ -61,20 +61,11 @@ export default function StoryPage() {
                                 For South African businesses, by South African entrepreneurs.
                             </p>
                         </div>
-
-                        <div className="mt-12 pt-8 border-t border-white/10">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-white/5" />
-                                <div>
-                                    <div className="text-white/50 text-sm">The Illumi Team</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                </div>
 
-                <div className="text-center mt-16">
-                    <div className="font-serif italic text-2xl text-white">The Illumi Team</div>
+                    <div className="text-center mt-16">
+                        <div className="font-serif italic text-2xl text-white">The Illumi Team</div>
+                    </div>
                 </div>
             </section>
 
