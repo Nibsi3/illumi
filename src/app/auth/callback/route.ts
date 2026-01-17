@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getURL } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
