@@ -6,16 +6,9 @@ export default async function middleware(request: NextRequest) {
         request: { headers: request.headers },
     })
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    if (!supabaseUrl || !supabaseKey) {
-        return response
-    }
-
     const supabase = createServerClient(
-        supabaseUrl,
-        supabaseKey,
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 getAll() { return request.cookies.getAll() },
@@ -30,9 +23,6 @@ export default async function middleware(request: NextRequest) {
         }
     )
 
-    // IMPORTANT: Avoid writing any logic between createServerClient and
-    // getUser(). A simple mistake can make it very hard to debug
-    // issues with users being randomly logged out.
     const { data: { user } } = await supabase.auth.getUser()
 
     // PROTECT ROUTES: If no user and trying to access protected page, redirect to sign-in
