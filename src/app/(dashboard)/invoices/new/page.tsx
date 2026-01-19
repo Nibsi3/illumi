@@ -355,8 +355,12 @@ export default function NewInvoicePage() {
                         if (emailData.success) {
                             console.log('[Invoice Save] Email sent successfully')
                         } else {
-                            console.error('[Invoice Save] Email send failed:', emailData.error)
                             const isDomainError = emailData.error?.includes("verify a domain") || emailData.error?.includes("testing emails");
+                            if (isDomainError) {
+                                console.warn('[Invoice Save] Email blocked by Resend domain verification/testing restriction:', emailData.error)
+                            } else {
+                                console.error('[Invoice Save] Email send failed:', emailData.error)
+                            }
                             toast.warning("Invoice created, but email failed", {
                                 description: isDomainError
                                     ? "Resend requires a verified domain to send to external recipients."

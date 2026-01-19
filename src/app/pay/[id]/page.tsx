@@ -107,7 +107,8 @@ export default function PayInvoicePage() {
                     amount: invoice.total,
                     currency: invoice.currency,
                     provider,
-                    invoiceNumber: invoice.invoice_number
+                    invoiceNumber: invoice.invoice_number,
+                    workspaceId: invoice.workspace_id
                 })
             })
 
@@ -118,12 +119,13 @@ export default function PayInvoicePage() {
                 })
                 window.location.href = data.link
             } else {
-                throw new Error(data.error || "Failed to generate payment link")
+                const providerLabel = data.provider || provider
+                throw new Error(`[${providerLabel}] ${data.error || "Failed to generate payment link"}`)
             }
         } catch (err: any) {
             console.error("Payment error:", err)
             toast.error("Payment failed", {
-                description: err.message
+                description: err?.message || "Failed to generate payment link"
             })
             setIsSimulating(false)
         }
@@ -166,6 +168,10 @@ export default function PayInvoicePage() {
     const isPaid = invoice.status === 'paid' || invoice.status === 'Paid'
     const template = invoice.template || "Classic"
     const mode = invoice.invoice_mode || "dark"
+
+    const urlProvider = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('provider') : null
+    const invoiceProvider = invoice.payment_provider
+    const selectedProvider = urlProvider || invoiceProvider || 'payfast'
 
     const formatDate = (dateString: string) => {
         if (!dateString) return "--/--/----"
@@ -413,6 +419,10 @@ export default function PayInvoicePage() {
                                     <div className="flex justify-between items-center">
                                         <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Amount to Pay</span>
                                         <span className="text-2xl font-serif italic text-white">{invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">PayGate</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-white/70">{selectedProvider}</span>
                                     </div>
                                     <div className="flex justify-center py-6 border-y border-white/5">
                                         <Receipt className="h-12 w-12 text-white/5" />

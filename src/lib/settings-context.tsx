@@ -101,7 +101,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.country) setCountry(parsed.country)
                     if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
                     if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
-                    if (parsed.providerKeys) setProviderKeys(parsed.providerKeys)
                     if (parsed.billingMethods) setBillingMethods(parsed.billingMethods)
                 }
             } catch (e) {
@@ -127,11 +126,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             country,
             activePaymentProvider,
             connectedProviders,
-            providerKeys,
             billingMethods
         }
         localStorage.setItem("illumi_settings", JSON.stringify(settings))
-    }, [currency, taxRate, dateFormat, fromEmail, logo, companyName, companyAddress, country, activePaymentProvider, connectedProviders, providerKeys, billingMethods, isLoaded])
+    }, [currency, taxRate, dateFormat, fromEmail, logo, companyName, companyAddress, country, activePaymentProvider, connectedProviders, billingMethods, isLoaded])
 
     return (
         <SettingsContext.Provider value={{

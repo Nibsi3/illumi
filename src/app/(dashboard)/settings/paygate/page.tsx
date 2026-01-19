@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { useSettings } from "@/lib/settings-context"
+import { useWorkspace } from "@/lib/workspace-context"
 
 const providers = [
     {
@@ -54,6 +55,7 @@ const providers = [
 
 export default function PayGatePage() {
     const { isPro, isLoading } = useSubscription()
+    const { activeWorkspace } = useWorkspace()
     const {
         activePaymentProvider, setActivePaymentProvider,
         connectedProviders, setConnectedProviders,
@@ -62,6 +64,31 @@ export default function PayGatePage() {
 
     const activeProvider = activePaymentProvider
     const [isTestMode, setIsTestMode] = useState(true)
+    const [isLoadingSettings, setIsLoadingSettings] = useState(true)
+    
+    // Load settings from Supabase on mount
+    useEffect(() => {
+        async function loadSettings() {
+            if (!activeWorkspace?.id) {
+                setIsLoadingSettings(false)
+                return
+            }
+            try {
+                const res = await fetch(`/api/paygate/config?workspace_id=${activeWorkspace.id}`)
+                const data = await res.json()
+                if (data.success && data.settings) {
+                    setActivePaymentProvider(data.settings.active_provider || null)
+                    setConnectedProviders(data.settings.connected_providers || [])
+                    setIsTestMode(data.settings.test_mode ?? true)
+                }
+            } catch (err) {
+                console.error('Failed to load paygate settings:', err)
+            } finally {
+                setIsLoadingSettings(false)
+            }
+        }
+        loadSettings()
+    }, [activeWorkspace?.id, setActivePaymentProvider, setConnectedProviders])
     
     // Disconnect all paygates for free users
     useEffect(() => {
@@ -160,7 +187,7 @@ export default function PayGatePage() {
         return { valid: true }
     }
 
-    const confirmConnection = (id: string) => {
+    const confirmConnection = async (id: string) => {
         // Validate keys first
         const validation = validateProviderKeys(id)
         if (!validation.valid) {
@@ -168,14 +195,46 @@ export default function PayGatePage() {
             return
         }
         
+        if (!activeWorkspace?.id) {
+            toast.error("No workspace selected")
+            return
+        }
+        
         setIsConnecting(true)
-        setTimeout(() => {
-            // Check for duplicates
-            if (!connectedProviders.includes(id)) {
-                setConnectedProviders([...connectedProviders, id])
+        
+        try {
+            // Save to Supabase
+            const newConnectedProviders = connectedProviders.includes(id) 
+                ? connectedProviders 
+                : [...connectedProviders, id]
+            const newActiveProvider = activeProvider || id
+            
+            const res = await fetch('/api/paygate/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    workspace_id: activeWorkspace.id,
+                    provider: id,
+                    active_provider: newActiveProvider,
+                    test_mode: isTestMode,
+                    connected_providers: newConnectedProviders,
+                    keys: {
+                        liveMerchantId,
+                        liveSecretKey,
+                        testMerchantId,
+                        testSecretKey
+                    }
+                })
+            })
+            
+            const data = await res.json()
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Failed to save')
             }
-
-            // Save keys
+            
+            // Update local state
+            setConnectedProviders(newConnectedProviders)
             setProviderKeys({
                 ...providerKeys,
                 [id]: {
@@ -184,22 +243,91 @@ export default function PayGatePage() {
                     isTestMode
                 }
             })
-
-            if (!activeProvider) setActivePaymentProvider(id) // use context setter
-            setIsConnecting(false)
+            if (!activeProvider) setActivePaymentProvider(id)
+            
             setConfiguringProvider(null)
             toast.success("Connected", {
-                description: `Successfully connected to ${providers.find(p => p.id === id)?.name}.`
+                description: `Successfully connected to ${providers.find(p => p.id === id)?.name}. Keys saved securely.`
             })
-        }, 1500)
+        } catch (err: any) {
+            console.error('Failed to save paygate config:', err)
+            toast.error("Failed to save", { description: err.message })
+        } finally {
+            setIsConnecting(false)
+        }
     }
 
-    const disconnect = (id: string) => {
-        setConnectedProviders(connectedProviders.filter(p => p !== id))
-        if (activeProvider === id) setActivePaymentProvider(null)
-        toast.success("Disconnected", {
-            description: `Successfully disconnected from ${providers.find(p => p.id === id)?.name}.`
+    const persistSettings = async (patch: { active_provider?: string | null; test_mode?: boolean; connected_providers?: string[] }) => {
+        if (!activeWorkspace?.id) return
+
+        const res = await fetch('/api/paygate/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                workspace_id: activeWorkspace.id,
+                active_provider: patch.active_provider !== undefined ? patch.active_provider : activeProvider,
+                test_mode: patch.test_mode !== undefined ? patch.test_mode : isTestMode,
+                connected_providers: patch.connected_providers !== undefined ? patch.connected_providers : connectedProviders,
+            })
         })
+
+        const data = await res.json().catch(() => null)
+        if (!data?.success) {
+            throw new Error(data?.error || 'Failed to save paygate settings')
+        }
+    }
+
+    const handleMakePrimary = async (id: string) => {
+        try {
+            await persistSettings({ active_provider: id })
+            setActivePaymentProvider(id)
+            toast.success("Primary updated", {
+                description: `Payments will use ${providers.find(p => p.id === id)?.name} by default.`
+            })
+        } catch (err: any) {
+            console.error('Failed to set primary provider:', err)
+            toast.error("Failed to update primary", { description: err.message })
+        }
+    }
+
+    const handleTestModeChange = async (checked: boolean) => {
+        setIsTestMode(checked)
+        try {
+            await persistSettings({ test_mode: checked })
+        } catch (err: any) {
+            console.error('Failed to save test mode:', err)
+            toast.error("Failed to update test mode", { description: err.message })
+        }
+    }
+
+    const disconnect = async (id: string) => {
+        if (!activeWorkspace?.id) return
+        
+        const newConnectedProviders = connectedProviders.filter(p => p !== id)
+        const newActiveProvider = activeProvider === id ? (newConnectedProviders[0] || null) : activeProvider
+        
+        try {
+            await fetch('/api/paygate/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    workspace_id: activeWorkspace.id,
+                    active_provider: newActiveProvider,
+                    test_mode: isTestMode,
+                    connected_providers: newConnectedProviders
+                })
+            })
+            
+            setConnectedProviders(newConnectedProviders)
+            if (activeProvider === id) setActivePaymentProvider(newActiveProvider)
+            
+            toast.success("Disconnected", {
+                description: `Successfully disconnected from ${providers.find(p => p.id === id)?.name}.`
+            })
+        } catch (err) {
+            console.error('Failed to disconnect:', err)
+            toast.error("Failed to disconnect")
+        }
     }
 
     const submitProviderRequest = () => {
@@ -210,7 +338,7 @@ export default function PayGatePage() {
         })
     }
 
-    if (isLoading) return null;
+    if (isLoading || isLoadingSettings) return null;
 
     // Show upgrade prompt for free users
     if (!isPro) {
@@ -249,7 +377,7 @@ export default function PayGatePage() {
                         <Switch
                             id="test-mode"
                             checked={isTestMode}
-                            onCheckedChange={setIsTestMode}
+                            onCheckedChange={handleTestModeChange}
                             className="data-[state=checked]:bg-white"
                         />
                     </div>
@@ -309,7 +437,7 @@ export default function PayGatePage() {
                                         <div className="space-y-4 flex-1 overflow-y-auto">
                                             <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10">
                                                 <Label className="text-xs font-medium text-white">Test Mode</Label>
-                                                <Switch checked={isTestMode} onCheckedChange={setIsTestMode} />
+                                                <Switch checked={isTestMode} onCheckedChange={handleTestModeChange} />
                                             </div>
 
                                             <div className="space-y-1.5">
@@ -369,7 +497,7 @@ export default function PayGatePage() {
                                     <div className="flex items-center gap-2">
                                         {!isActive && (
                                             <Button
-                                                onClick={() => setActivePaymentProvider(provider.id)}
+                                                onClick={() => handleMakePrimary(provider.id)}
                                                 size="sm"
                                                 variant="ghost"
                                                 className="h-8 px-3 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10"

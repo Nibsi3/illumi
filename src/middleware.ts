@@ -16,6 +16,6 @@ export const config = {
          * 5. /login (The page where users sign in)
          * 6. All images/favicons
          */
-        '/((?!api|_next/static|_next/image|auth/callback|login|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api|_next/static|_next/image|auth/callback|login|sitemap\\.xml|robots\\.txt|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }
