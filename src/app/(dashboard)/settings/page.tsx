@@ -12,8 +12,18 @@ import {
     Globe,
     Mail,
     Phone,
-    Lock
+    Lock,
+    Trash2,
+    AlertTriangle
 } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import {
     Select,
     SelectContent,
@@ -40,6 +50,8 @@ export default function GeneralSettings() {
     } = useSettings()
 
     const [industry, setIndustry] = useState("tech")
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const handleLogoUpload = () => {
         // Check for Pro subscription
@@ -227,6 +239,69 @@ export default function GeneralSettings() {
                     Save everything
                 </Button>
             </div>
+
+            {/* Danger Zone - Delete Account */}
+            <div className="space-y-6 pt-12 mt-12 border-t border-red-500/20">
+                <div className="flex flex-col gap-1">
+                    <h3 className="text-lg font-medium text-red-500">Danger Zone</h3>
+                    <p className="text-sm text-neutral-500 max-w-xl">
+                        Permanently delete your account and all associated data. This action cannot be undone.
+                    </p>
+                </div>
+                <Button
+                    variant="outline"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    className="border-red-500/30 bg-red-500/5 hover:bg-red-500/10 hover:border-red-500/50 text-red-500 h-11 px-6 font-semibold"
+                >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Account
+                </Button>
+            </div>
+
+            {/* Delete Account Confirmation Dialog */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-md">
+                    <DialogHeader>
+                        <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+                            <AlertTriangle className="h-6 w-6 text-red-500" />
+                        </div>
+                        <DialogTitle className="text-center text-xl text-white">Delete Account?</DialogTitle>
+                        <DialogDescription className="text-center text-neutral-400 pt-2">
+                            This action is <span className="text-red-400 font-semibold">permanent</span> and cannot be undone. 
+                            All your data, including invoices, clients, products, and settings will be permanently deleted.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="bg-red-500/5 border border-red-500/20 rounded-lg p-4 my-4">
+                        <p className="text-sm text-red-400 text-center">
+                            You will lose access to all workspaces and data associated with this account.
+                        </p>
+                    </div>
+                    <DialogFooter className="flex gap-3 sm:gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsDeleteDialogOpen(false)}
+                            className="flex-1 border-white/10 hover:bg-white/5"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={async () => {
+                                setIsDeleting(true)
+                                // In a real implementation, this would call an API to delete the account
+                                toast.error("Account deletion is currently disabled", {
+                                    description: "Please contact support@illumi.co.za to delete your account."
+                                })
+                                setIsDeleting(false)
+                                setIsDeleteDialogOpen(false)
+                            }}
+                            disabled={isDeleting}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                        >
+                            {isDeleting ? "Deleting..." : "Yes, Delete My Account"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

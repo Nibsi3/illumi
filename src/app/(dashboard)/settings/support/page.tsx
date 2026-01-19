@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,23 +13,24 @@ import {
     SelectValue
 } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Loader2, MessageSquare, BookOpen, ExternalLink, Mail, AlertCircle, CheckCircle2 } from "lucide-react"
+import { Loader2, MessageSquare, BookOpen, ExternalLink, Mail, AlertCircle, CheckCircle2, Bug, Sparkles, User, CreditCard, HelpCircle } from "lucide-react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
+import { cn } from "@/lib/utils"
 
 const categories = [
-    { value: "bug", label: "Bug Report", icon: AlertCircle },
-    { value: "feature", label: "Feature Request", icon: CheckCircle2 },
-    { value: "account", label: "Account Issue", icon: Mail },
-    { value: "billing", label: "Billing", icon: Mail },
-    { value: "other", label: "Other", icon: MessageSquare },
+    { value: "bug", label: "Bug Report", icon: Bug, color: "text-red-400" },
+    { value: "feature", label: "Feature Request", icon: Sparkles, color: "text-amber-400" },
+    { value: "account", label: "Account Issue", icon: User, color: "text-blue-400" },
+    { value: "billing", label: "Billing", icon: CreditCard, color: "text-emerald-400" },
+    { value: "other", label: "Other", icon: HelpCircle, color: "text-neutral-400" },
 ]
 
 const priorities = [
-    { value: "low", label: "Low", description: "General question or minor issue" },
-    { value: "medium", label: "Medium", description: "Important but not urgent" },
-    { value: "high", label: "High", description: "Affecting my workflow" },
-    { value: "urgent", label: "Urgent", description: "Critical issue blocking work" },
+    { value: "low", label: "Low", color: "bg-neutral-500" },
+    { value: "medium", label: "Medium", color: "bg-blue-500" },
+    { value: "high", label: "High", color: "bg-amber-500" },
+    { value: "urgent", label: "Urgent", color: "bg-red-500" },
 ]
 
 export default function SupportSettingsPage() {
@@ -64,10 +64,8 @@ export default function SupportSettingsPage() {
         setIsSubmitting(true)
 
         try {
-            // Get current user for context
             const { data: { user } } = await supabase.auth.getUser()
 
-            // Save to support_tickets table
             const { error: dbError } = await supabase
                 .from('support_tickets')
                 .insert([{
@@ -81,7 +79,6 @@ export default function SupportSettingsPage() {
 
             if (dbError) throw dbError
 
-            // Send email via Resend API
             const emailResponse = await fetch('/api/email/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -100,9 +97,6 @@ export default function SupportSettingsPage() {
             if (!emailResponse.ok) {
                 const data = await emailResponse.json().catch(() => null)
                 console.warn("Email sending failed, but ticket was saved", data)
-                toast.warning("Support ticket saved, but email failed", {
-                    description: data?.error || "Support email could not be sent. Please ensure Resend domain is verified."
-                })
             }
 
             setIsSubmitted(true)
@@ -110,7 +104,6 @@ export default function SupportSettingsPage() {
                 description: "We'll get back to you as soon as possible."
             })
 
-            // Reset form
             setSubject("")
             setCategory("")
             setPriority("medium")
@@ -124,192 +117,196 @@ export default function SupportSettingsPage() {
         }
     }
 
+    const selectedCategory = categories.find(c => c.value === category)
+    const selectedPriority = priorities.find(p => p.value === priority)
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20 max-w-4xl">
-            <div>
-                <h2 className="text-2xl font-bold text-white tracking-tight">Support</h2>
-                <p className="text-sm text-neutral-500">
-                    Get help from our team or browse our documentation.
-                </p>
+        <div className="pb-32 animate-in fade-in duration-500">
+            {/* Header */}
+            <div className="mb-12">
+                <h1 className="text-4xl font-serif font-medium mb-1">Support</h1>
+                <p className="text-muted-foreground">Get help from our team or browse our documentation.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main Support Form */}
-                <Card className="lg:col-span-2 bg-[#0a0a0a] border-white/10">
-                    <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
-                            <MessageSquare className="h-5 w-5" />
-                            Contact Support
-                        </CardTitle>
-                        <CardDescription className="text-neutral-500">
-                            Describe your issue and we'll help you resolve it.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {isSubmitted ? (
-                            <div className="text-center py-12">
-                                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+            {isSubmitted ? (
+                <div className="max-w-xl mx-auto text-center py-20">
+                    <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-3">Request Submitted</h2>
+                    <p className="text-neutral-400 mb-8 max-w-md mx-auto">
+                        We've received your support request and will respond within 24 hours. Check your email for updates.
+                    </p>
+                    <Button
+                        onClick={() => setIsSubmitted(false)}
+                        className="bg-white text-black hover:bg-neutral-200 font-semibold px-8"
+                    >
+                        Submit Another Request
+                    </Button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Main Form */}
+                    <div className="lg:col-span-8">
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            {/* Category Selection */}
+                            <div className="space-y-4">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">What can we help you with?</Label>
+                                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                                    {categories.map((cat) => {
+                                        const Icon = cat.icon
+                                        const isSelected = category === cat.value
+                                        return (
+                                            <button
+                                                key={cat.value}
+                                                type="button"
+                                                onClick={() => setCategory(cat.value)}
+                                                className={cn(
+                                                    "flex flex-col items-center gap-2 p-4 rounded-xl border transition-all",
+                                                    isSelected
+                                                        ? "bg-white/10 border-white/20"
+                                                        : "bg-[#09090b] border-white/5 hover:border-white/10 hover:bg-white/5"
+                                                )}
+                                            >
+                                                <Icon className={cn("h-5 w-5", isSelected ? cat.color : "text-neutral-500")} />
+                                                <span className={cn("text-xs font-medium", isSelected ? "text-white" : "text-neutral-400")}>{cat.label}</span>
+                                            </button>
+                                        )
+                                    })}
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">Request Submitted</h3>
-                                <p className="text-neutral-500 mb-6">
-                                    We've received your support request and will respond within 24 hours.
+                            </div>
+
+                            {/* Subject */}
+                            <div className="space-y-3">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</Label>
+                                <Input
+                                    value={subject}
+                                    onChange={(e) => setSubject(e.target.value)}
+                                    placeholder="Brief description of your issue"
+                                    className="bg-[#09090b] border-white/5 h-12 text-white placeholder:text-neutral-600 focus-visible:ring-white/10"
+                                    required
+                                />
+                            </div>
+
+                            {/* Priority */}
+                            <div className="space-y-3">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Priority</Label>
+                                <div className="flex gap-2">
+                                    {priorities.map((p) => (
+                                        <button
+                                            key={p.value}
+                                            type="button"
+                                            onClick={() => setPriority(p.value)}
+                                            className={cn(
+                                                "flex items-center gap-2 px-4 py-2 rounded-lg border transition-all",
+                                                priority === p.value
+                                                    ? "bg-white/10 border-white/20"
+                                                    : "bg-[#09090b] border-white/5 hover:border-white/10"
+                                            )}
+                                        >
+                                            <div className={cn("w-2 h-2 rounded-full", p.color)} />
+                                            <span className={cn("text-sm font-medium", priority === p.value ? "text-white" : "text-neutral-400")}>{p.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            <div className="space-y-3">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Description</Label>
+                                <Textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Please provide as much detail as possible about your issue..."
+                                    className="bg-[#09090b] border-white/5 text-white placeholder:text-neutral-600 min-h-[180px] resize-none focus-visible:ring-white/10"
+                                    required
+                                />
+                            </div>
+
+                            {/* Submit */}
+                            <div className="flex items-center justify-between pt-4">
+                                <p className="text-xs text-neutral-600">
+                                    Submitting as <span className="text-neutral-400">{userEmail || 'you'}</span>
                                 </p>
                                 <Button
-                                    onClick={() => setIsSubmitted(false)}
-                                    variant="outline"
-                                    className="border-white/10 hover:bg-white/5"
+                                    type="submit"
+                                    disabled={isSubmitting || !category || !subject || !description}
+                                    className="bg-white text-black hover:bg-neutral-200 font-semibold px-8 h-11"
                                 >
-                                    Submit Another Request
+                                    {isSubmitting ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MessageSquare className="h-4 w-4 mr-2" />
+                                            Submit Request
+                                        </>
+                                    )}
                                 </Button>
                             </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="space-y-2">
-                                    <Label className="text-white">Subject *</Label>
-                                    <Input
-                                        value={subject}
-                                        onChange={(e) => setSubject(e.target.value)}
-                                        placeholder="Brief description of your issue"
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-neutral-500"
-                                        required
-                                    />
-                                </div>
+                        </form>
+                    </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label className="text-white">Category *</Label>
-                                        <Select value={category} onValueChange={setCategory} required>
-                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                                <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-[#0a0a0a] border-white/10">
-                                                {categories.map((cat) => (
-                                                    <SelectItem
-                                                        key={cat.value}
-                                                        value={cat.value}
-                                                        className="text-white focus:bg-white/5 focus:text-white"
-                                                    >
-                                                        {cat.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label className="text-white">Priority</Label>
-                                        <Select value={priority} onValueChange={setPriority}>
-                                            <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                                                <SelectValue placeholder="Select priority" />
-                                            </SelectTrigger>
-                                            <SelectContent className="bg-[#0a0a0a] border-white/10">
-                                                {priorities.map((p) => (
-                                                    <SelectItem
-                                                        key={p.value}
-                                                        value={p.value}
-                                                        className="text-white focus:bg-white/5 focus:text-white"
-                                                    >
-                                                        <div className="flex flex-col">
-                                                            <span>{p.label}</span>
-                                                        </div>
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-white">Description *</Label>
-                                    <Textarea
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        placeholder="Please provide as much detail as possible about your issue. Include steps to reproduce if reporting a bug."
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-neutral-500 min-h-[150px] resize-none"
-                                        required
-                                    />
-                                    <p className="text-[10px] text-neutral-600">
-                                        The more details you provide, the faster we can help you.
-                                    </p>
-                                </div>
-
-                                <div className="flex justify-end pt-4">
-                                    <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="bg-white text-black hover:bg-neutral-200 font-semibold px-8"
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                Submitting...
-                                            </>
-                                        ) : (
-                                            "Submit Request"
-                                        )}
-                                    </Button>
-                                </div>
-                            </form>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Sidebar */}
-                <div className="space-y-4">
-                    <Card className="bg-[#0a0a0a] border-white/10">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-white text-sm flex items-center gap-2">
-                                <BookOpen className="h-4 w-4" />
-                                Documentation
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-xs text-neutral-500 mb-4">
-                                Find answers to common questions and learn how to use Illumi effectively.
-                            </p>
-                            <Link href="https://illumi.co.za/docs" target="_blank">
-                                <Button
-                                    variant="outline"
-                                    className="w-full border-white/10 hover:bg-white/5 text-white text-xs"
+                    {/* Sidebar */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Quick Links */}
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Quick Links</h3>
+                            <div className="space-y-3">
+                                <Link
+                                    href="https://illumi.co.za/docs"
+                                    target="_blank"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
                                 >
-                                    <ExternalLink className="h-3 w-3 mr-2" />
-                                    View Documentation
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
+                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                                        <BookOpen className="h-5 w-5 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-white">Documentation</p>
+                                        <p className="text-xs text-neutral-500">Browse guides & tutorials</p>
+                                    </div>
+                                    <ExternalLink className="h-4 w-4 text-neutral-600 ml-auto" />
+                                </Link>
+                                <a
+                                    href="mailto:support@illumi.co.za"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                                >
+                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
+                                        <Mail className="h-5 w-5 text-neutral-400 group-hover:text-white transition-colors" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-white">Email Us</p>
+                                        <p className="text-xs text-neutral-500">support@illumi.co.za</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
 
-                    <Card className="bg-[#0a0a0a] border-white/10">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-white text-sm flex items-center gap-2">
-                                <Mail className="h-4 w-4" />
-                                Direct Email
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-xs text-neutral-500 mb-4">
-                                Prefer email? Reach us directly at:
-                            </p>
-                            <a
-                                href="mailto:support@illumi.co.za"
-                                className="text-sm text-white font-medium hover:underline"
-                            >
-                                support@illumi.co.za
-                            </a>
-                        </CardContent>
-                    </Card>
-
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
-                        <p className="text-[10px] text-neutral-500 leading-relaxed">
-                            <strong className="text-neutral-400">Response Times:</strong><br />
-                            Low/Medium: 48 hours<br />
-                            High: 24 hours<br />
-                            Urgent: 4 hours
-                        </p>
+                        {/* Response Times */}
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Response Times</h3>
+                            <div className="space-y-3">
+                                {priorities.map((p) => (
+                                    <div key={p.value} className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className={cn("w-2 h-2 rounded-full", p.color)} />
+                                            <span className="text-sm text-neutral-400">{p.label}</span>
+                                        </div>
+                                        <span className="text-sm font-medium text-white">
+                                            {p.value === 'low' && '48 hours'}
+                                            {p.value === 'medium' && '24 hours'}
+                                            {p.value === 'high' && '12 hours'}
+                                            {p.value === 'urgent' && '4 hours'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     )
 }

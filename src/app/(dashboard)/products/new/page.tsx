@@ -164,40 +164,6 @@ export default function NewProductPage() {
               </div>
             </div>
 
-            {/* Inventory & Billing */}
-            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Billing & Units</h2>
-              <div className="grid grid-cols-2 gap-8">
-                <div className="space-y-3">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Unit Label</Label>
-                  <Select value={unitLabel} onValueChange={setUnitLabel}>
-                    <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                      <SelectItem value="service">Service</SelectItem>
-                      <SelectItem value="hour">Per Hour</SelectItem>
-                      <SelectItem value="seat">Per Seat</SelectItem>
-                      <SelectItem value="month">Per Month</SelectItem>
-                      <SelectItem value="kg">Kilogram</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-3">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Billing Mode</Label>
-                  <Select value={billingType} onValueChange={(val: any) => setBillingType(val)}>
-                    <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
-                      <SelectValue placeholder="Select mode" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                      <SelectItem value="one-time">One-off Payment</SelectItem>
-                      <SelectItem value="recurring">Recurring Subscription</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
             {/* Description Section */}
             <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Public Description</h2>

@@ -811,7 +811,6 @@ export default function NewInvoicePage() {
                                                         </datalist>
                                                     </td>
                                                     <td className="py-4 px-2 w-32">
-                                                        {/* Improved Number Input Styles */}
                                                         <NumberInput
                                                             value={task.price}
                                                             onChange={(val) => {
@@ -820,16 +819,11 @@ export default function NewInvoicePage() {
                                                                 newTasks[idx].price = val
                                                                 setTasks(newTasks)
                                                             }}
-                                                            className={cn(
-                                                                "justify-end h-11 px-3 rounded-md text-base font-medium transition-all focus-within:ring-1 focus-within:ring-emerald-500/50 w-full text-right",
-                                                                invoiceMode === "light"
-                                                                    ? "bg-neutral-100 border-transparent text-neutral-900 placeholder:text-neutral-400"
-                                                                    : "bg-white/5 border-transparent text-white placeholder:text-white/30"
-                                                            )}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
                                                         />
                                                     </td>
-                                                    <td className="py-4 px-2 text-right font-mono text-sm w-24">
-                                                        {/* Improved Number Input Styles */}
+                                                    <td className="py-4 px-2 w-24">
                                                         <NumberInput
                                                             value={task.qty}
                                                             onChange={(val) => {
@@ -838,12 +832,8 @@ export default function NewInvoicePage() {
                                                                 newTasks[idx].qty = val
                                                                 setTasks(newTasks)
                                                             }}
-                                                            className={cn(
-                                                                "justify-end h-11 px-3 rounded-md text-base font-medium transition-all focus-within:ring-1 focus-within:ring-emerald-500/50 w-full text-right",
-                                                                invoiceMode === "light"
-                                                                    ? "bg-neutral-100 border-transparent text-neutral-900"
-                                                                    : "bg-white/5 border-transparent text-white"
-                                                            )}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
                                                         />
                                                     </td>
                                                     <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-white")}>

@@ -11,6 +11,7 @@ interface NumberInputProps {
     disabled?: boolean
     className?: string
     placeholder?: string
+    variant?: "dark" | "light"
 }
 
 export function NumberInput({
@@ -19,8 +20,10 @@ export function NumberInput({
     disabled,
     className,
     placeholder,
+    variant = "dark",
 }: NumberInputProps) {
     const [isHovered, setIsHovered] = React.useState(false)
+    const [isFocused, setIsFocused] = React.useState(false)
     const timerRef = React.useRef<NodeJS.Timeout | null>(null)
     const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
 
@@ -44,10 +47,15 @@ export function NumberInput({
         if (intervalRef.current) clearInterval(intervalRef.current)
     }
 
+    const isLight = variant === "light"
+
     return (
         <div
             className={cn(
-                "relative flex items-center group bg-white/[0.03] hover:bg-white/[0.05] transition-colors rounded-lg px-2 border border-transparent focus-within:border-white/10",
+                "relative flex items-center group transition-all rounded-md h-10",
+                isLight
+                    ? "bg-neutral-100 border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-1 focus-within:ring-neutral-300"
+                    : "bg-transparent border border-white/10 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10",
                 className
             )}
             onMouseEnter={() => setIsHovered(true)}
@@ -60,28 +68,36 @@ export function NumberInput({
                 type="text"
                 inputMode="decimal"
                 value={value === 0 ? "" : value}
-                placeholder={placeholder}
+                placeholder={placeholder || "0"}
                 disabled={disabled}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 onChange={(e) => {
                     const val = parseFloat(e.target.value)
                     if (!isNaN(val)) onChange(val)
                     else if (e.target.value === "") onChange(0)
                 }}
                 className={cn(
-                    "w-full bg-transparent border-none p-0 h-full text-white focus:ring-0 text-sm font-bold font-mono placeholder:text-neutral-700",
+                    "w-full bg-transparent border-none px-3 h-full focus:ring-0 focus:outline-none text-sm font-semibold font-mono",
+                    isLight
+                        ? "text-neutral-900 placeholder:text-neutral-400"
+                        : "text-white placeholder:text-neutral-600",
                     !className?.includes("text-left") && "text-right"
                 )}
             />
 
-            {!disabled && (
-                <div className={cn(
-                    "flex flex-col gap-0 transition-all duration-200 ml-2",
-                    isHovered ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1"
-                )}>
+            {!disabled && (isHovered || isFocused) && (
+                <div className="flex flex-col border-l border-inherit">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-4 w-5 p-0 hover:bg-white/10 text-neutral-600 hover:text-white rounded-none border-b border-white/5"
+                        tabIndex={-1}
+                        className={cn(
+                            "h-5 w-6 p-0 rounded-none rounded-tr-md",
+                            isLight
+                                ? "hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900"
+                                : "hover:bg-white/10 text-neutral-500 hover:text-white"
+                        )}
                         onMouseDown={() => startContinuous(increment)}
                         onMouseUp={stopContinuous}
                         onMouseLeave={stopContinuous}
@@ -91,7 +107,13 @@ export function NumberInput({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-4 w-5 p-0 hover:bg-white/10 text-neutral-600 hover:text-white rounded-none"
+                        tabIndex={-1}
+                        className={cn(
+                            "h-5 w-6 p-0 rounded-none rounded-br-md border-t border-inherit",
+                            isLight
+                                ? "hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900"
+                                : "hover:bg-white/10 text-neutral-500 hover:text-white"
+                        )}
                         onMouseDown={() => startContinuous(decrement)}
                         onMouseUp={stopContinuous}
                         onMouseLeave={stopContinuous}
