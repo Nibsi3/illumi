@@ -2,6 +2,10 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { addDays, addWeeks, addMonths, addYears, addMinutes } from "date-fns"
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // Cron job endpoint for processing recurring invoices
 // Should be called regularly (e.g., every minute for testing, daily for production)
 export async function GET(req: Request) {
@@ -17,7 +21,24 @@ export async function GET(req: Request) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
 
     if (!supabaseUrl || !supabaseKey) {
-        return NextResponse.json({ error: "Missing Supabase credentials" }, { status: 500 })
+        return NextResponse.json(
+            {
+                error: "Missing Supabase credentials",
+                diagnostics: {
+                    has_NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
+                    has_SUPABASE_URL: Boolean(process.env.SUPABASE_URL),
+                    has_SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
+                    has_SUPABASE_SERVICE_KEY: Boolean(process.env.SUPABASE_SERVICE_KEY),
+                    node_env: process.env.NODE_ENV || null,
+                },
+            },
+            {
+                status: 500,
+                headers: {
+                    'Cache-Control': 'no-store, max-age=0',
+                },
+            }
+        )
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey)
