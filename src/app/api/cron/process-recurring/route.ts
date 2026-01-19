@@ -26,6 +26,9 @@ export async function GET(req: Request) {
     let invoicesCreated = 0
     let emailsSent = 0
 
+    const url = new URL(req.url)
+    const catchUp = url.searchParams.get('catchUp') === '1'
+
     try {
         // Fetch recurring invoices that are active
         const { data: recurringInvoices, error } = await supabase
@@ -39,62 +42,101 @@ export async function GET(req: Request) {
         console.log(`[Recurring Cron] Found ${recurringInvoices?.length || 0} recurring invoices`)
 
         for (const invoice of recurringInvoices || []) {
-            // Check if recurring has ended
-            if (invoice.recurring_end_type === 'on' && invoice.recurring_end_date) {
-                const endDate = new Date(invoice.recurring_end_date)
+            // End-on-date support (safe even if recurring_end_type column does not exist)
+            if (invoice.recurring_end_date) {
+                const endDate = new Date(`${invoice.recurring_end_date}T00:00:00`)
                 if (now > endDate) {
                     console.log(`[Recurring Cron] Invoice ${invoice.invoice_number} recurring period ended`)
                     continue
                 }
             }
 
-            // For 'after' type with minutes (testing), check if we should stop
-            if (invoice.recurring_end_type === 'after' && invoice.recurring_interval === 'minute') {
-                const createdAt = new Date(invoice.created_at)
-                const minutesElapsed = (now.getTime() - createdAt.getTime()) / (1000 * 60)
-                if (invoice.recurring_count && minutesElapsed > invoice.recurring_count) {
-                    console.log(`[Recurring Cron] Invoice ${invoice.invoice_number} minute-based recurring ended after ${invoice.recurring_count} minutes`)
-                    continue
+            // Calculate next invoice date based on interval.
+            // We can't rely on last_recurring_at being present in every DB schema, so we derive it
+            // by looking up the most recent child invoice (parent_invoice_id).
+            // IMPORTANT: For minute/daily testing, many invoices will share the same issue_date.
+            // Ordering by issue_date alone would return an arbitrary invoice, so we use created_at.
+            const createdAt = new Date(invoice.created_at)
+            const issueDateBase = invoice.issue_date
+                ? new Date(`${invoice.issue_date}T00:00:00`)
+                : createdAt
+
+            const { count: childCount, error: childCountError } = await supabase
+                .from('invoices')
+                .select('id', { count: 'exact', head: true })
+                .eq('parent_invoice_id', invoice.id)
+
+            if (childCountError) {
+                console.warn('[Recurring Cron] Failed to fetch child invoice count:', childCountError)
+            }
+
+            const occurrences = childCount || 0
+
+            // Derive the last scheduled time based on how many child invoices already exist.
+            // This enables catch-up even if the cron endpoint is called late.
+            let baseDate: Date
+            switch (invoice.recurring_interval) {
+                case 'minute':
+                    baseDate = addMinutes(createdAt, occurrences)
+                    break
+                case 'daily':
+                    baseDate = addDays(issueDateBase, occurrences)
+                    break
+                case 'weekly':
+                    baseDate = addWeeks(issueDateBase, occurrences)
+                    break
+                case 'monthly':
+                    baseDate = addMonths(issueDateBase, occurrences)
+                    break
+                case 'quarterly':
+                    baseDate = addMonths(issueDateBase, occurrences * 3)
+                    break
+                case 'yearly':
+                    baseDate = addYears(issueDateBase, occurrences)
+                    break
+                default:
+                    baseDate = addMonths(issueDateBase, occurrences)
+            }
+
+            const computeNextDate = (from: Date): Date => {
+                switch (invoice.recurring_interval) {
+                    case 'minute':
+                        return addMinutes(from, 1)
+                    case 'daily':
+                        return addDays(from, 1)
+                    case 'weekly':
+                        return addWeeks(from, 1)
+                    case 'monthly':
+                        return addMonths(from, 1)
+                    case 'quarterly':
+                        return addMonths(from, 3)
+                    case 'yearly':
+                        return addYears(from, 1)
+                    default:
+                        return addMonths(from, 1)
                 }
             }
 
-            // Calculate next invoice date based on interval
-            const lastInvoiceDate = invoice.last_recurring_at ? new Date(invoice.last_recurring_at) : new Date(invoice.created_at)
-            let nextInvoiceDate: Date
+            // By default, create at most 1 invoice per parent per cron run to avoid bursts
+            // when someone refreshes the endpoint manually.
+            // Use ?catchUp=1 to allow generating multiple missed occurrences (capped).
+            const maxPerRun = catchUp ? 10 : 1
+            let createdThisParent = 0
+            let nextInvoiceDate = computeNextDate(baseDate)
 
-            switch (invoice.recurring_interval) {
-                case 'minute':
-                    nextInvoiceDate = addMinutes(lastInvoiceDate, 1)
-                    break
-                case 'daily':
-                    nextInvoiceDate = addDays(lastInvoiceDate, 1)
-                    break
-                case 'weekly':
-                    nextInvoiceDate = addWeeks(lastInvoiceDate, 1)
-                    break
-                case 'monthly':
-                    nextInvoiceDate = addMonths(lastInvoiceDate, 1)
-                    break
-                case 'yearly':
-                    nextInvoiceDate = addYears(lastInvoiceDate, 1)
-                    break
-                default:
-                    nextInvoiceDate = addMonths(lastInvoiceDate, 1)
-            }
-
-            // Check if it's time to create a new invoice
-            if (now >= nextInvoiceDate) {
-                console.log(`[Recurring Cron] Creating new invoice from recurring ${invoice.invoice_number}`)
+            while (now >= nextInvoiceDate && createdThisParent < maxPerRun) {
+                console.log(`[Recurring Cron] Creating new invoice from recurring ${invoice.invoice_number} (next=${nextInvoiceDate.toISOString()})`)
 
                 // Generate new invoice number
                 const timestamp = Date.now().toString().slice(-6)
-                const newInvoiceNumber = `INV-${timestamp}`
+                const newInvoiceNumber = `INV-${timestamp}-${createdThisParent + 1}`
 
                 // Calculate new due date (same offset from issue date as original)
-                const originalIssueDays = invoice.due_date && invoice.issue_date
+                const originalIssueDaysRaw = invoice.due_date && invoice.issue_date
                     ? Math.round((new Date(invoice.due_date).getTime() - new Date(invoice.issue_date).getTime()) / (1000 * 60 * 60 * 24))
                     : 30
-                const newDueDate = addDays(now, originalIssueDays)
+                const originalIssueDays = Math.max(0, originalIssueDaysRaw)
+                const newDueDate = addDays(nextInvoiceDate, originalIssueDays)
 
                 // Create new invoice
                 const { data: newInvoice, error: insertError } = await supabase
@@ -105,7 +147,7 @@ export async function GET(req: Request) {
                         customer_id: invoice.customer_id,
                         invoice_number: newInvoiceNumber,
                         status: 'sent',
-                        issue_date: now.toISOString().split('T')[0],
+                        issue_date: nextInvoiceDate.toISOString().split('T')[0],
                         due_date: newDueDate.toISOString().split('T')[0],
                         currency: invoice.currency,
                         subtotal: invoice.subtotal,
@@ -113,19 +155,15 @@ export async function GET(req: Request) {
                         tax_amount: invoice.tax_amount,
                         total: invoice.total,
                         notes: invoice.notes,
-                        template: invoice.template,
-                        invoice_mode: invoice.invoice_mode,
-                        logo_url: invoice.logo_url,
-                        payment_provider: invoice.payment_provider,
                         is_recurring: false, // New invoice is not recurring itself
-                        parent_recurring_id: invoice.id, // Track parent
+                        parent_invoice_id: invoice.id, // Track parent
                     })
                     .select()
                     .single()
 
                 if (insertError) {
                     console.error(`[Recurring Cron] Failed to create invoice:`, insertError)
-                    continue
+                    break
                 }
 
                 // Copy invoice items
@@ -142,10 +180,10 @@ export async function GET(req: Request) {
                     await supabase.from('invoice_items').insert(itemsToInsert)
                 }
 
-                // Update parent invoice with last recurring timestamp
+                // Best-effort: update parent invoice timestamps if the column exists
                 await supabase
                     .from('invoices')
-                    .update({ last_recurring_at: now.toISOString() })
+                    .update({ sent_at: invoice.sent_at || now.toISOString() })
                     .eq('id', invoice.id)
 
                 invoicesCreated++
@@ -184,6 +222,11 @@ export async function GET(req: Request) {
                         console.error(`[Recurring Cron] Failed to send email:`, emailError)
                     }
                 }
+
+                invoicesCreated++
+                createdThisParent++
+                baseDate = nextInvoiceDate
+                nextInvoiceDate = computeNextDate(baseDate)
             }
         }
 

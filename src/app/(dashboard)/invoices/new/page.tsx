@@ -275,6 +275,23 @@ export default function NewInvoicePage() {
                         ? 'after'
                         : null
 
+            // Map UI interval values to DB-allowed values
+            // DB constraint may vary by environment; prefer preserving the selected interval.
+            const rawInterval = overrides.recurringInterval ?? recurringInterval
+            const mapIntervalForDb = (interval: string): string | null => {
+                if (!isRecurring) return null
+                switch (interval) {
+                    case 'minute': return 'minute'
+                    case 'daily': return 'daily'
+                    case 'weekly': return 'weekly'
+                    case 'monthly': return 'monthly'
+                    case 'quarterly': return 'quarterly'
+                    case 'yearly': return 'yearly'
+                    default: return 'monthly'
+                }
+            }
+            const recurringIntervalForDb = mapIntervalForDb(rawInterval)
+
             const invoiceData = {
                 user_id: user.id,
                 workspace_id: activeWorkspace?.id,
@@ -293,7 +310,7 @@ export default function NewInvoicePage() {
                 is_recurring: isRecurring,
                 ...(isRecurring
                     ? {
-                          recurring_interval: overrides.recurringInterval ?? recurringInterval,
+                          recurring_interval: recurringIntervalForDb,
                           ...(normalizedEndType === 'on'
                               ? {
                                     recurring_end_date: recurringEndDateForDb
@@ -308,12 +325,15 @@ export default function NewInvoicePage() {
                     : {
                           recurring_interval: null,
                       }),
+            }
+            console.log('[Invoice Save] Invoice data to insert:', invoiceData)
+
+            const optionalInvoiceExtras = {
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
                 payment_provider: activePaymentProvider || null,
             }
-            console.log('[Invoice Save] Invoice data to insert:', invoiceData)
 
             // 1. Create Invoice with fallback for missing columns
             let { data: invoice, error: invoiceError } = await supabase
@@ -321,6 +341,53 @@ export default function NewInvoicePage() {
                 .insert(invoiceData)
                 .select()
                 .single()
+
+            // Handle recurring_interval check constraint - retry with 'monthly' as fallback
+            if (
+                invoiceError &&
+                (invoiceError as any).code === '23514' &&
+                (invoiceError.message || '').includes('invoices_recurring_interval_check')
+            ) {
+                console.warn('[Invoice Save] Retrying with recurring_interval="monthly" due to DB constraint')
+                const { data: retryInvoiceInterval, error: retryErrorInterval } = await supabase
+                    .from('invoices')
+                    .insert({
+                        ...(invoiceData as any),
+                        recurring_interval: 'monthly',
+                    })
+                    .select()
+                    .single()
+
+                invoice = retryInvoiceInterval
+                invoiceError = retryErrorInterval
+
+                // If still failing, disable recurring entirely
+                if (
+                    invoiceError &&
+                    (invoiceError as any).code === '23514' &&
+                    (invoiceError.message || '').includes('invoices_recurring_interval_check')
+                ) {
+                    console.warn('[Invoice Save] Retrying with recurring disabled due to interval constraint')
+                    const {
+                        is_recurring,
+                        recurring_interval,
+                        recurring_end_type,
+                        recurring_end_date,
+                        ...retryDataNoRecurring
+                    } = invoiceData as any
+                    const { data: retryInvoice2, error: retryError2 } = await supabase
+                        .from('invoices')
+                        .insert({
+                            ...retryDataNoRecurring,
+                            is_recurring: false,
+                            recurring_interval: null,
+                        })
+                        .select()
+                        .single()
+                    invoice = retryInvoice2
+                    invoiceError = retryError2
+                }
+            }
 
             // Handle recurring_end_type check constraint differences across DB versions
             if (
@@ -388,38 +455,23 @@ export default function NewInvoicePage() {
                 }
             }
 
-            // Handle potential schema cache error for new columns
-            if (
-                invoiceError &&
-                (
-                    invoiceError.message?.includes('invoice_mode') ||
-                    invoiceError.message?.includes('logo_url') ||
-                    invoiceError.message?.includes('payment_provider') ||
-                    invoiceError.message?.includes('notes') ||
-                    invoiceError.message?.includes('scheduled_date') ||
-                    invoiceError.message?.includes('recurring_end_type') ||
-                    invoiceError.message?.includes('recurring_end_date')
-                )
-            ) {
-                console.warn('[Invoice Save] Retrying without new columns due to schema error')
-                const {
-                    template,
-                    invoice_mode,
-                    logo_url,
-                    payment_provider,
-                    notes,
-                    scheduled_date,
-                    recurring_end_type,
-                    recurring_end_date,
-                    ...fallbackData
-                } = invoiceData as any
-                const { data: retryInvoice, error: retryError } = await supabase
+            // Best-effort: update optional extras (older DBs may not have these columns)
+            if (!invoiceError && invoice?.id) {
+                const { data: updatedInvoice, error: extrasError } = await supabase
                     .from('invoices')
-                    .insert(fallbackData)
+                    .update(optionalInvoiceExtras as any)
+                    .eq('id', invoice.id)
                     .select()
                     .single()
-                invoice = retryInvoice
-                invoiceError = retryError
+
+                if (extrasError) {
+                    const extrasCode = (extrasError as any).code
+                    if (extrasCode !== 'PGRST204') {
+                        console.warn('[Invoice Save] Optional invoice extras update failed:', extrasError)
+                    }
+                } else if (updatedInvoice) {
+                    invoice = updatedInvoice
+                }
             }
 
             if (invoiceError) {
