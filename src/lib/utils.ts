@@ -9,11 +9,11 @@ export const getURL = () => {
     let url = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL
 
     // Prioritize browser origin if available (fixes issues with dynamic ports like 3001)
-    if (typeof window !== 'undefined' && window.location.origin) {
+    if (!url && typeof window !== 'undefined' && window.location.origin) {
         url = window.location.origin
     }
 
-    url = url || 'http://localhost:3000'
+    url = url || 'http://localhost:3001'
 
     // Ensure it has a protocol
     if (!url.startsWith('http')) {
