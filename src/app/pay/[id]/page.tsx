@@ -94,6 +94,16 @@ export default function PayInvoicePage() {
     const handlePayment = async () => {
         setIsSimulating(true)
         try {
+            // Validate amount before sending to API
+            const amount = Number(invoice.total)
+            if (!Number.isFinite(amount) || amount <= 0) {
+                toast.error("Invalid invoice amount", {
+                    description: "This invoice has no valid total. Please contact the sender."
+                })
+                setIsSimulating(false)
+                return
+            }
+
             // Get provider from URL params, invoice's payment_provider field, or default to payfast
             const urlProvider = new URLSearchParams(window.location.search).get('provider')
             const invoiceProvider = invoice.payment_provider
@@ -104,8 +114,8 @@ export default function PayInvoicePage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     invoiceId: invoice.id,
-                    amount: invoice.total,
-                    currency: invoice.currency,
+                    amount: amount,
+                    currency: invoice.currency || 'ZAR',
                     provider,
                     invoiceNumber: invoice.invoice_number,
                     workspaceId: invoice.workspace_id

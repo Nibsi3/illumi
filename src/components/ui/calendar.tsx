@@ -93,7 +93,7 @@ export function Calendar({
                             onClick={() => onSelect?.(day)}
                         >
                             {isSelected ? (
-                                <div className="h-7 w-7 rounded-lg bg-violet-500 text-white flex items-center justify-center shadow-inner shadow-violet-900/40 text-xs font-bold">
+                                <div className="h-7 w-7 rounded-lg bg-white text-black flex items-center justify-center text-xs font-bold">
                                     {format(day, "d")}
                                 </div>
                             ) : (
@@ -103,7 +103,7 @@ export function Calendar({
                                         isCurrentMonth
                                             ? "text-neutral-300 hover:bg-white/10"
                                             : "text-slate-600 hover:bg-white/5",
-                                        isToday && "border border-white/10"
+                                        isToday && "border border-white/20 text-white"
                                     )}
                                 >
                                     {format(day, "d")}

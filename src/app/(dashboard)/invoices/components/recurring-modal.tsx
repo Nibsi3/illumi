@@ -24,13 +24,13 @@ interface RecurringModalProps {
     onClose: () => void
     onSave: (settings: {
         interval: string
-        endType: "on" | "after" | "never"
+        endType: "on" | "after" | "never" | "after_minutes"
         endDate?: Date
         endCount?: number
     }) => void
     initialSettings?: {
         interval: string
-        endType: "on" | "after" | "never"
+        endType: "on" | "after" | "never" | "after_minutes"
         endDate?: Date
         endCount?: number
     }
@@ -38,7 +38,7 @@ interface RecurringModalProps {
 
 export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: RecurringModalProps) {
     const [interval, setInterval] = React.useState(initialSettings?.interval || "monthly")
-    const [endType, setEndType] = React.useState<"on" | "after" | "never">(initialSettings?.endType || "never")
+    const [endType, setEndType] = React.useState<"on" | "after" | "never" | "after_minutes">(initialSettings?.endType || "never")
     const [endDate, setEndDate] = React.useState<Date | undefined>(initialSettings?.endDate)
     const [endCount, setEndCount] = React.useState(initialSettings?.endCount || 12)
 
@@ -73,6 +73,7 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                 <SelectValue placeholder="Select frequency" />
                             </SelectTrigger>
                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                <SelectItem value="minute">Every Minute (Testing)</SelectItem>
                                 <SelectItem value="daily">Daily</SelectItem>
                                 <SelectItem value="weekly">Weekly</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
@@ -91,6 +92,7 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                 <SelectItem value="never">Never</SelectItem>
                                 <SelectItem value="on">On Date</SelectItem>
                                 <SelectItem value="after">After X Times</SelectItem>
+                                <SelectItem value="after_minutes">In X Minutes (Testing)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -131,6 +133,21 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                 onChange={(e) => setEndCount(parseInt(e.target.value))}
                                 className="bg-white/5 border-white/10 h-11"
                             />
+                        </div>
+                    )}
+
+                    {endType === "after_minutes" && (
+                        <div className="grid gap-2">
+                            <Label htmlFor="minutes" className="text-xs font-bold uppercase tracking-widest text-neutral-500">End in X Minutes</Label>
+                            <Input
+                                id="minutes"
+                                type="number"
+                                value={endCount}
+                                onChange={(e) => setEndCount(parseInt(e.target.value))}
+                                placeholder="e.g. 5"
+                                className="bg-white/5 border-white/10 h-11"
+                            />
+                            <p className="text-[10px] text-neutral-500">For testing: recurring will stop after this many minutes</p>
                         </div>
                     )}
                 </div>

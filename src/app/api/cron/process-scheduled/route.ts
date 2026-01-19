@@ -1,0 +1,114 @@
+import { NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+
+// Cron job endpoint for processing scheduled invoices
+// Should be called regularly (e.g., every minute or hourly)
+export async function GET(req: Request) {
+    // Verify cron secret for security
+    const authHeader = req.headers.get("authorization")
+    const cronSecret = process.env.CRON_SECRET
+
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY
+
+    if (!supabaseUrl || !supabaseKey) {
+        return NextResponse.json({ error: "Missing Supabase credentials" }, { status: 500 })
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    const now = new Date()
+    const todayStr = now.toISOString().split('T')[0]
+    let invoicesSent = 0
+    let emailsSent = 0
+
+    try {
+        // Fetch scheduled invoices that are due to be sent
+        const { data: scheduledInvoices, error } = await supabase
+            .from('invoices')
+            .select('*, customers(name, email), invoice_items(*)')
+            .eq('status', 'scheduled')
+            .lte('issue_date', todayStr) // Issue date is today or in the past
+
+        if (error) throw error
+
+        console.log(`[Scheduled Cron] Found ${scheduledInvoices?.length || 0} scheduled invoices to process`)
+
+        for (const invoice of scheduledInvoices || []) {
+            const issueDate = new Date(invoice.issue_date + 'T00:00:00')
+            
+            // Check if it's time to send (issue date is today or past)
+            if (now >= issueDate) {
+                console.log(`[Scheduled Cron] Sending scheduled invoice ${invoice.invoice_number}`)
+
+                // Update invoice status to 'sent'
+                const { error: updateError } = await supabase
+                    .from('invoices')
+                    .update({ 
+                        status: 'sent',
+                        sent_at: now.toISOString()
+                    })
+                    .eq('id', invoice.id)
+
+                if (updateError) {
+                    console.error(`[Scheduled Cron] Failed to update invoice status:`, updateError)
+                    continue
+                }
+
+                invoicesSent++
+
+                // Send email if customer has email
+                if (invoice.customers?.email) {
+                    const amount = new Intl.NumberFormat('en-ZA', {
+                        style: 'currency',
+                        currency: invoice.currency || 'ZAR'
+                    }).format(invoice.total)
+
+                    const paymentLink = `${process.env.NEXT_PUBLIC_URL}/pay/${invoice.id}`
+                    const dueDate = invoice.due_date 
+                        ? new Date(invoice.due_date).toLocaleDateString('en-ZA', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        })
+                        : 'Upon receipt'
+
+                    try {
+                        await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                type: 'invoice',
+                                to: invoice.customers.email,
+                                customerName: invoice.customers.name,
+                                invoiceNumber: invoice.invoice_number,
+                                amount: amount,
+                                currency: invoice.currency || 'ZAR',
+                                dueDate: dueDate,
+                                paymentLink: paymentLink,
+                            })
+                        })
+                        emailsSent++
+                        console.log(`[Scheduled Cron] Email sent for ${invoice.invoice_number} to ${invoice.customers.email}`)
+                    } catch (emailError) {
+                        console.error(`[Scheduled Cron] Failed to send email:`, emailError)
+                    }
+                }
+            }
+        }
+
+        return NextResponse.json({
+            success: true,
+            invoicesSent,
+            emailsSent,
+            processedAt: now.toISOString()
+        })
+    } catch (error) {
+        console.error('[Scheduled Cron] Error:', error)
+        return NextResponse.json({ error: "Cron job failed" }, { status: 500 })
+    }
+}

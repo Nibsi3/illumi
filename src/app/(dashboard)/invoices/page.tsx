@@ -18,6 +18,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { CalendarDays } from "lucide-react"
+import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
@@ -26,13 +38,12 @@ import { useSettings } from "@/lib/settings-context"
 // Kept for type reference only, not using mock data
 
 const columnsList = [
-    { label: "Invoice no.", id: "id" },
-    { label: "Status", id: "status" },
-    { label: "Due date", id: "dueDate" },
-    { label: "Customer", id: "customer" },
-    { label: "Amount", id: "amount" },
-    { label: "Issue date", id: "issueDate" },
-    { label: "Type", id: "type" },
+    { label: "Invoice no.", id: "id", sortable: true },
+    { label: "Status", id: "status", sortable: true, sortOptions: ["Paid", "Overdue"] },
+    { label: "Due date", id: "dueDate", sortable: true, sortOptions: ["closest", "furthest"] },
+    { label: "Customer", id: "customer", sortable: true, sortOptions: ["A-Z", "Z-A"] },
+    { label: "Amount", id: "amount", sortable: true, sortOptions: ["highest", "lowest"] },
+    { label: "Issue date", id: "issueDate", sortable: true, sortOptions: ["closest", "furthest"] },
 ]
 
 export default function InvoicesPage() {
@@ -46,10 +57,20 @@ export default function InvoicesPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
     const [filterClient, setFilterClient] = useState<string | null>(null)
+
+    // Mark as Paid dialog state
+    const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
+    const [markPaidInvoice, setMarkPaidInvoice] = useState<any>(null)
+    const [markPaidDate, setMarkPaidDate] = useState<Date>(new Date())
+    const [markPaidAmount, setMarkPaidAmount] = useState<string>("")
     const [expandedFolders, setExpandedFolders] = useState<string[]>([])
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
-        "id", "status", "dueDate", "customer", "amount", "issueDate", "type"
+        "id", "status", "dueDate", "customer", "amount", "issueDate"
     ])
+
+    // Sorting state
+    const [sortColumn, setSortColumn] = useState<string | null>(null)
+    const [sortDirection, setSortDirection] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -148,25 +169,47 @@ export default function InvoicesPage() {
         }
     }
 
-    // Mark as paid function
-    const handleMarkAsPaid = async (invoiceId: string) => {
+    // Open Mark as Paid dialog
+    const openMarkPaidDialog = (invoice: any) => {
+        setMarkPaidInvoice(invoice)
+        setMarkPaidDate(new Date())
+        // Extract numeric amount from formatted string or use raw total
+        const rawAmount = invoice.total || parseFloat(invoice.amount?.replace(/[^0-9.-]+/g, "")) || 0
+        setMarkPaidAmount(rawAmount.toString())
+        setMarkPaidDialogOpen(true)
+    }
+
+    // Mark as paid function with date and amount
+    const handleMarkAsPaid = async () => {
+        if (!markPaidInvoice) return
         try {
+            const paidAmount = parseFloat(markPaidAmount)
+            if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+                toast.error("Please enter a valid amount")
+                return
+            }
+
             const { error } = await supabase
                 .from('invoices')
                 .update({
                     status: 'paid',
-                    paid_at: new Date().toISOString()
+                    paid_at: markPaidDate.toISOString(),
+                    paid_amount: paidAmount
                 })
-                .eq('id', invoiceId)
+                .eq('id', markPaidInvoice.id)
 
             if (error) throw error
 
-            toast.success("Invoice marked as paid")
+            toast.success("Invoice marked as paid", {
+                description: `Paid on ${format(markPaidDate, 'dd/MM/yyyy')}`
+            })
 
             // Refresh the list reactively
             setInvoices(prev => prev.map(inv =>
-                inv.id === invoiceId ? { ...inv, status: 'Paid' } : inv
+                inv.id === markPaidInvoice.id ? { ...inv, status: 'Paid' } : inv
             ))
+            setMarkPaidDialogOpen(false)
+            setMarkPaidInvoice(null)
         } catch (error: any) {
             console.error('Update failed:', error)
             toast.error("Failed to update status")
@@ -227,6 +270,142 @@ export default function InvoicesPage() {
         )
     }
 
+    // Duplicate invoice function
+    const handleDuplicateInvoice = async (invoiceId: string) => {
+        try {
+            // Fetch the original invoice with items
+            const { data: original, error: fetchError } = await supabase
+                .from('invoices')
+                .select('*, invoice_items(*)')
+                .eq('id', invoiceId)
+                .single()
+
+            if (fetchError || !original) throw fetchError || new Error("Invoice not found")
+
+            // Generate new invoice number
+            const timestamp = Date.now().toString().slice(-6)
+            const newInvoiceNumber = `INV-${timestamp}`
+
+            // Create new invoice (copy all fields except id, created_at, updated_at, status)
+            const { data: newInvoice, error: insertError } = await supabase
+                .from('invoices')
+                .insert({
+                    user_id: original.user_id,
+                    workspace_id: original.workspace_id,
+                    customer_id: original.customer_id,
+                    invoice_number: newInvoiceNumber,
+                    status: 'draft',
+                    issue_date: new Date().toISOString().split('T')[0],
+                    due_date: original.due_date,
+                    currency: original.currency,
+                    subtotal: original.subtotal,
+                    tax_rate: original.tax_rate,
+                    tax_amount: original.tax_amount,
+                    total: original.total,
+                    notes: original.notes,
+                    template: original.template,
+                    invoice_mode: original.invoice_mode,
+                    logo_url: original.logo_url,
+                    payment_provider: original.payment_provider,
+                })
+                .select()
+                .single()
+
+            if (insertError || !newInvoice) throw insertError || new Error("Failed to create invoice")
+
+            // Copy invoice items
+            if (original.invoice_items && original.invoice_items.length > 0) {
+                const itemsToInsert = original.invoice_items.map((item: any) => ({
+                    invoice_id: newInvoice.id,
+                    description: item.description,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    total: item.total,
+                    sort_order: item.sort_order,
+                }))
+
+                const { error: itemsError } = await supabase
+                    .from('invoice_items')
+                    .insert(itemsToInsert)
+
+                if (itemsError) throw itemsError
+            }
+
+            toast.success("Invoice duplicated", {
+                description: `Created new draft invoice ${newInvoiceNumber}`
+            })
+
+            // Refresh the list
+            const { data: refreshed } = await supabase
+                .from('invoices')
+                .select('*, customers(name)')
+                .eq('workspace_id', activeWorkspace?.id)
+                .order('created_at', { ascending: false })
+
+            if (refreshed) {
+                const formattedInvoices = refreshed.map(inv => {
+                    const now = new Date()
+                    now.setHours(0, 0, 0, 0)
+                    const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null
+                    const isOverdue = inv.status.toLowerCase() !== 'paid' && dueDate && dueDate < now
+
+                    return {
+                        ...inv,
+                        displayId: inv.invoice_number,
+                        customer: inv.customers?.name || 'Unknown',
+                        amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
+                        dueDate: inv.due_date,
+                        issueDate: inv.issue_date,
+                        status: isOverdue ? 'Overdue' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1)
+                    }
+                })
+                setInvoices(formattedInvoices)
+            }
+        } catch (error: any) {
+            console.error('Duplicate failed:', error)
+            toast.error("Failed to duplicate invoice", {
+                description: error.message
+            })
+        }
+    }
+
+    // Handle column header click for sorting
+    const handleColumnSort = (columnId: string) => {
+        const column = columnsList.find(c => c.id === columnId)
+        if (!column?.sortable) return
+
+        if (sortColumn === columnId) {
+            // Cycle through sort options or toggle direction
+            if (column.sortOptions && column.sortOptions.length > 0) {
+                const currentIndex = column.sortOptions.indexOf(sortDirection || '')
+                const nextIndex = (currentIndex + 1) % (column.sortOptions.length + 1)
+                if (nextIndex === column.sortOptions.length) {
+                    setSortColumn(null)
+                    setSortDirection(null)
+                } else {
+                    setSortDirection(column.sortOptions[nextIndex])
+                }
+            } else {
+                // For invoice number, just toggle asc/desc
+                if (sortDirection === 'asc') {
+                    setSortDirection('desc')
+                } else if (sortDirection === 'desc') {
+                    setSortColumn(null)
+                    setSortDirection(null)
+                } else {
+                    setSortDirection('asc')
+                }
+            }
+        } else {
+            setSortColumn(columnId)
+            if (column.sortOptions && column.sortOptions.length > 0) {
+                setSortDirection(column.sortOptions[0])
+            } else {
+                setSortDirection('asc')
+            }
+        }
+    }
+
     // Filter by both status and client
     const filteredInvoices = invoices.filter((inv: any) => {
         let statusMatch = !filterStatus
@@ -240,6 +419,63 @@ export default function InvoicesPage() {
 
         const clientMatch = !filterClient || inv.customer === filterClient
         return statusMatch && clientMatch
+    })
+
+    // Sort filtered invoices
+    const sortedInvoices = [...filteredInvoices].sort((a, b) => {
+        if (!sortColumn || !sortDirection) return 0
+
+        switch (sortColumn) {
+            case 'id':
+                // Sort by invoice number
+                const numA = a.displayId?.replace(/\D/g, '') || '0'
+                const numB = b.displayId?.replace(/\D/g, '') || '0'
+                return sortDirection === 'asc' 
+                    ? parseInt(numA) - parseInt(numB)
+                    : parseInt(numB) - parseInt(numA)
+
+            case 'status':
+                // Sort by status: Paid first or Overdue first
+                if (sortDirection === 'Paid') {
+                    if (a.status === 'Paid' && b.status !== 'Paid') return -1
+                    if (a.status !== 'Paid' && b.status === 'Paid') return 1
+                } else if (sortDirection === 'Overdue') {
+                    if (a.status === 'Overdue' && b.status !== 'Overdue') return -1
+                    if (a.status !== 'Overdue' && b.status === 'Overdue') return 1
+                }
+                return 0
+
+            case 'dueDate':
+                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : 0
+                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : 0
+                return sortDirection === 'closest'
+                    ? dueDateA - dueDateB
+                    : dueDateB - dueDateA
+
+            case 'customer':
+                const nameA = (a.customer || '').toLowerCase()
+                const nameB = (b.customer || '').toLowerCase()
+                return sortDirection === 'A-Z'
+                    ? nameA.localeCompare(nameB)
+                    : nameB.localeCompare(nameA)
+
+            case 'amount':
+                const amountA = a.total || 0
+                const amountB = b.total || 0
+                return sortDirection === 'highest'
+                    ? amountB - amountA
+                    : amountA - amountB
+
+            case 'issueDate':
+                const issueDateA = a.issueDate ? new Date(a.issueDate).getTime() : 0
+                const issueDateB = b.issueDate ? new Date(b.issueDate).getTime() : 0
+                return sortDirection === 'closest'
+                    ? issueDateA - issueDateB
+                    : issueDateB - issueDateA
+
+            default:
+                return 0
+        }
     })
 
     // Group invoices by company for the folder view
@@ -461,15 +697,30 @@ export default function InvoicesPage() {
                                             </div>
                                         </th>
                                         {columnsList.filter(c => visibleColumns.includes(c.id)).map(col => (
-                                            <th key={col.id} className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">
-                                                {col.label}
+                                            <th 
+                                                key={col.id} 
+                                                className={cn(
+                                                    "px-5 py-3 font-medium uppercase text-[10px] tracking-widest border-r border-white/10 select-none",
+                                                    col.sortable ? "cursor-pointer hover:bg-white/5 hover:text-white transition-colors" : "",
+                                                    sortColumn === col.id ? "text-white bg-white/5" : "text-[#878787]"
+                                                )}
+                                                onClick={() => col.sortable && handleColumnSort(col.id)}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {col.label}
+                                                    {sortColumn === col.id && sortDirection && (
+                                                        <span className="text-[8px] text-white/60 normal-case font-normal">
+                                                            ({sortDirection})
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </th>
                                         ))}
                                         <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredInvoices.map((invoice: any) => (
+                                    {sortedInvoices.map((invoice: any) => (
                                         <tr key={invoice.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                             <td className="px-5 py-4 border-r border-white/10">
                                                 <div
@@ -511,9 +762,6 @@ export default function InvoicesPage() {
                                             {visibleColumns.includes("issueDate") && (
                                                 <td className="px-5 py-4 border-r border-white/10 text-neutral-400">{invoice.issueDate}</td>
                                             )}
-                                            {visibleColumns.includes("type") && (
-                                                <td className="px-5 py-4 border-r border-white/10 text-neutral-400">{invoice.type}</td>
-                                            )}
                                             <td className="px-5 py-4 text-center">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -530,6 +778,12 @@ export default function InvoicesPage() {
                                                         </Link>
                                                         <DropdownMenuItem
                                                             className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleDuplicateInvoice(invoice.id)}
+                                                        >
+                                                            Duplicate Invoice
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={async () => {
                                                                 toast.info("Preparing PDF...", { duration: 1000 })
                                                                 const qs = new URLSearchParams()
@@ -543,7 +797,7 @@ export default function InvoicesPage() {
                                                         <DropdownMenuSeparator className="bg-white/10 mx-1" />
                                                         <DropdownMenuItem
                                                             className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
-                                                            onClick={() => handleMarkAsPaid(invoice.id)}
+                                                            onClick={() => openMarkPaidDialog(invoice)}
                                                         >
                                                             Mark as Paid
                                                         </DropdownMenuItem>
@@ -615,7 +869,7 @@ export default function InvoicesPage() {
 
                 {/* Selection Toolbar */}
                 {selectedIds.length > 0 && (
-                    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-5">
+                    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-bottom-5">
                         <div className="flex items-center gap-6 px-6 py-4 bg-black border border-white/10 shadow-2xl rounded-none min-w-[400px]">
                             <div className="flex items-center gap-3 border-r border-white/10 pr-6">
                                 <span className="text-sm font-bold text-white tracking-tight">{selectedIds.length} selected</span>
@@ -642,6 +896,75 @@ export default function InvoicesPage() {
                     </div>
                 )}
             </div>
+
+            {/* Mark as Paid Dialog */}
+            <Dialog open={markPaidDialogOpen} onOpenChange={setMarkPaidDialogOpen}>
+                <DialogContent className="bg-[#09090b] border-white/10 text-white max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Mark Invoice as Paid</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-6 py-4">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Invoice</Label>
+                            <p className="text-sm text-white">{markPaidInvoice?.displayId} - {markPaidInvoice?.customer}</p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Payment Date</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10 h-11"
+                                    >
+                                        <CalendarDays className="mr-2 h-4 w-4 text-neutral-400" />
+                                        {format(markPaidDate, "dd/MM/yyyy")}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={markPaidDate}
+                                        onSelect={(date) => date && setMarkPaidDate(date)}
+                                        className="rounded-md"
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Amount Received</Label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">R</span>
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={markPaidAmount}
+                                    onChange={(e) => setMarkPaidAmount(e.target.value)}
+                                    className="pl-7 bg-white/5 border-white/10 h-11 text-white"
+                                    placeholder="0.00"
+                                />
+                            </div>
+                            <p className="text-[10px] text-neutral-500">Original amount: {markPaidInvoice?.amount}</p>
+                        </div>
+                    </div>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="ghost"
+                            onClick={() => setMarkPaidDialogOpen(false)}
+                            className="text-neutral-400 hover:text-white hover:bg-white/5"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleMarkAsPaid}
+                            className="bg-white text-black hover:bg-neutral-200"
+                        >
+                            Confirm Payment
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

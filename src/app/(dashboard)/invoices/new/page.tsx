@@ -113,7 +113,7 @@ export default function NewInvoicePage() {
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
     const [recurringInterval, setRecurringInterval] = useState("monthly")
-    const [recurringEndType, setRecurringEndType] = useState<"on" | "after" | "never">("never")
+    const [recurringEndType, setRecurringEndType] = useState<"on" | "after" | "never" | "after_minutes">("never")
     const [recurringEndDate, setRecurringEndDate] = useState<Date | undefined>(new Date(new Date().setFullYear(new Date().getFullYear() + 1)))
     const [recurringEndCount, setRecurringEndCount] = useState(12)
     const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false)
@@ -221,7 +221,10 @@ export default function NewInvoicePage() {
             await handleSaveInvoice('sent')
         } else if (type === 'schedule') {
             if (scheduleDate) {
-                await handleSaveInvoice('scheduled', { issueDate: scheduleDate })
+                const [hh, mm] = (scheduleTime || "09:00").split(":")
+                const scheduled = new Date(scheduleDate)
+                scheduled.setHours(Number(hh) || 0, Number(mm) || 0, 0, 0)
+                await handleSaveInvoice('scheduled', { issueDate: scheduleDate, scheduledDate: scheduled })
             } else {
                 toast.error("Please select a date first")
             }
@@ -256,6 +259,22 @@ export default function NewInvoicePage() {
             console.log('[Invoice Save] Calculated totals:', { subtotal, taxAmount, total })
 
             // Prepare invoice data
+            const isRecurring = overrides.isRecurring ?? isRecurringEnabled
+            const rawEndType = overrides.recurringEndType ?? recurringEndType
+            const normalizedEndType = rawEndType === 'after_minutes' ? 'after' : rawEndType
+            const recurringEndDateForDb =
+                isRecurring && normalizedEndType === 'on'
+                    ? (overrides.recurringEndDate ?? recurringEndDate)
+                    : null
+
+            const recurringEndTypeForDb = !isRecurring
+                ? null
+                : normalizedEndType === 'on'
+                    ? 'on'
+                    : normalizedEndType === 'after'
+                        ? 'after'
+                        : null
+
             const invoiceData = {
                 user_id: user.id,
                 workspace_id: activeWorkspace?.id,
@@ -263,6 +282,7 @@ export default function NewInvoicePage() {
                 status: status,
                 issue_date: overrides.issueDate ? format(overrides.issueDate, 'yyyy-MM-dd') : issueDate,
                 due_date: dueDate || null,
+                scheduled_date: overrides.scheduledDate ? new Date(overrides.scheduledDate).toISOString() : null,
                 customer_id: customerId || null,
                 currency: currency,
                 subtotal: subtotal,
@@ -270,10 +290,24 @@ export default function NewInvoicePage() {
                 tax_amount: taxAmount,
                 total: total,
                 notes: invoiceNote,
-                is_recurring: overrides.isRecurring ?? isRecurringEnabled,
-                recurring_interval: overrides.recurringInterval ?? (isRecurringEnabled ? recurringInterval : null),
-                recurring_end_date: overrides.recurringEndDate ?? recurringEndDate,
-                recurring_end_type: overrides.recurringEndType ?? recurringEndType,
+                is_recurring: isRecurring,
+                ...(isRecurring
+                    ? {
+                          recurring_interval: overrides.recurringInterval ?? recurringInterval,
+                          ...(normalizedEndType === 'on'
+                              ? {
+                                    recurring_end_date: recurringEndDateForDb
+                                        ? format(recurringEndDateForDb, 'yyyy-MM-dd')
+                                        : null,
+                                    recurring_end_type: recurringEndTypeForDb,
+                                }
+                              : normalizedEndType === 'after'
+                                ? { recurring_end_type: recurringEndTypeForDb }
+                                : {}),
+                      }
+                    : {
+                          recurring_interval: null,
+                      }),
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
@@ -288,10 +322,97 @@ export default function NewInvoicePage() {
                 .select()
                 .single()
 
+            // Handle recurring_end_type check constraint differences across DB versions
+            if (
+                invoiceError &&
+                (invoiceError as any).code === '23514' &&
+                (invoiceError.message || '').includes('invoices_recurring_end_type_check')
+            ) {
+                // Some DBs use 'on_date' instead of 'on'
+                if ((invoiceData as any).recurring_end_type === 'on') {
+                    console.warn('[Invoice Save] Retrying with recurring_end_type="on_date" due to DB constraint')
+                    const { data: retryInvoiceOnDate, error: retryErrorOnDate } = await supabase
+                        .from('invoices')
+                        .insert({
+                            ...(invoiceData as any),
+                            recurring_end_type: 'on_date',
+                        })
+                        .select()
+                        .single()
+
+                    invoice = retryInvoiceOnDate
+                    invoiceError = retryErrorOnDate
+                }
+
+                if (
+                    invoiceError &&
+                    (invoiceError as any).code === '23514' &&
+                    (invoiceError.message || '').includes('invoices_recurring_end_type_check')
+                ) {
+                    console.warn('[Invoice Save] Retrying with recurring fields omitted due to DB constraint')
+                    const { recurring_end_type, recurring_end_date, ...retryData } = invoiceData as any
+                    const { data: retryInvoice, error: retryError } = await supabase
+                        .from('invoices')
+                        .insert(retryData)
+                        .select()
+                        .single()
+
+                    invoice = retryInvoice
+                    invoiceError = retryError
+                }
+
+                if (
+                    invoiceError &&
+                    (invoiceError as any).code === '23514' &&
+                    (invoiceError.message || '').includes('invoices_recurring_end_type_check')
+                ) {
+                    console.warn('[Invoice Save] Retrying with recurring disabled due to DB constraint')
+                    const {
+                        is_recurring,
+                        recurring_interval,
+                        recurring_end_type: _retryEndType,
+                        recurring_end_date: _retryEndDate,
+                        ...retryData2
+                    } = invoiceData as any
+                    const { data: retryInvoice2, error: retryError2 } = await supabase
+                        .from('invoices')
+                        .insert({
+                            ...retryData2,
+                            is_recurring: false,
+                            recurring_interval: null,
+                        })
+                        .select()
+                        .single()
+                    invoice = retryInvoice2
+                    invoiceError = retryError2
+                }
+            }
+
             // Handle potential schema cache error for new columns
-            if (invoiceError && (invoiceError.message?.includes('invoice_mode') || invoiceError.message?.includes('logo_url') || invoiceError.message?.includes('payment_provider') || invoiceError.message?.includes('notes'))) {
+            if (
+                invoiceError &&
+                (
+                    invoiceError.message?.includes('invoice_mode') ||
+                    invoiceError.message?.includes('logo_url') ||
+                    invoiceError.message?.includes('payment_provider') ||
+                    invoiceError.message?.includes('notes') ||
+                    invoiceError.message?.includes('scheduled_date') ||
+                    invoiceError.message?.includes('recurring_end_type') ||
+                    invoiceError.message?.includes('recurring_end_date')
+                )
+            ) {
                 console.warn('[Invoice Save] Retrying without new columns due to schema error')
-                const { template, invoice_mode, logo_url, payment_provider, notes, ...fallbackData } = invoiceData as any
+                const {
+                    template,
+                    invoice_mode,
+                    logo_url,
+                    payment_provider,
+                    notes,
+                    scheduled_date,
+                    recurring_end_type,
+                    recurring_end_date,
+                    ...fallbackData
+                } = invoiceData as any
                 const { data: retryInvoice, error: retryError } = await supabase
                     .from('invoices')
                     .insert(fallbackData)
@@ -423,65 +544,126 @@ export default function NewInvoicePage() {
                             <Eye className="h-4 w-4 mr-2" /> Preview
                         </Button>
 
-                        {/* ACTION BUTTONS */}
+                        {/* ACTION BUTTONS - Sliding Drawer */}
                         <div className="flex items-center gap-3">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                            <div className="relative group flex items-center">
+                                {/* Primary Action: Send */}
+                                <Button
+                                    onClick={() => handleCreate('send')}
+                                    disabled={isSaving}
+                                    className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
+                                >
+                                    {isSaving ? 'Saving...' : 'Send'}
+                                </Button>
+
+                                {/* Secondary Actions Container - Reveals on Hover */}
+                                <div className="flex items-center bg-[#1a1a1a] h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-white/10 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto overflow-hidden max-w-0 group-hover:max-w-[400px]">
                                     <Button
-                                        disabled={isSaving}
-                                        className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-lg disabled:opacity-50"
-                                    >
-                                        {isSaving ? 'Saving...' : 'Send'}
-                                        <ChevronDown className="h-4 w-4 ml-2 opacity-70" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="bg-[#09090b] border-white/10 text-white p-2 rounded-xl shadow-2xl">
-                                    <DropdownMenuItem
                                         onClick={() => handleCreate('create')}
-                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs"
+                                        disabled={isSaving}
+                                        variant="ghost"
+                                        className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
                                     >
                                         Draft
-                                    </DropdownMenuItem>
+                                    </Button>
+                                    <div className="w-px h-4 bg-white/10 mx-1" />
 
-                                    <DropdownMenuItem
+                                    <Button
                                         onClick={() => handleCreate('send')}
-                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs"
+                                        disabled={isSaving}
+                                        variant="ghost"
+                                        className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
                                     >
-                                        Send now
-                                    </DropdownMenuItem>
+                                        <Send className="h-3 w-3" />
+                                        Send Now
+                                    </Button>
+                                    <div className="w-px h-4 bg-white/10 mx-1" />
 
-                                    <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs">
-                                            Schedule
-                                        </DropdownMenuSubTrigger>
-                                        <DropdownMenuSubContent className="bg-[#09090b] border-white/10 p-0 rounded-xl shadow-2xl">
-                                            <Calendar
-                                                mode="single"
-                                                selected={scheduleDate}
-                                                onSelect={(date) => {
-                                                    setScheduleDate(date)
-                                                    if (date) handleCreate('schedule')
-                                                }}
-                                                className="rounded-md border-white/5"
-                                            />
-                                        </DropdownMenuSubContent>
-                                    </DropdownMenuSub>
+                                    {/* Schedule with Popover */}
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                            >
+                                                <Clock className="h-3 w-3" />
+                                                Schedule
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
+                                            <div className="space-y-4">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={scheduleDate}
+                                                    onSelect={setScheduleDate}
+                                                    className="rounded-md"
+                                                />
+                                                <div className="flex items-center gap-2">
+                                                    <Label className="text-xs text-neutral-400">Time:</Label>
+                                                    <Input
+                                                        type="time"
+                                                        value={scheduleTime}
+                                                        onChange={(e) => setScheduleTime(e.target.value)}
+                                                        className="h-8 w-28 bg-white/5 border-white/10 text-white text-xs"
+                                                    />
+                                                </div>
+                                                <Button
+                                                    onClick={() => {
+                                                        if (scheduleDate) {
+                                                            handleCreate('schedule')
+                                                        } else {
+                                                            toast.error("Please select a date first")
+                                                        }
+                                                    }}
+                                                    disabled={isSaving || !scheduleDate}
+                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                >
+                                                    Schedule Now
+                                                </Button>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
 
-                                    <DropdownMenuItem
-                                        onClick={() => {
-                                            if (!isPro) {
-                                                toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })
-                                                return
-                                            }
-                                            handleCreate('recurring')
-                                        }}
-                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs flex items-center justify-between"
-                                    >
-                                        <span>Recurring</span>
-                                        {!isPro && <span className="text-[8px] text-yellow-500 ml-3">PRO</span>}
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                    <div className="w-px h-4 bg-white/10 mx-1" />
+
+                                    {/* Recurring with Popover submenu */}
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                            >
+                                                <Repeat className="h-3 w-3" />
+                                                Recurring
+                                                {!isPro && <span className="text-[8px] text-yellow-500 ml-1">PRO</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-64 p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
+                                            <div className="space-y-4">
+                                                <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
+                                                <p className="text-[10px] text-neutral-500">Set up automatic invoice generation on a schedule.</p>
+                                                <Button
+                                                    onClick={() => {
+                                                        if (!isPro) {
+                                                            toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })
+                                                            return
+                                                        }
+                                                        setIsRecurringModalOpen(true)
+                                                    }}
+                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                >
+                                                    Configure Recurring
+                                                </Button>
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+
+                                {/* Hint Icon to indicate more actions */}
+                                <div className="absolute -right-6 text-neutral-600 group-hover:opacity-0 transition-opacity">
+                                    <ChevronRight className="h-4 w-4" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -841,7 +1023,7 @@ export default function NewInvoicePage() {
 
                                     <Button
                                         variant="ghost"
-                                        className="mt-8 text-neutral-500 hover:text-emerald-500 gap-2 px-0 hover:bg-transparent border border-dashed border-white/5 w-full h-12 rounded-xl group transition-all"
+                                        className="mt-8 text-neutral-500 hover:text-white gap-2 px-0 hover:bg-transparent border border-dashed border-white/5 hover:border-white/20 w-full h-12 rounded-xl group transition-all"
                                         onClick={addTask}
                                     >
                                         <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
@@ -991,16 +1173,17 @@ export default function NewInvoicePage() {
                     setRecurringInterval(settings.interval)
                     setRecurringEndType(settings.endType)
                     setRecurringEndDate(settings.endDate)
+                    setRecurringEndCount(settings.endCount || 12)
 
                     // Trigger save with overrides
                     handleSaveInvoice('sent', {
                         isRecurring: true,
                         recurringInterval: settings.interval,
                         recurringEndType: settings.endType,
-                        recurringEndDate: settings.endDate
+                        recurringEndDate: settings.endDate,
+                        recurringEndCount: settings.endCount || 12
                     })
-                    setRecurringEndCount(settings.endCount || 12)
-                    toast.success(`Recurring set to ${settings.interval}`)
+                    toast.success(`Recurring invoice created with ${settings.interval} frequency`)
                 }}
                 initialSettings={{
                     interval: recurringInterval,

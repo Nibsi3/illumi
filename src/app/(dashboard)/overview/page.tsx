@@ -61,7 +61,19 @@ export default function DashboardPage() {
         products: 0,
         pendingInvoices: 0,
         recurring: 0,
-        growth: 12.5 // Placeholder until historical data is available
+        growth: 12.5
+    })
+
+    // Cash flow metrics state
+    const [cashFlowMetrics, setCashFlowMetrics] = useState({
+        outstanding: 0,
+        overdue: 0,
+        paidYTD: 0,
+        dso: 0, // Days Sales Outstanding
+        vatEstimate: 0,
+        momGrowth: 0,
+        projectedRevenue: 0,
+        topClients: [] as { name: string; total: number; count: number }[]
     })
     
     // Monthly revenue data for charts
@@ -76,25 +88,106 @@ export default function DashboardPage() {
                 const { data: { user } } = await supabase.auth.getUser()
                 if (!user || !activeWorkspace) return
 
-                // Fetch Invoices with issue_date for monthly breakdown
+                const now = new Date()
+                const currentYear = now.getFullYear()
+                const currentMonth = now.getMonth()
+                const startOfYear = new Date(currentYear, 0, 1).toISOString()
+
+                // Fetch Invoices with full details for comprehensive metrics
                 const { data: invoices } = await supabase
                     .from('invoices')
-                    .select('total, status, issue_date')
+                    .select('total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
                     .eq('workspace_id', activeWorkspace.id)
 
-                const totalRevenue = invoices
-                    ?.filter(i => i.status.toLowerCase() === 'paid')
-                    .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0) || 0
+                // Fetch customers for top clients calculation
+                const { data: customers } = await supabase
+                    .from('customers')
+                    .select('id, name')
+                    .eq('workspace_id', activeWorkspace.id)
+
+                const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
+
+                // Basic metrics
+                const paidInvoices = invoices?.filter(i => i.status.toLowerCase() === 'paid') || []
+                const totalRevenue = paidInvoices.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
 
                 const pendingCount = invoices
                     ?.filter(i => ['pending', 'draft', 'sent'].includes(i.status.toLowerCase()))
                     .length || 0
 
-                // Fetch Customers Count
-                const { count: customerCount } = await supabase
-                    .from('customers')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('workspace_id', activeWorkspace.id)
+                // Cash Flow Metrics Calculations
+                // 1. Outstanding (unpaid invoices total)
+                const outstandingInvoices = invoices?.filter(i => 
+                    ['sent', 'pending', 'viewed'].includes(i.status.toLowerCase())
+                ) || []
+                const outstanding = outstandingInvoices.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                // 2. Overdue (past due date and unpaid)
+                const overdueInvoices = invoices?.filter(i => {
+                    if (i.status.toLowerCase() === 'paid') return false
+                    if (!i.due_date) return false
+                    const dueDate = new Date(i.due_date)
+                    return dueDate < now
+                }) || []
+                const overdue = overdueInvoices.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                // 3. Paid YTD (paid invoices this year)
+                const paidYTDInvoices = paidInvoices.filter(i => {
+                    if (!i.paid_at && !i.issue_date) return false
+                    const paidDate = new Date(i.paid_at || i.issue_date)
+                    return paidDate.getFullYear() === currentYear
+                })
+                const paidYTD = paidYTDInvoices.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                // 4. DSO (Days Sales Outstanding) = (Accounts Receivable / Total Credit Sales) × Number of Days
+                const totalCreditSales = invoices?.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0) || 1
+                const dso = totalCreditSales > 0 ? Math.round((outstanding / totalCreditSales) * 365) : 0
+
+                // 5. VAT Estimate (15% of paid revenue YTD)
+                const vatEstimate = paidYTDInvoices.reduce((acc, curr) => acc + (Number(curr.tax_amount) || 0), 0)
+
+                // 6. MoM Growth (compare this month to last month)
+                const thisMonthPaid = paidInvoices.filter(i => {
+                    const date = new Date(i.paid_at || i.issue_date)
+                    return date.getMonth() === currentMonth && date.getFullYear() === currentYear
+                }).reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1
+                const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear
+                const lastMonthPaid = paidInvoices.filter(i => {
+                    const date = new Date(i.paid_at || i.issue_date)
+                    return date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear
+                }).reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                const momGrowth = lastMonthPaid > 0 
+                    ? Math.round(((thisMonthPaid - lastMonthPaid) / lastMonthPaid) * 100) 
+                    : (thisMonthPaid > 0 ? 100 : 0)
+
+                // 7. Projected Revenue (average monthly * remaining months)
+                const monthsElapsed = currentMonth + 1
+                const avgMonthlyRevenue = paidYTD / monthsElapsed
+                const remainingMonths = 12 - monthsElapsed
+                const projectedRevenue = paidYTD + (avgMonthlyRevenue * remainingMonths)
+
+                // 8. Top Clients (by total paid amount)
+                const clientTotals = new Map<string, { total: number; count: number }>()
+                paidInvoices.forEach(inv => {
+                    if (!inv.customer_id) return
+                    const existing = clientTotals.get(inv.customer_id) || { total: 0, count: 0 }
+                    clientTotals.set(inv.customer_id, {
+                        total: existing.total + (Number(inv.total) || 0),
+                        count: existing.count + 1
+                    })
+                })
+
+                const topClients = Array.from(clientTotals.entries())
+                    .map(([id, data]) => ({
+                        name: customerMap.get(id) || 'Unknown',
+                        total: data.total,
+                        count: data.count
+                    }))
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5)
 
                 // Fetch Products
                 const { data: products } = await supabase
@@ -109,16 +202,26 @@ export default function DashboardPage() {
 
                 setMetrics({
                     revenue: totalRevenue,
-                    customers: customerCount || 0,
+                    customers: customers?.length || 0,
                     products: productCount,
                     pendingInvoices: pendingCount,
                     recurring: recurring,
-                    growth: 12.5 // Static for now
+                    growth: momGrowth
+                })
+
+                setCashFlowMetrics({
+                    outstanding,
+                    overdue,
+                    paidYTD,
+                    dso,
+                    vatEstimate,
+                    momGrowth,
+                    projectedRevenue,
+                    topClients
                 })
 
                 // Calculate monthly revenue for charts using actual invoice dates
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                const currentYear = new Date().getFullYear()
                 const lastYear = currentYear - 1
                 
                 const monthlyData = months.map((month, index) => {
@@ -382,59 +485,153 @@ export default function DashboardPage() {
                     </Card>
                 </div>
             ) : (
-                /* Metrics View - Full Width */
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10 w-full">
-                    {[
-                        "Net Revenue", "Monthly Burn Rate", "Monthly Expenses",
-                        "Profit & Loss", "Revenue Forecast", "Runway", "Expense Breakdown"
-                    ].map((title) => (
-                        <Card key={title} className="bg-[#0c0c0c] border border-white/5 rounded-none p-8 min-h-[350px]">
-                            <div className="flex flex-col gap-4">
-                                <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{title === "Runway" ? "Runway" : "Revenue"}</span>
-                                    <h3 className="text-3xl font-serif font-bold italic">{currency} {title === "Net Revenue" ? metrics.revenue.toLocaleString() : "0"}</h3>
-                                    {title === "Net Revenue" && (
-                                        <div className="flex gap-4 mt-2">
-                                            <div className="flex items-center gap-2"><div className="h-1 w-1 bg-white rounded-full" /><span className="text-[10px] text-muted-foreground">This Year</span></div>
-                                            <div className="flex items-center gap-2"><div className="h-1 w-1 bg-white/20 rounded-full" /><span className="text-[10px] text-muted-foreground">Last Year</span></div>
-                                            <div className="flex items-center gap-2"><div className="h-1 w-1 bg-primary rounded-full" /><span className="text-[10px] text-muted-foreground">Average</span></div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex-1 min-h-[200px] flex items-end justify-between border-b border-white/5 pb-2 gap-1">
-                                    {monthlyRevenue.length > 0 ? monthlyRevenue.map((data, i) => {
-                                        const maxRevenue = Math.max(...monthlyRevenue.map(d => Math.max(d.revenue, d.lastYear)), 1)
-                                        const heightPercent = (data.revenue / maxRevenue) * 100
-                                        const lastYearHeight = (data.lastYear / maxRevenue) * 100
-                                        return (
-                                            <div key={`${data.month}-${i}`} className="flex-1 flex flex-col items-center gap-2">
-                                                <div className="w-full flex items-end justify-center gap-0.5 h-32">
-                                                    <div 
-                                                        className="w-2 bg-white/20 rounded-t transition-all hover:bg-white/30" 
-                                                        style={{ height: `${lastYearHeight}%` }} 
-                                                        title={`Last Year: ${currency} ${data.lastYear.toLocaleString()}`}
-                                                    />
-                                                    <div 
-                                                        className="w-2 bg-white rounded-t transition-all hover:bg-white/80" 
-                                                        style={{ height: `${heightPercent}%` }} 
-                                                        title={`This Year: ${currency} ${data.revenue.toLocaleString()}`}
-                                                    />
-                                                </div>
-                                                <span className="text-[8px] text-muted-foreground">{data.month}</span>
-                                            </div>
-                                        )
-                                    }) : (
-                                        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
-                                            <div key={`${m}-${i}`} className="flex flex-col items-center gap-2">
-                                                <div className="w-px h-32 border-l border-dashed border-white/10" />
-                                                <span className="text-[8px] text-muted-foreground">{m}</span>
-                                            </div>
-                                        ))
-                                    )}
+                /* Metrics View - Comprehensive Cash Flow Dashboard */
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                    {/* Cash Flow Trio */}
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Outstanding</span>
+                                <div className="px-2 py-0.5 bg-amber-500/10 rounded text-[8px] font-bold text-amber-500">RECEIVABLE</div>
+                            </div>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {cashFlowMetrics.outstanding.toLocaleString()}</h3>
+                            <p className="text-[10px] text-neutral-500">Invoices awaiting payment</p>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Overdue</span>
+                                <div className="px-2 py-0.5 bg-red-500/10 rounded text-[8px] font-bold text-red-500">URGENT</div>
+                            </div>
+                            <h3 className="text-3xl font-serif font-bold italic text-red-400">{currency} {cashFlowMetrics.overdue.toLocaleString()}</h3>
+                            <p className="text-[10px] text-neutral-500">Past due date invoices</p>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Paid YTD</span>
+                                <div className="px-2 py-0.5 bg-emerald-500/10 rounded text-[8px] font-bold text-emerald-500">COLLECTED</div>
+                            </div>
+                            <h3 className="text-3xl font-serif font-bold italic text-emerald-400">{currency} {cashFlowMetrics.paidYTD.toLocaleString()}</h3>
+                            <p className="text-[10px] text-neutral-500">Revenue collected this year</p>
+                        </div>
+                    </Card>
+
+                    {/* Efficiency Metrics */}
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">DSO</span>
+                                <div className="px-2 py-0.5 bg-blue-500/10 rounded text-[8px] font-bold text-blue-500">EFFICIENCY</div>
+                            </div>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{cashFlowMetrics.dso} <span className="text-lg text-neutral-500">days</span></h3>
+                            <p className="text-[10px] text-neutral-500">Days Sales Outstanding</p>
+                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                <div 
+                                    className={cn("h-full rounded-full transition-all", cashFlowMetrics.dso < 30 ? "bg-emerald-500" : cashFlowMetrics.dso < 60 ? "bg-amber-500" : "bg-red-500")}
+                                    style={{ width: `${Math.min(cashFlowMetrics.dso / 90 * 100, 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">MoM Growth</span>
+                                <div className={cn("px-2 py-0.5 rounded text-[8px] font-bold", cashFlowMetrics.momGrowth >= 0 ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500")}>
+                                    {cashFlowMetrics.momGrowth >= 0 ? "UP" : "DOWN"}
                                 </div>
                             </div>
-                        </Card>
-                    ))}
+                            <h3 className={cn("text-3xl font-serif font-bold italic", cashFlowMetrics.momGrowth >= 0 ? "text-emerald-400" : "text-red-400")}>
+                                {cashFlowMetrics.momGrowth >= 0 ? "+" : ""}{cashFlowMetrics.momGrowth}%
+                            </h3>
+                            <p className="text-[10px] text-neutral-500">Month-over-month revenue change</p>
+                        </div>
+                    </Card>
+
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">VAT Liability</span>
+                                <div className="px-2 py-0.5 bg-violet-500/10 rounded text-[8px] font-bold text-violet-500">TAX</div>
+                            </div>
+                            <h3 className="text-3xl font-serif font-bold italic text-violet-400">{currency} {cashFlowMetrics.vatEstimate.toLocaleString()}</h3>
+                            <p className="text-[10px] text-neutral-500">Estimated VAT collected YTD</p>
+                        </div>
+                    </Card>
+
+                    {/* Projected Revenue - Full Width */}
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all md:col-span-2 lg:col-span-2">
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Projected Annual Revenue</span>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[8px] font-bold text-white">FORECAST</div>
+                            </div>
+                            <div className="flex items-baseline gap-4">
+                                <h3 className="text-4xl font-serif font-bold italic text-white">{currency} {Math.round(cashFlowMetrics.projectedRevenue).toLocaleString()}</h3>
+                                <span className="text-sm text-neutral-500">based on YTD performance</span>
+                            </div>
+                            <div className="flex items-end gap-1 h-24 mt-4">
+                                {monthlyRevenue.map((data, i) => {
+                                    const maxRevenue = Math.max(...monthlyRevenue.map(d => d.revenue), 1)
+                                    const heightPercent = (data.revenue / maxRevenue) * 100
+                                    const currentMonth = new Date().getMonth()
+                                    const isFuture = i > currentMonth
+                                    return (
+                                        <div key={`proj-${data.month}-${i}`} className="flex-1 flex flex-col items-center gap-1">
+                                            <div 
+                                                className={cn("w-full rounded-t transition-all", isFuture ? "bg-white/10 border border-dashed border-white/20" : "bg-white hover:bg-white/80")}
+                                                style={{ height: `${Math.max(heightPercent, 5)}%` }}
+                                                title={`${data.month}: ${currency} ${data.revenue.toLocaleString()}`}
+                                            />
+                                            <span className="text-[7px] text-neutral-600">{data.month}</span>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Top Clients */}
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all lg:col-span-1">
+                        <div className="flex flex-col gap-4 h-full">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Top Clients</span>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[8px] font-bold text-white">BY REVENUE</div>
+                            </div>
+                            <div className="flex-1 space-y-3">
+                                {cashFlowMetrics.topClients.length > 0 ? (
+                                    cashFlowMetrics.topClients.map((client, i) => {
+                                        const maxTotal = cashFlowMetrics.topClients[0]?.total || 1
+                                        const widthPercent = (client.total / maxTotal) * 100
+                                        return (
+                                            <div key={`client-${i}`} className="space-y-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-xs text-white truncate max-w-[60%]">{client.name}</span>
+                                                    <span className="text-xs text-neutral-400">{currency} {client.total.toLocaleString()}</span>
+                                                </div>
+                                                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-white rounded-full transition-all" style={{ width: `${widthPercent}%` }} />
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                ) : (
+                                    <div className="flex-1 flex items-center justify-center text-neutral-600 text-xs">
+                                        No client data yet
+                                    </div>
+                                )}
+                            </div>
+                            {cashFlowMetrics.topClients.length > 0 && (
+                                <p className="text-[10px] text-neutral-500">{cashFlowMetrics.topClients.reduce((acc, c) => acc + c.count, 0)} invoices from top {cashFlowMetrics.topClients.length} clients</p>
+                            )}
+                        </div>
+                    </Card>
                 </div>
             )}
 
