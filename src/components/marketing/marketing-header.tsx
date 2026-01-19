@@ -6,15 +6,17 @@ import { IconMenu2, IconX, IconChevronDown } from "@tabler/icons-react"
 import { useState } from "react"
 
 const featureDropdownItems = [
+    { name: "Overview", href: "/features/overview" },
     { name: "Invoicing", href: "/features/invoice" },
-    { name: "Client Database", href: "/clients" },
-    { name: "Product Catalog", href: "/products" },
+    { name: "Inbox", href: "/features/inbox" },
+    { name: "Vault", href: "/features/vault" },
 ]
 
 const navigation = [
     { name: "Pricing", href: "/pricing" },
     { name: "Story", href: "/story" },
-    { name: "Docs", href: "https://docs.illumi.co.za" },
+    { name: "Contact", href: "/contact" },
+    { name: "Docs", href: "https://illumi.co.za/docs" },
 ]
 
 

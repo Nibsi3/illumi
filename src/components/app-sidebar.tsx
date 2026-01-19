@@ -68,7 +68,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
-        router.push("/login");
+        router.push("/");
     };
 
     const handleCreateWorkspace = async (e: React.FormEvent) => {

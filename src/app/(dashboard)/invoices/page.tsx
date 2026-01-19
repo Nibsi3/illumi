@@ -33,7 +33,6 @@ const columnsList = [
     { label: "Amount", id: "amount" },
     { label: "Issue date", id: "issueDate" },
     { label: "Type", id: "type" },
-    { label: "Sent at", id: "sentAt" },
 ]
 
 export default function InvoicesPage() {

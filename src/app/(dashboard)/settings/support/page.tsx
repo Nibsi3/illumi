@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -40,7 +40,18 @@ export default function SupportSettingsPage() {
     const [priority, setPriority] = useState("medium")
     const [description, setDescription] = useState("")
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [userName, setUserName] = useState<string>("")
+    const [userEmail, setUserEmail] = useState<string>("")
     const supabase = createClient()
+
+    useEffect(() => {
+        const loadUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            setUserName(user?.user_metadata?.full_name || user?.email?.split('@')[0] || '')
+            setUserEmail(user?.email || '')
+        }
+        loadUser()
+    }, [supabase])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -76,18 +87,22 @@ export default function SupportSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     type: 'support',
-                    to: 'support@emini.co.za',
+                    to: 'support@illumi.co.za',
                     subject,
                     category: categories.find(c => c.value === category)?.label,
                     priority: priorities.find(p => p.value === priority)?.label,
                     description,
-                    userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
-                    userEmail: user?.email
+                    userName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || userName || 'User',
+                    userEmail: user?.email || userEmail
                 })
             })
 
             if (!emailResponse.ok) {
-                console.warn("Email sending failed, but ticket was saved")
+                const data = await emailResponse.json().catch(() => null)
+                console.warn("Email sending failed, but ticket was saved", data)
+                toast.warning("Support ticket saved, but email failed", {
+                    description: data?.error || "Support email could not be sent. Please ensure Resend domain is verified."
+                })
             }
 
             setIsSubmitted(true)
@@ -251,9 +266,9 @@ export default function SupportSettingsPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="text-xs text-neutral-500 mb-4">
-                                Find answers to common questions and learn how to use Emini effectively.
+                                Find answers to common questions and learn how to use Illumi effectively.
                             </p>
-                            <Link href="/docs" target="_blank">
+                            <Link href="https://illumi.co.za/docs" target="_blank">
                                 <Button
                                     variant="outline"
                                     className="w-full border-white/10 hover:bg-white/5 text-white text-xs"
@@ -277,10 +292,10 @@ export default function SupportSettingsPage() {
                                 Prefer email? Reach us directly at:
                             </p>
                             <a
-                                href="mailto:support@emini.co.za"
+                                href="mailto:support@illumi.co.za"
                                 className="text-sm text-white font-medium hover:underline"
                             >
-                                support@emini.co.za
+                                support@illumi.co.za
                             </a>
                         </CardContent>
                     </Card>

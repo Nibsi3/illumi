@@ -119,6 +119,9 @@ export default function EditInvoicePage() {
     const [scheduleDate, setScheduleDate] = useState<Date | undefined>(new Date())
     const [scheduleTime, setScheduleTime] = useState("09:00")
 
+    // Note
+    const [invoiceNote, setInvoiceNote] = useState("")
+
     // Logo
     const [customers, setCustomers] = useState<any[]>([])
     const [customerId, setCustomerId] = useState<string | null>(null)
@@ -188,6 +191,7 @@ export default function EditInvoicePage() {
                         setIsRecurringEnabled(invoice.is_recurring || false)
                         setRecurringInterval(invoice.recurring_interval || "monthly")
                         setLogo(invoice.logo_url || settings.logo)
+                        setInvoiceNote((invoice.notes || invoice.note || "") as string)
 
                         if (invoice.customers) {
                             setClientName(invoice.customers.name)
@@ -238,6 +242,7 @@ export default function EditInvoicePage() {
                 tax_rate: taxRate,
                 tax_amount: taxAmount,
                 total: total,
+                notes: invoiceNote,
                 is_recurring: isRecurringEnabled,
                 recurring_interval: isRecurringEnabled ? recurringInterval : null,
                 template: template,
@@ -246,10 +251,19 @@ export default function EditInvoicePage() {
             }
 
             // Update Invoice
-            const { error: invoiceError } = await supabase
+            let { error: invoiceError } = await supabase
                 .from('invoices')
                 .update(invoiceData)
                 .eq('id', invoiceId)
+
+            if (invoiceError && invoiceError.message?.includes('notes')) {
+                const { notes, ...fallbackData } = invoiceData as any
+                const { error: retryError } = await supabase
+                    .from('invoices')
+                    .update(fallbackData)
+                    .eq('id', invoiceId)
+                invoiceError = retryError
+            }
 
             if (invoiceError) throw invoiceError
 
@@ -738,7 +752,9 @@ export default function EditInvoicePage() {
                                             <div className="space-y-2">
                                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Note</span>
                                                 <textarea
-                                                    defaultValue="Thank you for your business."
+                                                    placeholder="Add a note (visible to client)"
+                                                    value={invoiceNote}
+                                                    onChange={(e) => setInvoiceNote(e.target.value)}
                                                     className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-neutral-600 text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
@@ -789,7 +805,8 @@ export default function EditInvoicePage() {
                     invoiceNumber,
                     fromEmail,
                     issueDate,
-                    dueDate
+                    dueDate,
+                    note: invoiceNote
                 }}
             />
 

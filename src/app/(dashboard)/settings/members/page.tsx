@@ -2,7 +2,7 @@
 
 import { StatusDot } from "@/components/status-dot"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2, Loader2 } from "lucide-react"
@@ -20,29 +20,22 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useWorkspace } from "@/lib/workspace-context"
 
-const mockMembers = [
-    {
-        id: "1",
-        name: "Cameron Falck",
-        email: "cameronfalck03@gmail.com",
-        role: "Owner",
-        avatar: "https://lh3.googleusercontent.com/a/default-user=s96-c",
-        status: "active",
-    },
-    {
-        id: "2",
-        name: "John Doe",
-        email: "john@example.com",
-        role: "Member",
-        avatar: null,
-        status: "pending",
-    },
-]
+type MemberRow = {
+    id: string
+    name: string
+    email: string
+    role: "Owner" | "Admin" | "Member"
+    avatar: string | null
+    status: "active" | "pending"
+}
 
 export default function MembersPage() {
     const { isPro, limits } = useSubscription()
-    const [members, setMembers] = useState(mockMembers)
+    const { activeWorkspace } = useWorkspace()
+    const [members, setMembers] = useState<MemberRow[]>([])
+    const [isLoadingMembers, setIsLoadingMembers] = useState(true)
     const [showInviteForm, setShowInviteForm] = useState(false)
     const [inviteEmail, setInviteEmail] = useState("")
     const [isInviting, setIsInviting] = useState(false)
@@ -50,37 +43,85 @@ export default function MembersPage() {
 
     const reachedLimit = members.length >= limits.maxUsers
 
+    const activeWorkspaceId = activeWorkspace?.id
+
+    useEffect(() => {
+        const fetchMembers = async () => {
+            if (!activeWorkspaceId) {
+                setMembers([])
+                setIsLoadingMembers(false)
+                return
+            }
+
+            setIsLoadingMembers(true)
+            try {
+                const { data, error } = await supabase
+                    .from('workspace_members')
+                    .select('id, email, role, status')
+                    .eq('workspace_id', activeWorkspaceId)
+                    .order('created_at', { ascending: true })
+
+                if (error) throw error
+
+                const rows = (data || []).map((m: any) => {
+                    const email = (m.email || '').trim()
+                    const name = email ? email.split('@')[0] : 'Member'
+                    const normalizedRole = (m.role || 'member').toString().toLowerCase()
+                    const role: MemberRow['role'] = normalizedRole === 'owner'
+                        ? 'Owner'
+                        : normalizedRole === 'admin'
+                            ? 'Admin'
+                            : 'Member'
+                    const status: MemberRow['status'] = (m.status || 'pending').toString().toLowerCase() === 'active' ? 'active' : 'pending'
+
+                    return {
+                        id: m.id,
+                        name,
+                        email,
+                        role,
+                        avatar: null,
+                        status,
+                    }
+                })
+
+                setMembers(rows)
+            } catch (err: any) {
+                console.error('Failed to load members:', err)
+                toast.error('Failed to load members', { description: err.message })
+            } finally {
+                setIsLoadingMembers(false)
+            }
+        }
+
+        fetchMembers()
+    }, [activeWorkspaceId, supabase])
+
     const handleInvite = async () => {
         if (reachedLimit) return
         if (!inviteEmail) return
+
+        if (!activeWorkspaceId) {
+            toast.error('No workspace selected')
+            return
+        }
 
         setIsInviting(true)
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("Not authenticated")
 
-            // Get current workspace (for now, use the first one or create if none exists)
-            let { data: workspace } = await supabase
-                .from('workspaces')
-                .select('id, name')
-                .eq('owner_id', user.id)
-                .limit(1)
-                .single()
-
             // Save to workspace_members
-            if (workspace) {
-                const { error: memberError } = await supabase
-                    .from('workspace_members')
-                    .insert([{
-                        workspace_id: workspace.id,
-                        email: inviteEmail,
-                        role: 'member',
-                        status: 'pending'
-                    }])
+            const { error: memberError } = await supabase
+                .from('workspace_members')
+                .insert([{
+                    workspace_id: activeWorkspaceId,
+                    email: inviteEmail,
+                    role: 'member',
+                    status: 'pending'
+                }])
 
-                if (memberError && !memberError.message.includes('duplicate')) {
-                    throw memberError
-                }
+            if (memberError && !memberError.message.includes('duplicate')) {
+                throw memberError
             }
 
             // Send invite email via Resend
@@ -91,8 +132,8 @@ export default function MembersPage() {
                     type: 'invite',
                     to: inviteEmail,
                     inviterName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'A team member',
-                    workspaceName: workspace?.name || 'Emini',
-                    inviteLink: `${window.location.origin}/invite?email=${encodeURIComponent(inviteEmail)}`
+                    workspaceName: activeWorkspace?.name || 'Illumi',
+                    inviteLink: `${window.location.origin}/login`
                 })
             })
 
@@ -100,17 +141,18 @@ export default function MembersPage() {
                 console.warn("Email sending may have failed")
             }
 
-            setMembers([
-                ...members,
-                {
-                    id: Date.now().toString(),
-                    name: inviteEmail.split("@")[0],
-                    email: inviteEmail,
-                    role: "Member",
-                    avatar: null,
-                    status: "pending",
-                },
-            ])
+            const newRow: MemberRow = {
+                id: Date.now().toString(),
+                name: inviteEmail.split("@")[0],
+                email: inviteEmail,
+                role: "Member",
+                avatar: null,
+                status: "pending",
+            }
+            setMembers(prev => {
+                const exists = prev.some(m => m.email.toLowerCase() === inviteEmail.toLowerCase())
+                return exists ? prev : [...prev, newRow]
+            })
 
             toast.success("Invitation sent", {
                 description: `An invite has been sent to ${inviteEmail}`
@@ -127,13 +169,41 @@ export default function MembersPage() {
         }
     }
 
-    const removeMember = (id: string) => {
-        setMembers(members.filter(m => m.id !== id))
+    const removeMember = async (id: string) => {
+        if (!activeWorkspaceId) return
+        try {
+            const { error } = await supabase
+                .from('workspace_members')
+                .delete()
+                .eq('id', id)
+                .eq('workspace_id', activeWorkspaceId)
+
+            if (error) throw error
+            setMembers(prev => prev.filter(m => m.id !== id))
+            toast.success('Member removed')
+        } catch (err: any) {
+            toast.error('Failed to remove member', { description: err.message })
+        }
     }
 
-    const changeRole = (id: string, newRole: string) => {
-        if (!isPro && newRole === "Admin") return // Pro feature?
-        setMembers(members.map(m => m.id === id ? { ...m, role: newRole } : m))
+    const changeRole = async (id: string, newRole: string) => {
+        if (!activeWorkspaceId) return
+        if (!isPro && newRole === "Admin") return
+        const dbRole = newRole.toLowerCase()
+        try {
+            const { error } = await supabase
+                .from('workspace_members')
+                .update({ role: dbRole })
+                .eq('id', id)
+                .eq('workspace_id', activeWorkspaceId)
+
+            if (error) throw error
+
+            setMembers(prev => prev.map(m => m.id === id ? { ...m, role: newRole as any } : m))
+            toast.success('Role updated')
+        } catch (err: any) {
+            toast.error('Failed to update role', { description: err.message })
+        }
     }
 
     return (
@@ -226,6 +296,12 @@ export default function MembersPage() {
                     <span>Member</span>
                     <span>Role & Actions</span>
                 </div>
+                {isLoadingMembers && (
+                    <div className="p-6 rounded-2xl border border-white/5 bg-[#09090b] flex items-center gap-3 text-neutral-400">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span className="text-xs">Loading members...</span>
+                    </div>
+                )}
                 {members.map((member) => (
                     <div
                         key={member.id}

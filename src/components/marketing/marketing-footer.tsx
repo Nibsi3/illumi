@@ -18,15 +18,15 @@ const footerLinks = {
         { name: "Vault", href: "/features/vault" },
     ],
     resources: [
-        { name: "Documentation", href: "#" },
-        { name: "Support", href: "#" },
+        { name: "Documentation", href: "https://illumi.co.za/docs" },
+        { name: "Support", href: "/contact" },
         { name: "Privacy Policy", href: "#" },
         { name: "Terms of Service", href: "#" },
     ],
     company: [
         { name: "Story", href: "/story" },
         { name: "Pricing", href: "/pricing" },
-        { name: "Contact", href: "#" },
+        { name: "Contact", href: "/contact" },
     ],
 }
 

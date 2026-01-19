@@ -79,6 +79,11 @@ export default function NewInvoicePage() {
     const { activeWorkspace } = useWorkspace()
     const { activePaymentProvider } = settings
 
+    const paygateLabel = (activePaymentProvider || 'payfast')
+        .split('_')
+        .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(' ')
+
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
         { id: 1, description: "", price: 0, qty: 1 }
@@ -264,6 +269,7 @@ export default function NewInvoicePage() {
                 tax_rate: taxRate,
                 tax_amount: taxAmount,
                 total: total,
+                notes: invoiceNote,
                 is_recurring: overrides.isRecurring ?? isRecurringEnabled,
                 recurring_interval: overrides.recurringInterval ?? (isRecurringEnabled ? recurringInterval : null),
                 recurring_end_date: overrides.recurringEndDate ?? recurringEndDate,
@@ -283,9 +289,9 @@ export default function NewInvoicePage() {
                 .single()
 
             // Handle potential schema cache error for new columns
-            if (invoiceError && (invoiceError.message?.includes('invoice_mode') || invoiceError.message?.includes('logo_url') || invoiceError.message?.includes('payment_provider'))) {
+            if (invoiceError && (invoiceError.message?.includes('invoice_mode') || invoiceError.message?.includes('logo_url') || invoiceError.message?.includes('payment_provider') || invoiceError.message?.includes('notes'))) {
                 console.warn('[Invoice Save] Retrying without new columns due to schema error')
-                const { template, invoice_mode, logo_url, payment_provider, ...fallbackData } = invoiceData as any
+                const { template, invoice_mode, logo_url, payment_provider, notes, ...fallbackData } = invoiceData as any
                 const { data: retryInvoice, error: retryError } = await supabase
                     .from('invoices')
                     .insert(fallbackData)
@@ -895,6 +901,9 @@ export default function NewInvoicePage() {
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                                                                     <span className="text-[8px] font-black text-white uppercase tracking-widest">Live</span>
                                                                 </div>
+                                                                <div className="flex items-center px-2 py-0.5 bg-white/5 rounded-full border border-white/10 shrink-0">
+                                                                    <span className="text-[8px] font-black text-white uppercase tracking-widest">{paygateLabel}</span>
+                                                                </div>
                                                             </div>
                                                             <span className="text-[10px] text-neutral-500 font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
                                                         </div>
@@ -967,7 +976,8 @@ export default function NewInvoicePage() {
                     invoiceNumber,
                     fromEmail,
                     issueDate,
-                    dueDate
+                    dueDate,
+                    note: invoiceNote
                 }}
             />
 

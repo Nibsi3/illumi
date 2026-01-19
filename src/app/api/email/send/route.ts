@@ -3,7 +3,7 @@ import { Resend } from "resend"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-type EmailType = "invite" | "support" | "invoice" | "payment_reminder" | "final_notice"
+type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
 
 interface InvoiceItem {
     description: string
@@ -115,6 +115,24 @@ export async function POST(req: Request) {
                         </p>
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
                             <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <strong>Illumi</strong></p>
+                        </div>
+                    </div>
+                `
+                break
+
+            case "contact":
+                emailSubject = payload.subject || `New Contact Request`
+                emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+                        <h1 style="color: #000; font-size: 24px; margin-bottom: 24px;">New Contact Request</h1>
+                        <div style="background: #f5f5f5; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+                            <p style="margin: 0 0 12px 0;"><strong>Name:</strong> ${payload.userName || "Visitor"}</p>
+                            <p style="margin: 0 0 12px 0;"><strong>Email:</strong> ${payload.userEmail || "(not provided)"}</p>
+                            <p style="margin: 0;"><strong>Subject:</strong> ${payload.subject || "New Contact Request"}</p>
+                        </div>
+                        <div style="background: #fff; border: 1px solid #e5e5e5; padding: 24px; border-radius: 12px;">
+                            <h3 style="margin: 0 0 16px 0; color: #333;">Message:</h3>
+                            <p style="color: #666; line-height: 1.6; white-space: pre-wrap;">${payload.description || ""}</p>
                         </div>
                     </div>
                 `
@@ -254,7 +272,7 @@ export async function POST(req: Request) {
         }
 
         // Determine the "from" address
-        let fromAddress = type === "support"
+        let fromAddress = type === "support" || type === "contact"
             ? "support@illumi.co.za"
             : "invoices@illumi.co.za"
 
@@ -266,7 +284,7 @@ export async function POST(req: Request) {
         const { data, error } = await resend.emails.send({
             from: isVerified ? `Illumi <${fromAddress}>` : `Illumi (Test) <onboarding@resend.dev>`,
             to: type === "support" ? "support@illumi.co.za" : cleanTo,
-            replyTo: type === "support" ? payload.userEmail : undefined,
+            replyTo: (type === "support" || type === "contact") ? payload.userEmail : undefined,
             subject: emailSubject,
             html: emailHtml,
         })

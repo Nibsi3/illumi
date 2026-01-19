@@ -85,7 +85,7 @@ export default function StoryPage() {
                             variant="outline"
                             className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5"
                         >
-                            <Link href="/docs">View Docs</Link>
+                            <Link href="https://illumi.co.za/docs" target="_blank">View Docs</Link>
                         </Button>
                         <Button
                             asChild

@@ -27,6 +27,7 @@ interface PreviewModalProps {
         fromEmail: string
         issueDate: string
         dueDate: string
+        note?: string
     }
 }
 
@@ -242,7 +243,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         "text-sm italic font-serif leading-relaxed opacity-60",
                                         data.invoiceMode === "light" ? "text-black/60" : "text-white/60"
                                     )}>
-                                        Thank you for your partnership. We appreciate the opportunity to work with you and your team.
+                                        {data.note?.trim() || ""}
                                     </p>
                                 </div>
                             </div>

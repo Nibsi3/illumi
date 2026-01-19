@@ -148,6 +148,18 @@ export default function GeneralSettings() {
                                 <SelectItem value="marketing">Marketing & Advertising</SelectItem>
                                 <SelectItem value="finance">Finance & Accounting</SelectItem>
                                 <SelectItem value="consulting">Professional Consulting</SelectItem>
+                                <SelectItem value="legal">Legal Services</SelectItem>
+                                <SelectItem value="real_estate">Real Estate</SelectItem>
+                                <SelectItem value="construction">Construction</SelectItem>
+                                <SelectItem value="retail">Retail & E-commerce</SelectItem>
+                                <SelectItem value="hospitality">Hospitality</SelectItem>
+                                <SelectItem value="healthcare">Healthcare</SelectItem>
+                                <SelectItem value="education">Education</SelectItem>
+                                <SelectItem value="transport">Transport & Logistics</SelectItem>
+                                <SelectItem value="manufacturing">Manufacturing</SelectItem>
+                                <SelectItem value="creative">Creative / Design</SelectItem>
+                                <SelectItem value="nonprofit">Non-profit</SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
