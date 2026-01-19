@@ -19,7 +19,8 @@ import {
     IconChevronDown,
     IconX,
     IconSend,
-    IconMessage2
+    IconMessage2,
+    IconLoader2
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import React, { useState, useEffect } from "react"
@@ -42,6 +43,10 @@ import { useSettings } from "@/lib/settings-context"
 export default function DashboardPage() {
     const router = useRouter();
     const { currency } = useSettings();
+    const [isInitialLoading, setIsInitialLoading] = useState(() => {
+        if (typeof window === "undefined") return true
+        return sessionStorage.getItem("illumi_overview_loaded") !== "true"
+    })
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState("1 year");
     const [query, setQuery] = useState("");
@@ -145,6 +150,11 @@ export default function DashboardPage() {
                 setMonthlyRevenue(monthlyData)
             } catch (error) {
                 console.error("Error fetching metrics:", error)
+            } finally {
+                setIsInitialLoading(false)
+                if (typeof window !== "undefined") {
+                    sessionStorage.setItem("illumi_overview_loaded", "true")
+                }
             }
         }
         fetchMetrics()
@@ -182,6 +192,17 @@ export default function DashboardPage() {
         } finally {
             setIsLoadingChat(false);
         }
+    }
+
+    if (isInitialLoading) {
+        return (
+            <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3 text-white/70">
+                    <IconLoader2 className="h-5 w-5 animate-spin" />
+                    <div className="text-xs font-sans tracking-wide">Loading overview...</div>
+                </div>
+            </div>
+        )
     }
 
     return (

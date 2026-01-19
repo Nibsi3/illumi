@@ -2,7 +2,7 @@
 
 import { StatusDot } from "@/components/status-dot"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2, Loader2 } from "lucide-react"
@@ -59,7 +59,6 @@ export default function MembersPage() {
                     .from('workspace_members')
                     .select('id, email, role, status')
                     .eq('workspace_id', activeWorkspaceId)
-                    .order('created_at', { ascending: true })
 
                 if (error) throw error
 
@@ -86,8 +85,13 @@ export default function MembersPage() {
 
                 setMembers(rows)
             } catch (err: any) {
-                console.error('Failed to load members:', err)
-                toast.error('Failed to load members', { description: err.message })
+                console.error('Failed to load members:', {
+                    message: err?.message,
+                    details: err?.details,
+                    hint: err?.hint,
+                    code: err?.code,
+                })
+                toast.error('Failed to load members', { description: err?.message || 'Please try again.' })
             } finally {
                 setIsLoadingMembers(false)
             }

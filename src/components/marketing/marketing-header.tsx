@@ -16,7 +16,6 @@ const navigation = [
     { name: "Pricing", href: "/pricing" },
     { name: "Story", href: "/story" },
     { name: "Contact", href: "/contact" },
-    { name: "Docs", href: "https://illumi.co.za/docs" },
 ]
 
 
