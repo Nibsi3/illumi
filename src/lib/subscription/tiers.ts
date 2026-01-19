@@ -1,6 +1,22 @@
 /**
  * Subscription Tier Definitions
- * Defines the feature limits and capabilities for Free and Pro tiers
+ * 
+ * Starter (Free Forever):
+ * - Unlimited invoices
+ * - Client database
+ * - Product catalog
+ * - WhatsApp & Email sharing
+ * - PDF Exports
+ * - Basic reporting
+ * 
+ * Pro (R350/month):
+ * - Everything in Starter
+ * - Custom business logo
+ * - PayGate integration
+ * - Client payment portal
+ * - Recurring invoices
+ * - Automated status updates
+ * - Priority support
  */
 
 export type SubscriptionTier = "free" | "pro"
@@ -12,41 +28,61 @@ export interface TierLimits {
     vaultStorageGB: number
     maxUsers: number
     features: {
-        recurringPayments: boolean
+        // Pro-only features
+        customLogo: boolean
+        payGateIntegration: boolean
         clientPortal: boolean
+        recurringInvoices: boolean
+        automatedStatusUpdates: boolean
+        prioritySupport: boolean
+        // Legacy feature names (kept for compatibility)
+        recurringPayments: boolean
         customPayGate: boolean
         advancedReporting: boolean
-        prioritySupport: boolean
     }
 }
 
 export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     free: {
-        invoicesPerMonth: 10,
-        connectedBanks: 2,
-        inboxItemsPerMonth: 50,
-        vaultStorageGB: 10,
-        maxUsers: 2,
+        // Starter plan - Free Forever
+        invoicesPerMonth: Infinity, // Unlimited invoices
+        connectedBanks: 0, // No bank connections for free
+        inboxItemsPerMonth: Infinity,
+        vaultStorageGB: 5,
+        maxUsers: 1,
         features: {
-            recurringPayments: false,
+            // Pro-only features - all disabled for free
+            customLogo: false,
+            payGateIntegration: false,
             clientPortal: false,
+            recurringInvoices: false,
+            automatedStatusUpdates: false,
+            prioritySupport: false,
+            // Legacy
+            recurringPayments: false,
             customPayGate: false,
             advancedReporting: false,
-            prioritySupport: false,
         },
     },
     pro: {
-        invoicesPerMonth: 50,
+        // Pro plan - R350/month
+        invoicesPerMonth: Infinity,
         connectedBanks: 10,
-        inboxItemsPerMonth: 500,
+        inboxItemsPerMonth: Infinity,
         vaultStorageGB: 100,
         maxUsers: 10,
         features: {
-            recurringPayments: true,
+            // All Pro features enabled
+            customLogo: true,
+            payGateIntegration: true,
             clientPortal: true,
+            recurringInvoices: true,
+            automatedStatusUpdates: true,
+            prioritySupport: true,
+            // Legacy
+            recurringPayments: true,
             customPayGate: true,
             advancedReporting: true,
-            prioritySupport: true,
         },
     },
 }

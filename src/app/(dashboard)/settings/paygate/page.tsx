@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -61,8 +61,15 @@ export default function PayGatePage() {
     } = useSettings()
 
     const activeProvider = activePaymentProvider
-    // const [connectedProviders, setConnectedProviders] = useState(providers.filter(p => p.connected).map(p => p.id))
     const [isTestMode, setIsTestMode] = useState(true)
+    
+    // Disconnect all paygates for free users
+    useEffect(() => {
+        if (!isLoading && !isPro && connectedProviders.length > 0) {
+            setConnectedProviders([])
+            setActivePaymentProvider(null)
+        }
+    }, [isPro, isLoading, connectedProviders.length, setConnectedProviders, setActivePaymentProvider])
     const [configuringProvider, setConfiguringProvider] = useState<string | null>(null)
     const [isConnecting, setIsConnecting] = useState(false)
 
@@ -93,7 +100,74 @@ export default function PayGatePage() {
         setConfiguringProvider(id)
     }
 
+    // Validate keys based on provider
+    const validateProviderKeys = (providerId: string): { valid: boolean; error?: string } => {
+        const merchantId = isTestMode ? testMerchantId : liveMerchantId
+        const secretKey = isTestMode ? testSecretKey : liveSecretKey
+        
+        if (!merchantId.trim() || !secretKey.trim()) {
+            return { valid: false, error: "Both Merchant ID and Secret Key are required" }
+        }
+        
+        switch (providerId) {
+            case 'payfast':
+                // PayFast: Merchant ID should be numeric, key should be alphanumeric
+                if (!/^\d+$/.test(merchantId)) {
+                    return { valid: false, error: "PayFast Merchant ID must be numeric (e.g., 10000100)" }
+                }
+                if (merchantId.length < 5) {
+                    return { valid: false, error: "PayFast Merchant ID seems too short" }
+                }
+                break
+                
+            case 'yoco':
+                // Yoco: Secret keys start with sk_test_ or sk_live_
+                const yocoPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
+                if (!secretKey.startsWith(yocoPrefix)) {
+                    return { valid: false, error: `Yoco ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${yocoPrefix}"` }
+                }
+                break
+                
+            case 'paystack':
+                // PayStack: Secret keys start with sk_test_ or sk_live_
+                const paystackPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
+                if (!secretKey.startsWith(paystackPrefix)) {
+                    return { valid: false, error: `PayStack ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${paystackPrefix}"` }
+                }
+                break
+                
+            case 'ozow':
+                // Ozow: Site Code and Private Key validation
+                if (merchantId.length < 4) {
+                    return { valid: false, error: "Ozow Site Code seems too short" }
+                }
+                if (secretKey.length < 10) {
+                    return { valid: false, error: "Ozow Private Key seems too short" }
+                }
+                break
+                
+            case 'peach':
+                // Peach Payments: Entity ID and Access Token
+                if (merchantId.length < 10) {
+                    return { valid: false, error: "Peach Payments Entity ID seems too short" }
+                }
+                if (secretKey.length < 20) {
+                    return { valid: false, error: "Peach Payments Access Token seems too short" }
+                }
+                break
+        }
+        
+        return { valid: true }
+    }
+
     const confirmConnection = (id: string) => {
+        // Validate keys first
+        const validation = validateProviderKeys(id)
+        if (!validation.valid) {
+            toast.error("Invalid Credentials", { description: validation.error })
+            return
+        }
+        
         setIsConnecting(true)
         setTimeout(() => {
             // Check for duplicates
@@ -137,6 +211,30 @@ export default function PayGatePage() {
     }
 
     if (isLoading) return null;
+
+    // Show upgrade prompt for free users
+    if (!isPro) {
+        return (
+            <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
+                        <IconLock className="h-10 w-10 text-neutral-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Pro Feature</h2>
+                    <p className="text-neutral-500 max-w-md mb-8">
+                        Payment gateway integration is only available on the Pro plan. 
+                        Upgrade to accept payments directly from your invoices.
+                    </p>
+                    <Button 
+                        onClick={() => window.location.href = '/settings/billing'}
+                        className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-bold"
+                    >
+                        Upgrade to Pro — R350/mo
+                    </Button>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
@@ -257,14 +355,7 @@ export default function PayGatePage() {
                                             variant="ghost"
                                             size="sm"
                                             className="text-xs text-neutral-400 hover:text-white hover:bg-white/5 h-8 px-3 rounded-lg font-medium"
-                                            onClick={() => {
-                                                // Mock pre-fill
-                                                setLiveMerchantId("10000100")
-                                                setLiveSecretKey("sk_live_...")
-                                                setTestMerchantId("test-id-123")
-                                                setTestSecretKey("sk_test_...")
-                                                setConfiguringProvider(provider.id)
-                                            }}
+                                            onClick={() => handleConnect(provider.id)}
                                         >
                                             <IconSettings className="h-3.5 w-3.5 mr-2" />
                                             Configure

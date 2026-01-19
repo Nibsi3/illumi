@@ -41,7 +41,7 @@ export default function InvoicesPage() {
     const [isLoading, setIsLoading] = useState(true)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
-    const { currency } = useSettings()
+    const { currency, activePaymentProvider } = useSettings()
 
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -175,13 +175,13 @@ export default function InvoicesPage() {
     }
 
     const handleCopyLink = (invoiceNumber: string) => {
-        const url = `${window.location.origin}/pay/${invoiceNumber}`
+        const url = `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
         navigator.clipboard.writeText(url)
         toast.success("Link copied to clipboard")
     }
 
     const handleWhatsAppShare = (invoiceNumber: string, total: any) => {
-        const url = `${window.location.origin}/pay/${invoiceNumber}`
+        const url = `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
         const text = `Invoice #${invoiceNumber} from Emini Invoicing. Total: ${total}. View and pay here: ${url}`
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
     }
@@ -190,6 +190,8 @@ export default function InvoicesPage() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("Not authenticated")
+
+            const paymentLink = `${window.location.origin}/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
 
             const response = await fetch('/api/email/send', {
                 method: 'POST',
@@ -202,7 +204,7 @@ export default function InvoicesPage() {
                     amount: invoice.amount,
                     currency: invoice.currency || 'ZAR',
                     dueDate: invoice.dueDate,
-                    paymentUrl: `${window.location.origin}/pay/${invoice.displayId}`
+                    paymentLink,
                 })
             })
 
@@ -524,14 +526,17 @@ export default function InvoicesPage() {
                                                         <Link href={`/invoices/edit/${invoice.id}`}>
                                                             <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
                                                         </Link>
-                                                        <Link href={`/pay/${invoice.displayId}`} target="_blank">
+                                                        <Link href={`/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`} target="_blank">
                                                             <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
                                                         </Link>
                                                         <DropdownMenuItem
                                                             className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={async () => {
                                                                 toast.info("Preparing PDF...", { duration: 1000 })
-                                                                window.open(`/pay/${invoice.displayId}?print=true`, '_blank')
+                                                                const qs = new URLSearchParams()
+                                                                if (activePaymentProvider) qs.set('provider', activePaymentProvider)
+                                                                qs.set('print', 'true')
+                                                                window.open(`/pay/${invoice.displayId}?${qs.toString()}`, '_blank')
                                                             }}
                                                         >
                                                             Download PDF

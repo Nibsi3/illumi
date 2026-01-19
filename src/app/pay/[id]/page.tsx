@@ -94,6 +94,11 @@ export default function PayInvoicePage() {
     const handlePayment = async () => {
         setIsSimulating(true)
         try {
+            // Get provider from URL params, invoice's payment_provider field, or default to payfast
+            const urlProvider = new URLSearchParams(window.location.search).get('provider')
+            const invoiceProvider = invoice.payment_provider
+            const provider = urlProvider || invoiceProvider || 'payfast'
+            
             const response = await fetch('/api/paygate/generate-link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -101,7 +106,7 @@ export default function PayInvoicePage() {
                     invoiceId: invoice.id,
                     amount: invoice.total,
                     currency: invoice.currency,
-                    provider: new URLSearchParams(window.location.search).get('provider') || 'payfast',
+                    provider,
                     invoiceNumber: invoice.invoice_number
                 })
             })

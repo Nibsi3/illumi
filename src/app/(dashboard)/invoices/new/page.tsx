@@ -50,7 +50,7 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import { NumberInput } from "@/components/ui/number-input"
 import { PreviewModal } from "../components/preview-modal"
-import { allClients, allProducts } from "@/lib/data"
+import { allClients } from "@/lib/data"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
 import { useSettings } from "@/lib/settings-context"
@@ -77,6 +77,7 @@ export default function NewInvoicePage() {
     const { isPro } = useSubscription()
     const settings = useSettings()
     const { activeWorkspace } = useWorkspace()
+    const { activePaymentProvider } = settings
 
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
@@ -131,6 +132,7 @@ export default function NewInvoicePage() {
     }, [settings.logo, settings.fromEmail])
 
     const [customers, setCustomers] = useState<any[]>([])
+    const [products, setProducts] = useState<any[]>([])
     const [customerId, setCustomerId] = useState<string | null>(null)
     const [isSaving, setIsSaving] = useState(false)
     const supabase = createClient()
@@ -184,13 +186,28 @@ export default function NewInvoicePage() {
         }
 
         const fetchCustomers = async () => {
-            const { data } = await supabase.from('customers').select('*')
+            if (!activeWorkspace) return
+            const { data } = await supabase
+                .from('customers')
+                .select('*')
+                .eq('workspace_id', activeWorkspace.id)
             if (data) setCustomers(data)
+        }
+
+        const fetchProducts = async () => {
+            if (!activeWorkspace) return
+            const { data } = await supabase
+                .from('products')
+                .select('*')
+                .eq('workspace_id', activeWorkspace.id)
+                .eq('status', 'active')
+            if (data) setProducts(data)
         }
 
         checkAuth()
         fetchCustomers()
-    }, [router, supabase])
+        fetchProducts()
+    }, [router, supabase, activeWorkspace])
 
     const handleCreate = async (type: string) => {
         if (type === 'create') {
@@ -209,6 +226,11 @@ export default function NewInvoicePage() {
     }
 
     const handleSaveInvoice = async (status: 'draft' | 'sent' | 'scheduled' = 'draft', overrides: any = {}) => {
+        // Prevent double-submission
+        if (isSaving) {
+            console.log('[Invoice Save] Already saving, ignoring duplicate call')
+            return
+        }
         setIsSaving(true)
         console.log('[Invoice Save] Starting save process...', { status, invoiceNumber, customerId })
 
@@ -249,6 +271,7 @@ export default function NewInvoicePage() {
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
+                payment_provider: activePaymentProvider || null,
             }
             console.log('[Invoice Save] Invoice data to insert:', invoiceData)
 
@@ -260,9 +283,9 @@ export default function NewInvoicePage() {
                 .single()
 
             // Handle potential schema cache error for new columns
-            if (invoiceError && (invoiceError.message?.includes('invoice_mode') || invoiceError.message?.includes('logo_url'))) {
+            if (invoiceError && (invoiceError.message?.includes('invoice_mode') || invoiceError.message?.includes('logo_url') || invoiceError.message?.includes('payment_provider'))) {
                 console.warn('[Invoice Save] Retrying without new columns due to schema error')
-                const { template, invoice_mode, logo_url, ...fallbackData } = invoiceData as any
+                const { template, invoice_mode, logo_url, payment_provider, ...fallbackData } = invoiceData as any
                 const { data: retryInvoice, error: retryError } = await supabase
                     .from('invoices')
                     .insert(fallbackData)
@@ -318,7 +341,7 @@ export default function NewInvoicePage() {
                                 customerName: clientName,
                                 amount: `${currency} ${total.toLocaleString()}`,
                                 dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
-                                paymentLink: `${process.env.NEXT_PUBLIC_URL || 'https://illumi.co.za'}/pay/${invoice.id}`,
+                                paymentLink: `${process.env.NEXT_PUBLIC_URL || 'https://illumi.co.za'}/pay/${invoice.id}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`,
                                 note: invoiceNote,
                                 items: tasks.map(t => ({
                                     description: t.description,
@@ -397,15 +420,17 @@ export default function NewInvoicePage() {
                                 {/* Primary Action: Draft */}
                                 <Button
                                     onClick={() => handleCreate('create')}
-                                    className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10"
+                                    disabled={isSaving}
+                                    className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
                                 >
-                                    Save Draft
+                                    {isSaving ? 'Saving...' : 'Save Draft'}
                                 </Button>
 
                                 {/* Secondary Actions Container - Reveals on Hover */}
                                 <div className="flex items-center bg-[#1a1a1a] h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-white/10 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto overflow-hidden max-w-0 group-hover:max-w-[300px]">
                                     <Button
                                         onClick={() => handleCreate('send')}
+                                        disabled={isSaving}
                                         variant="ghost"
                                         className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
                                     >
@@ -439,12 +464,19 @@ export default function NewInvoicePage() {
 
                                     <div className="w-px h-4 bg-white/10 mx-1" />
                                     <Button
-                                        onClick={() => handleCreate('recurring')}
+                                        onClick={() => {
+                                            if (!isPro) {
+                                                toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })
+                                                return
+                                            }
+                                            handleCreate('recurring')
+                                        }}
                                         variant="ghost"
                                         className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
                                     >
                                         <Repeat className="h-3 w-3" />
                                         Recurring
+                                        {!isPro && <span className="text-[8px] text-yellow-500 ml-1">PRO</span>}
                                     </Button>
                                 </div>
 
@@ -757,7 +789,7 @@ export default function NewInvoicePage() {
                                                                 newTasks[idx].description = e.target.value
 
                                                                 // Auto-fill price if product matches
-                                                                const product = allProducts.find(p => p.name === e.target.value)
+                                                                const product = products.find(p => p.name === e.target.value)
                                                                 if (product) {
                                                                     newTasks[idx].price = typeof product.price === 'string' ? parseFloat(product.price.replace(/[^0-9.]/g, '')) : product.price
                                                                 }
@@ -765,7 +797,7 @@ export default function NewInvoicePage() {
                                                             }}
                                                         />
                                                         <datalist id="product-suggestions">
-                                                            {allProducts.map(p => <option key={p.id} value={p.name} />)}
+                                                            {products.map(p => <option key={p.id} value={p.name} />)}
                                                         </datalist>
                                                     </td>
                                                     <td className="py-4 px-2 w-32">

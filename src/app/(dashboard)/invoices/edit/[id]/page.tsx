@@ -77,6 +77,7 @@ export default function EditInvoicePage() {
     const invoiceId = params.id as string
     const { isPro } = useSubscription()
     const settings = useSettings()
+    const { activePaymentProvider } = settings
 
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
@@ -284,7 +285,7 @@ export default function EditInvoicePage() {
                             customerName: clientName,
                             amount: `${currency} ${total.toLocaleString()}`,
                             dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
-                            paymentLink: `${window.location.origin}/pay/${invoiceNumber}`
+                            paymentLink: `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
                         })
                     })
                     const emailData = await emailRes.json()

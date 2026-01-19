@@ -58,6 +58,9 @@ export default function DashboardPage() {
         recurring: 0,
         growth: 12.5 // Placeholder until historical data is available
     })
+    
+    // Monthly revenue data for charts
+    const [monthlyRevenue, setMonthlyRevenue] = useState<{ month: string; revenue: number; lastYear: number }[]>([])
 
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
@@ -68,10 +71,10 @@ export default function DashboardPage() {
                 const { data: { user } } = await supabase.auth.getUser()
                 if (!user || !activeWorkspace) return
 
-                // Fetch Invoices
+                // Fetch Invoices with issue_date for monthly breakdown
                 const { data: invoices } = await supabase
                     .from('invoices')
-                    .select('total, status')
+                    .select('total, status, issue_date')
                     .eq('workspace_id', activeWorkspace.id)
 
                 const totalRevenue = invoices
@@ -107,12 +110,45 @@ export default function DashboardPage() {
                     recurring: recurring,
                     growth: 12.5 // Static for now
                 })
+
+                // Calculate monthly revenue for charts using actual invoice dates
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                const currentYear = new Date().getFullYear()
+                const lastYear = currentYear - 1
+                
+                const monthlyData = months.map((month, index) => {
+                    // Filter paid invoices for this month in current year
+                    const thisYearInvoices = invoices?.filter(inv => {
+                        if (inv.status.toLowerCase() !== 'paid') return false
+                        if (!inv.issue_date) return false
+                        const invoiceDate = new Date(inv.issue_date)
+                        return invoiceDate.getFullYear() === currentYear && invoiceDate.getMonth() === index
+                    }) || []
+                    
+                    // Filter paid invoices for this month in last year
+                    const lastYearInvoices = invoices?.filter(inv => {
+                        if (inv.status.toLowerCase() !== 'paid') return false
+                        if (!inv.issue_date) return false
+                        const invoiceDate = new Date(inv.issue_date)
+                        return invoiceDate.getFullYear() === lastYear && invoiceDate.getMonth() === index
+                    }) || []
+                    
+                    const monthRevenue = thisYearInvoices.reduce((acc, inv) => acc + (Number(inv.total) || 0), 0)
+                    const lastYearRevenue = lastYearInvoices.reduce((acc, inv) => acc + (Number(inv.total) || 0), 0)
+                    
+                    return {
+                        month,
+                        revenue: Math.round(monthRevenue),
+                        lastYear: Math.round(lastYearRevenue)
+                    }
+                })
+                setMonthlyRevenue(monthlyData)
             } catch (error) {
                 console.error("Error fetching metrics:", error)
             }
         }
         fetchMetrics()
-    }, [supabase])
+    }, [supabase, activeWorkspace])
 
     const handleChatSubmit = async (e?: React.FormEvent, customQuery?: string) => {
         if (e) e.preventDefault();
@@ -346,13 +382,36 @@ export default function DashboardPage() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex-1 min-h-[200px] flex items-end justify-between border-b border-white/5 pb-2">
-                                    {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"].map((m, i) => (
-                                        <div key={`${m}-${i}`} className="flex flex-col items-center gap-2">
-                                            <div className="w-px h-32 border-l border-dashed border-white/5" />
-                                            <span className="text-[8px] text-muted-foreground">{m}</span>
-                                        </div>
-                                    ))}
+                                <div className="flex-1 min-h-[200px] flex items-end justify-between border-b border-white/5 pb-2 gap-1">
+                                    {monthlyRevenue.length > 0 ? monthlyRevenue.map((data, i) => {
+                                        const maxRevenue = Math.max(...monthlyRevenue.map(d => Math.max(d.revenue, d.lastYear)), 1)
+                                        const heightPercent = (data.revenue / maxRevenue) * 100
+                                        const lastYearHeight = (data.lastYear / maxRevenue) * 100
+                                        return (
+                                            <div key={`${data.month}-${i}`} className="flex-1 flex flex-col items-center gap-2">
+                                                <div className="w-full flex items-end justify-center gap-0.5 h-32">
+                                                    <div 
+                                                        className="w-2 bg-white/20 rounded-t transition-all hover:bg-white/30" 
+                                                        style={{ height: `${lastYearHeight}%` }} 
+                                                        title={`Last Year: ${currency} ${data.lastYear.toLocaleString()}`}
+                                                    />
+                                                    <div 
+                                                        className="w-2 bg-white rounded-t transition-all hover:bg-white/80" 
+                                                        style={{ height: `${heightPercent}%` }} 
+                                                        title={`This Year: ${currency} ${data.revenue.toLocaleString()}`}
+                                                    />
+                                                </div>
+                                                <span className="text-[8px] text-muted-foreground">{data.month}</span>
+                                            </div>
+                                        )
+                                    }) : (
+                                        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
+                                            <div key={`${m}-${i}`} className="flex flex-col items-center gap-2">
+                                                <div className="w-px h-32 border-l border-dashed border-white/10" />
+                                                <span className="text-[8px] text-muted-foreground">{m}</span>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </Card>

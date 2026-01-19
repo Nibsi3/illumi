@@ -38,6 +38,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useWorkspace } from "@/lib/workspace-context";
+import { SearchModal } from "@/components/search-modal";
+import { useSubscription } from "@/lib/subscription/hooks";
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
@@ -46,9 +48,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [isWorkspaceDialogOpen, setIsWorkspaceDialogOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     // Use workspace context
     const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces } = useWorkspace();
+    const { isSubscribed, daysRemaining, isPro, isLoading: subscriptionLoading } = useSubscription();
 
     const supabase = createClient();
     const router = useRouter();
@@ -295,15 +299,27 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     {/* Header (Stayed relatively similar but polished) */}
                     <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 backdrop-blur-md bg-black/50 sticky top-0 z-40">
                         <div className="flex items-center gap-6 flex-1">
-                            <div className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-pointer max-w-md w-full">
+                            <button 
+                                type="button"
+                                onClick={() => setIsSearchOpen(true)}
+                                className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
+                            >
                                 <IconSearch className="h-4 w-4" />
-                                <span className="text-sm font-medium">Find anything...</span>
-                            </div>
+                                <span className="text-sm font-medium">Search anything...</span>
+                            </button>
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Link href="/pricing" className="text-[11px] text-neutral-500 hover:text-white transition-colors">
-                                Pro trial · 11 days left
+                            <Link href="/settings/billing" className="text-[11px] text-neutral-500 hover:text-white transition-colors">
+                                {subscriptionLoading ? (
+                                    "Loading..."
+                                ) : isSubscribed && daysRemaining !== null ? (
+                                    `Pro Plan · ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`
+                                ) : isSubscribed ? (
+                                    "Pro Plan · Active"
+                                ) : (
+                                    "Free Plan · Upgrade"
+                                )}
                             </Link>
 
                             <NotificationDropdown />
@@ -417,6 +433,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     </form>
                 </DialogContent>
             </Dialog>
+
+            {/* Search Modal */}
+            <SearchModal open={isSearchOpen} onOpenChange={setIsSearchOpen} />
         </div>
     );
 }

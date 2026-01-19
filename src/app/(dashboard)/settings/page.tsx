@@ -11,7 +11,8 @@ import {
     Building2,
     Globe,
     Mail,
-    Phone
+    Phone,
+    Lock
 } from "lucide-react"
 import {
     Select,
@@ -23,9 +24,11 @@ import {
 
 import { motion, AnimatePresence } from "framer-motion"
 import { useSettings } from "@/lib/settings-context"
+import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
 
 export default function GeneralSettings() {
+    const { isPro } = useSubscription()
     const {
         logo, setLogo,
         companyName, setCompanyName,
@@ -39,7 +42,12 @@ export default function GeneralSettings() {
     const [industry, setIndustry] = useState("tech")
 
     const handleLogoUpload = () => {
-        // Mock upload
+        // Check for Pro subscription
+        if (!isPro) {
+            toast.error("Pro Feature", { description: "Custom business logo is only available on the Pro plan." })
+            return
+        }
+        
         const input = document.createElement('input')
         input.type = 'file'
         input.accept = 'image/*'
@@ -67,19 +75,29 @@ export default function GeneralSettings() {
             {/* Logo Section */}
             <div className="space-y-6">
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-medium text-white">Default Logo</h3>
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-medium text-white">Default Logo</h3>
+                        {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
+                    </div>
                     <p className="text-sm text-neutral-500 max-w-xl">
-                        This logo will be displayed on all your invoices and client communications by default.
+                        {isPro 
+                            ? "This logo will be displayed on all your invoices and client communications by default."
+                            : "Upgrade to Pro to add your custom business logo to invoices and client communications."}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-8">
                     <div
                         onClick={handleLogoUpload}
-                        className="w-32 h-32 rounded-2xl border-2 border-dashed border-white/5 bg-black hover:border-white/20 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden"
+                        className={`w-32 h-32 rounded-2xl border-2 border-dashed border-white/5 bg-black hover:border-white/20 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden ${!isPro ? 'opacity-50' : ''}`}
                     >
-                        {logo ? (
+                        {logo && isPro ? (
                             <img src={logo} alt="Logo" className="w-full h-full object-contain p-4" />
+                        ) : !isPro ? (
+                            <>
+                                <Lock className="h-6 w-6 text-neutral-600 mb-2" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-600">Pro Only</span>
+                            </>
                         ) : (
                             <>
                                 <Upload className="h-6 w-6 text-neutral-600 group-hover:text-neutral-400 group-hover:scale-110 transition-all mb-2" />
@@ -88,12 +106,14 @@ export default function GeneralSettings() {
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Button variant="outline" className="h-9 border-white/10 bg-white/5 hover:bg-white/10" onClick={handleLogoUpload}>
-                            Replace Logo
+                        <Button variant="outline" className="h-9 border-white/10 bg-white/5 hover:bg-white/10" onClick={handleLogoUpload} disabled={!isPro}>
+                            {isPro ? "Replace Logo" : "Upgrade to Pro"}
                         </Button>
-                        <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
-                            Remove
-                        </Button>
+                        {isPro && (
+                            <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
+                                Remove
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>

@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { NumberInput } from "@/components/ui/number-input"
 import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
 
 interface CreateProductModalProps {
     isOpen: boolean
@@ -22,6 +23,7 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
     const [price, setPrice] = useState(0)
     const [description, setDescription] = useState("")
     const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -35,6 +37,11 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
                 return
             }
 
+            if (!activeWorkspace) {
+                toast.error("No workspace selected")
+                return
+            }
+
             const { data, error } = await supabase
                 .from('products')
                 .insert([{
@@ -42,6 +49,7 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
                     price,
                     description,
                     user_id: user.id,
+                    workspace_id: activeWorkspace.id,
                     status: 'active'
                 }])
                 .select()

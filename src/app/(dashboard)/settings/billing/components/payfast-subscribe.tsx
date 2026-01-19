@@ -1,45 +1,50 @@
 "use client"
 
 import React from "react"
+import { Button } from "@/components/ui/button"
+import { IconStarFilled } from "@tabler/icons-react"
+
+// PayFast Production Credentials - Set these in environment variables
+const PAYFAST_MERCHANT_ID = process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID || ""
+const PAYFAST_MERCHANT_KEY = process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_KEY || ""
+const PAYFAST_URL = "https://www.payfast.co.za/eng/process"
 
 export function PayFastSubscribeButton() {
     return (
         <form
             name="PayFastPayNowForm"
-            action="https://payment.payfast.io/eng/process"
+            action={PAYFAST_URL}
             method="post"
             className="flex flex-col items-center"
         >
-            <input required type="hidden" name="cmd" value="_paynow" />
-            <input required type="hidden" name="receiver" value="10378042" />
-            <input type="hidden" name="return_url" value="https://illumi.co.za/settings/billing" />
-            <input type="hidden" name="cancel_url" value="https://illumi.co.za/overview" />
-            <input required type="hidden" name="amount" value="350" />
-            <input required type="hidden" name="item_name" value="Pro Plan" />
-            <input type="hidden" name="item_description" value="For growing businesses and teams
-Everything in Starter
-Custom business logo
-PayGate integration
-Client payment portal
-Recurring invoices
-Automated status updates
-Priority support" />
-            <input required type="hidden" name="subscription_type" value="1" />
-            <input type="hidden" name="recurring_amount" value="350" />
-            <input required type="hidden" name="cycles" value="0" />
-            <input required type="hidden" name="frequency" value="3" />
+            {/* Merchant Details */}
+            <input type="hidden" name="merchant_id" value={PAYFAST_MERCHANT_ID} />
+            <input type="hidden" name="merchant_key" value={PAYFAST_MERCHANT_KEY} />
+            
+            {/* Return URLs */}
+            <input type="hidden" name="return_url" value="https://illumi.co.za/settings/billing?success=true" />
+            <input type="hidden" name="cancel_url" value="https://illumi.co.za/settings/billing?cancelled=true" />
+            <input type="hidden" name="notify_url" value="https://illumi.co.za/api/payfast/notify" />
+            
+            {/* Transaction Details */}
+            <input type="hidden" name="amount" value="350.00" />
+            <input type="hidden" name="item_name" value="Illumi Pro Plan" />
+            <input type="hidden" name="item_description" value="Monthly subscription to Illumi Pro Plan" />
+            
+            {/* Subscription Details */}
+            <input type="hidden" name="subscription_type" value="1" />
+            <input type="hidden" name="billing_date" value="" />
+            <input type="hidden" name="recurring_amount" value="350.00" />
+            <input type="hidden" name="frequency" value="3" />
+            <input type="hidden" name="cycles" value="0" />
 
-            <button
+            <Button
                 type="submit"
-                className="transition-transform hover:scale-105 active:scale-95 shadow-2xl rounded-lg overflow-hidden"
+                className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
             >
-                <img
-                    src="https://my.payfast.io/images/buttons/Subscribe/Light-Large-Subscribe.png"
-                    alt="Subscribe"
-                    title="Subscribe with Payfast"
-                    className="h-12 w-auto"
-                />
-            </button>
+                <IconStarFilled size={18} className="mr-2" />
+                Subscribe Now — R350/mo
+            </Button>
         </form>
     )
 }

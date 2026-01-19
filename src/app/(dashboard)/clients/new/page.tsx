@@ -37,18 +37,76 @@ import {
 } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
+import { toast } from "sonner"
 
 export default function NewClientPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
+    const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
+    
+    // Form state
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [billingEmail, setBillingEmail] = useState("")
+    const [phone, setPhone] = useState("")
+    const [website, setWebsite] = useState("")
+    const [contactPerson, setContactPerson] = useState("")
+    const [address, setAddress] = useState("")
+    const [country, setCountry] = useState("South Africa")
+    const [taxId, setTaxId] = useState("")
+    const [notes, setNotes] = useState("")
+    const [industry, setIndustry] = useState("")
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
+        if (!name) {
+            toast.error("Customer name is required")
+            return
+        }
+        if (!email) {
+            toast.error("Email is required")
+            return
+        }
+        if (!activeWorkspace) {
+            toast.error("No workspace selected")
+            return
+        }
+
         setIsLoading(true)
-        // Simulate creation
-        setTimeout(() => {
-            setIsLoading(false)
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
+                toast.error("You must be logged in")
+                return
+            }
+
+            const { error } = await supabase
+                .from('customers')
+                .insert({
+                    name,
+                    email,
+                    billing_email: billingEmail || null,
+                    phone: phone || null,
+                    address: address || null,
+                    country,
+                    industry: industry || null,
+                    status: 'active',
+                    user_id: user.id,
+                    workspace_id: activeWorkspace.id
+                })
+
+            if (error) throw error
+
+            toast.success("Customer created successfully")
             router.push("/clients")
-        }, 1000)
+        } catch (error: any) {
+            toast.error("Failed to create customer", { description: error.message })
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -80,6 +138,8 @@ export default function NewClientPage() {
                                         placeholder="Acme Inc"
                                         spellCheck={false}
                                         className="bg-transparent border-white/10 h-12 text-lg font-bold focus-visible:ring-white/20"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                     />
                                 </div>
 
@@ -90,6 +150,8 @@ export default function NewClientPage() {
                                             placeholder="acme@example.com"
                                             spellCheck={false}
                                             className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                         />
                                     </div>
                                     <div className="space-y-3">
@@ -98,6 +160,8 @@ export default function NewClientPage() {
                                             placeholder="finance@example.com"
                                             spellCheck={false}
                                             className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                            value={billingEmail}
+                                            onChange={(e) => setBillingEmail(e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -105,11 +169,11 @@ export default function NewClientPage() {
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Phone Number</Label>
-                                        <Input placeholder="+27 12 345 6789" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
+                                        <Input placeholder="+27 12 345 6789" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" value={phone} onChange={(e) => setPhone(e.target.value)} />
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Website</Label>
-                                        <Input placeholder="acme.com" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
+                                        <Input placeholder="acme.com" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" value={website} onChange={(e) => setWebsite(e.target.value)} />
                                     </div>
                                 </div>
 
@@ -119,6 +183,8 @@ export default function NewClientPage() {
                                         placeholder="John Doe"
                                         spellCheck={false}
                                         className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20"
+                                        value={contactPerson}
+                                        onChange={(e) => setContactPerson(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -134,26 +200,28 @@ export default function NewClientPage() {
                                         placeholder="Line 1, Line 2, City, State, ZIP"
                                         spellCheck={false}
                                         className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
                                     />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Country</Label>
-                                        <Select defaultValue="za">
+                                        <Select value={country} onValueChange={setCountry}>
                                             <SelectTrigger className="bg-transparent border-white/10 h-12 focus:ring-white/20">
                                                 <SelectValue placeholder="Select country" />
                                             </SelectTrigger>
                                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                                <SelectItem value="za">South Africa</SelectItem>
-                                                <SelectItem value="us">United States</SelectItem>
-                                                <SelectItem value="uk">United Kingdom</SelectItem>
+                                                <SelectItem value="South Africa">South Africa</SelectItem>
+                                                <SelectItem value="United States">United States</SelectItem>
+                                                <SelectItem value="United Kingdom">United Kingdom</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Tax ID / VAT Number</Label>
-                                        <Input placeholder="Enter VAT number" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" />
+                                        <Input placeholder="Enter VAT number" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" value={taxId} onChange={(e) => setTaxId(e.target.value)} />
                                     </div>
                                 </div>
                             </div>
@@ -162,7 +230,7 @@ export default function NewClientPage() {
                         {/* Notes Section */}
                         <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
                             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Private Notes</h2>
-                            <textarea placeholder="Add any private details about this client..." className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none" />
+                            <textarea placeholder="Add any private details about this client..." className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none" value={notes} onChange={(e) => setNotes(e.target.value)} />
                         </div>
                     </div>
                 </div>

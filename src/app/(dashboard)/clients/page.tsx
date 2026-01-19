@@ -78,7 +78,7 @@ export default function ClientsPage() {
             }
         }
         fetchCustomers()
-    }, [supabase])
+    }, [supabase, activeWorkspace])
 
     const handleDeleteCustomer = async (customerId: string) => {
         try {

@@ -46,13 +46,82 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
         return v
     }
 
+    // Luhn algorithm for card number validation
+    const isValidCardNumber = (cardNumber: string) => {
+        const digits = cardNumber.replace(/\s/g, '')
+        if (digits.length < 13 || digits.length > 19) return false
+        
+        let sum = 0
+        let isEven = false
+        
+        for (let i = digits.length - 1; i >= 0; i--) {
+            let digit = parseInt(digits[i], 10)
+            
+            if (isEven) {
+                digit *= 2
+                if (digit > 9) digit -= 9
+            }
+            
+            sum += digit
+            isEven = !isEven
+        }
+        
+        return sum % 10 === 0
+    }
+
+    // Validate expiry date
+    const isValidExpiry = (expiryStr: string) => {
+        const parts = expiryStr.split('/')
+        if (parts.length !== 2) return false
+        
+        const month = parseInt(parts[0], 10)
+        const year = parseInt(`20${parts[1]}`, 10)
+        
+        if (month < 1 || month > 12) return false
+        
+        const now = new Date()
+        const currentYear = now.getFullYear()
+        const currentMonth = now.getMonth() + 1
+        
+        if (year < currentYear) return false
+        if (year === currentYear && month < currentMonth) return false
+        
+        return true
+    }
+
+    // Validate CVC
+    const isValidCVC = (cvcStr: string) => {
+        return cvcStr.length >= 3 && cvcStr.length <= 4 && /^\d+$/.test(cvcStr)
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
 
-        // Basic Validation
-        if (number.length < 16) {
-            toast.error("Invalid card number")
+        // Validate cardholder name
+        if (!name.trim()) {
+            toast.error("Please enter cardholder name")
+            setIsSubmitting(false)
+            return
+        }
+
+        // Validate card number with Luhn algorithm
+        if (!isValidCardNumber(number)) {
+            toast.error("Invalid card number", { description: "Please check the card number and try again" })
+            setIsSubmitting(false)
+            return
+        }
+
+        // Validate expiry date
+        if (!isValidExpiry(expiry)) {
+            toast.error("Invalid expiry date", { description: "Card may be expired or date format is incorrect" })
+            setIsSubmitting(false)
+            return
+        }
+
+        // Validate CVC
+        if (!isValidCVC(cvc)) {
+            toast.error("Invalid CVC", { description: "CVC must be 3-4 digits" })
             setIsSubmitting(false)
             return
         }
@@ -94,10 +163,12 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                         Add Payment Method
                     </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+                <form onSubmit={handleSubmit} className="space-y-4 pt-4" autoComplete="on">
                     <div className="space-y-2">
                         <Label>Cardholder Name</Label>
                         <Input
+                            name="cc-name"
+                            autoComplete="cc-name"
                             placeholder="John Doe"
                             className="bg-white/5 border-white/10"
                             value={name}
@@ -109,6 +180,9 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                         <Label>Card Number</Label>
                         <div className="relative">
                             <Input
+                                name="cc-number"
+                                autoComplete="cc-number"
+                                inputMode="numeric"
                                 placeholder="0000 0000 0000 0000"
                                 className="bg-white/5 border-white/10 pl-10"
                                 value={number}
@@ -123,6 +197,9 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                         <div className="space-y-2">
                             <Label>Expiry Date</Label>
                             <Input
+                                name="cc-exp"
+                                autoComplete="cc-exp"
+                                inputMode="numeric"
                                 placeholder="MM/YY"
                                 className="bg-white/5 border-white/10"
                                 value={expiry}
@@ -135,6 +212,9 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                             <Label>CVC</Label>
                             <div className="relative">
                                 <Input
+                                    name="cc-csc"
+                                    autoComplete="cc-csc"
+                                    inputMode="numeric"
                                     placeholder="123"
                                     className="bg-white/5 border-white/10 pl-10"
                                     value={cvc}

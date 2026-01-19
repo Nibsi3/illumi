@@ -22,9 +22,11 @@ import { cn } from "@/lib/utils"
 import { NumberInput } from "@/components/ui/number-input"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useWorkspace } from "@/lib/workspace-context"
 
 export default function NewProductPage() {
   const router = useRouter()
+  const { activeWorkspace } = useWorkspace()
   const [isLoading, setIsLoading] = useState(false)
 
   // Form State
@@ -60,6 +62,11 @@ export default function NewProductPage() {
         return
       }
 
+      if (!activeWorkspace) {
+        toast.error("No workspace selected")
+        return
+      }
+
       const { error } = await supabase
         .from('products')
         .insert({
@@ -70,7 +77,8 @@ export default function NewProductPage() {
           sku: sku || null,
           billing_type: billingType,
           status: 'active',
-          user_id: user.id
+          user_id: user.id,
+          workspace_id: activeWorkspace.id
           // Note: unit_label and tax_treatment might need schema updates if they don't exist, 
           // but for now we stick to the core fields known from the list page.
           // If the schema supports them, we add them. 
