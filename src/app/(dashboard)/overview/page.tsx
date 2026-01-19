@@ -194,19 +194,17 @@ export default function DashboardPage() {
         }
     }
 
-    if (isInitialLoading) {
-        return (
-            <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3 text-white/70">
-                    <IconLoader2 className="h-5 w-5 animate-spin" />
-                    <div className="text-xs font-sans tracking-wide">Loading overview...</div>
-                </div>
-            </div>
-        )
-    }
-
     return (
-        <div className="flex flex-col gap-y-6 animate-in fade-in duration-700 min-h-full font-serif -mt-6">
+        <div className="relative flex flex-col gap-y-6 animate-in fade-in duration-700 min-h-full font-serif -mt-6">
+            {isInitialLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
+                    <div className="relative flex flex-col items-center gap-3 text-white/80">
+                        <IconLoader2 className="h-5 w-5 animate-spin" />
+                        <div className="text-xs font-sans tracking-wide">Loading overview...</div>
+                    </div>
+                </div>
+            )}
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
@@ -335,7 +333,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/products" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconLayoutGrid className="h-4 w-4" />
@@ -351,7 +349,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/overview" onClick={(e) => { e.preventDefault(); setView("metrics"); }} className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/1 transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconTrendingUp className="h-4 w-4" />
@@ -366,7 +364,7 @@ export default function DashboardPage() {
                         </Card>
                     </Link>
 
-                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.01] transition-colors group h-[220px] shadow-2xl col-span-1 md:col-span-2">
+                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/1 transition-colors group h-[220px] shadow-2xl col-span-1 md:col-span-2">
                         <div className="flex flex-col justify-between h-full">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">

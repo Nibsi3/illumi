@@ -19,25 +19,26 @@ import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
 const categories = [
-    { value: "bug", label: "Bug Report", icon: Bug, color: "text-red-400" },
-    { value: "feature", label: "Feature Request", icon: Sparkles, color: "text-amber-400" },
-    { value: "account", label: "Account Issue", icon: User, color: "text-blue-400" },
-    { value: "billing", label: "Billing", icon: CreditCard, color: "text-emerald-400" },
-    { value: "other", label: "Other", icon: HelpCircle, color: "text-neutral-400" },
+    { value: "bug", label: "Bug Report", icon: Bug },
+    { value: "feature", label: "Feature Request", icon: Sparkles },
+    { value: "account", label: "Account Issue", icon: User },
+    { value: "billing", label: "Billing", icon: CreditCard },
+    { value: "other", label: "Other", icon: HelpCircle },
 ]
 
 const priorities = [
-    { value: "low", label: "Low", color: "bg-neutral-500" },
-    { value: "medium", label: "Medium", color: "bg-blue-500" },
-    { value: "high", label: "High", color: "bg-amber-500" },
-    { value: "urgent", label: "Urgent", color: "bg-red-500" },
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+    { value: "urgent", label: "Urgent" },
 ]
 
 export default function SupportSettingsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [subject, setSubject] = useState("")
-    const [category, setCategory] = useState("")
-    const [priority, setPriority] = useState("medium")
+    const [category, setCategory] = useState("account")
+    const [priority, setPriority] = useState("low")
+    const [priorityTouched, setPriorityTouched] = useState(false)
     const [description, setDescription] = useState("")
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [userName, setUserName] = useState<string>("")
@@ -105,8 +106,9 @@ export default function SupportSettingsPage() {
             })
 
             setSubject("")
-            setCategory("")
-            setPriority("medium")
+            setCategory("account")
+            setPriority("low")
+            setPriorityTouched(false)
             setDescription("")
         } catch (error: any) {
             toast.error("Failed to submit request", {
@@ -145,10 +147,11 @@ export default function SupportSettingsPage() {
                     </Button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                     {/* Main Form */}
-                    <div className="lg:col-span-8">
-                        <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="lg:col-span-8 flex">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-8 w-full flex flex-col">
+                            <form onSubmit={handleSubmit} className="space-y-8 flex-1">
                             {/* Category Selection */}
                             <div className="space-y-4">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">What can we help you with?</Label>
@@ -168,7 +171,7 @@ export default function SupportSettingsPage() {
                                                         : "bg-[#09090b] border-white/5 hover:border-white/10 hover:bg-white/5"
                                                 )}
                                             >
-                                                <Icon className={cn("h-5 w-5", isSelected ? cat.color : "text-neutral-500")} />
+                                                <Icon className={cn("h-5 w-5", isSelected ? "text-white" : "text-neutral-500")} />
                                                 <span className={cn("text-xs font-medium", isSelected ? "text-white" : "text-neutral-400")}>{cat.label}</span>
                                             </button>
                                         )
@@ -196,7 +199,10 @@ export default function SupportSettingsPage() {
                                         <button
                                             key={p.value}
                                             type="button"
-                                            onClick={() => setPriority(p.value)}
+                                            onClick={() => {
+                                                setPriorityTouched(true)
+                                                setPriority(p.value)
+                                            }}
                                             className={cn(
                                                 "flex items-center gap-2 px-4 py-2 rounded-lg border transition-all",
                                                 priority === p.value
@@ -204,7 +210,9 @@ export default function SupportSettingsPage() {
                                                     : "bg-[#09090b] border-white/5 hover:border-white/10"
                                             )}
                                         >
-                                            <div className={cn("w-2 h-2 rounded-full", p.color)} />
+                                            {priorityTouched && priority === p.value && (
+                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                            )}
                                             <span className={cn("text-sm font-medium", priority === p.value ? "text-white" : "text-neutral-400")}>{p.label}</span>
                                         </button>
                                     ))}
@@ -246,13 +254,15 @@ export default function SupportSettingsPage() {
                                     )}
                                 </Button>
                             </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
 
                     {/* Sidebar */}
-                    <div className="lg:col-span-4 space-y-6">
+                    <div className="lg:col-span-4 flex">
+                        <div className="w-full flex flex-col gap-6">
                         {/* Quick Links */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 flex-1">
                             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Quick Links</h3>
                             <div className="space-y-3">
                                 <Link
@@ -285,13 +295,15 @@ export default function SupportSettingsPage() {
                         </div>
 
                         {/* Response Times */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 flex-1">
                             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Response Times</h3>
                             <div className="space-y-3">
                                 {priorities.map((p) => (
                                     <div key={p.value} className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className={cn("w-2 h-2 rounded-full", p.color)} />
+                                            {priorityTouched && priority === p.value && (
+                                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                            )}
                                             <span className="text-sm text-neutral-400">{p.label}</span>
                                         </div>
                                         <span className="text-sm font-medium text-white">
@@ -303,6 +315,7 @@ export default function SupportSettingsPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>

@@ -216,9 +216,9 @@ function BillingContent() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
                 {/* Payment Methods */}
-                <div className="space-y-6">
+                <div className="space-y-6 flex flex-col">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-white">Payment Methods</h3>
                         <Button
@@ -232,9 +232,9 @@ function BillingContent() {
                         </Button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1">
                         {billingMethods.length === 0 && (
-                            <div className="p-8 border border-white/5 border-dashed rounded-xl bg-[#09090b] text-center">
+                            <div className="p-8 border border-white/5 border-dashed rounded-xl bg-[#09090b] text-center min-h-[96px] flex items-center justify-center">
                                 <p className="text-sm text-neutral-500">No payment methods added.</p>
                             </div>
                         )}
@@ -243,7 +243,7 @@ function BillingContent() {
                                 key={card.id}
                                 className={cn(
                                     "p-4 rounded-xl border transition-all flex items-center justify-between group",
-                                    card.isDefault ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b] hover:bg-white/[0.02]"
+                                    card.isDefault ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b] hover:bg-white/2"
                                 )}
                             >
                                 <div className="flex items-center gap-4">
@@ -300,11 +300,14 @@ function BillingContent() {
                 </div>
 
                 {/* Billing History / Details */}
-                <div className="space-y-6">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-white">Billing History</h3>
-                    <div className="border border-white/5 rounded-xl bg-[#09090b] divide-y divide-white/5">
+                <div className="space-y-6 flex flex-col">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-white">Billing History</h3>
+                        <div className="h-6" />
+                    </div>
+                    <div className="border border-white/5 rounded-xl bg-[#09090b] divide-y divide-white/5 flex-1">
                         {isLoadingHistory ? (
-                            <div className="p-8 text-center">
+                            <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
                                 <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">Loading...</p>
                             </div>
                         ) : billingHistory.length > 0 ? (
@@ -330,7 +333,7 @@ function BillingContent() {
                                 )}
                             </>
                         ) : (
-                            <div className="p-8 text-center">
+                            <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
                                 <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">No billing history yet</p>
                             </div>
                         )}
