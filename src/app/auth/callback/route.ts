@@ -6,21 +6,26 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url)
-    const code = searchParams.get('code')
-    const next = searchParams.get('next') ?? '/overview'
+    const requestUrl = new URL(request.url)
+    const code = requestUrl.searchParams.get('code')
+    const next = requestUrl.searchParams.get('next') ?? '/overview'
 
-    const baseUrl = getURL()
+    // FORCE local redirection if we are in development/local environment
+    // This overrides any Supabase site_url fallback
+    let origin = requestUrl.origin
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        origin = 'http://localhost:3001'
+    }
 
     if (code) {
         const supabase = await createClient()
         const { error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
-            return NextResponse.redirect(`${baseUrl}${next}`)
+            return NextResponse.redirect(`${origin}${next}`)
         }
         console.error('Auth code exchange error:', error)
     }
 
     // Return the user to an error page with instructions
-    return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`)
+    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }

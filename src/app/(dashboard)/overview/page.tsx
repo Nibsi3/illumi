@@ -36,9 +36,12 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
+import { useSettings } from "@/lib/settings-context"
 
 export default function DashboardPage() {
     const router = useRouter();
+    const { currency } = useSettings();
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState("1 year");
     const [query, setQuery] = useState("");
@@ -57,38 +60,39 @@ export default function DashboardPage() {
     })
 
     const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
 
     useEffect(() => {
         async function fetchMetrics() {
             try {
                 const { data: { user } } = await supabase.auth.getUser()
-                if (!user) return
+                if (!user || !activeWorkspace) return
 
                 // Fetch Invoices
                 const { data: invoices } = await supabase
                     .from('invoices')
-                    .select('amount, status')
-                    .eq('user_id', user.id)
+                    .select('total, status')
+                    .eq('workspace_id', activeWorkspace.id)
 
                 const totalRevenue = invoices
-                    ?.filter(i => i.status === 'paid' || i.status === 'Paid')
-                    .reduce((acc, curr) => acc + (curr.amount || 0), 0) || 0
+                    ?.filter(i => i.status.toLowerCase() === 'paid')
+                    .reduce((acc, curr) => acc + (Number(curr.total) || 0), 0) || 0
 
                 const pendingCount = invoices
-                    ?.filter(i => i.status === 'pending' || i.status === 'Pending' || i.status === 'draft' || i.status === 'Draft')
+                    ?.filter(i => ['pending', 'draft', 'sent'].includes(i.status.toLowerCase()))
                     .length || 0
 
                 // Fetch Customers Count
                 const { count: customerCount } = await supabase
                     .from('customers')
                     .select('*', { count: 'exact', head: true })
-                    .eq('user_id', user.id)
+                    .eq('workspace_id', activeWorkspace.id)
 
                 // Fetch Products
                 const { data: products } = await supabase
                     .from('products')
                     .select('price, billing_type')
-                    .eq('user_id', user.id)
+                    .eq('workspace_id', activeWorkspace.id)
 
                 const productCount = products?.length || 0
                 const recurring = products
@@ -207,7 +211,7 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                     {/* Grid items use #0c0c0c */}
                     <Link href="/invoices" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconReceipt className="h-4 w-4" />
@@ -215,7 +219,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="text-[11px] text-muted-foreground">Net revenue - {period}</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.revenue.toLocaleString()}</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
                                     <div className="text-[9px] uppercase font-bold text-emerald-500/80 mt-1 flex items-center gap-1.5">
                                         <IconTrendingUp className="h-3 w-3" />
                                         +{metrics.growth}% vs last year
@@ -226,7 +230,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/clients" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconUsers className="h-4 w-4" />
@@ -242,7 +246,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/recurring" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconClock className="h-4 w-4" />
@@ -250,7 +254,7 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.recurring.toLocaleString()}</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.recurring.toLocaleString()}</div>
                                     <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Based on active subscriptions</div>
                                 </div>
                             </div>
@@ -258,7 +262,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/inbox" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.02] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconWallet className="h-4 w-4" />
@@ -290,7 +294,7 @@ export default function DashboardPage() {
                     </Link>
 
                     <Link href="/overview" onClick={(e) => { e.preventDefault(); setView("metrics"); }} className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.01] transition-colors group h-[220px] shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/1 transition-colors group h-[220px] shadow-2xl">
                             <div className="flex flex-col justify-between h-full">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconTrendingUp className="h-4 w-4" />
@@ -298,8 +302,8 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="text-[11px] text-muted-foreground">Estimated gross - {period}</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">ZAR {metrics.revenue.toLocaleString()}</div>
-                                    <div className="text-[9px] uppercase font-bold text-muted-foreground/30">Tax: ZAR {(metrics.revenue * 0.15).toLocaleString()}</div>
+                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
+                                    <div className="text-[9px] uppercase font-bold text-muted-foreground/30">Tax: {currency} {(metrics.revenue * 0.15).toLocaleString()}</div>
                                 </div>
                             </div>
                         </Card>
@@ -333,7 +337,7 @@ export default function DashboardPage() {
                             <div className="flex flex-col gap-4">
                                 <div className="flex flex-col gap-1">
                                     <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{title === "Runway" ? "Runway" : "Revenue"}</span>
-                                    <h3 className="text-3xl font-serif font-bold italic">ZAR {title === "Net Revenue" ? metrics.revenue.toLocaleString() : "0"}</h3>
+                                    <h3 className="text-3xl font-serif font-bold italic">{currency} {title === "Net Revenue" ? metrics.revenue.toLocaleString() : "0"}</h3>
                                     {title === "Net Revenue" && (
                                         <div className="flex gap-4 mt-2">
                                             <div className="flex items-center gap-2"><div className="h-1 w-1 bg-white rounded-full" /><span className="text-[10px] text-muted-foreground">This Year</span></div>
@@ -345,7 +349,7 @@ export default function DashboardPage() {
                                 <div className="flex-1 min-h-[200px] flex items-end justify-between border-b border-white/5 pb-2">
                                     {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan"].map((m, i) => (
                                         <div key={`${m}-${i}`} className="flex flex-col items-center gap-2">
-                                            <div className="w-[1px] h-32 border-l border-dashed border-white/5" />
+                                            <div className="w-px h-32 border-l border-dashed border-white/5" />
                                             <span className="text-[8px] text-muted-foreground">{m}</span>
                                         </div>
                                     ))}
@@ -390,7 +394,7 @@ export default function DashboardPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
-                        className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex flex-col items-center"
+                        className="fixed inset-0 z-100 bg-black/95 backdrop-blur-3xl flex flex-col items-center"
                     >
                         {/* Header */}
                         <div className="w-full max-w-5xl flex items-center justify-between p-8">

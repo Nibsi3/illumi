@@ -24,7 +24,7 @@ export function AuthForm() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${getURL()}/auth/callback?next=/overview`,
+                emailRedirectTo: `${getURL()}/auth/callback`,
             },
         })
 
@@ -77,7 +77,7 @@ export function AuthForm() {
                     supabase.auth.signInWithOAuth({
                         provider: 'google',
                         options: {
-                            redirectTo: `${getURL()}/auth/callback?next=/overview`,
+                            redirectTo: `${getURL()}/auth/callback`,
                         }
                     })
                 }}>

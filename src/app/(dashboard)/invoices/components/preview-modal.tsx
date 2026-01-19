@@ -4,6 +4,9 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { X, Download, Printer, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useSettings } from "@/lib/settings-context"
+import { format, parseISO } from "date-fns"
+import { toast } from "sonner"
 
 interface PreviewModalProps {
     isOpen: boolean
@@ -29,23 +32,17 @@ interface PreviewModalProps {
 
 export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     if (!isOpen) return null
+    const { activePaymentProvider } = useSettings()
 
     const formatDate = (dateString: string) => {
         if (!dateString) return "--/--/----"
-        const date = new Date(dateString)
-        const day = String(date.getDate()).padStart(2, '0')
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        const year = date.getFullYear()
-
-        switch (data.dateFormat) {
-            case "DD/MM/YYYY":
-                return `${day}/${month}/${year}`
-            case "MM/DD/YYYY":
-                return `${month}/${day}/${year}`
-            case "YYYY-MM-DD":
-                return `${year}-${month}-${day}`
-            default:
-                return `${day}/${month}/${year}`
+        try {
+            // dateString is expected to be YYYY-MM-DD
+            const date = parseISO(dateString)
+            const fmt = data.dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')
+            return format(date, fmt)
+        } catch (e) {
+            return dateString
         }
     }
 
@@ -72,7 +69,15 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <Button variant="outline" className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter">
+                    <Button
+                        variant="outline"
+                        className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter"
+                        onClick={() => {
+                            const url = `${window.location.origin}/pay/${data.invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
+                            navigator.clipboard.writeText(url)
+                            toast.success("Link copied to clipboard")
+                        }}
+                    >
                         <Share2 className="mr-2 h-4 w-4" />
                         Share
                     </Button>
@@ -84,15 +89,18 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         <Printer className="mr-2 h-4 w-4" />
                         Print
                     </Button>
-                    <Button className="h-9 bg-white text-black hover:bg-neutral-200 text-xs font-black uppercase tracking-tighter px-6">
+                    <Button
+                        className="h-9 bg-white text-black hover:bg-neutral-200 text-xs font-black uppercase tracking-tighter px-6"
+                        onClick={() => window.print()}
+                    >
                         <Download className="mr-2 h-4 w-4" />
                         Download PDF
                     </Button>
                 </div>
-            </header>
+            </header >
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-12 scrollbar-hide">
+            < div className="flex-1 overflow-y-auto p-12 scrollbar-hide" >
                 <div className={cn(
                     "mx-auto shadow-2xl min-h-[1000px] printable-area transition-all duration-500",
                     data.invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#0a0a0a] text-white border border-white/5",
@@ -105,25 +113,24 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     )}
 
                     <div className={cn(data.template === "Modern" && "p-12")}>
-                        {/* Header: Logo & Title */}
-                        <div className="flex justify-between items-start mb-16">
+                        <div className="flex justify-between items-start mb-24">
                             <div className={cn(
-                                "w-20 h-20 rounded-2xl flex items-center justify-center overflow-hidden",
-                                data.invoiceMode === "light" ? "bg-black" : "bg-white"
+                                "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border",
+                                data.invoiceMode === "light" ? "bg-black border-black/5" : "bg-white border-white/10"
                             )}>
                                 {data.logo ? (
                                     <img src={data.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                 ) : (
                                     <div className={cn(
-                                        "font-black text-2xl italic",
+                                        "font-serif font-black text-3xl italic",
                                         data.invoiceMode === "light" ? "text-white" : "text-black"
-                                    )}>I.</div>
+                                    )}>E.</div>
                                 )}
                             </div>
                             <div className="text-right">
-                                <h1 className="text-5xl font-serif italic mb-2">Invoice</h1>
+                                <h1 className="text-6xl font-serif italic mb-3 tracking-tighter">Invoice</h1>
                                 <p className={cn(
-                                    "font-mono text-sm tracking-widest",
+                                    "font-mono text-xs tracking-[0.3em] uppercase opacity-40",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/40"
                                 )}>{data.invoiceNumber}</p>
                             </div>
@@ -220,47 +227,49 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             </tbody>
                         </table>
 
-                        {/* Footer */}
+                        {/* Footer Section */}
                         <div className={cn(
-                            "flex justify-between items-start pt-12 border-t-2",
-                            data.invoiceMode === "light" ? "border-black" : "border-white"
+                            "grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t",
+                            data.invoiceMode === "light" ? "border-black/10" : "border-white/5"
                         )}>
-                            <div className="w-1/2 flex flex-col gap-8">
-                                <div className="flex flex-col gap-2">
+                            <div className="space-y-6">
+                                <div className="space-y-2">
                                     <span className={cn(
-                                        "text-[10px] font-bold uppercase tracking-widest",
+                                        "text-[10px] font-bold uppercase tracking-[0.2em]",
                                         data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                     )}>Note</span>
                                     <p className={cn(
-                                        "text-xs leading-relaxed italic opacity-60",
-                                        data.invoiceMode === "light" ? "text-neutral-400" : "text-white/40"
+                                        "text-sm italic font-serif leading-relaxed opacity-60",
+                                        data.invoiceMode === "light" ? "text-black/60" : "text-white/60"
                                     )}>
-                                        Thank you for your business.
+                                        Thank you for your partnership. We appreciate the opportunity to work with you and your team.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="w-1/3 flex flex-col gap-4">
-                                <div className="flex justify-between text-sm">
-                                    <span className="opacity-40 font-medium tracking-widest uppercase text-[10px]">Subtotal</span>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Subtotal</span>
                                     <span className="font-mono">{subtotal.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="opacity-40 font-medium tracking-widest uppercase text-[10px]">Tax ({data.taxRate}%)</span>
-                                    <span className="font-mono">{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Tax ({data.taxRate}%)</span>
+                                    <span className="font-mono text-neutral-400">{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
                                 <div className={cn(
-                                    "flex justify-between items-center text-4xl font-serif italic font-bold mt-6 pt-6 border-t",
-                                    data.invoiceMode === "light" ? "border-neutral-100" : "border-white/5"
+                                    "pt-10 border-t flex justify-between items-end",
+                                    data.invoiceMode === "light" ? "border-black/5" : "border-white/10"
                                 )}>
-                                    <span className="opacity-20 text-xl font-sans font-bold uppercase tracking-tighter">Total</span>
-                                    <span className="font-mono">{total.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
+                                    <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/20 mb-2">Total Due</span>
+                                    <span className="text-5xl font-serif italic font-bold tracking-tighter">
+                                        {total.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
 
             <style jsx global>{`
                 @media print {
@@ -273,6 +282,6 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     )
 }

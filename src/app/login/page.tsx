@@ -42,20 +42,16 @@ export default function LoginPage() {
     const [googleLoading, setGoogleLoading] = useState(false)
     const supabase = createClient()
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-        }, 5000)
-
-        return () => clearInterval(timer)
-    }, [])
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true)
+        const redirectUrl = `${getURL()}/auth/callback`
+        console.log('Initiating Google Sign-In with redirect:', redirectUrl)
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${getURL()}/auth/callback?next=/overview`,
+                redirectTo: redirectUrl,
             }
         })
 
@@ -73,17 +69,25 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
-                emailRedirectTo: `${getURL()}/auth/callback?next=/overview`,
+                emailRedirectTo: `${getURL()}/auth/callback`,
             },
         })
 
         if (error) {
             toast.error(error.message)
         } else {
-            toast.success("Check your email for the magic link!")
+            toast.success("Check your email for the login link!")
         }
         setLoading(false)
     }
+
+    // Cycle testimonials
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+        }, 5000)
+        return () => clearInterval(interval)
+    }, [])
 
     const testimonial = testimonials[currentTestimonial]
 

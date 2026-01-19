@@ -8,7 +8,7 @@ import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Check, Download, X, 
 import { IconFolder } from "@tabler/icons-react"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import {
     DropdownMenu,
@@ -18,8 +18,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu"
-import { allInvoices } from "@/lib/mock-data"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
+import { useWorkspace } from "@/lib/workspace-context"
+import { useSettings } from "@/lib/settings-context"
 
+// Kept for type reference only, not using mock data
 
 const columnsList = [
     { label: "Invoice no.", id: "id" },
@@ -27,19 +31,19 @@ const columnsList = [
     { label: "Due date", id: "dueDate" },
     { label: "Customer", id: "customer" },
     { label: "Amount", id: "amount" },
-    { label: "VAT Rate", id: "vatRate" },
-    { label: "VAT Amount", id: "vatAmount" },
-    { label: "Tax Rate", id: "taxRate" },
-    { label: "Tax Amount", id: "taxAmount" },
-    { label: "Excl. VAT", id: "exclVat" },
-    { label: "Excl. Tax", id: "exclTax" },
-    { label: "Internal Note", id: "internalNote" },
     { label: "Issue date", id: "issueDate" },
     { label: "Type", id: "type" },
     { label: "Sent at", id: "sentAt" },
 ]
 
 export default function InvoicesPage() {
+    const [invoices, setInvoices] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
+    const { currency } = useSettings()
+
+    // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
     const [filterClient, setFilterClient] = useState<string | null>(null)
@@ -48,17 +52,63 @@ export default function InvoicesPage() {
         "id", "status", "dueDate", "customer", "amount", "issueDate", "type"
     ])
 
+    useEffect(() => {
+        const fetchInvoices = async () => {
+            if (!activeWorkspace) {
+                setIsLoading(false)
+                return
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('invoices')
+                    .select('*, customers(name)')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .order('created_at', { ascending: false })
+
+                if (error) throw error
+
+                // Transform data to match UI expectations
+                const formattedInvoices = (data || []).map(inv => {
+                    const now = new Date();
+                    now.setHours(0, 0, 0, 0);
+                    // Parse due date as local midnight to avoid UTC offsets making today overdue
+                    const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null;
+                    const isOverdue = inv.status.toLowerCase() !== 'paid' && dueDate && dueDate < now;
+
+                    return {
+                        ...inv,
+                        displayId: inv.invoice_number, // Use the readable invoice number for display
+                        customer: inv.customers?.name || 'Unknown',
+                        amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
+                        dueDate: inv.due_date,
+                        issueDate: inv.issue_date,
+                        status: isOverdue ? 'Overdue' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1)
+                    };
+                })
+
+                setInvoices(formattedInvoices)
+            } catch (e) {
+                console.error("Error fetching invoices:", e)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchInvoices()
+    }, [activeWorkspace?.id, currency])
+
     // Compute unique clients with invoice counts
     const clientFolders = useMemo(() => {
         const clientMap = new Map<string, number>()
-        allInvoices.forEach((inv: any) => {
+        invoices.forEach((inv: any) => {
             clientMap.set(inv.customer, (clientMap.get(inv.customer) || 0) + 1)
         })
         return Array.from(clientMap.entries()).map(([name, count]) => ({
             name,
             count
         }))
-    }, [])
+    }, [invoices])
 
     const [viewMode, setViewMode] = useState<'list' | 'company'>('list')
 
@@ -69,10 +119,102 @@ export default function InvoicesPage() {
     }
 
     const toggleSelectAll = () => {
-        if (selectedIds.length === allInvoices.length) {
+        if (selectedIds.length === invoices.length) {
             setSelectedIds([])
         } else {
-            setSelectedIds(allInvoices.map((i: any) => i.id))
+            setSelectedIds(invoices.map((i: any) => i.id))
+        }
+    }
+
+    // Delete invoice function
+    const handleDeleteInvoice = async (invoiceId: string) => {
+        try {
+            const { error } = await supabase
+                .from('invoices')
+                .delete()
+                .eq('id', invoiceId)
+
+            if (error) throw error
+
+            toast.success("Invoice deleted")
+
+            // Refresh the list reactively
+            setInvoices(prev => prev.filter(inv => inv.id !== invoiceId))
+            setSelectedIds(prev => prev.filter(id => id !== invoiceId))
+        } catch (error: any) {
+            console.error('Delete failed:', error)
+            toast.error("Failed to delete invoice", {
+                description: error.message
+            })
+        }
+    }
+
+    // Mark as paid function
+    const handleMarkAsPaid = async (invoiceId: string) => {
+        try {
+            const { error } = await supabase
+                .from('invoices')
+                .update({
+                    status: 'paid',
+                    paid_at: new Date().toISOString()
+                })
+                .eq('id', invoiceId)
+
+            if (error) throw error
+
+            toast.success("Invoice marked as paid")
+
+            // Refresh the list reactively
+            setInvoices(prev => prev.map(inv =>
+                inv.id === invoiceId ? { ...inv, status: 'Paid' } : inv
+            ))
+        } catch (error: any) {
+            console.error('Update failed:', error)
+            toast.error("Failed to update status")
+        }
+    }
+
+    const handleCopyLink = (invoiceNumber: string) => {
+        const url = `${window.location.origin}/pay/${invoiceNumber}`
+        navigator.clipboard.writeText(url)
+        toast.success("Link copied to clipboard")
+    }
+
+    const handleWhatsAppShare = (invoiceNumber: string, total: any) => {
+        const url = `${window.location.origin}/pay/${invoiceNumber}`
+        const text = `Invoice #${invoiceNumber} from Emini Invoicing. Total: ${total}. View and pay here: ${url}`
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    }
+
+    const handleEmailShare = async (invoice: any) => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error("Not authenticated")
+
+            const response = await fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'invoice',
+                    to: invoice.customers?.email || invoice.customer_email || 'customer@example.com',
+                    customerName: invoice.customer,
+                    invoiceNumber: invoice.displayId,
+                    amount: invoice.amount,
+                    currency: invoice.currency || 'ZAR',
+                    dueDate: invoice.dueDate,
+                    paymentUrl: `${window.location.origin}/pay/${invoice.displayId}`
+                })
+            })
+
+            const data = await response.json()
+            if (data.success) {
+                toast.success("Email sent successfully")
+            } else {
+                throw new Error(data.error || "Failed to send email")
+            }
+        } catch (err: any) {
+            console.error("Email share error:", err)
+            toast.error("Failed to send email", { description: err.message })
         }
     }
 
@@ -85,8 +227,16 @@ export default function InvoicesPage() {
     }
 
     // Filter by both status and client
-    const filteredInvoices = allInvoices.filter((inv: any) => {
-        const statusMatch = !filterStatus || inv.status.toLowerCase() === filterStatus.toLowerCase()
+    const filteredInvoices = invoices.filter((inv: any) => {
+        let statusMatch = !filterStatus
+        if (filterStatus === 'unpaid') {
+            statusMatch = ['sent', 'viewed', 'draft'].includes(inv.status.toLowerCase())
+        } else if (filterStatus === 'overdue') {
+            statusMatch = inv.status.toLowerCase() === 'overdue'
+        } else if (filterStatus) {
+            statusMatch = inv.status.toLowerCase() === filterStatus.toLowerCase()
+        }
+
         const clientMatch = !filterClient || inv.customer === filterClient
         return statusMatch && clientMatch
     })
@@ -120,7 +270,7 @@ export default function InvoicesPage() {
                         >
                             <FolderOpen className="h-4 w-4 shrink-0" />
                             <span className="flex-1 text-sm font-medium truncate">All Invoices</span>
-                            <span className="text-xs text-neutral-500">{allInvoices.length}</span>
+                            <span className="text-xs text-neutral-500">{invoices.length}</span>
                         </button>
 
                         {/* Client Folders */}
@@ -154,36 +304,46 @@ export default function InvoicesPage() {
                         <p className="text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Create
-                                    <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 bg-[#0d0d0d] border-white/10 rounded-none text-white p-1">
-                                <Link href="/invoices/new">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer px-3 py-2.5 text-xs font-medium">
-                                        New Invoice
-                                    </DropdownMenuItem>
-                                </Link>
-                                <Link href="/recurring/new">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer px-3 py-2.5 text-xs font-medium">
-                                        New Recurring
-                                    </DropdownMenuItem>
-                                </Link>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Link href="/invoices/new">
+                            <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Create
+                            </Button>
+                        </Link>
                     </div>
                 </div>
 
                 {/* Status Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {[
-                        { label: "Open", value: "ZAR 0", count: "2 invoices", status: "unpaid" },
-                        { label: "Overdue", value: "ZAR 0", count: "No invoices", status: "overdue" },
-                        { label: "Paid", value: "ZAR 0", count: "No invoices", status: "paid" },
+                        {
+                            label: "Open",
+                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).reduce((acc, curr) => acc + (curr.total || 0), 0)
+                            ),
+                            count: `${invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).length} invoices`,
+                            status: "unpaid"
+                        },
+                        {
+                            label: "Overdue",
+                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                invoices.filter(i => i.status.toLowerCase() === 'overdue').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                            ),
+                            count: invoices.filter(i => i.status.toLowerCase() === 'overdue').length > 0
+                                ? `${invoices.filter(i => i.status.toLowerCase() === 'overdue').length} invoices`
+                                : "No invoices",
+                            status: "overdue"
+                        },
+                        {
+                            label: "Paid",
+                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                invoices.filter(i => i.status.toLowerCase() === 'paid').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                            ),
+                            count: invoices.filter(i => i.status.toLowerCase() === 'paid').length > 0
+                                ? `${invoices.filter(i => i.status.toLowerCase() === 'paid').length} invoices`
+                                : "No invoices",
+                            status: "paid"
+                        },
                     ].map((card) => (
                         <Card
                             key={card.label}
@@ -290,13 +450,13 @@ export default function InvoicesPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse text-left text-[13px]">
                                 <thead>
-                                    <tr className="bg-white/[0.02] border-b border-white/10">
-                                        <th className="px-5 py-3 w-10 border-r border-white/10 text-neutral-500 italic lowercase font-serif bg-white/[0.1] text-xs">
+                                    <tr className="bg-white/2 border-b border-white/10">
+                                        <th className="px-5 py-3 w-10 border-r border-white/10 text-neutral-500 italic lowercase font-serif bg-white/10 text-xs">
                                             <div
                                                 onClick={toggleSelectAll}
                                                 className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors"
                                             >
-                                                {selectedIds.length === allInvoices.length && <Check className="h-3 w-3 text-white" />}
+                                                {selectedIds.length === invoices.length && <Check className="h-3 w-3 text-white" />}
                                             </div>
                                         </th>
                                         {columnsList.filter(c => visibleColumns.includes(c.id)).map(col => (
@@ -309,7 +469,7 @@ export default function InvoicesPage() {
                                 </thead>
                                 <tbody>
                                     {filteredInvoices.map((invoice: any) => (
-                                        <tr key={invoice.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                                        <tr key={invoice.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                             <td className="px-5 py-4 border-r border-white/10">
                                                 <div
                                                     onClick={() => toggleSelect(invoice.id)}
@@ -322,15 +482,16 @@ export default function InvoicesPage() {
                                                 </div>
                                             </td>
                                             {visibleColumns.includes("id") && (
-                                                <td className="px-5 py-4 border-r border-white/10 font-bold text-[#fafafa] tracking-tight">#{invoice.id}</td>
+                                                <td className="px-5 py-4 border-r border-white/10 font-bold text-[#fafafa] tracking-tight">#{invoice.displayId}</td>
                                             )}
                                             {visibleColumns.includes("status") && (
                                                 <td className="px-5 py-4 border-r border-white/10">
                                                     <StatusDot
                                                         variant={
                                                             invoice.status === 'Paid' ? 'success' :
-                                                                invoice.status === 'Draft' ? 'neutral' :
-                                                                    'warning'
+                                                                invoice.status === 'Overdue' ? 'error' :
+                                                                    invoice.status === 'Draft' ? 'neutral' :
+                                                                        'warning'
                                                         }
                                                     >
                                                         {invoice.status}
@@ -360,15 +521,54 @@ export default function InvoicesPage() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
-                                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
-                                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
-                                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Download PDF</DropdownMenuItem>
+                                                        <Link href={`/invoices/edit/${invoice.id}`}>
+                                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
+                                                        </Link>
+                                                        <Link href={`/pay/${invoice.displayId}`} target="_blank">
+                                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
+                                                        </Link>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={async () => {
+                                                                toast.info("Preparing PDF...", { duration: 1000 })
+                                                                window.open(`/pay/${invoice.displayId}?print=true`, '_blank')
+                                                            }}
+                                                        >
+                                                            Download PDF
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-white/10 mx-1" />
-                                                        <DropdownMenuItem className="focus:bg-green-500/10 focus:text-green-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Share via WhatsApp</DropdownMenuItem>
-                                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Send via Email</DropdownMenuItem>
-                                                        <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Copy link</DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleMarkAsPaid(invoice.id)}
+                                                        >
+                                                            Mark as Paid
+                                                        </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-white/10 mx-1" />
-                                                        <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Delete</DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-green-500/10 focus:text-green-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleWhatsAppShare(invoice.displayId, invoice.amount)}
+                                                        >
+                                                            Share via WhatsApp
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleEmailShare(invoice)}
+                                                        >
+                                                            Send via Email
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleCopyLink(invoice.displayId)}
+                                                        >
+                                                            Copy link
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                        <DropdownMenuItem
+                                                            className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            onClick={() => handleDeleteInvoice(invoice.id)}
+                                                        >
+                                                            Delete
+                                                        </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </td>
@@ -384,7 +584,7 @@ export default function InvoicesPage() {
                             <Card key={company} className="bg-transparent border-white/5 hover:border-white/20 transition-all rounded-none group cursor-pointer">
                                 <CardContent className="p-6">
                                     <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-colors">
+                                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/3 transition-colors">
                                             <IconFolder className="h-6 w-6 text-neutral-400 group-hover:text-white transition-colors" />
                                         </div>
                                         <div className="flex-1 min-w-0">

@@ -22,31 +22,17 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const mockCards = [
-    {
-        id: "1",
-        brand: "Visa",
-        last4: "4242",
-        expMonth: 12,
-        expYear: 2025,
-        isDefault: true,
-    },
-    {
-        id: "2",
-        brand: "Mastercard",
-        last4: "8888",
-        expMonth: 8,
-        expYear: 2026,
-        isDefault: false,
-    }
-]
+import { AddCardModal } from "./components/add-card-modal"
+import { PayFastSubscribeButton } from "./components/payfast-subscribe"
+import { useSettings } from "@/lib/settings-context"
 
 function BillingContent() {
     const searchParams = useSearchParams()
     const plan = searchParams.get("plan")
     const { isPro, trialDaysLeft } = useSubscription()
+    const { billingMethods, setBillingMethods } = useSettings()
     const [selectedPlan, setSelectedPlan] = useState<string | null>(plan)
-    const [cards, setCards] = useState(mockCards)
+    const [isAddCardOpen, setIsAddCardOpen] = useState(false)
 
     useEffect(() => {
         if (plan) {
@@ -55,14 +41,22 @@ function BillingContent() {
     }, [plan])
 
     const setDefaultCard = (id: string) => {
-        setCards(cards.map(card => ({
+        setBillingMethods(billingMethods.map(card => ({
             ...card,
             isDefault: card.id === id
         })))
     }
 
     const removeCard = (id: string) => {
-        setCards(cards.filter(card => card.id !== id))
+        setBillingMethods(billingMethods.filter(card => card.id !== id))
+    }
+
+    const handleAddCard = (card: any) => {
+        // If first card, make default
+        if (billingMethods.length === 0) {
+            card.isDefault = true
+        }
+        setBillingMethods([...billingMethods, card])
     }
 
     return (
@@ -80,32 +74,51 @@ function BillingContent() {
                 <div className="flex items-center justify-between relative z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">Pro Trial</span>
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{trialDaysLeft} days remaining</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">
+                                {isPro ? "Pro Plan" : "Free Plan"}
+                            </span>
+                            {!isPro && (
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{trialDaysLeft} days remaining</span>
+                            )}
                         </div>
-                        <p className="text-3xl font-serif italic text-white mb-2">Illumi Professional</p>
-                        <p className="text-sm text-neutral-400 max-w-md">Access to all features including recurring invoices, client portal, and up to 10 team members.</p>
+                        <p className="text-3xl font-serif italic text-white mb-2">
+                            {isPro ? "Illumi Professional" : "Ready for Pro?"}
+                        </p>
+                        <p className="text-sm text-neutral-400 max-w-md">
+                            {isPro
+                                ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
+                                : "Upgrade to Pro for R350/mo to unlock recurring invoices, custom branding, and the client portal."}
+                        </p>
 
                         <div className="mt-8 flex items-center gap-4">
-                            <Button
-                                onClick={() => {
-                                    if (confirm(`Cancel subscription? You have ${trialDaysLeft} days remaining on your pro-rata balance.`)) {
-                                        alert("Subscription cancelled. Your access will remain active until the end of the period.");
-                                    }
-                                }}
-                                variant="ghost"
-                                className="h-9 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-red-500 hover:bg-red-500/5 px-4"
-                            >
-                                Cancel Plan
-                            </Button>
+                            {isPro ? (
+                                <Button
+                                    onClick={() => {
+                                        if (confirm(`Cancel subscription? You have ${trialDaysLeft} days remaining on your pro-rata balance.`)) {
+                                            alert("Subscription cancelled. Your access will remain active until the end of the period.");
+                                        }
+                                    }}
+                                    variant="ghost"
+                                    className="h-9 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-red-500 hover:bg-red-500/5 px-4"
+                                >
+                                    Cancel Plan
+                                </Button>
+                            ) : null}
                         </div>
                     </div>
-                    <Button
-                        onClick={() => window.open('https://billing.illumi.co.za', '_blank')}
-                        className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-xs shadow-2xl"
-                    >
-                        Manage Plan
-                    </Button>
+                    {isPro ? (
+                        <Button
+                            onClick={() => window.open('https://billing.illumi.co.za', '_blank')}
+                            className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-xs shadow-2xl"
+                        >
+                            Manage Plan
+                        </Button>
+                    ) : (
+                        <div className="flex flex-col items-end gap-2">
+                            <PayFastSubscribeButton />
+                            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-2">Secure monthly billing</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -114,14 +127,24 @@ function BillingContent() {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-white">Payment Methods</h3>
-                        <Button variant="ghost" size="sm" className="text-[10px] font-bold uppercase tracking-widest text-[#878787] hover:text-white px-0">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-[10px] font-bold uppercase tracking-widest text-[#878787] hover:text-white px-0"
+                            onClick={() => setIsAddCardOpen(true)}
+                        >
                             <IconPlus size={14} className="mr-1" />
                             Add New
                         </Button>
                     </div>
 
                     <div className="space-y-3">
-                        {cards.map((card) => (
+                        {billingMethods.length === 0 && (
+                            <div className="p-8 border border-white/5 border-dashed rounded-xl bg-[#09090b] text-center">
+                                <p className="text-sm text-neutral-500">No payment methods added.</p>
+                            </div>
+                        )}
+                        {billingMethods.map((card) => (
                             <div
                                 key={card.id}
                                 className={cn(
@@ -190,6 +213,12 @@ function BillingContent() {
                     </div>
                 </div>
             </div>
+
+            <AddCardModal
+                isOpen={isAddCardOpen}
+                onClose={() => setIsAddCardOpen(false)}
+                onSave={handleAddCard}
+            />
         </div>
     )
 }

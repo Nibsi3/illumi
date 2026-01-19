@@ -12,6 +12,7 @@ import { IconCreditCard, IconCheck, IconPlug, IconArrowRight, IconRefresh, IconP
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { useSettings } from "@/lib/settings-context"
 
 const providers = [
     {
@@ -53,8 +54,14 @@ const providers = [
 
 export default function PayGatePage() {
     const { isPro, isLoading } = useSubscription()
-    const [connectedProviders, setConnectedProviders] = useState(providers.filter(p => p.connected).map(p => p.id))
-    const [activeProvider, setActiveProvider] = useState<string | null>("payfast")
+    const {
+        activePaymentProvider, setActivePaymentProvider,
+        connectedProviders, setConnectedProviders,
+        providerKeys, setProviderKeys
+    } = useSettings()
+
+    const activeProvider = activePaymentProvider
+    // const [connectedProviders, setConnectedProviders] = useState(providers.filter(p => p.connected).map(p => p.id))
     const [isTestMode, setIsTestMode] = useState(true)
     const [configuringProvider, setConfiguringProvider] = useState<string | null>(null)
     const [isConnecting, setIsConnecting] = useState(false)
@@ -77,18 +84,34 @@ export default function PayGatePage() {
             return
         }
         // Reset inputs on fresh connect
-        setLiveMerchantId("")
-        setLiveSecretKey("")
-        setTestMerchantId("")
-        setTestSecretKey("")
+        const savedKeys = providerKeys[id] || {}
+        setLiveMerchantId(savedKeys.liveMerchantId || "")
+        setLiveSecretKey(savedKeys.liveSecretKey || "")
+        setTestMerchantId(savedKeys.testMerchantId || "")
+        setTestSecretKey(savedKeys.testSecretKey || "")
+        setIsTestMode(savedKeys.isTestMode !== undefined ? savedKeys.isTestMode : true)
         setConfiguringProvider(id)
     }
 
     const confirmConnection = (id: string) => {
         setIsConnecting(true)
         setTimeout(() => {
-            setConnectedProviders(prev => [...prev, id])
-            if (!activeProvider) setActiveProvider(id)
+            // Check for duplicates
+            if (!connectedProviders.includes(id)) {
+                setConnectedProviders([...connectedProviders, id])
+            }
+
+            // Save keys
+            setProviderKeys({
+                ...providerKeys,
+                [id]: {
+                    liveMerchantId, liveSecretKey,
+                    testMerchantId, testSecretKey,
+                    isTestMode
+                }
+            })
+
+            if (!activeProvider) setActivePaymentProvider(id) // use context setter
             setIsConnecting(false)
             setConfiguringProvider(null)
             toast.success("Connected", {
@@ -98,8 +121,8 @@ export default function PayGatePage() {
     }
 
     const disconnect = (id: string) => {
-        setConnectedProviders(prev => prev.filter(p => p !== id))
-        if (activeProvider === id) setActiveProvider(null)
+        setConnectedProviders(connectedProviders.filter(p => p !== id))
+        if (activeProvider === id) setActivePaymentProvider(null)
         toast.success("Disconnected", {
             description: `Successfully disconnected from ${providers.find(p => p.id === id)?.name}.`
         })
@@ -252,14 +275,26 @@ export default function PayGatePage() {
                                 </div>
 
                                 {isConnected ? (
-                                    <Button
-                                        onClick={() => disconnect(provider.id)}
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-8 px-3 text-xs border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 bg-transparent transition-colors"
-                                    >
-                                        Disconnect
-                                    </Button>
+                                    <div className="flex items-center gap-2">
+                                        {!isActive && (
+                                            <Button
+                                                onClick={() => setActivePaymentProvider(provider.id)}
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-8 px-3 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10"
+                                            >
+                                                Make Primary
+                                            </Button>
+                                        )}
+                                        <Button
+                                            onClick={() => disconnect(provider.id)}
+                                            size="sm"
+                                            variant="outline"
+                                            className="h-8 px-3 text-xs border-red-500/20 text-red-500 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 bg-transparent transition-colors"
+                                        >
+                                            Disconnect
+                                        </Button>
+                                    </div>
                                 ) : (
                                     <Button
                                         onClick={() => handleConnect(provider.id)}

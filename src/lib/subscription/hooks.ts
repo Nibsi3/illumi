@@ -14,8 +14,8 @@ export function useSubscription() {
 
     useEffect(() => {
         // TODO: Fetch actual subscription data from database
-        // For now, defaulting to pro tier for testing
-        setTier("pro")
+        // Setting to free by default so we can test the subscription flow
+        setTier("free")
         setIsLoading(false)
     }, [])
 

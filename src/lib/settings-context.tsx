@@ -17,6 +17,42 @@ interface SettingsContextType {
     setCompanyName: (name: string) => void
     companyAddress: string
     setCompanyNameAddress: (address: string) => void
+    country: string
+    setCountry: (country: string) => void
+    activePaymentProvider: string | null
+    setActivePaymentProvider: (providerId: string | null) => void
+    connectedProviders: string[]
+    setConnectedProviders: (providers: string[]) => void
+    providerKeys: Record<string, any>
+    setProviderKeys: (keys: Record<string, any>) => void
+    billingMethods: any[]
+    setBillingMethods: (methods: any[]) => void
+}
+
+const VAT_RATES: Record<string, number> = {
+    "South Africa": 15,
+    "Nigeria": 7.5,
+    "Egypt": 14,
+    "Algeria": 19,
+    "Morocco": 20,
+    "Ethiopia": 15,
+    "Kenya": 16,
+    "Tanzania": 18,
+    "Ghana": 15,
+    "Angola": 14
+}
+
+const COUNTRY_CURRENCIES: Record<string, string> = {
+    "South Africa": "ZAR",
+    "Nigeria": "NGN",
+    "Egypt": "EGP",
+    "Algeria": "DZD",
+    "Morocco": "MAD",
+    "Ethiopia": "ETB",
+    "Kenya": "KES",
+    "Tanzania": "TZS",
+    "Ghana": "GHS",
+    "Angola": "AOA"
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
@@ -29,7 +65,24 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [logo, setLogo] = useState<string | null>(null)
     const [companyName, setCompanyName] = useState("Illumi Professional")
     const [companyAddress, setCompanyNameAddress] = useState("")
+    const [country, setCountry] = useState("South Africa")
+    const [activePaymentProvider, setActivePaymentProvider] = useState<string | null>("payfast")
+    const [connectedProviders, setConnectedProviders] = useState<string[]>(["payfast"])
+    const [providerKeys, setProviderKeys] = useState<Record<string, any>>({})
+    const [billingMethods, setBillingMethods] = useState<any[]>([])
     const [isLoaded, setIsLoaded] = useState(false)
+
+    const handleSetCountry = (newCountry: string) => {
+        setCountry(newCountry)
+        const rate = VAT_RATES[newCountry]
+        if (rate !== undefined) {
+            setTaxRate(rate)
+        }
+        const curr = COUNTRY_CURRENCIES[newCountry]
+        if (curr) {
+            setCurrency(curr)
+        }
+    }
 
     // Load settings from localStorage on mount
     useEffect(() => {
@@ -45,6 +98,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.logo) setLogo(parsed.logo)
                     if (parsed.companyName) setCompanyName(parsed.companyName)
                     if (parsed.companyAddress) setCompanyNameAddress(parsed.companyAddress)
+                    if (parsed.country) setCountry(parsed.country)
+                    if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
+                    if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
+                    if (parsed.providerKeys) setProviderKeys(parsed.providerKeys)
+                    if (parsed.billingMethods) setBillingMethods(parsed.billingMethods)
                 }
             } catch (e) {
                 console.error("Failed to load settings", e)
@@ -65,10 +123,15 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             fromEmail,
             logo,
             companyName,
-            companyAddress
+            companyAddress,
+            country,
+            activePaymentProvider,
+            connectedProviders,
+            providerKeys,
+            billingMethods
         }
         localStorage.setItem("illumi_settings", JSON.stringify(settings))
-    }, [currency, taxRate, dateFormat, fromEmail, logo, companyName, companyAddress, isLoaded])
+    }, [currency, taxRate, dateFormat, fromEmail, logo, companyName, companyAddress, country, activePaymentProvider, connectedProviders, providerKeys, billingMethods, isLoaded])
 
     return (
         <SettingsContext.Provider value={{
@@ -78,7 +141,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             fromEmail, setFromEmail,
             logo, setLogo,
             companyName, setCompanyName,
-            companyAddress, setCompanyNameAddress
+            companyAddress, setCompanyNameAddress,
+            country, setCountry: handleSetCountry,
+            activePaymentProvider, setActivePaymentProvider,
+            connectedProviders, setConnectedProviders,
+            providerKeys, setProviderKeys,
+            billingMethods, setBillingMethods
         }}>
             {children}
         </SettingsContext.Provider>

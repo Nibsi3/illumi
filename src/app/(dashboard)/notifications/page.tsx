@@ -1,68 +1,112 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Trash2, Settings, Archive } from "lucide-react"
+import { Trash2, Settings } from "lucide-react"
+import { IconCash, IconReceipt, IconClock, IconAlertCircle, IconBell } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { formatDistanceToNow } from "date-fns"
 
-const mockNotifications = [
-    {
-        id: "1",
-        type: "payment",
-        source: "whatsapp",
-        title: "Payment received via WhatsApp",
-        message: "Invoice #INV-0001 has been paid by Acme Corp",
-        amount: "ZAR 5,000.00",
-        time: "2 hours ago",
-        read: false,
-    },
-    {
-        id: "2",
-        type: "payment",
-        source: "email",
-        title: "Payment confirmation email",
-        message: "Standard Bank payment confirmation for Invoice #INV-0002",
-        amount: "ZAR 800.00",
-        time: "5 hours ago",
-        read: false,
-    },
-    {
-        id: "3",
-        type: "invoice",
-        source: "system",
-        title: "Invoice sent successfully",
-        message: "Invoice #INV-0003 has been sent to wefwe",
-        time: "1 day ago",
-        read: true,
-    },
-    {
-        id: "4",
-        type: "payment",
-        source: "whatsapp",
-        title: "Payment received via WhatsApp",
-        message: "Invoice #INV-0004 has been paid by Globex Corporation",
-        amount: "ZAR 12,500.00",
-        time: "2 days ago",
-        read: true,
-    },
-]
+interface Notification {
+    id: string
+    type: 'payment_received' | 'invoice_sent' | 'payment_reminder' | 'final_notice' | 'invoice_overdue'
+    title: string
+    message: string | null
+    amount: number | null
+    read: boolean
+    created_at: string
+    invoices?: {
+        invoice_number: string
+        total: number
+        currency: string
+    }
+}
+
+const typeIcons: Record<string, any> = {
+    payment_received: IconCash,
+    invoice_sent: IconReceipt,
+    payment_reminder: IconClock,
+    final_notice: IconAlertCircle,
+    invoice_overdue: IconAlertCircle,
+}
+
+const typeColors: Record<string, string> = {
+    payment_received: "text-emerald-500 bg-emerald-500/10",
+    invoice_sent: "text-blue-500 bg-blue-500/10",
+    payment_reminder: "text-amber-500 bg-amber-500/10",
+    final_notice: "text-red-500 bg-red-500/10",
+    invoice_overdue: "text-red-500 bg-red-500/10",
+}
 
 export default function NotificationsPage() {
     const [activeTab, setActiveTab] = useState<"inbox" | "archive">("inbox")
-    const [notifications, setNotifications] = useState(mockNotifications)
+    const [notifications, setNotifications] = useState<Notification[]>([])
+    const [loading, setLoading] = useState(true)
 
-    const archiveAll = () => {
-        setNotifications(notifications.map(n => ({ ...n, read: true })))
+    const fetchNotifications = async () => {
+        try {
+            const res = await fetch('/api/notifications?limit=50')
+            const data = await res.json()
+            if (data.notifications) {
+                setNotifications(data.notifications)
+            }
+        } catch (error) {
+            console.error("Failed to fetch notifications:", error)
+        } finally {
+            setLoading(false)
+        }
     }
 
-    const deleteNotification = (id: string) => {
-        setNotifications(notifications.filter(n => n.id !== id))
+    useEffect(() => {
+        fetchNotifications()
+    }, [])
+
+    const archiveAll = async () => {
+        try {
+            await fetch('/api/notifications', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ markAll: true })
+            })
+            setNotifications(notifications.map(n => ({ ...n, read: true })))
+        } catch (error) {
+            console.error("Failed to archive all:", error)
+        }
     }
 
-    const filteredNotifications = activeTab === "inbox" 
+    const deleteNotification = async (id: string) => {
+        try {
+            await fetch('/api/notifications', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: [id] })
+            })
+            setNotifications(notifications.filter(n => n.id !== id))
+        } catch (error) {
+            console.error("Failed to delete notification:", error)
+        }
+    }
+
+    const filteredNotifications = activeTab === "inbox"
         ? notifications.filter(n => !n.read)
         : notifications.filter(n => n.read)
+
+    const formatTime = (dateStr: string) => {
+        try {
+            return formatDistanceToNow(new Date(dateStr), { addSuffix: true })
+        } catch {
+            return dateStr
+        }
+    }
+
+    const formatAmount = (amount: number | null, currency?: string) => {
+        if (!amount) return null
+        return new Intl.NumberFormat('en-ZA', {
+            style: 'currency',
+            currency: currency || 'ZAR'
+        }).format(amount)
+    }
 
     return (
         <div className="max-w-4xl mx-auto pb-32">
@@ -84,7 +128,7 @@ export default function NotificationsPage() {
                                 : "text-neutral-500 border-transparent hover:text-white"
                         )}
                     >
-                        Inbox
+                        Inbox ({notifications.filter(n => !n.read).length})
                     </button>
                     <button
                         onClick={() => setActiveTab("archive")}
@@ -118,57 +162,70 @@ export default function NotificationsPage() {
 
             {/* Notifications List */}
             <div className="space-y-2">
-                {filteredNotifications.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-12 text-neutral-500">
+                        <p>Loading notifications...</p>
+                    </div>
+                ) : filteredNotifications.length === 0 ? (
                     <div className="text-center py-12 text-neutral-500">
                         <p>No notifications in {activeTab}</p>
                     </div>
                 ) : (
-                    filteredNotifications.map((notification) => (
-                        <div
-                            key={notification.id}
-                            className={cn(
-                                "p-4 rounded-lg border border-white/5 bg-[#09090b] hover:bg-white/5 transition-colors flex items-start gap-4 group",
-                                !notification.read && "bg-white/[0.02]"
-                            )}
-                        >
-                            <div className="flex-1">
-                                <div className="flex items-start justify-between mb-1">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-white mb-1">
-                                            {notification.title}
-                                        </h3>
-                                        <p className="text-xs text-neutral-400 mb-2">
-                                            {notification.message}
-                                        </p>
-                                        {notification.amount && (
-                                            <p className="text-sm font-semibold text-green-500">
-                                                {notification.amount}
-                                            </p>
-                                        )}
+                    filteredNotifications.map((notification) => {
+                        const Icon = typeIcons[notification.type] || IconBell
+                        const colorClass = typeColors[notification.type] || "text-white bg-white/10"
+
+                        return (
+                            <div
+                                key={notification.id}
+                                className={cn(
+                                    "p-4 rounded-lg border border-white/5 bg-[#09090b] hover:bg-white/5 transition-colors flex items-start gap-4 group",
+                                    !notification.read && "bg-white/2"
+                                )}
+                            >
+                                <div className={cn("p-2 rounded-lg", colorClass)}>
+                                    <Icon className="h-5 w-5" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-start justify-between mb-1">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-white mb-1">
+                                                {notification.title}
+                                            </h3>
+                                            {notification.message && (
+                                                <p className="text-xs text-neutral-400 mb-2">
+                                                    {notification.message}
+                                                </p>
+                                            )}
+                                            {notification.amount && notification.type === 'payment_received' && (
+                                                <p className="text-sm font-semibold text-emerald-500">
+                                                    {formatAmount(notification.amount, notification.invoices?.currency)}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4 mt-2">
+                                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider">
+                                            {notification.type.replace('_', ' ')}
+                                        </span>
+                                        <span className="text-xs text-neutral-500">
+                                            {formatTime(notification.created_at)}
+                                        </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 mt-2">
-                                    <span className="text-[10px] text-neutral-500 uppercase tracking-wider">
-                                        {notification.source}
-                                    </span>
-                                    <span className="text-xs text-neutral-500">
-                                        {notification.time}
-                                    </span>
-                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => deleteNotification(notification.id)}
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-500 hover:text-red-500"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => deleteNotification(notification.id)}
-                                className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-500 hover:text-red-500"
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))
+                        )
+                    })
                 )}
             </div>
         </div>
     )
 }
-

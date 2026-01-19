@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SettingsProvider } from "@/lib/settings-context"
+import { WorkspaceProvider } from "@/lib/workspace-context"
 
 export const dynamic = "force-dynamic"
 
@@ -9,10 +10,12 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <SettingsProvider>
-            <AppSidebar>
-                {children}
-            </AppSidebar>
-        </SettingsProvider>
+        <WorkspaceProvider>
+            <SettingsProvider>
+                <AppSidebar>
+                    {children}
+                </AppSidebar>
+            </SettingsProvider>
+        </WorkspaceProvider>
     )
 }

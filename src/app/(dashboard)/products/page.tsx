@@ -16,6 +16,8 @@ import {
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useWorkspace } from "@/lib/workspace-context"
+import { useSettings } from "@/lib/settings-context"
 
 type Product = {
   id: string
@@ -49,17 +51,18 @@ export default function ProductsPage() {
     "status",
   ])
   const supabase = createClient()
+  const { activeWorkspace } = useWorkspace()
+  const { currency } = useSettings()
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
+        if (!activeWorkspace) return
 
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('workspace_id', activeWorkspace.id)
           .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -94,8 +97,8 @@ export default function ProductsPage() {
     (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
   )
 
-  const formatPrice = (price: number, currency: string) => {
-    return `${currency} ${price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
+  const formatPrice = (price: number, itemCurrency: string) => {
+    return `${currency || itemCurrency || 'ZAR'} ${price.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`
   }
 
   return (
@@ -200,7 +203,7 @@ export default function ProductsPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left text-[13px]">
               <thead>
-                <tr className="bg-white/[0.02] border-b border-white/10">
+                <tr className="bg-white/2 border-b border-white/10">
                   <th className="px-5 py-3 w-10 border-r border-white/10">
                     <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors" />
                   </th>
@@ -213,7 +216,7 @@ export default function ProductsPage() {
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                  <tr key={product.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                     <td className="px-5 py-4 border-r border-white/10">
                       <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
                     </td>

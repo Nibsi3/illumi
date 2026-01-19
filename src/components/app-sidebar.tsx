@@ -37,6 +37,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useWorkspace } from "@/lib/workspace-context";
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
@@ -45,33 +46,20 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [isWorkspaceDialogOpen, setIsWorkspaceDialogOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
-    const [workspaces, setWorkspaces] = useState<any[]>([]);
-    const [activeWorkspace, setActiveWorkspace] = useState<any>(null);
+
+    // Use workspace context
+    const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces } = useWorkspace();
 
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        const getUserAndWorkspaces = async () => {
+        const getUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
-
-            if (user) {
-                // Fetch user's workspaces
-                const { data: workspaceData } = await supabase
-                    .from('workspaces')
-                    .select('*')
-                    .eq('owner_id', user.id)
-                    .order('created_at', { ascending: true });
-
-                if (workspaceData && workspaceData.length > 0) {
-                    setWorkspaces(workspaceData);
-                    setActiveWorkspace(workspaceData[0]);
-                }
-            }
         };
-        getUserAndWorkspaces();
+        getUser();
     }, [supabase]);
 
     const handleSignOut = async () => {
@@ -97,8 +85,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
             if (error) throw error;
 
-            setWorkspaces(prev => [...prev, data]);
-            if (!activeWorkspace) setActiveWorkspace(data);
+            // Refresh workspaces from context
+            await refreshWorkspaces();
+            setActiveWorkspace(data);
             toast.success("Workspace Created", { description: `${newWorkspaceName} is ready.` });
             setIsWorkspaceDialogOpen(false);
             setNewWorkspaceName("");
@@ -121,11 +110,6 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             icon: <IconReceipt className="h-5 w-5 shrink-0" />,
         },
         {
-            label: "Recurring",
-            href: "/recurring",
-            icon: <IconClock className="h-5 w-5 shrink-0" />,
-        },
-        {
             label: "Customers",
             href: "/clients",
             icon: <IconUsers className="h-5 w-5 shrink-0" />,
@@ -141,6 +125,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             icon: <IconSettings className="h-5 w-5 shrink-0" />,
         },
     ];
+
 
     const userEmail = user?.email || "cameronfalck03@gmail.com";
     const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0];
@@ -231,7 +216,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                         {workspaces.map((ws) => (
                                             <div
                                                 key={ws.id}
-                                                onClick={() => setActiveWorkspace(ws)}
+                                                onClick={() => {
+                                                    setActiveWorkspace(ws)
+                                                    // Store in localStorage for persistence
+                                                    localStorage.setItem('activeWorkspaceId', ws.id)
+                                                    setShowSwitcher(false)
+                                                    // Navigate to overview on workspace switch
+                                                    router.push('/overview')
+                                                }}
                                                 className={cn(
                                                     "flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors",
                                                     activeWorkspace?.id === ws.id && "bg-white/5"
@@ -243,6 +235,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                                 <span className="text-xs font-medium">{ws.name}</span>
                                             </div>
                                         ))}
+
                                         {workspaces.length === 0 && (
                                             <div className="p-3 text-xs text-neutral-500 text-center">No workspaces yet</div>
                                         )}
@@ -377,9 +370,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </div>
                     </header>
 
-                    {/* Dashboard content with refined padding (Pic 3) */}
-                    <main className="flex-1 overflow-y-auto w-full no-scrollbar">
-                        <div className="p-6 md:p-10 h-full">
+                    {/* Dashboard content */}
+                    <main className={cn(
+                        "flex-1 w-full",
+                        pathname === '/invoices/new' ? "overflow-hidden" : "overflow-y-auto no-scrollbar"
+                    )}>
+                        <div className={cn(
+                            "h-full",
+                            pathname === '/invoices/new' ? "p-0" : "p-6 md:p-10"
+                        )}>
                             {children}
                         </div>
                     </main>

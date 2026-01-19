@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { useWorkspace } from "@/lib/workspace-context"
 
 const customerColumns = [
     { label: "Name", id: "name" },
@@ -55,17 +56,17 @@ export default function ClientsPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
     const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
 
     useEffect(() => {
         const fetchCustomers = async () => {
             try {
-                const { data: { user } } = await supabase.auth.getUser()
-                if (!user) return
+                if (!activeWorkspace) return
 
                 const { data, error } = await supabase
                     .from('customers')
                     .select('*')
-                    .eq('user_id', user.id)
+                    .eq('workspace_id', activeWorkspace.id)
                     .order('created_at', { ascending: false })
 
                 if (error) throw error
@@ -192,7 +193,7 @@ export default function ClientsPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse text-left text-[13px]">
                             <thead>
-                                <tr className="bg-white/[0.02] border-b border-white/10">
+                                <tr className="bg-white/2 border-b border-white/10">
                                     <th className="px-5 py-3 w-10 border-r border-white/10">
                                         <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors">
                                             {/* Select All Checkbox */}
@@ -208,7 +209,7 @@ export default function ClientsPage() {
                             </thead>
                             <tbody>
                                 {filteredCustomers.map((customer) => (
-                                    <tr key={customer.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                                    <tr key={customer.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                         <td className="px-5 py-4 border-r border-white/10">
                                             <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
                                         </td>

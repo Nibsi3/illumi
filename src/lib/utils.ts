@@ -6,15 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getURL = () => {
-    // 1. Prioritize Environment Variable (from Build/Cloud settings)
     let url = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL
 
-    // 2. If no environment variable, try browser origin
-    if (!url && typeof window !== 'undefined') {
+    // Prioritize browser origin if available (fixes issues with dynamic ports like 3001)
+    if (typeof window !== 'undefined' && window.location.origin) {
         url = window.location.origin
     }
 
-    // 3. Last resort fallback (avoid 0.0.0.0)
     url = url || 'http://localhost:3000'
 
     // Ensure it has a protocol

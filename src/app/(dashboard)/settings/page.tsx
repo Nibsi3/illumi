@@ -32,7 +32,8 @@ export default function GeneralSettings() {
         fromEmail, setFromEmail,
         currency, setCurrency,
         dateFormat, setDateFormat,
-        taxRate, setTaxRate
+        country, setCountry,
+        taxRate
     } = useSettings()
 
     const [industry, setIndustry] = useState("tech")
@@ -144,29 +145,33 @@ export default function GeneralSettings() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
-                        <Select value={currency} onValueChange={setCurrency}>
-                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                <SelectItem value="ZAR">South African Rand (ZAR)</SelectItem>
-                                <SelectItem value="USD">US Dollar (USD)</SelectItem>
-                                <SelectItem value="EUR">Euro (EUR)</SelectItem>
-                                <SelectItem value="GBP">British Pound (GBP)</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">
+                            {currency} (Auto-set)
+                        </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Tax Rate (%)</Label>
-                        <Input
-                            type="number"
-                            value={taxRate}
-                            onChange={(e) => setTaxRate(Number(e.target.value))}
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
-                        />
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Country</Label>
+                        <Select value={country} onValueChange={setCountry}>
+                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                <SelectItem value="South Africa">South Africa</SelectItem>
+                                <SelectItem value="Nigeria">Nigeria</SelectItem>
+                                <SelectItem value="Egypt">Egypt</SelectItem>
+                                <SelectItem value="Algeria">Algeria</SelectItem>
+                                <SelectItem value="Morocco">Morocco</SelectItem>
+                                <SelectItem value="Ethiopia">Ethiopia</SelectItem>
+                                <SelectItem value="Kenya">Kenya</SelectItem>
+                                <SelectItem value="Tanzania">Tanzania</SelectItem>
+                                <SelectItem value="Ghana">Ghana</SelectItem>
+                                <SelectItem value="Angola">Angola</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <p className="text-[10px] text-neutral-500">Current VAT Rate: {taxRate}%</p>
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Date Format</Label>
