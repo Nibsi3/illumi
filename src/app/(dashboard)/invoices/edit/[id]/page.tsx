@@ -70,6 +70,7 @@ import { CreateProductModal } from "../../components/create-product-modal"
 import { RecurringModal } from "../../components/recurring-modal"
 
 type TemplateType = "Classic" | "Minimal" | "Modern"
+type LogoBgMode = "light" | "dark"
 
 export default function EditInvoicePage() {
     const router = useRouter()
@@ -103,6 +104,7 @@ export default function EditInvoicePage() {
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
+    const [logoBg, setLogoBg] = useState<LogoBgMode>("dark")
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
     // Recurring State
@@ -183,6 +185,7 @@ export default function EditInvoicePage() {
                         setInvoiceNumber(invoice.invoice_number)
                         setTemplate(invoice.template as TemplateType || "Classic")
                         setInvoiceMode(invoice.invoice_mode as any || "dark")
+                        setLogoBg((invoice as any).logo_bg || "dark")
                         setCurrency(invoice.currency || "ZAR")
                         setTaxRate(invoice.tax_rate || 0)
                         setIssueDate(invoice.issue_date || invoice.created_at.split('T')[0])
@@ -231,7 +234,7 @@ export default function EditInvoicePage() {
             const taxAmount = subtotal * (taxRate / 100)
             const total = subtotal + taxAmount
 
-            const invoiceData = {
+            const invoiceData: any = {
                 invoice_number: invoiceNumber,
                 status: status,
                 issue_date: issueDate,
@@ -248,6 +251,7 @@ export default function EditInvoicePage() {
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
+                logo_bg: logoBg,
             }
 
             // Update Invoice
@@ -289,12 +293,17 @@ export default function EditInvoicePage() {
             // 3. Send Email if status is 'sent'
             if (status === 'sent' && clientEmail) {
                 try {
+                    const { data: { user } } = await supabase.auth.getUser()
                     const emailRes = await fetch('/api/email/send', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             type: 'invoice',
                             to: clientEmail,
+                            companyName: settings.companyName,
+                            supportEmail: settings.fromEmail,
+                            companyWebsite: settings.companyWebsite,
+                            allowCustomBranding: Boolean(isPro),
                             invoiceNumber: invoiceNumber,
                             customerName: clientName,
                             amount: `${currency} ${total.toLocaleString()}`,
@@ -434,7 +443,7 @@ export default function EditInvoicePage() {
                                             <div className="flex items-center gap-2">
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-400 hover:bg-neutral-100" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-500 hover:bg-neutral-200" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
                                                             <Settings2 className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
@@ -473,6 +482,16 @@ export default function EditInvoicePage() {
                                                                             <SelectItem value="0">0%</SelectItem>
                                                                             <SelectItem value="15">15% (VAT)</SelectItem>
                                                                             <SelectItem value="20">20%</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <div className="flex items-center gap-2 text-neutral-400"><LayoutTemplate className="h-4 w-4" /><span className="text-xs">Logo background</span></div>
+                                                                    <Select value={logoBg} onValueChange={(v: any) => setLogoBg(v)}>
+                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                            <SelectItem value="dark">Dark</SelectItem>
+                                                                            <SelectItem value="light">Light</SelectItem>
                                                                         </SelectContent>
                                                                     </Select>
                                                                 </div>
@@ -534,7 +553,9 @@ export default function EditInvoicePage() {
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                invoiceMode === "light" ? "bg-neutral-50 border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300" : "bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20"
+                                                logoBg === "light"
+                                                    ? "bg-white border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300"
+                                                    : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
                                             )}
                                         >
                                             {logo ? (
@@ -565,7 +586,7 @@ export default function EditInvoicePage() {
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className="font-mono text-sm tracking-widest text-[#878787] h-5">{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-700" : "text-[#878787]")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
@@ -580,25 +601,26 @@ export default function EditInvoicePage() {
                                                     defaultValue="Illumi Professional"
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                                 <textarea
                                                     defaultValue={"123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"}
                                                     placeholder="Address"
                                                     spellCheck={false}
-                                                    className={cn("w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-4 text-right">
-                                            <div className="flex justify-between items-center mb-2">
+                                            <div className="flex justify-end items-center gap-2 mb-2">
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
@@ -607,7 +629,6 @@ export default function EditInvoicePage() {
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
                                                 </Button>
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
                                             </div>
                                             <div className="space-y-3">
                                                 <Input
@@ -615,7 +636,7 @@ export default function EditInvoicePage() {
                                                     list="client-suggestions"
                                                     spellCheck={false}
                                                     value={clientName}
-                                                    className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
                                                     onChange={(e) => {
                                                         const val = e.target.value;
                                                         setClientName(val)
@@ -633,7 +654,7 @@ export default function EditInvoicePage() {
                                                 </datalist>
 
                                                 {(clientEmail || clientAddress) && (
-                                                    <div className="flex flex-col items-end gap-1 text-xs text-neutral-500">
+                                                    <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-neutral-500">
                                                         {clientEmail && <span>{clientEmail}</span>}
                                                         {clientPhone && <span>{clientPhone}</span>}
                                                         {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}

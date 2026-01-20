@@ -4,7 +4,7 @@ import { StatusDot } from "@/components/status-dot"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Check, Download, X, FolderOpen, Folder, ChevronRight } from "lucide-react"
+import { Search, Filter, MoreHorizontal, ChevronDown, Check, Download, X, FolderOpen, Folder, ChevronRight } from "lucide-react"
 import { IconFolder } from "@tabler/icons-react"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
@@ -34,6 +34,7 @@ import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
+import { useSubscription } from "@/lib/subscription/hooks"
 
 // Kept for type reference only, not using mock data
 
@@ -51,12 +52,14 @@ export default function InvoicesPage() {
     const [isLoading, setIsLoading] = useState(true)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
-    const { currency, activePaymentProvider } = useSettings()
+    const { currency, activePaymentProvider, fromEmail, companyName, companyWebsite, sendInvoiceCopyToSelf } = useSettings()
+    const { isPro } = useSubscription()
 
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
     const [filterClient, setFilterClient] = useState<string | null>(null)
+    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
 
     // Mark as Paid dialog state
     const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
@@ -92,18 +95,20 @@ export default function InvoicesPage() {
                 const formattedInvoices = (data || []).map(inv => {
                     const now = new Date();
                     now.setHours(0, 0, 0, 0);
+                    const rawStatus = (inv.status || '').toLowerCase()
                     // Parse due date as local midnight to avoid UTC offsets making today overdue
                     const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null;
-                    const isOverdue = inv.status.toLowerCase() !== 'paid' && dueDate && dueDate < now;
+                    const isOverdue = rawStatus !== 'paid' && rawStatus !== 'scheduled' && dueDate && dueDate < now;
 
                     return {
                         ...inv,
+                        raw_status: rawStatus,
                         displayId: inv.invoice_number, // Use the readable invoice number for display
                         customer: inv.customers?.name || 'Unknown',
                         amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
                         dueDate: inv.due_date,
                         issueDate: inv.issue_date,
-                        status: isOverdue ? 'Overdue' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1)
+                        status: isOverdue ? 'Overdue' : rawStatus ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1) : ''
                     };
                 })
 
@@ -129,8 +134,6 @@ export default function InvoicesPage() {
             count
         }))
     }, [invoices])
-
-    const [viewMode, setViewMode] = useState<'list' | 'company'>('list')
 
     const toggleSelect = (id: string) => {
         setSelectedIds(prev =>
@@ -241,6 +244,10 @@ export default function InvoicesPage() {
                 body: JSON.stringify({
                     type: 'invoice',
                     to: invoice.customers?.email || invoice.customer_email || 'customer@example.com',
+                    companyName: companyName,
+                    supportEmail: fromEmail,
+                    companyWebsite: companyWebsite,
+                    allowCustomBranding: Boolean(isPro),
                     customerName: invoice.customer,
                     invoiceNumber: invoice.displayId,
                     amount: invoice.amount,
@@ -410,7 +417,8 @@ export default function InvoicesPage() {
     const filteredInvoices = invoices.filter((inv: any) => {
         let statusMatch = !filterStatus
         if (filterStatus === 'unpaid') {
-            statusMatch = ['sent', 'viewed', 'draft'].includes(inv.status.toLowerCase())
+            const statusForMatch = (inv.raw_status || inv.status || '').toLowerCase()
+            statusMatch = ['sent', 'viewed', 'draft', 'scheduled'].includes(statusForMatch)
         } else if (filterStatus === 'overdue') {
             statusMatch = inv.status.toLowerCase() === 'overdue'
         } else if (filterStatus) {
@@ -418,7 +426,19 @@ export default function InvoicesPage() {
         }
 
         const clientMatch = !filterClient || inv.customer === filterClient
-        return statusMatch && clientMatch
+
+        const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled'
+        const isRecurringParent = Boolean(inv.is_recurring)
+        const typeMatch =
+            filterInvoiceType === 'all'
+                ? true
+                : filterInvoiceType === 'scheduled'
+                    ? isScheduled
+                    : filterInvoiceType === 'recurring'
+                        ? isRecurringParent
+                        : !isScheduled && !isRecurringParent
+
+        return statusMatch && clientMatch && typeMatch
     })
 
     // Sort filtered invoices
@@ -486,6 +506,7 @@ export default function InvoicesPage() {
     }, {})
 
     return (
+        <>
         <div className="flex gap-6 pb-32">
             {/* Client Folder Sidebar */}
             <div className="w-64 shrink-0">
@@ -541,12 +562,31 @@ export default function InvoicesPage() {
                         <p className="text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Link href="/invoices/new">
-                            <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Create
-                            </Button>
-                        </Link>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
+                                    Create
+                                    <ChevronDown className="ml-2 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 bg-[#0d0d0d] border-white/10 rounded-none">
+                                <Link href="/invoices/new">
+                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                        Invoice
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href="/invoices/scheduled/new">
+                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                        Schedule Invoice
+                                    </DropdownMenuItem>
+                                </Link>
+                                <Link href="/invoices/recurring/new">
+                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                        Recurring Invoice
+                                    </DropdownMenuItem>
+                                </Link>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
 
@@ -631,24 +671,35 @@ export default function InvoicesPage() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setViewMode('list')}
+                                onClick={() => setFilterInvoiceType('all')}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    viewMode === 'list' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'all' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
                                 )}
                             >
-                                List View
+                                Invoices
                             </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setViewMode('company')}
+                                onClick={() => setFilterInvoiceType('recurring')}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    viewMode === 'company' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'recurring' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
                                 )}
                             >
-                                Company View
+                                Recurring Invoices
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setFilterInvoiceType('scheduled')}
+                                className={cn(
+                                    "h-9 px-4 rounded-none text-xs transition-all",
+                                    filterInvoiceType === 'scheduled' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                )}
+                            >
+                                Scheduled Invoices
                             </Button>
                         </div>
                     </div>
@@ -682,8 +733,7 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Main Content Area */}
-                {viewMode === 'list' ? (
-                    <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+                <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse text-left text-[13px]">
                                 <thead>
@@ -691,7 +741,7 @@ export default function InvoicesPage() {
                                         <th className="px-5 py-3 w-10 border-r border-white/10 text-neutral-500 italic lowercase font-serif bg-white/10 text-xs">
                                             <div
                                                 onClick={toggleSelectAll}
-                                                className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors"
+                                                className="w-4 h-4 rounded-sm border border-white/40 bg-white/5 flex items-center justify-center cursor-pointer hover:border-white/60 hover:bg-white/10 transition-colors"
                                             >
                                                 {selectedIds.length === invoices.length && <Check className="h-3 w-3 text-white" />}
                                             </div>
@@ -726,7 +776,7 @@ export default function InvoicesPage() {
                                                 <div
                                                     onClick={() => toggleSelect(invoice.id)}
                                                     className={cn(
-                                                        "w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40",
+                                                        "w-4 h-4 rounded-sm border border-white/40 bg-white/5 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/60 group-hover:bg-white/10",
                                                         selectedIds.includes(invoice.id) && "bg-white border-white"
                                                     )}
                                                 >
@@ -836,37 +886,7 @@ export default function InvoicesPage() {
                             </table>
                         </div>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {Object.entries(invoicesByCompany).map(([company, invoices]: [string, any]) => (
-                            <Card key={company} className="bg-transparent border-white/5 hover:border-white/20 transition-all rounded-none group cursor-pointer">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/3 transition-colors">
-                                            <IconFolder className="h-6 w-6 text-neutral-400 group-hover:text-white transition-colors" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-medium text-white truncate">{company}</h4>
-                                            <p className="text-[10px] text-neutral-500">{invoices.length} {invoices.length === 1 ? 'item' : 'items'}</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1 opacity-50">
-                                        {invoices.slice(0, 2).map((inv: any) => (
-                                            <div key={inv.id} className="text-[10px] flex justify-between">
-                                                <span className="text-white">#{inv.id}</span>
-                                                <span className="text-white font-medium">{inv.amount}</span>
-                                            </div>
-                                        ))}
-                                        {invoices.length > 2 && (
-                                            <div className="text-[9px] text-neutral-600">+{invoices.length - 2} more</div>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-
+                </div>
                 {/* Selection Toolbar */}
                 {selectedIds.length > 0 && (
                     <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-bottom-5">
@@ -965,6 +985,6 @@ export default function InvoicesPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
+        </> 
     )
 }

@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import {
-    IconBrandTabler,
+    IconLayoutDashboard,
+    IconPackage,
     IconSettings,
     IconReceipt,
     IconClock,
+    IconCash,
     IconUsers,
     IconSearch,
     IconLogout,
@@ -49,9 +51,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isSwitchingWorkspace, setIsSwitchingWorkspace] = useState(false);
 
     // Use workspace context
-    const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces } = useWorkspace();
+    const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces, isOwner } = useWorkspace();
     const { isSubscribed, daysRemaining, isPro, isLoading: subscriptionLoading } = useSubscription();
 
     const supabase = createClient();
@@ -106,12 +109,17 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         {
             label: "Overview",
             href: "/overview",
-            icon: <IconBrandTabler className="h-5 w-5 shrink-0" rotate={-45} />,
+            icon: <IconLayoutDashboard className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Invoices",
             href: "/invoices",
             icon: <IconReceipt className="h-5 w-5 shrink-0" />,
+        },
+        {
+            label: "Expenses",
+            href: "/expenses",
+            icon: <IconCash className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Customers",
@@ -121,7 +129,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         {
             label: "Products",
             href: "/products",
-            icon: <IconBrandTabler className="h-5 w-5 shrink-0" />,
+            icon: <IconPackage className="h-5 w-5 shrink-0" />,
         },
         {
             label: "Settings",
@@ -221,12 +229,22 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                             <div
                                                 key={ws.id}
                                                 onClick={() => {
+                                                    if (activeWorkspace?.id === ws.id) {
+                                                        setShowSwitcher(false)
+                                                        return
+                                                    }
+
+                                                    setIsSwitchingWorkspace(true)
                                                     setActiveWorkspace(ws)
                                                     // Store in localStorage for persistence
                                                     localStorage.setItem('activeWorkspaceId', ws.id)
                                                     setShowSwitcher(false)
                                                     // Navigate to overview on workspace switch
                                                     router.push('/overview')
+
+                                                    setTimeout(() => {
+                                                        setIsSwitchingWorkspace(false)
+                                                    }, 800)
                                                 }}
                                                 className={cn(
                                                     "flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors",
@@ -244,14 +262,20 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                             <div className="p-3 text-xs text-neutral-500 text-center">No workspaces yet</div>
                                         )}
                                         <DropdownMenuSeparator className="bg-white/5" />
-                                        <Button
-                                            onClick={() => setIsWorkspaceDialogOpen(true)}
-                                            variant="ghost"
-                                            className="w-full justify-start h-10 px-2 hover:bg-white/5 rounded-lg text-neutral-400 hover:text-white text-xs gap-3"
-                                        >
-                                            <IconPlus className="h-4 w-4" />
-                                            <span>Add workspace</span>
-                                        </Button>
+                                        {isOwner ? (
+                                            <Button
+                                                onClick={() => setIsWorkspaceDialogOpen(true)}
+                                                variant="ghost"
+                                                className="w-full justify-start h-10 px-2 hover:bg-white/5 rounded-lg text-neutral-400 hover:text-white text-xs gap-3"
+                                            >
+                                                <IconPlus className="h-4 w-4" />
+                                                <span>Add workspace</span>
+                                            </Button>
+                                        ) : (
+                                            <div className="px-2 py-2 text-[10px] text-neutral-500 text-center">
+                                                Only workspace owners can create new workspaces
+                                            </div>
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -296,6 +320,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
                 {/* Main Content Area */}
                 <div className="flex-1 flex flex-col min-w-0 bg-black relative">
+                    {isSwitchingWorkspace && (
+                        <div className="absolute inset-0 z-50 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+                            <div className="relative flex flex-col items-center gap-3 text-white/80">
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                <div className="text-xs font-sans tracking-wide">Loading workspace…</div>
+                            </div>
+                        </div>
+                    )}
                     {/* Header (Stayed relatively similar but polished) */}
                     <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 backdrop-blur-md bg-black/50 sticky top-0 z-40">
                         <div className="flex items-center gap-6 flex-1">

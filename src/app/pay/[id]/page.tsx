@@ -178,6 +178,7 @@ export default function PayInvoicePage() {
     const isPaid = invoice.status === 'paid' || invoice.status === 'Paid'
     const template = invoice.template || "Classic"
     const mode = invoice.invoice_mode || "dark"
+    const logoBg = (invoice.logo_bg || mode || "dark") as "light" | "dark"
 
     const urlProvider = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('provider') : null
     const invoiceProvider = invoice.payment_provider
@@ -264,19 +265,19 @@ export default function PayInvoicePage() {
                                 <div className="flex justify-between items-start mb-24">
                                     <div className={cn(
                                         "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border shadow-sm",
-                                        mode === "light" ? "bg-white border-neutral-100" : "bg-white border-white/10"
+                                        logoBg === "light" ? "bg-white border-neutral-100" : "bg-[#0c0c0c] border-white/10"
                                     )}>
                                         {invoice.logo_url ? (
                                             <img src={invoice.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
                                         ) : (
-                                            <div className="font-serif font-black text-3xl italic text-black">E.</div>
+                                            <div className="invoice-font-title font-black text-3xl text-black">E.</div>
                                         )}
                                     </div>
                                     <div className="text-right">
-                                        <h1 className="text-6xl font-serif italic mb-3 tracking-tighter">Invoice</h1>
+                                        <h1 className="text-6xl invoice-font-title font-bold mb-3 tracking-tighter">Invoice</h1>
                                         <p className={cn(
-                                            "font-mono text-xs tracking-[0.3em] uppercase opacity-40",
-                                            mode === "light" ? "text-neutral-400" : "text-white/40"
+                                            "invoice-font-id text-xs tracking-[0.3em] uppercase opacity-40",
+                                            mode === "light" ? "text-neutral-600" : "text-white/40"
                                         )}>{invoice.invoice_number}</p>
                                     </div>
                                 </div>
@@ -291,7 +292,7 @@ export default function PayInvoicePage() {
                                             "text-[10px] font-bold uppercase tracking-[0.2em]",
                                             mode === "light" ? "text-neutral-600" : "text-white/50"
                                         )}>From</span>
-                                        <div className="space-y-1">
+                                        <div className="space-y-1 invoice-font-from">
                                             <p className="text-lg font-bold">Illumi Professional</p>
                                             {invoice.from_email && <p className="text-xs font-medium opacity-60">{invoice.from_email}</p>}
                                             <p className={cn(
@@ -306,11 +307,11 @@ export default function PayInvoicePage() {
                                     <div className="flex flex-col gap-4 text-right">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                            mode === "light" ? "text-neutral-400" : "text-white/20"
+                                            mode === "light" ? "text-neutral-600" : "text-white/50"
                                         )}>To</span>
-                                        <div className="space-y-1">
-                                            <p className="text-lg font-bold italic font-serif opacity-90">{invoice.customers?.name || "Valued Customer"}</p>
-                                            {invoice.customers?.email && <p className="text-xs font-medium opacity-60 italic">{invoice.customers?.email}</p>}
+                                        <div className="space-y-1 invoice-font-client">
+                                            <p className="text-lg font-bold opacity-90">{invoice.customers?.name || "Valued Customer"}</p>
+                                            {invoice.customers?.email && <p className="text-xs font-medium opacity-60">{invoice.customers?.email}</p>}
                                             <p className={cn(
                                                 "text-xs leading-relaxed whitespace-pre-wrap",
                                                 mode === "light" ? "text-neutral-500" : "text-white/40"
@@ -326,18 +327,18 @@ export default function PayInvoicePage() {
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-widest",
-                                            mode === "light" ? "text-neutral-400" : "text-white/20"
+                                            mode === "light" ? "text-neutral-600" : "text-white/50"
                                         )}>Issue Date</span>
-                                        <p className="font-semibold text-sm italic font-serif">
+                                        <p className="invoice-font-date font-semibold text-sm">
                                             {formatDate(invoice.issue_date)}
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-widest",
-                                            mode === "light" ? "text-neutral-400" : "text-white/20"
+                                            mode === "light" ? "text-neutral-600" : "text-white/50"
                                         )}>Due Date</span>
-                                        <p className="font-semibold text-sm italic font-serif">
+                                        <p className="invoice-font-date font-semibold text-sm">
                                             {formatDate(invoice.due_date)}
                                         </p>
                                     </div>
@@ -362,10 +363,10 @@ export default function PayInvoicePage() {
                                     )}>
                                         {invoice.invoice_items?.map((item: any, i: number) => (
                                             <tr key={i} className="text-sm">
-                                                <td className="py-6 font-medium">{item.description}</td>
-                                                <td className="py-6 text-right font-mono">{item.unit_price.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
-                                                <td className="py-6 text-right font-mono">{item.quantity}</td>
-                                                <td className="py-6 text-right font-bold font-mono pr-6">{(item.unit_price * item.quantity).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
+                                                <td className="py-6 font-medium invoice-font-item">{item.description}</td>
+                                                <td className="py-6 text-right invoice-font-amount">{item.unit_price.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
+                                                <td className="py-6 text-right invoice-font-amount">{item.quantity}</td>
+                                                <td className="py-6 text-right font-bold invoice-font-amount pr-6">{(item.unit_price * item.quantity).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -380,13 +381,13 @@ export default function PayInvoicePage() {
                                         <div className="space-y-2">
                                             <span className={cn(
                                                 "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                                mode === "light" ? "text-neutral-400" : "text-white/20"
+                                                mode === "light" ? "text-neutral-600" : "text-white/50"
                                             )}>Note</span>
                                             <p className={cn(
-                                                "text-sm italic font-serif leading-relaxed opacity-60",
+                                                "text-sm invoice-font-notes leading-relaxed opacity-60",
                                                 mode === "light" ? "text-black/60" : "text-white/60"
                                             )}>
-                                                Thank you for your partnership. We appreciate the opportunity to work with you and your team.
+                                                {invoice.notes?.trim() || ""}
                                             </p>
                                         </div>
                                     </div>
@@ -394,12 +395,12 @@ export default function PayInvoicePage() {
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center text-sm opacity-60">
                                             <span className="text-[10px] uppercase font-bold tracking-widest">Subtotal</span>
-                                            <span className="font-mono">{(invoice.total / (1 + (invoice.vat_rate || 0) / 100)).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
+                                            <span className="invoice-font-amount">{(invoice.total / (1 + (invoice.vat_rate || 0) / 100)).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
                                         </div>
                                         {invoice.vat_amount > 0 && (
                                             <div className="flex justify-between items-center text-sm opacity-60">
                                                 <span className="text-[10px] uppercase font-bold tracking-widest">VAT ({invoice.vat_rate}%)</span>
-                                                <span className="font-mono">{invoice.vat_amount.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
+                                                <span className="invoice-font-amount">{invoice.vat_amount.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
                                             </div>
                                         )}
                                         <div className={cn(
@@ -407,7 +408,7 @@ export default function PayInvoicePage() {
                                             mode === "light" ? "border-black/5" : "border-white/10"
                                         )}>
                                             <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-20 mb-2">Total Due</span>
-                                            <span className="text-6xl font-serif italic font-bold tracking-tighter">
+                                            <span className="text-6xl invoice-font-amount font-bold tracking-tighter">
                                                 {invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}
                                             </span>
                                         </div>

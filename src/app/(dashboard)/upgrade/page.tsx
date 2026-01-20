@@ -14,7 +14,6 @@ const freeFeatures = [
     "50 inbox items per month",
     "Customer management",
     "Export CSV & reports",
-    "Assistant",
     "10GB Vault Storage",
     "2 users",
 ]
@@ -28,7 +27,6 @@ const proFeatures = [
     "500 inbox items per month",
     "Customer management",
     "Export CSV & reports",
-    "Assistant",
     "Recurring payments",
     "Client payment portal",
     "Custom PayGate integration",

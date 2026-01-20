@@ -157,7 +157,10 @@ export async function GET(req: Request) {
                     ? Math.round((new Date(invoice.due_date).getTime() - new Date(invoice.issue_date).getTime()) / (1000 * 60 * 60 * 24))
                     : 30
                 const originalIssueDays = Math.max(0, originalIssueDaysRaw)
-                const newDueDate = addDays(nextInvoiceDate, originalIssueDays)
+                // Issue date should be when we generate the invoice (today)
+                const generatedIssueDate = new Date(now)
+                generatedIssueDate.setHours(0, 0, 0, 0)
+                const newDueDate = addDays(generatedIssueDate, originalIssueDays)
 
                 // Create new invoice
                 const { data: newInvoice, error: insertError } = await supabase
@@ -168,7 +171,7 @@ export async function GET(req: Request) {
                         customer_id: invoice.customer_id,
                         invoice_number: newInvoiceNumber,
                         status: 'sent',
-                        issue_date: nextInvoiceDate.toISOString().split('T')[0],
+                        issue_date: generatedIssueDate.toISOString().split('T')[0],
                         due_date: newDueDate.toISOString().split('T')[0],
                         currency: invoice.currency,
                         subtotal: invoice.subtotal,
@@ -219,12 +222,26 @@ export async function GET(req: Request) {
                     const paymentLink = `${process.env.NEXT_PUBLIC_URL}/pay/${newInvoice.id}`
 
                     try {
+                        let companyName: string | undefined
+                        try {
+                            const { data: ws } = await supabase
+                                .from('workspaces')
+                                .select('name')
+                                .eq('id', invoice.workspace_id)
+                                .maybeSingle()
+                            companyName = ws?.name
+                        } catch {
+                            companyName = undefined
+                        }
+
                         await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: invoice.customers.email,
+                                companyName,
+                                supportEmail: invoice.from_email,
                                 customerName: invoice.customers.name,
                                 invoiceNumber: newInvoiceNumber,
                                 amount: amount,

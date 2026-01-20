@@ -6,6 +6,7 @@ import { Trash2, Settings } from "lucide-react"
 import { IconCash, IconReceipt, IconClock, IconAlertCircle, IconBell } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
 
 interface Notification {
@@ -16,6 +17,7 @@ interface Notification {
     amount: number | null
     read: boolean
     created_at: string
+    invoice_id?: string | null
     invoices?: {
         invoice_number: string
         total: number
@@ -40,6 +42,7 @@ const typeColors: Record<string, string> = {
 }
 
 export default function NotificationsPage() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState<"inbox" | "archive">("inbox")
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [loading, setLoading] = useState(true)
@@ -182,6 +185,10 @@ export default function NotificationsPage() {
                                     "p-4 rounded-lg border border-white/5 bg-[#09090b] hover:bg-white/5 transition-colors flex items-start gap-4 group",
                                     !notification.read && "bg-white/2"
                                 )}
+                                onClick={() => {
+                                    if (!notification.invoice_id) return
+                                    router.push(`/invoices/preview/${notification.invoice_id}`)
+                                }}
                             >
                                 <div className={cn("p-2 rounded-lg", colorClass)}>
                                     <Icon className="h-5 w-5" />
@@ -216,7 +223,10 @@ export default function NotificationsPage() {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => deleteNotification(notification.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        deleteNotification(notification.id)
+                                    }}
                                     className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-500 hover:text-red-500"
                                 >
                                     <Trash2 className="h-4 w-4" />

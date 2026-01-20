@@ -39,6 +39,23 @@
   --font-hedvig-sans: 'Hedvig Letters Sans';
   --font-hedvig-serif: 'Hedvig Letters Serif', serif;
   --font-geist-mono: 'Geist Mono', monospace;
+  --font-invoice-montserrat: 'Montserrat', sans-serif;
+  --font-invoice-roboto-slab: 'Roboto Slab', serif;
+  --font-invoice-lato: 'Lato', sans-serif;
+  --font-invoice-playfair: 'Playfair Display', serif;
+  --font-invoice-source-sans: 'Source Sans Pro', sans-serif;
+  --font-invoice-open-sans: 'Open Sans', sans-serif;
+  --font-invoice-poppins: 'Poppins', sans-serif;
+  --font-invoice-roboto: 'Roboto', sans-serif;
+
+  --font-invoice-title: var(--font-invoice-montserrat), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-invoice-id: var(--font-invoice-roboto-slab), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-invoice-date: var(--font-invoice-lato), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-invoice-client: var(--font-invoice-playfair), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-invoice-from: var(--font-invoice-source-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-invoice-item: var(--font-invoice-open-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-invoice-amount: var(--font-invoice-poppins), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-invoice-notes: var(--font-invoice-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .dark {
@@ -154,6 +171,38 @@ h6 {
 .font-serif-italic {
   font-family: var(--font-serif), serif;
   font-style: italic;
+}
+
+.invoice-font-title {
+  font-family: var(--font-invoice-title);
+}
+
+.invoice-font-id {
+  font-family: var(--font-invoice-id);
+}
+
+.invoice-font-date {
+  font-family: var(--font-invoice-date);
+}
+
+.invoice-font-client {
+  font-family: var(--font-invoice-client);
+}
+
+.invoice-font-from {
+  font-family: var(--font-invoice-from);
+}
+
+.invoice-font-item {
+  font-family: var(--font-invoice-item);
+}
+
+.invoice-font-amount {
+  font-family: var(--font-invoice-amount);
+}
+
+.invoice-font-notes {
+  font-family: var(--font-invoice-notes);
 }
 
 @layer base {

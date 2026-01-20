@@ -5,7 +5,18 @@ import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
 
 import localFont from "next/font/local";
-import { Hedvig_Letters_Serif, Geist_Mono } from "next/font/google";
+import {
+  Geist_Mono,
+  Hedvig_Letters_Serif,
+  Lato,
+  Montserrat,
+  Open_Sans,
+  Playfair_Display,
+  Poppins,
+  Roboto,
+  Roboto_Slab,
+  Source_Sans_3,
+} from "next/font/google";
 
 const hedvigSans = localFont({
   src: "./fonts/HedvigLettersSans-Regular.ttf",
@@ -23,11 +34,69 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const invoiceMontserrat = Montserrat({
+  variable: "--font-invoice-montserrat",
+  subsets: ["latin"],
+});
+
+const invoiceRobotoSlab = Roboto_Slab({
+  variable: "--font-invoice-roboto-slab",
+  subsets: ["latin"],
+});
+
+const invoiceLato = Lato({
+  variable: "--font-invoice-lato",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const invoicePlayfair = Playfair_Display({
+  variable: "--font-invoice-playfair",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const invoiceSourceSans = Source_Sans_3({
+  variable: "--font-invoice-source-sans",
+  subsets: ["latin"],
+});
+
+const invoiceOpenSans = Open_Sans({
+  variable: "--font-invoice-open-sans",
+  subsets: ["latin"],
+});
+
+const invoicePoppins = Poppins({
+  variable: "--font-invoice-poppins",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+});
+
+const invoiceRoboto = Roboto({
+  variable: "--font-invoice-roboto",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Illumi | Invoicing & Finance for South Africa",
   description: "Illumi helps you manage your invoicing and finances with ease.",
   icons: {
-    icon: "/logo.png",
+    icon: [
+      {
+        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png",
+      },
+    ],
+    shortcut: [
+      {
+        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png",
+      },
+    ],
+    apple: [
+      {
+        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png",
+      },
+    ],
   },
 };
 
@@ -39,7 +108,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} antialiased bg-black text-white font-serif`}
+        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} ${invoiceMontserrat.variable} ${invoiceRobotoSlab.variable} ${invoiceLato.variable} ${invoicePlayfair.variable} ${invoiceSourceSans.variable} ${invoiceOpenSans.variable} ${invoicePoppins.variable} ${invoiceRoboto.variable} antialiased bg-black text-white font-serif`}
         suppressHydrationWarning
       >
         {children}

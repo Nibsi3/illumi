@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react"
+import { useWorkspace } from "@/lib/workspace-context"
 
 interface SettingsContextType {
     currency: string
@@ -11,10 +12,14 @@ interface SettingsContextType {
     setDateFormat: (format: string) => void
     fromEmail: string
     setFromEmail: (email: string) => void
+    sendInvoiceCopyToSelf: boolean
+    setSendInvoiceCopyToSelf: (enabled: boolean) => void
     logo: string | null
     setLogo: (logo: string | null) => void
     companyName: string
     setCompanyName: (name: string) => void
+    companyWebsite: string
+    setCompanyWebsite: (website: string) => void
     companyAddress: string
     setCompanyNameAddress: (address: string) => void
     country: string
@@ -58,12 +63,15 @@ const COUNTRY_CURRENCIES: Record<string, string> = {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
+    const { activeWorkspace } = useWorkspace()
     const [currency, setCurrency] = useState("ZAR")
     const [taxRate, setTaxRate] = useState(15)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
     const [fromEmail, setFromEmail] = useState("hello@illumi.co.za")
+    const [sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf] = useState(false)
     const [logo, setLogo] = useState<string | null>(null)
     const [companyName, setCompanyName] = useState("Illumi Professional")
+    const [companyWebsite, setCompanyWebsite] = useState("")
     const [companyAddress, setCompanyNameAddress] = useState("")
     const [country, setCountry] = useState("South Africa")
     const [activePaymentProvider, setActivePaymentProvider] = useState<string | null>("payfast")
@@ -71,6 +79,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [providerKeys, setProviderKeys] = useState<Record<string, any>>({})
     const [billingMethods, setBillingMethods] = useState<any[]>([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const [isBillingLoaded, setIsBillingLoaded] = useState(false)
+
+    const storageKey = activeWorkspace?.id
+        ? `illumi_settings_${activeWorkspace.id}`
+        : "illumi_settings"
 
     const handleSetCountry = (newCountry: string) => {
         setCountry(newCountry)
@@ -88,20 +101,21 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const loadSettings = () => {
             try {
-                const storedSettings = localStorage.getItem("illumi_settings")
+                const storedSettings = localStorage.getItem(storageKey)
                 if (storedSettings) {
                     const parsed = JSON.parse(storedSettings)
                     if (parsed.currency) setCurrency(parsed.currency)
                     if (parsed.taxRate !== undefined) setTaxRate(parsed.taxRate)
                     if (parsed.dateFormat) setDateFormat(parsed.dateFormat)
                     if (parsed.fromEmail) setFromEmail(parsed.fromEmail)
+                    if (parsed.sendInvoiceCopyToSelf !== undefined) setSendInvoiceCopyToSelf(Boolean(parsed.sendInvoiceCopyToSelf))
                     if (parsed.logo) setLogo(parsed.logo)
                     if (parsed.companyName) setCompanyName(parsed.companyName)
+                    if (parsed.companyWebsite !== undefined) setCompanyWebsite(parsed.companyWebsite)
                     if (parsed.companyAddress) setCompanyNameAddress(parsed.companyAddress)
                     if (parsed.country) setCountry(parsed.country)
                     if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
                     if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
-                    if (parsed.billingMethods) setBillingMethods(parsed.billingMethods)
                 }
             } catch (e) {
                 console.error("Failed to load settings", e)
@@ -110,6 +124,22 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             }
         }
         loadSettings()
+    }, [storageKey])
+
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem("illumi_billing")
+            if (stored) {
+                const parsed = JSON.parse(stored)
+                if (Array.isArray(parsed.billingMethods)) {
+                    setBillingMethods(parsed.billingMethods)
+                }
+            }
+        } catch (e) {
+            console.error("Failed to load billing", e)
+        } finally {
+            setIsBillingLoaded(true)
+        }
     }, [])
 
     // Save settings to localStorage whenever they change
@@ -120,16 +150,22 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             taxRate,
             dateFormat,
             fromEmail,
+            sendInvoiceCopyToSelf,
             logo,
             companyName,
+            companyWebsite,
             companyAddress,
             country,
             activePaymentProvider,
             connectedProviders,
-            billingMethods
         }
-        localStorage.setItem("illumi_settings", JSON.stringify(settings))
-    }, [currency, taxRate, dateFormat, fromEmail, logo, companyName, companyAddress, country, activePaymentProvider, connectedProviders, billingMethods, isLoaded])
+        localStorage.setItem(storageKey, JSON.stringify(settings))
+    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, logo, companyName, companyWebsite, companyAddress, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
+
+    useEffect(() => {
+        if (!isBillingLoaded) return
+        localStorage.setItem("illumi_billing", JSON.stringify({ billingMethods }))
+    }, [billingMethods, isBillingLoaded])
 
     return (
         <SettingsContext.Provider value={{
@@ -137,8 +173,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             taxRate, setTaxRate,
             dateFormat, setDateFormat,
             fromEmail, setFromEmail,
+            sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf,
             logo, setLogo,
             companyName, setCompanyName,
+            companyWebsite, setCompanyWebsite,
             companyAddress, setCompanyNameAddress,
             country, setCountry: handleSetCountry,
             activePaymentProvider, setActivePaymentProvider,

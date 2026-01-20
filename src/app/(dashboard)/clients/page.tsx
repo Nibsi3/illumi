@@ -17,6 +17,12 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 const customerColumns = [
     { label: "Name", id: "name" },
@@ -55,8 +61,50 @@ export default function ClientsPage() {
     const [customers, setCustomers] = useState<Customer[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
+    const [selectedIds, setSelectedIds] = useState<string[]>([])
+    const [historyCustomer, setHistoryCustomer] = useState<Customer | null>(null)
+    const [historyInvoices, setHistoryInvoices] = useState<any[]>([])
+    const [isHistoryLoading, setIsHistoryLoading] = useState(false)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
+
+    const toggleCustomerStatus = async (customer: Customer) => {
+        try {
+            const nextStatus = customer.status === 'active' ? 'inactive' : 'active'
+            const { error } = await supabase
+                .from('customers')
+                .update({ status: nextStatus })
+                .eq('id', customer.id)
+
+            if (error) throw error
+            setCustomers(prev => prev.map(c => (c.id === customer.id ? { ...c, status: nextStatus } : c)))
+        } catch (error: any) {
+            toast.error("Failed to update customer", { description: error.message })
+        }
+    }
+
+    const openHistory = async (customer: Customer) => {
+        if (!activeWorkspace) return
+        setHistoryCustomer(customer)
+        setIsHistoryLoading(true)
+        setHistoryInvoices([])
+        try {
+            const { data, error } = await supabase
+                .from('invoices')
+                .select('invoice_number, status, total, issue_date, due_date, paid_at')
+                .eq('workspace_id', activeWorkspace.id)
+                .eq('customer_id', customer.id)
+                .order('issue_date', { ascending: false })
+                .limit(25)
+
+            if (error) throw error
+            setHistoryInvoices(data || [])
+        } catch (error: any) {
+            toast.error("Failed to load history", { description: error.message })
+        } finally {
+            setIsHistoryLoading(false)
+        }
+    }
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -195,8 +243,22 @@ export default function ClientsPage() {
                             <thead>
                                 <tr className="bg-white/2 border-b border-white/10">
                                     <th className="px-5 py-3 w-10 border-r border-white/10">
-                                        <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors">
-                                            {/* Select All Checkbox */}
+                                        <div
+                                            className={cn(
+                                                "w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors",
+                                                selectedIds.length > 0 && selectedIds.length === filteredCustomers.length && "bg-white text-black"
+                                            )}
+                                            onClick={() => {
+                                                if (selectedIds.length === filteredCustomers.length) {
+                                                    setSelectedIds([])
+                                                } else {
+                                                    setSelectedIds(filteredCustomers.map(c => c.id))
+                                                }
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
+                                        >
+                                            {selectedIds.length > 0 && selectedIds.length === filteredCustomers.length && <Check className="h-3 w-3" />}
                                         </div>
                                     </th>
                                     <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Name</th>
@@ -211,7 +273,19 @@ export default function ClientsPage() {
                                 {filteredCustomers.map((customer) => (
                                     <tr key={customer.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                         <td className="px-5 py-4 border-r border-white/10">
-                                            <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
+                                            <div
+                                                className={cn(
+                                                    "w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40",
+                                                    selectedIds.includes(customer.id) && "bg-white text-black"
+                                                )}
+                                                onClick={() => {
+                                                    setSelectedIds(prev => prev.includes(customer.id) ? prev.filter(id => id !== customer.id) : [...prev, customer.id])
+                                                }}
+                                                role="button"
+                                                tabIndex={0}
+                                            >
+                                                {selectedIds.includes(customer.id) && <Check className="h-3 w-3" />}
+                                            </div>
                                         </td>
                                         <td className="px-5 py-4 border-r border-white/10">
                                             <div className="flex items-center gap-3">
@@ -246,8 +320,18 @@ export default function ClientsPage() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
-                                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Customer</DropdownMenuItem>
-                                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View History</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                        onClick={() => openHistory(customer)}
+                                                    >
+                                                        View History
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                        onClick={() => toggleCustomerStatus(customer)}
+                                                    >
+                                                        {customer.status === 'active' ? 'Mark Inactive' : 'Mark Active'}
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuSeparator className="bg-white/10 mx-1" />
                                                     <DropdownMenuItem
                                                         onClick={() => handleDeleteCustomer(customer.id)}
@@ -265,6 +349,47 @@ export default function ClientsPage() {
                     </div>
                 </div>
             )}
+
+            <Dialog open={Boolean(historyCustomer)} onOpenChange={(open) => { if (!open) setHistoryCustomer(null) }}>
+                <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-2xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-white">History — {historyCustomer?.name}</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="mt-2">
+                        {isHistoryLoading ? (
+                            <div className="text-sm text-neutral-400 flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" /> Loading...
+                            </div>
+                        ) : historyInvoices.length === 0 ? (
+                            <div className="text-sm text-neutral-400">No invoices found for this customer.</div>
+                        ) : (
+                            <div className="border border-white/10 rounded-xl overflow-hidden">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="border-b border-white/10 text-[10px] uppercase tracking-widest text-neutral-500">
+                                        <tr>
+                                            <th className="px-4 py-3">Invoice</th>
+                                            <th className="px-4 py-3">Status</th>
+                                            <th className="px-4 py-3 text-right">Total</th>
+                                            <th className="px-4 py-3">Issued</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/10">
+                                        {historyInvoices.map((inv: any) => (
+                                            <tr key={inv.invoice_number} className="hover:bg-white/5">
+                                                <td className="px-4 py-3 text-white">{inv.invoice_number || '-'}</td>
+                                                <td className="px-4 py-3 text-neutral-400">{inv.status}</td>
+                                                <td className="px-4 py-3 text-right text-white">{Number(inv.total || 0).toLocaleString()}</td>
+                                                <td className="px-4 py-3 text-neutral-400">{inv.issue_date || '-'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

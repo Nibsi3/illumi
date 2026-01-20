@@ -32,7 +32,7 @@ type MemberRow = {
 }
 
 export default function MembersPage() {
-    const { isPro, limits } = useSubscription()
+    const { isPro, limits, isOwner } = useSubscription()
     const { activeWorkspace } = useWorkspace()
     const [members, setMembers] = useState<MemberRow[]>([])
     const [isLoadingMembers, setIsLoadingMembers] = useState(true)
@@ -101,6 +101,10 @@ export default function MembersPage() {
     }, [activeWorkspaceId, supabase])
 
     const handleInvite = async () => {
+        if (!isOwner) {
+            toast.error('Only workspace owners can invite members')
+            return
+        }
         if (reachedLimit) return
         if (!inviteEmail) return
 
@@ -109,35 +113,58 @@ export default function MembersPage() {
             return
         }
 
+        const normalizedInviteEmail = inviteEmail.toLowerCase().trim()
+        if (!normalizedInviteEmail) return
+
         setIsInviting(true)
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("Not authenticated")
 
             // Save to workspace_members
-            const { error: memberError } = await supabase
+            let memberRowId: string | null = null
+            const { data: insertedMember, error: memberError } = await supabase
                 .from('workspace_members')
                 .insert([{
                     workspace_id: activeWorkspaceId,
-                    email: inviteEmail,
+                    email: normalizedInviteEmail,
                     role: 'member',
                     status: 'pending'
                 }])
+                .select('id')
+                .single()
 
-            if (memberError && !memberError.message.includes('duplicate')) {
-                throw memberError
+            if (memberError) {
+                const msg = (memberError.message || '').toLowerCase()
+                const isDuplicate = msg.includes('duplicate') || msg.includes('unique')
+                if (!isDuplicate) throw memberError
+
+                const { data: existing } = await supabase
+                    .from('workspace_members')
+                    .select('id')
+                    .eq('workspace_id', activeWorkspaceId)
+                    .eq('email', normalizedInviteEmail)
+                    .maybeSingle()
+                memberRowId = existing?.id || null
+            } else {
+                memberRowId = insertedMember?.id || null
+            }
+
+            if (!memberRowId) {
+                throw new Error('Failed to create invite. Please try again.')
             }
 
             // Send invite email via Resend
+            const invitePath = `/invite/${memberRowId}`
             const emailResponse = await fetch('/api/email/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     type: 'invite',
-                    to: inviteEmail,
+                    to: normalizedInviteEmail,
                     inviterName: user.user_metadata?.full_name || user.email?.split('@')[0] || 'A team member',
                     workspaceName: activeWorkspace?.name || 'Illumi',
-                    inviteLink: `${window.location.origin}/login`
+                    inviteLink: `${window.location.origin}${invitePath}`
                 })
             })
 
@@ -146,20 +173,20 @@ export default function MembersPage() {
             }
 
             const newRow: MemberRow = {
-                id: Date.now().toString(),
-                name: inviteEmail.split("@")[0],
-                email: inviteEmail,
+                id: memberRowId,
+                name: normalizedInviteEmail.split("@")[0],
+                email: normalizedInviteEmail,
                 role: "Member",
                 avatar: null,
                 status: "pending",
             }
             setMembers(prev => {
-                const exists = prev.some(m => m.email.toLowerCase() === inviteEmail.toLowerCase())
+                const exists = prev.some(m => m.email.toLowerCase() === normalizedInviteEmail)
                 return exists ? prev : [...prev, newRow]
             })
 
             toast.success("Invitation sent", {
-                description: `An invite has been sent to ${inviteEmail}`
+                description: `An invite has been sent to ${normalizedInviteEmail}`
             })
 
             setInviteEmail("")
@@ -174,6 +201,10 @@ export default function MembersPage() {
     }
 
     const removeMember = async (id: string) => {
+        if (!isOwner) {
+            toast.error('Only workspace owners can remove members')
+            return
+        }
         if (!activeWorkspaceId) return
         try {
             const { error } = await supabase
@@ -191,6 +222,10 @@ export default function MembersPage() {
     }
 
     const changeRole = async (id: string, newRole: string) => {
+        if (!isOwner) {
+            toast.error('Only workspace owners can change roles')
+            return
+        }
         if (!activeWorkspaceId) return
         if (!isPro && newRole === "Admin") return
         const dbRole = newRole.toLowerCase()

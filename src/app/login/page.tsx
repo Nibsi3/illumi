@@ -41,10 +41,29 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [googleLoading, setGoogleLoading] = useState(false)
     const supabase = createClient()
+    const [nextPath, setNextPath] = useState('/overview')
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        try {
+            const params = new URLSearchParams(window.location.search)
+            const next = params.get('next')
+            if (next && next.startsWith('/')) {
+                setNextPath(next)
+            }
+        } catch {
+            // ignore
+        }
+    }, [])
 
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true)
+        try {
+            localStorage.setItem('illumi_auth_next', nextPath)
+        } catch {
+            // ignore
+        }
         const redirectUrl = `${getURL()}/auth/callback`
         console.log('Initiating Google Sign-In with redirect:', redirectUrl)
 
@@ -66,6 +85,11 @@ export default function LoginPage() {
         if (!email) return
 
         setLoading(true)
+        try {
+            localStorage.setItem('illumi_auth_next', nextPath)
+        } catch {
+            // ignore
+        }
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {

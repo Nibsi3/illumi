@@ -27,7 +27,7 @@ export function useSubscription() {
     const [isSubscribed, setIsSubscribed] = useState(false)
     
     const supabase = createClient()
-    const { activeWorkspace } = useWorkspace()
+    const { activeWorkspace, isOwner, userId } = useWorkspace()
 
     useEffect(() => {
         async function fetchSubscription() {
@@ -58,8 +58,24 @@ export function useSubscription() {
 
                 // PGRST116 = no rows found, which is expected for free users
                 // 42P01 = table doesn't exist
-                if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
-                    console.error('Error fetching subscription:', error)
+                // PGRST205 = table/view not found in schema cache
+                // 42501 = insufficient privilege (RLS / perms)
+                const errorCode = (error as any)?.code
+                const isExpectedError =
+                    errorCode === 'PGRST116' ||
+                    errorCode === '42P01' ||
+                    errorCode === 'PGRST205' ||
+                    errorCode === '42501'
+
+                if (error && !isExpectedError) {
+                    const safeError = {
+                        message: (error as any)?.message,
+                        details: (error as any)?.details,
+                        hint: (error as any)?.hint,
+                        code: (error as any)?.code,
+                        name: (error as any)?.name,
+                    }
+                    console.error('Error fetching subscription:', safeError)
                 }
 
                 if (data) {
@@ -84,7 +100,11 @@ export function useSubscription() {
                     setDaysRemaining(null)
                 }
             } catch (error) {
-                console.error('Error fetching subscription:', error)
+                const safeError = {
+                    message: (error as any)?.message,
+                    name: (error as any)?.name,
+                }
+                console.error('Error fetching subscription:', safeError)
             } finally {
                 setIsLoading(false)
             }
@@ -93,15 +113,21 @@ export function useSubscription() {
         fetchSubscription()
     }, [activeWorkspace, supabase])
 
+    // Pro benefits only apply if user is the workspace owner
+    // Members get access to workspace features but cannot "own" Pro status
+    const effectiveTier: SubscriptionTier = isOwner ? tier : "free"
+    const effectiveIsPro = isOwner && tier === "pro"
+
     return {
-        tier,
+        tier: effectiveTier,
         isLoading,
-        daysRemaining,
-        subscription,
-        isSubscribed,
-        isPro: tier === "pro",
-        isFree: tier === "free",
-        limits: getTierLimits(tier),
+        daysRemaining: isOwner ? daysRemaining : null,
+        subscription: isOwner ? subscription : null,
+        isSubscribed: effectiveIsPro,
+        isPro: effectiveIsPro,
+        isFree: !effectiveIsPro,
+        limits: getTierLimits(effectiveTier),
+        isOwner,
     }
 }
 

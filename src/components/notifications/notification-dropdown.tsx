@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { formatDistanceToNow } from "date-fns"
 
 interface Notification {
@@ -20,6 +21,7 @@ interface Notification {
     amount: number | null
     read: boolean
     created_at: string
+    invoice_id?: string | null
     invoices?: {
         invoice_number: string
         total: number
@@ -44,6 +46,7 @@ const typeColors: Record<string, string> = {
 }
 
 export function NotificationDropdown() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState<"inbox" | "archive">("inbox")
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [archived, setArchived] = useState<Notification[]>([])
@@ -220,7 +223,15 @@ export function NotificationDropdown() {
                                     return (
                                         <div
                                             key={notification.id}
-                                            className="px-4 py-3 hover:bg-white/5 transition-colors group relative"
+                                            className={cn(
+                                                "px-4 py-3 hover:bg-white/5 transition-colors group relative",
+                                                notification.invoice_id ? "cursor-pointer" : ""
+                                            )}
+                                            onClick={async () => {
+                                                if (!notification.invoice_id) return
+                                                await handleMarkAsRead(notification.id)
+                                                router.push(`/invoices/preview/${notification.invoice_id}`)
+                                            }}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <div className={cn("mt-0.5", colorClass)}>
@@ -248,7 +259,10 @@ export function NotificationDropdown() {
                                                         </div>
                                                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button
-                                                                onClick={() => handleMarkAsRead(notification.id)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    handleMarkAsRead(notification.id)
+                                                                }}
                                                                 className="p-1.5 text-neutral-500 hover:text-white hover:bg-white/10 rounded-md transition-all"
                                                                 title="Archive"
                                                             >
@@ -257,7 +271,10 @@ export function NotificationDropdown() {
                                                                 </svg>
                                                             </button>
                                                             <button
-                                                                onClick={() => handleRemove(notification.id)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    handleRemove(notification.id)
+                                                                }}
                                                                 className="p-1.5 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all"
                                                                 title="Delete"
                                                             >
@@ -286,7 +303,14 @@ export function NotificationDropdown() {
                                     return (
                                         <div
                                             key={notification.id}
-                                            className="px-4 py-3 hover:bg-white/5 transition-colors group relative opacity-60 hover:opacity-100"
+                                            className={cn(
+                                                "px-4 py-3 hover:bg-white/5 transition-colors group relative opacity-60 hover:opacity-100",
+                                                notification.invoice_id ? "cursor-pointer" : ""
+                                            )}
+                                            onClick={() => {
+                                                if (!notification.invoice_id) return
+                                                router.push(`/invoices/preview/${notification.invoice_id}`)
+                                            }}
                                         >
                                             <div className="flex items-start gap-3">
                                                 <div className="mt-0.5 text-neutral-500">
@@ -303,7 +327,10 @@ export function NotificationDropdown() {
                                                             </p>
                                                         </div>
                                                         <button
-                                                            onClick={() => handleRemove(notification.id, true)}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                handleRemove(notification.id, true)
+                                                            }}
                                                             className="p-1 text-neutral-500 hover:text-red-500 transition-colors"
                                                             title="Delete"
                                                         >
@@ -325,19 +352,21 @@ export function NotificationDropdown() {
                 </div>
 
                 {/* Footer */}
-                {activeTab === "inbox" && notifications.length > 0 && (
-                    <div className="border-t border-white/5 px-4 py-3 flex items-center justify-between">
-                        <button
-                            onClick={handleArchiveAll}
-                            className="text-sm text-neutral-400 hover:text-white transition-colors"
-                        >
-                            Archive all
-                        </button>
-                        <Link href="/notifications" className="text-sm text-neutral-400 hover:text-white transition-colors">
-                            View all
-                        </Link>
+                <div className="border-t border-white/5 px-4 py-3 flex items-center justify-between">
+                    <div>
+                        {activeTab === "inbox" && notifications.length > 0 && (
+                            <button
+                                onClick={handleArchiveAll}
+                                className="text-sm text-neutral-400 hover:text-white transition-colors"
+                            >
+                                Archive all
+                            </button>
+                        )}
                     </div>
-                )}
+                    <Link href="/notifications" className="text-sm text-neutral-400 hover:text-white transition-colors">
+                        View all
+                    </Link>
+                </div>
             </DropdownMenuContent>
         </DropdownMenu>
     )

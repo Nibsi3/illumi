@@ -18,6 +18,13 @@ import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 type Product = {
   id: string
@@ -43,6 +50,10 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [editing, setEditing] = useState<Product | null>(null)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isSavingEdit, setIsSavingEdit] = useState(false)
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
     "name",
     "sku",
@@ -74,21 +85,85 @@ export default function ProductsPage() {
       }
     }
     fetchProducts()
-  }, [supabase])
+  }, [supabase, activeWorkspace])
 
-  const handleDeleteProduct = async (productId: string) => {
+  const handleArchiveProduct = async (productId: string) => {
     try {
       const { error } = await supabase
         .from('products')
-        .delete()
+        .update({ status: 'archived' })
         .eq('id', productId)
 
       if (error) throw error
 
-      setProducts(prev => prev.filter(p => p.id !== productId))
-      toast.success("Product deleted")
+      setProducts(prev => prev.map(p => (p.id === productId ? { ...p, status: 'archived' } : p)))
+      toast.success("Product archived")
     } catch (error: any) {
-      toast.error("Failed to delete product", { description: error.message })
+      toast.error("Failed to archive product", { description: error.message })
+    }
+  }
+
+  const openEdit = (product: Product) => {
+    setEditing({ ...product })
+    setIsEditOpen(true)
+  }
+
+  const saveEdit = async () => {
+    if (!editing) return
+    setIsSavingEdit(true)
+    try {
+      const { error } = await supabase
+        .from('products')
+        .update({
+          name: editing.name,
+          sku: editing.sku || null,
+          description: editing.description || null,
+          price: Number(editing.price) || 0,
+        })
+        .eq('id', editing.id)
+
+      if (error) throw error
+      setProducts(prev => prev.map(p => (p.id === editing.id ? editing : p)))
+      setIsEditOpen(false)
+      setEditing(null)
+      toast.success('Product updated')
+    } catch (error: any) {
+      toast.error('Failed to update product', { description: error.message })
+    } finally {
+      setIsSavingEdit(false)
+    }
+  }
+
+  const duplicateProduct = async (product: Product) => {
+    if (!activeWorkspace) return
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        toast.error('You must be logged in')
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .insert({
+          name: product.name,
+          sku: product.sku || null,
+          description: product.description || null,
+          price: product.price,
+          currency: product.currency,
+          billing_type: product.billing_type,
+          status: 'active',
+          user_id: user.id,
+          workspace_id: activeWorkspace.id,
+        })
+        .select('*')
+        .single()
+
+      if (error) throw error
+      setProducts(prev => [data as Product, ...prev])
+      toast.success('Product duplicated')
+    } catch (error: any) {
+      toast.error('Failed to duplicate product', { description: error.message })
     }
   }
 
@@ -205,7 +280,23 @@ export default function ProductsPage() {
               <thead>
                 <tr className="bg-white/2 border-b border-white/10">
                   <th className="px-5 py-3 w-10 border-r border-white/10">
-                    <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors" />
+                    <div
+                      className={cn(
+                        "w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors",
+                        selectedIds.length > 0 && selectedIds.length === filteredProducts.length && "bg-white text-black"
+                      )}
+                      onClick={() => {
+                        if (selectedIds.length === filteredProducts.length) {
+                          setSelectedIds([])
+                        } else {
+                          setSelectedIds(filteredProducts.map(p => p.id))
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {selectedIds.length > 0 && selectedIds.length === filteredProducts.length && <Package className="h-3 w-3" />}
+                    </div>
                   </th>
                   <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Product</th>
                   <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">SKU</th>
@@ -218,7 +309,19 @@ export default function ProductsPage() {
                 {filteredProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                     <td className="px-5 py-4 border-r border-white/10">
-                      <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40",
+                          selectedIds.includes(product.id) && "bg-white text-black"
+                        )}
+                        onClick={() => {
+                          setSelectedIds(prev => prev.includes(product.id) ? prev.filter(id => id !== product.id) : [...prev, product.id])
+                        }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        {selectedIds.includes(product.id) && <Package className="h-3 w-3" />}
+                      </div>
                     </td>
                     <td className="px-5 py-4 border-r border-white/10">
                       <div className="flex items-center gap-3">
@@ -253,11 +356,21 @@ export default function ProductsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
-                          <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Product</DropdownMenuItem>
-                          <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Duplicate</DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                            onClick={() => openEdit(product)}
+                          >
+                            Edit Product
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                            onClick={() => duplicateProduct(product)}
+                          >
+                            Duplicate
+                          </DropdownMenuItem>
                           <DropdownMenuSeparator className="bg-white/10 mx-1" />
                           <DropdownMenuItem
-                            onClick={() => handleDeleteProduct(product.id)}
+                            onClick={() => handleArchiveProduct(product.id)}
                             className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
                           >
                             Archive
@@ -272,6 +385,75 @@ export default function ProductsPage() {
           </div>
         </div>
       )}
+
+      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+        <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Product</DialogTitle>
+          </DialogHeader>
+
+          {editing && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Name</label>
+                <Input
+                  value={editing.name}
+                  onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                  className="bg-black border-white/10 h-11"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Price</label>
+                  <Input
+                    value={String(editing.price ?? 0)}
+                    onChange={(e) => setEditing({ ...editing, price: Number(e.target.value) })}
+                    inputMode="decimal"
+                    className="bg-black border-white/10 h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">SKU</label>
+                  <Input
+                    value={editing.sku || ''}
+                    onChange={(e) => setEditing({ ...editing, sku: e.target.value })}
+                    className="bg-black border-white/10 h-11"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Description</label>
+                <Input
+                  value={editing.description || ''}
+                  onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                  className="bg-black border-white/10 h-11"
+                />
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              className="border-white/10 bg-white/5 hover:bg-white/10"
+              onClick={() => setIsEditOpen(false)}
+              disabled={isSavingEdit}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-white text-black hover:bg-neutral-200"
+              onClick={saveEdit}
+              disabled={isSavingEdit || !editing}
+            >
+              {isSavingEdit ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -123,15 +123,15 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     <img src={data.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                 ) : (
                                     <div className={cn(
-                                        "font-serif font-black text-3xl italic",
+                                        "invoice-font-title font-black text-3xl",
                                         data.invoiceMode === "light" ? "text-white" : "text-black"
                                     )}>E.</div>
                                 )}
                             </div>
                             <div className="text-right">
-                                <h1 className="text-6xl font-serif italic mb-3 tracking-tighter">Invoice</h1>
+                                <h1 className="text-6xl invoice-font-title font-bold mb-3 tracking-tighter">Invoice</h1>
                                 <p className={cn(
-                                    "font-mono text-xs tracking-[0.3em] uppercase opacity-40",
+                                    "invoice-font-id text-xs tracking-[0.3em] uppercase opacity-40",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/40"
                                 )}>{data.invoiceNumber}</p>
                             </div>
@@ -147,7 +147,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     "text-[10px] font-bold uppercase tracking-[0.2em]",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                 )}>From</span>
-                                <div className="space-y-1">
+                                <div className="space-y-1 invoice-font-from">
                                     <p className="text-lg font-bold">Illumi Professional</p>
                                     {data.fromEmail && <p className="text-xs font-medium opacity-60">{data.fromEmail}</p>}
                                     <p className={cn(
@@ -164,9 +164,9 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     "text-[10px] font-bold uppercase tracking-[0.2em]",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                 )}>To</span>
-                                <div className="space-y-1">
-                                    <p className="text-lg font-bold italic font-serif opacity-90">{data.clientName || "Valued Customer"}</p>
-                                    {data.clientEmail && <p className="text-xs font-medium opacity-60 italic">{data.clientEmail}</p>}
+                                <div className="space-y-1 invoice-font-client">
+                                    <p className="text-lg font-bold opacity-90">{data.clientName || "Valued Customer"}</p>
+                                    {data.clientEmail && <p className="text-xs font-medium opacity-60">{data.clientEmail}</p>}
                                     {data.clientPhone && <p className="text-xs font-medium opacity-60 mb-2">{data.clientPhone}</p>}
                                     <p className={cn(
                                         "text-xs leading-relaxed whitespace-pre-wrap",
@@ -185,7 +185,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     "text-[10px] font-bold uppercase tracking-widest",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                 )}>Issue Date</span>
-                                <p className="font-semibold text-sm italic font-serif">
+                                <p className="invoice-font-date font-semibold text-sm">
                                     {formatDate(data.issueDate)}
                                 </p>
                             </div>
@@ -194,7 +194,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     "text-[10px] font-bold uppercase tracking-widest",
                                     data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                 )}>Due Date</span>
-                                <p className="font-semibold text-sm italic font-serif">
+                                <p className="invoice-font-date font-semibold text-sm">
                                     {formatDate(data.dueDate)}
                                 </p>
                             </div>
@@ -219,10 +219,10 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             )}>
                                 {data.tasks.map((task, i) => (
                                     <tr key={i} className="text-sm">
-                                        <td className="py-6 font-medium">{task.description || "No description"}</td>
-                                        <td className="py-6 text-right font-mono">{task.price.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
-                                        <td className="py-6 text-right font-mono">{task.qty}</td>
-                                        <td className="py-6 text-right font-bold font-mono pr-6">{(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
+                                        <td className="py-6 font-medium invoice-font-item">{task.description || "No description"}</td>
+                                        <td className="py-6 text-right invoice-font-amount">{task.price.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
+                                        <td className="py-6 text-right invoice-font-amount">{task.qty}</td>
+                                        <td className="py-6 text-right font-bold invoice-font-amount pr-6">{(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -240,7 +240,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
                                     )}>Note</span>
                                     <p className={cn(
-                                        "text-sm italic font-serif leading-relaxed opacity-60",
+                                        "text-sm invoice-font-notes leading-relaxed opacity-60",
                                         data.invoiceMode === "light" ? "text-black/60" : "text-white/60"
                                     )}>
                                         {data.note?.trim() || ""}
@@ -251,18 +251,18 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Subtotal</span>
-                                    <span className="font-mono">{subtotal.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
+                                    <span className="invoice-font-amount">{subtotal.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Tax ({data.taxRate}%)</span>
-                                    <span className="font-mono text-neutral-400">{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
+                                    <span className="invoice-font-amount text-neutral-400">{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
                                 <div className={cn(
                                     "pt-10 border-t flex justify-between items-end",
                                     data.invoiceMode === "light" ? "border-black/5" : "border-white/10"
                                 )}>
                                     <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/20 mb-2">Total Due</span>
-                                    <span className="text-5xl font-serif italic font-bold tracking-tighter">
+                                    <span className="text-5xl invoice-font-amount font-bold tracking-tighter">
                                         {total.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}
                                     </span>
                                 </div>

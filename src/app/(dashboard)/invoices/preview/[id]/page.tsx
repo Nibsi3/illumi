@@ -29,6 +29,9 @@ interface Invoice {
     notes: string
     terms: string
     currency: string
+    logo_url?: string | null
+    invoice_mode?: "light" | "dark" | null
+    logo_bg?: "light" | "dark" | null
     customer: {
         name: string
         email: string
@@ -143,15 +146,23 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
             {/* Invoice Paper Layout */}
             <main className="max-w-5xl mx-auto mt-12 px-6">
+                {(() => {
+                    const logoBg = (invoice.logo_bg || invoice.invoice_mode || 'dark') as 'light' | 'dark'
+                    const logoContainerClass = logoBg === 'light' ? 'bg-white border-neutral-100' : 'bg-[#0c0c0c] border-white/10'
+                    return (
                 <div className="bg-white text-black rounded-lg shadow-2xl p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
                     {/* Header: Logo & Title */}
                     <div className="flex justify-between items-start mb-20">
-                        <div className="w-20 h-20 bg-black rounded-xl flex items-center justify-center">
-                            <img src="/logo.png" alt="Logo" className="w-10 h-10 invert" />
+                        <div className={"w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden border " + logoContainerClass}>
+                            {invoice.logo_url ? (
+                                <img src={invoice.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
+                            ) : (
+                                <div className="invoice-font-title font-black text-2xl">E.</div>
+                            )}
                         </div>
                         <div className="text-right">
-                            <h1 className="text-5xl font-serif italic mb-2">Invoice</h1>
-                            <p className="text-neutral-500 font-mono text-sm tracking-widest">#{invoice.invoice_number}</p>
+                            <h1 className="text-5xl invoice-font-title font-bold mb-2">Invoice</h1>
+                            <p className="text-neutral-400 invoice-font-id text-sm tracking-widest">#{invoice.invoice_number}</p>
                         </div>
                     </div>
 
@@ -159,7 +170,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     <div className="grid grid-cols-2 gap-20 mb-16 pb-16 border-b border-neutral-100">
                         <div className="flex flex-col gap-4">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">From</span>
-                            <div className="space-y-1">
+                            <div className="space-y-1 invoice-font-from">
                                 <p className="text-lg font-bold">My Professional Co.</p>
                                 <p className="text-sm text-neutral-600 leading-relaxed">
                                     123 Business Avenue<br />
@@ -171,7 +182,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         </div>
                         <div className="flex flex-col gap-4 text-right">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">To</span>
-                            <div className="space-y-1">
+                            <div className="space-y-1 invoice-font-client">
                                 <p className="text-lg font-bold">{invoice.customer?.name || 'Customer'}</p>
                                 <p className="text-sm text-neutral-600 leading-relaxed">
                                     {invoice.customer?.email}<br />
@@ -185,11 +196,11 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     <div className="flex gap-16 mb-16">
                         <div className="flex flex-col gap-1">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Issue Date</span>
-                            <p className="font-semibold text-sm italic font-serif">{formatDate(invoice.issue_date)}</p>
+                            <p className="invoice-font-date font-semibold text-sm">{formatDate(invoice.issue_date)}</p>
                         </div>
                         <div className="flex flex-col gap-1">
                             <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Due Date</span>
-                            <p className="font-semibold text-sm italic font-serif text-red-500">{invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</p>
+                            <p className="invoice-font-date font-semibold text-sm text-red-500">{invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</p>
                         </div>
                     </div>
 
@@ -206,10 +217,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         <tbody className="divide-y divide-neutral-100">
                             {invoice.items.map((item) => (
                                 <tr key={item.id} className="text-sm">
-                                    <td className="py-6 font-medium">{item.description}</td>
-                                    <td className="py-6 text-right">{formatCurrency(item.unit_price)}</td>
+                                    <td className="py-6 font-medium invoice-font-item">{item.description}</td>
+                                    <td className="py-6 text-right invoice-font-amount">{formatCurrency(item.unit_price)}</td>
                                     <td className="py-6 text-right">{item.quantity}</td>
-                                    <td className="py-6 text-right font-bold">{formatCurrency(item.total)}</td>
+                                    <td className="py-6 text-right font-bold invoice-font-amount">{formatCurrency(item.total)}</td>
                                 </tr>
                             ))}
                             {invoice.items.length === 0 && (
@@ -226,7 +237,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             {invoice.notes && (
                             <div className="flex flex-col gap-2">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Note</span>
-                                <p className="text-xs text-neutral-500 leading-relaxed">
+                                <p className="text-xs text-neutral-500 leading-relaxed invoice-font-notes">
                                     {invoice.notes}
                                 </p>
                             </div>
@@ -245,13 +256,13 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         <div className="w-1/3 flex flex-col gap-4">
                             <div className="flex justify-between text-sm">
                                 <span className="text-neutral-400">Subtotal</span>
-                                <span>{formatCurrency(invoice.subtotal)}</span>
+                                <span className="invoice-font-amount">{formatCurrency(invoice.subtotal)}</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-neutral-400">Tax ({invoice.tax_rate || 0}%)</span>
-                                <span>{formatCurrency(invoice.tax_amount || 0)}</span>
+                                <span className="invoice-font-amount">{formatCurrency(invoice.tax_amount || 0)}</span>
                             </div>
-                            <div className="flex justify-between items-center text-4xl font-serif italic font-bold mt-6 pt-6 border-t border-neutral-100">
+                            <div className="flex justify-between items-center text-4xl invoice-font-amount font-bold mt-6 pt-6 border-t border-neutral-100">
                                 <span className="text-neutral-400 text-2xl">Total</span>
                                 <span>{formatCurrency(invoice.total)}</span>
                             </div>
@@ -262,6 +273,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.illumi.co.za</p>
                     </div>
                 </div>
+                    )
+                })()}
             </main>
 
             <style jsx global>{`

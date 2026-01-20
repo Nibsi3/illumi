@@ -47,7 +47,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { NumberInput } from "@/components/ui/number-input"
 import { PreviewModal } from "../components/preview-modal"
 import { allClients } from "@/lib/data"
@@ -68,16 +68,45 @@ import { createClient } from "@/lib/supabase/client"
 
 import { CreateClientModal } from "../components/create-client-modal"
 import { CreateProductModal } from "../components/create-product-modal"
-import { RecurringModal } from "../components/recurring-modal"
 
 type TemplateType = "Classic" | "Minimal" | "Modern"
+type LogoBgMode = "light" | "dark"
 
 export default function NewInvoicePage() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const { isPro } = useSubscription()
     const settings = useSettings()
     const { activeWorkspace } = useWorkspace()
     const { activePaymentProvider } = settings
+
+    const invoiceCreationMode = (searchParams.get('mode') || 'invoice') as 'invoice' | 'scheduled' | 'recurring'
+    const canDraft = invoiceCreationMode === 'invoice'
+    const canSchedule = invoiceCreationMode === 'scheduled'
+    const canRecurring = invoiceCreationMode === 'recurring'
+
+    const [actionsOpen, setActionsOpen] = useState(false)
+    const [schedulePopoverOpen, setSchedulePopoverOpen] = useState(false)
+    const [recurringPopoverOpen, setRecurringPopoverOpen] = useState(false)
+    const actionsPanelOpen = actionsOpen || schedulePopoverOpen || recurringPopoverOpen
+
+    const timeQuickPicks = [
+        '08:00',
+        '09:00',
+        '12:00',
+        '14:00',
+        '17:00',
+        '18:00',
+        '18:45',
+        '20:00',
+    ]
+
+    const normalizeTimeInput = (raw: string) => {
+        const cleaned = raw.replace(/[^0-9:]/g, '').slice(0, 5)
+        if (cleaned.length <= 2) return cleaned
+        if (cleaned.includes(':')) return cleaned
+        return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`
+    }
 
     const paygateLabel = (activePaymentProvider || 'payfast')
         .split('_')
@@ -108,6 +137,7 @@ export default function NewInvoicePage() {
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
+    const [logoBg, setLogoBg] = useState<LogoBgMode>("dark")
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
     // Recurring State
@@ -116,7 +146,6 @@ export default function NewInvoicePage() {
     const [recurringEndType, setRecurringEndType] = useState<"on" | "after" | "never" | "after_minutes">("never")
     const [recurringEndDate, setRecurringEndDate] = useState<Date | undefined>(new Date(new Date().setFullYear(new Date().getFullYear() + 1)))
     const [recurringEndCount, setRecurringEndCount] = useState(12)
-    const [isRecurringModalOpen, setIsRecurringModalOpen] = useState(false)
     const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
     // Schedule State
@@ -178,15 +207,10 @@ export default function NewInvoicePage() {
 
     useEffect(() => {
         const checkAuth = async () => {
-            const { data: { user }, error } = await supabase.auth.getUser()
-            if (error || !user) {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) {
                 router.push('/login')
                 return
-            }
-
-            // Generate initial unique invoice number if none exists
-            if (!invoiceNumber) {
-                setInvoiceNumber(generateUniqueInvoiceNumber())
             }
         }
 
@@ -209,17 +233,37 @@ export default function NewInvoicePage() {
             if (data) setProducts(data)
         }
 
+        if (!invoiceNumber) {
+            setInvoiceNumber(generateUniqueInvoiceNumber())
+        }
+
         checkAuth()
         fetchCustomers()
         fetchProducts()
-    }, [router, supabase, activeWorkspace])
+    }, [router, supabase, activeWorkspace, invoiceNumber])
 
     const handleCreate = async (type: string) => {
         if (type === 'create') {
+            if (!canDraft) {
+                toast.error("Draft not available", { description: "Only standard invoices can be saved as a draft." })
+                return
+            }
             await handleSaveInvoice('draft')
         } else if (type === 'send') {
+            if (canSchedule) {
+                toast.error("Send now not available", { description: "Scheduled invoices must be scheduled." })
+                return
+            }
+            if (canRecurring) {
+                toast.error("Send now not available", { description: "Recurring invoices must be configured before sending." })
+                return
+            }
             await handleSaveInvoice('sent')
         } else if (type === 'schedule') {
+            if (!canSchedule) {
+                toast.error("Scheduling not available", { description: "Use Schedule Invoice to schedule an invoice." })
+                return
+            }
             if (scheduleDate) {
                 const [hh, mm] = (scheduleTime || "09:00").split(":")
                 const scheduled = new Date(scheduleDate)
@@ -228,8 +272,6 @@ export default function NewInvoicePage() {
             } else {
                 toast.error("Please select a date first")
             }
-        } else if (type === 'recurring') {
-            setIsRecurringModalOpen(true)
         }
     }
 
@@ -251,6 +293,8 @@ export default function NewInvoicePage() {
                 router.push('/login')
                 return
             }
+
+            const ownerEmail = user.email
 
             // Calculate totals
             const subtotal = tasks.reduce((acc, t) => acc + (t.price * t.qty), 0)
@@ -292,43 +336,47 @@ export default function NewInvoicePage() {
             }
             const recurringIntervalForDb = mapIntervalForDb(rawInterval)
 
-            const invoiceData = {
+            const issueDateForDb = overrides.issueDate
+                ? format(overrides.issueDate, 'yyyy-MM-dd')
+                : (issueDate || new Date().toISOString().slice(0, 10))
+
+            const scheduledDateForDb = overrides.scheduledDate instanceof Date
+                ? overrides.scheduledDate.toISOString()
+                : null
+
+            const invoiceData: any = {
                 user_id: user.id,
                 workspace_id: activeWorkspace?.id,
+                customer_id: customerId,
                 invoice_number: invoiceNumber,
-                status: status,
-                issue_date: overrides.issueDate ? format(overrides.issueDate, 'yyyy-MM-dd') : issueDate,
+                issue_date: issueDateForDb,
+                scheduled_date: status === 'scheduled' ? scheduledDateForDb : null,
                 due_date: dueDate || null,
-                scheduled_date: overrides.scheduledDate ? new Date(overrides.scheduledDate).toISOString() : null,
-                customer_id: customerId || null,
-                currency: currency,
-                subtotal: subtotal,
+                currency,
+                subtotal,
                 tax_rate: taxRate,
                 tax_amount: taxAmount,
-                total: total,
+                total,
+                status,
                 notes: invoiceNote,
                 payment_provider: activePaymentProvider || 'payfast',
                 logo_url: logo || null,
-                is_recurring: isRecurring,
-                ...(isRecurring
-                    ? {
-                          recurring_interval: recurringIntervalForDb,
-                          recurring_end_type: recurringEndTypeForDb || 'never',
-                          ...(normalizedEndType === 'on'
-                              ? {
-                                    recurring_end_date: recurringEndDateForDb
-                                        ? format(recurringEndDateForDb, 'yyyy-MM-dd')
-                                        : null,
-                                }
-                              : normalizedEndType === 'after'
-                                ? {
-                                    recurring_end_count: overrides.recurringEndCount ?? recurringEndCount,
-                                  }
-                                : {}),
-                      }
-                    : {
-                          recurring_interval: null,
-                      }),
+                logo_bg: logoBg,
+                template,
+                invoice_mode: invoiceMode,
+                from_email: ownerEmail || fromEmail,
+                send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
+                is_recurring: Boolean(isRecurring),
+                recurring_interval: isRecurring ? recurringIntervalForDb : null,
+                recurring_end_type: isRecurring ? recurringEndTypeForDb : null,
+                recurring_end_date:
+                    isRecurring && recurringEndTypeForDb === 'on'
+                        ? (recurringEndDateForDb ? format(recurringEndDateForDb, 'yyyy-MM-dd') : null)
+                        : null,
+                recurring_end_count:
+                    isRecurring && recurringEndTypeForDb === 'after'
+                        ? (overrides.recurringEndCount ?? recurringEndCount)
+                        : null,
             }
             console.log('[Invoice Save] Invoice data to insert:', invoiceData)
 
@@ -336,7 +384,10 @@ export default function NewInvoicePage() {
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
+                logo_bg: logoBg,
                 payment_provider: activePaymentProvider || null,
+                from_email: ownerEmail || fromEmail,
+                send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
             }
 
             // 1. Create Invoice with fallback for missing columns
@@ -520,18 +571,22 @@ export default function NewInvoicePage() {
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: targetEmail,
+                                companyName: settings.companyName,
+                                supportEmail: settings.fromEmail,
+                                companyWebsite: settings.companyWebsite,
+                                allowCustomBranding: Boolean(isPro),
                                 invoiceNumber: invoiceNumber,
                                 customerName: clientName,
                                 amount: `${currency} ${total.toLocaleString()}`,
+                                currency,
                                 dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
-                                paymentLink: `${process.env.NEXT_PUBLIC_URL || 'https://illumi.co.za'}/pay/${invoice.id}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`,
+                                paymentLink: `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`,
                                 note: invoiceNote,
                                 items: tasks.map(t => ({
                                     description: t.description,
                                     quantity: t.qty,
                                     unit_price: t.price
                                 })),
-                                currency: currency
                             })
                         })
                         const emailData = await emailRes.json()
@@ -602,51 +657,37 @@ export default function NewInvoicePage() {
 
                         {/* ACTION BUTTONS - Sliding Drawer */}
                         <div className="flex items-center gap-3">
-                            <div className="relative group flex items-center">
-                                {/* Primary Action: Send */}
-                                <Button
-                                    onClick={() => handleCreate('send')}
-                                    disabled={isSaving}
-                                    className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
-                                >
-                                    {isSaving ? 'Saving...' : 'Send'}
-                                </Button>
-
-                                {/* Secondary Actions Container - Reveals on Hover */}
-                                <div className="flex items-center bg-[#1a1a1a] h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-white/10 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto overflow-hidden max-w-0 group-hover:max-w-[400px]">
-                                    <Button
-                                        onClick={() => handleCreate('create')}
-                                        disabled={isSaving}
-                                        variant="ghost"
-                                        className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                            <div
+                                className="relative flex items-center"
+                                onMouseEnter={() => setActionsOpen(true)}
+                                onMouseLeave={() => {
+                                    if (!schedulePopoverOpen && !recurringPopoverOpen) setActionsOpen(false)
+                                }}
+                            >
+                                {/* Primary Action */}
+                                {canSchedule ? (
+                                    <Popover
+                                        open={schedulePopoverOpen}
+                                        onOpenChange={(open) => {
+                                            setSchedulePopoverOpen(open)
+                                            if (open) setActionsOpen(true)
+                                        }}
                                     >
-                                        Draft
-                                    </Button>
-                                    <div className="w-px h-4 bg-white/10 mx-1" />
-
-                                    <Button
-                                        onClick={() => handleCreate('send')}
-                                        disabled={isSaving}
-                                        variant="ghost"
-                                        className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
-                                    >
-                                        <Send className="h-3 w-3" />
-                                        Send Now
-                                    </Button>
-                                    <div className="w-px h-4 bg-white/10 mx-1" />
-
-                                    {/* Schedule with Popover */}
-                                    <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
-                                                variant="ghost"
-                                                className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                                disabled={isSaving}
+                                                className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
                                             >
-                                                <Clock className="h-3 w-3" />
-                                                Schedule
+                                                {isSaving ? 'Saving...' : 'Schedule'}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
+                                        <PopoverContent
+                                            className="w-[360px] p-4 bg-[#09090b] border-white/10 rounded-md shadow-2xl"
+                                            side="bottom"
+                                            align="center"
+                                            sideOffset={12}
+                                            collisionPadding={16}
+                                        >
                                             <div className="space-y-4">
                                                 <Calendar
                                                     mode="single"
@@ -654,69 +695,227 @@ export default function NewInvoicePage() {
                                                     onSelect={setScheduleDate}
                                                     className="rounded-md"
                                                 />
-                                                <div className="flex items-center gap-2">
-                                                    <Label className="text-xs text-neutral-400">Time:</Label>
-                                                    <Input
-                                                        type="time"
-                                                        value={scheduleTime}
-                                                        onChange={(e) => setScheduleTime(e.target.value)}
-                                                        className="h-8 w-28 bg-white/5 border-white/10 text-white text-xs"
-                                                    />
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label className="text-xs text-neutral-400">Time (24h):</Label>
+                                                        <Input
+                                                            inputMode="numeric"
+                                                            value={scheduleTime}
+                                                            onChange={(e) => setScheduleTime(normalizeTimeInput(e.target.value))}
+                                                            placeholder="17:00"
+                                                            className="h-8 w-28 bg-white/5 border-white/10 text-white text-xs rounded-md"
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-4 gap-2">
+                                                        {timeQuickPicks.map((t) => (
+                                                            <Button
+                                                                key={t}
+                                                                type="button"
+                                                                variant="outline"
+                                                                onClick={() => setScheduleTime(t)}
+                                                                className={cn(
+                                                                    "h-8 px-0 text-[10px] font-bold border-white/10 bg-white/5 hover:bg-white/10 text-neutral-200 rounded-md",
+                                                                    scheduleTime === t ? "border-white/30 bg-white/10" : ""
+                                                                )}
+                                                            >
+                                                                {t}
+                                                            </Button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                                 <Button
                                                     onClick={() => {
                                                         if (scheduleDate) {
                                                             handleCreate('schedule')
+                                                            setSchedulePopoverOpen(false)
+                                                            setActionsOpen(false)
                                                         } else {
                                                             toast.error("Please select a date first")
                                                         }
                                                     }}
                                                     disabled={isSaving || !scheduleDate}
-                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold rounded-md"
                                                 >
                                                     Schedule Now
                                                 </Button>
                                             </div>
                                         </PopoverContent>
                                     </Popover>
-
-                                    <div className="w-px h-4 bg-white/10 mx-1" />
-
-                                    {/* Recurring with Popover submenu */}
-                                    <Popover>
+                                ) : canRecurring ? (
+                                    <Popover
+                                        open={recurringPopoverOpen}
+                                        onOpenChange={(open) => {
+                                            setRecurringPopoverOpen(open)
+                                            if (open) setActionsOpen(true)
+                                        }}
+                                    >
                                         <PopoverTrigger asChild>
                                             <Button
+                                                disabled={isSaving}
+                                                className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
+                                            >
+                                                {isSaving ? 'Saving...' : 'Recurring'}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-80 p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
+                                            {!isPro ? (
+                                                <div className="space-y-3">
+                                                    <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
+                                                    <p className="text-[10px] text-neutral-500">Recurring invoices are only available on the Pro plan.</p>
+                                                    <Button
+                                                        onClick={() => toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })}
+                                                        className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                    >
+                                                        Upgrade to Pro
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    <div className="space-y-1">
+                                                        <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Settings</h4>
+                                                        <p className="text-[10px] text-neutral-500">Configure how often this invoice should be generated.</p>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Frequency</Label>
+                                                        <Select value={recurringInterval} onValueChange={setRecurringInterval}>
+                                                            <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs">
+                                                                <SelectValue placeholder="Select frequency" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                <SelectItem value="minute">Every Minute (Testing)</SelectItem>
+                                                                <SelectItem value="daily">Daily</SelectItem>
+                                                                <SelectItem value="weekly">Weekly</SelectItem>
+                                                                <SelectItem value="monthly">Monthly</SelectItem>
+                                                                <SelectItem value="yearly">Yearly</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Ends</Label>
+                                                        <Select value={recurringEndType} onValueChange={(v: any) => setRecurringEndType(v)}>
+                                                            <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs">
+                                                                <SelectValue placeholder="Select end type" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                <SelectItem value="never">Never</SelectItem>
+                                                                <SelectItem value="on">On Date</SelectItem>
+                                                                <SelectItem value="after">After X Times</SelectItem>
+                                                                <SelectItem value="after_minutes">In X Minutes (Testing)</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+
+                                                    {recurringEndType === 'on' && (
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">End Date</Label>
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        className={cn(
+                                                                            "h-10 w-full justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10 hover:text-white text-xs",
+                                                                            !recurringEndDate && "text-muted-foreground"
+                                                                        )}
+                                                                    >
+                                                                        <CalendarDays className="mr-2 h-4 w-4" />
+                                                                        {recurringEndDate ? format(recurringEndDate, "PPP") : <span>Pick a date</span>}
+                                                                    </Button>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10" align="start">
+                                                                    <Calendar selected={recurringEndDate} onSelect={setRecurringEndDate} />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                        </div>
+                                                    )}
+
+                                                    {(recurringEndType === 'after' || recurringEndType === 'after_minutes') && (
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
+                                                                {recurringEndType === 'after' ? 'Number of Invoices' : 'End in X Minutes'}
+                                                            </Label>
+                                                            <Input
+                                                                type="number"
+                                                                value={recurringEndCount}
+                                                                onChange={(e) => setRecurringEndCount(parseInt(e.target.value || '0'))}
+                                                                className="bg-white/5 border-white/10 h-10 text-xs"
+                                                            />
+                                                        </div>
+                                                    )}
+
+                                                    <Button
+                                                        onClick={async () => {
+                                                            await handleSaveInvoice('sent', {
+                                                                isRecurring: true,
+                                                                recurringInterval,
+                                                                recurringEndType,
+                                                                recurringEndDate,
+                                                                recurringEndCount,
+                                                            })
+                                                            setRecurringPopoverOpen(false)
+                                                            setActionsOpen(false)
+                                                        }}
+                                                        disabled={isSaving}
+                                                        className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                    >
+                                                        Create Recurring Invoice
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </PopoverContent>
+                                    </Popover>
+                                ) : (
+                                    <Button
+                                        onClick={() => handleCreate('send')}
+                                        disabled={isSaving}
+                                        className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
+                                    >
+                                        {isSaving ? 'Saving...' : 'Send'}
+                                    </Button>
+                                )}
+
+                                {/* Secondary Actions Container */}
+                                <div
+                                    className={cn(
+                                        "flex items-center bg-[#1a1a1a] h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-white/10 overflow-hidden transition-all duration-300",
+                                        actionsPanelOpen
+                                            ? "opacity-100 translate-x-0 pointer-events-auto max-w-[400px]"
+                                            : "opacity-0 -translate-x-4 pointer-events-none max-w-0"
+                                    )}
+                                >
+                                    {canDraft && (
+                                        <>
+                                            <Button
+                                                onClick={() => handleCreate('create')}
+                                                disabled={isSaving}
                                                 variant="ghost"
                                                 className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
                                             >
-                                                <Repeat className="h-3 w-3" />
-                                                Recurring
-                                                {!isPro && <span className="text-[8px] text-yellow-500 ml-1">PRO</span>}
+                                                Draft
                                             </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-64 p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
-                                            <div className="space-y-4">
-                                                <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
-                                                <p className="text-[10px] text-neutral-500">Set up automatic invoice generation on a schedule.</p>
-                                                <Button
-                                                    onClick={() => {
-                                                        if (!isPro) {
-                                                            toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })
-                                                            return
-                                                        }
-                                                        setIsRecurringModalOpen(true)
-                                                    }}
-                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
-                                                >
-                                                    Configure Recurring
-                                                </Button>
-                                            </div>
-                                        </PopoverContent>
-                                    </Popover>
+                                            <div className="w-px h-4 bg-white/10 mx-1" />
+                                        </>
+                                    )}
+
+                                    {!canSchedule && !canRecurring && (
+                                        <Button
+                                            onClick={() => handleCreate('send')}
+                                            disabled={isSaving}
+                                            variant="ghost"
+                                            className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                        >
+                                            <Send className="h-3 w-3" />
+                                            Send Now
+                                        </Button>
+                                    )}
                                 </div>
 
                                 {/* Hint Icon to indicate more actions */}
-                                <div className="absolute -right-6 text-neutral-600 group-hover:opacity-0 transition-opacity">
+                                <div className={cn(
+                                    "absolute -right-6 text-neutral-600 transition-opacity",
+                                    actionsPanelOpen ? "opacity-0" : "opacity-100"
+                                )}>
                                     <ChevronRight className="h-4 w-4" />
                                 </div>
                             </div>
@@ -750,7 +949,7 @@ export default function NewInvoicePage() {
                                             <div className="flex items-center gap-2">
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-400 hover:bg-neutral-100" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-500 hover:bg-neutral-200" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
                                                             <Settings2 className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
@@ -766,6 +965,16 @@ export default function NewInvoicePage() {
                                                                             <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
                                                                             <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
                                                                             <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <div className="flex items-center gap-2 text-neutral-400"><LayoutTemplate className="h-4 w-4" /><span className="text-xs">Logo background</span></div>
+                                                                    <Select value={logoBg} onValueChange={(v: any) => setLogoBg(v)}>
+                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                            <SelectItem value="dark">Dark</SelectItem>
+                                                                            <SelectItem value="light">Light</SelectItem>
                                                                         </SelectContent>
                                                                     </Select>
                                                                 </div>
@@ -808,7 +1017,9 @@ export default function NewInvoicePage() {
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                invoiceMode === "light" ? "bg-neutral-50 border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300" : "bg-white/5 border-white/10 hover:bg-white/8 hover:border-white/20"
+                                                logoBg === "light"
+                                                    ? "bg-white border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300"
+                                                    : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
                                             )}
                                         >
                                             {logo ? (
@@ -833,13 +1044,12 @@ export default function NewInvoicePage() {
                                             template === "Minimal" && "text-center"
                                         )}>
                                             <h2 className={cn(
-                                                "text-5xl font-serif mb-2 italic",
+                                                "text-5xl invoice-font-title font-bold mb-2",
                                                 invoiceMode === "light" ? "text-black" : "text-white",
-                                                template === "Classic" && "italic",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className="font-mono text-sm tracking-widest text-[#878787] h-5">{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-700" : "text-[#878787]")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
@@ -848,32 +1058,35 @@ export default function NewInvoicePage() {
                                         "grid grid-cols-2 gap-20 mb-16",
                                         template === "Modern" && "bg-white/5 p-8 rounded-xl"
                                     )}>
-                                        <div className="flex flex-col gap-4">
+                                        <div className="col-span-2 flex items-center justify-between mb-2">
                                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">From</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
+                                        </div>
+                                        <div className="flex flex-col gap-4">
                                             <div className="space-y-3">
                                                 <Input
                                                     defaultValue="Illumi Professional"
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                                 <textarea
                                                     defaultValue={"123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"}
                                                     placeholder="Address"
                                                     spellCheck={false}
-                                                    className={cn("w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-4 text-right">
-                                            <div className="flex justify-between items-center mb-2">
+                                            <div className="flex justify-end">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
@@ -882,7 +1095,6 @@ export default function NewInvoicePage() {
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
                                                 </Button>
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="space-y-3">
@@ -891,7 +1103,7 @@ export default function NewInvoicePage() {
                                                         list="client-suggestions"
                                                         spellCheck={false}
                                                         value={clientName}
-                                                        className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
                                                         onChange={(e) => {
                                                             const val = e.target.value;
                                                             setClientName(val)
@@ -915,7 +1127,7 @@ export default function NewInvoicePage() {
 
                                                     {/* Read-only client details display if selected */}
                                                     {(clientEmail || clientAddress) && (
-                                                        <div className="flex flex-col items-end gap-1 text-xs text-neutral-500">
+                                                        <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-neutral-500">
                                                             {clientEmail && <span>{clientEmail}</span>}
                                                             {clientPhone && <span>{clientPhone}</span>}
                                                             {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
@@ -935,7 +1147,7 @@ export default function NewInvoicePage() {
                                             <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
                                                 <PopoverTrigger asChild>
                                                     <button className={cn(
-                                                        "bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
+                                                        "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
                                                         invoiceMode === "light" ? "text-black" : "text-white"
                                                     )}>
                                                         {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
@@ -962,7 +1174,7 @@ export default function NewInvoicePage() {
                                             <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
                                                 <PopoverTrigger asChild>
                                                     <button className={cn(
-                                                        "bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
+                                                        "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
                                                         invoiceMode === "light" ? "text-black" : "text-white"
                                                     )}>
                                                         {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
@@ -1015,7 +1227,7 @@ export default function NewInvoicePage() {
                                                         <Input
                                                             placeholder="Enter Product"
                                                             spellCheck={false}
-                                                            className={cn("bg-transparent border-none p-0 h-auto placeholder:text-neutral-600 focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                            className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-neutral-600 focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-white")}
                                                             value={task.description}
                                                             list="product-suggestions"
                                                             onChange={(e) => {
@@ -1061,7 +1273,7 @@ export default function NewInvoicePage() {
                                                             className="h-10 w-full"
                                                         />
                                                     </td>
-                                                    <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                    <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-white")}>
                                                         {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                     </td>
                                                     <td className="py-4 text-right pl-2">
@@ -1097,7 +1309,7 @@ export default function NewInvoicePage() {
                                                 placeholder="Add a note (visible to client)"
                                                 value={invoiceNote}
                                                 onChange={(e) => setInvoiceNote(e.target.value)}
-                                                className="w-full bg-transparent border-none p-0 h-24 text-neutral-400 placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
+                                                className="invoice-font-notes w-full bg-transparent border-none p-0 h-24 text-neutral-400 placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-4">
@@ -1152,15 +1364,15 @@ export default function NewInvoicePage() {
                                     <div className="col-span-4 flex flex-col gap-6">
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="text-neutral-500">Subtotal</span>
-                                            <span className="font-mono text-white">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                            <span className="invoice-font-amount text-white">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                         </div>
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="text-neutral-500">Tax ({taxRate}%)</span>
-                                            <span className="font-mono text-white">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                            <span className="invoice-font-amount text-white">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                         </div>
                                         <div className="flex justify-between items-center pt-6 border-t border-white/5">
                                             <span className="text-sm font-bold text-white uppercase tracking-widest">Total</span>
-                                            <span className="text-3xl font-black text-white font-mono">
+                                            <span className="text-3xl font-black text-white invoice-font-amount">
                                                 {(calculateSubtotal() * (1 + taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                             </span>
                                         </div>
@@ -1218,34 +1430,6 @@ export default function NewInvoicePage() {
                         price: product.price,
                         qty: 1
                     }])
-                }}
-            />
-
-            <RecurringModal
-                isOpen={isRecurringModalOpen}
-                onClose={() => setIsRecurringModalOpen(false)}
-                onSave={(settings) => {
-                    setIsRecurringEnabled(true)
-                    setRecurringInterval(settings.interval)
-                    setRecurringEndType(settings.endType)
-                    setRecurringEndDate(settings.endDate)
-                    setRecurringEndCount(settings.endCount || 12)
-
-                    // Trigger save with overrides
-                    handleSaveInvoice('sent', {
-                        isRecurring: true,
-                        recurringInterval: settings.interval,
-                        recurringEndType: settings.endType,
-                        recurringEndDate: settings.endDate,
-                        recurringEndCount: settings.endCount || 12
-                    })
-                    toast.success(`Recurring invoice created with ${settings.interval} frequency`)
-                }}
-                initialSettings={{
-                    interval: recurringInterval,
-                    endType: recurringEndType,
-                    endDate: recurringEndDate,
-                    endCount: recurringEndCount
                 }}
             />
         </div>

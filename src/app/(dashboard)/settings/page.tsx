@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import {
     Plus,
     Upload,
@@ -42,14 +43,15 @@ export default function GeneralSettings() {
     const {
         logo, setLogo,
         companyName, setCompanyName,
+        companyWebsite, setCompanyWebsite,
         fromEmail, setFromEmail,
+        sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf,
         currency, setCurrency,
         dateFormat, setDateFormat,
         country, setCountry,
         taxRate
     } = useSettings()
 
-    const [industry, setIndustry] = useState("tech")
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
@@ -149,50 +151,6 @@ export default function GeneralSettings() {
                             className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
                         />
                     </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Industry</Label>
-                        <Select defaultValue={industry} onValueChange={(val) => setIndustry(val)}>
-                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                <SelectItem value="tech">Technology & Software</SelectItem>
-                                <SelectItem value="marketing">Marketing & Advertising</SelectItem>
-                                <SelectItem value="finance">Finance & Accounting</SelectItem>
-                                <SelectItem value="consulting">Professional Consulting</SelectItem>
-                                <SelectItem value="legal">Legal Services</SelectItem>
-                                <SelectItem value="real_estate">Real Estate</SelectItem>
-                                <SelectItem value="construction">Construction</SelectItem>
-                                <SelectItem value="retail">Retail & E-commerce</SelectItem>
-                                <SelectItem value="hospitality">Hospitality</SelectItem>
-                                <SelectItem value="healthcare">Healthcare</SelectItem>
-                                <SelectItem value="education">Education</SelectItem>
-                                <SelectItem value="transport">Transport & Logistics</SelectItem>
-                                <SelectItem value="manufacturing">Manufacturing</SelectItem>
-                                <SelectItem value="creative">Creative / Design</SelectItem>
-                                <SelectItem value="nonprofit">Non-profit</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-8">
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
-                        <Input
-                            value={fromEmail}
-                            onChange={(e) => setFromEmail(e.target.value)}
-                            placeholder="support@myco.com"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
-                        <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">
-                            {currency} (Auto-set)
-                        </div>
-                    </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-8">
@@ -229,6 +187,55 @@ export default function GeneralSettings() {
                                 <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
+                        <Input
+                            value={fromEmail}
+                            onChange={(e) => setFromEmail(e.target.value)}
+                            placeholder="support@myco.com"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Website</Label>
+                            {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
+                        </div>
+                        <Input
+                            value={companyWebsite}
+                            onChange={(e) => setCompanyWebsite(e.target.value)}
+                            placeholder="https://yourcompany.com"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            disabled={!isPro}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
+                        <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">
+                            {currency} (Auto-set)
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-8 border-t border-white/5">
+                    <div className="flex items-center justify-between gap-6">
+                        <div className="flex flex-col gap-1">
+                            <h4 className="text-sm font-medium text-white">Send yourself a copy</h4>
+                            <p className="text-xs text-neutral-500 max-w-xl">
+                                When an invoice email is sent to a client, also send a copy to your support email.
+                            </p>
+                        </div>
+                        <Switch
+                            checked={sendInvoiceCopyToSelf}
+                            onCheckedChange={(checked) => setSendInvoiceCopyToSelf(Boolean(checked))}
+                        />
                     </div>
                 </div>
             </div>

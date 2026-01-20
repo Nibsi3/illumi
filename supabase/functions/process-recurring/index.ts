@@ -249,7 +249,10 @@ Deno.serve(async (req: Request) => {
       ? Math.round((new Date(`${invoice.due_date}T00:00:00`).getTime() - new Date(`${invoice.issue_date}T00:00:00`).getTime()) / (1000 * 60 * 60 * 24))
       : 30
     const origIssueDays = Math.max(0, origIssueDaysRaw)
-    const newDueDate = new Date(nextInvoiceDate)
+    // Issue date should be when we generate the invoice (today)
+    const generatedIssueDate = new Date(now)
+    generatedIssueDate.setHours(0, 0, 0, 0)
+    const newDueDate = new Date(generatedIssueDate)
     newDueDate.setDate(newDueDate.getDate() + origIssueDays)
 
     const timestamp = Date.now().toString().slice(-6)
@@ -263,7 +266,7 @@ Deno.serve(async (req: Request) => {
         customer_id: invoice.customer_id,
         invoice_number: newInvoiceNumber,
         status: "sent",
-        issue_date: formatDateOnly(nextInvoiceDate),
+        issue_date: formatDateOnly(generatedIssueDate),
         due_date: formatDateOnly(newDueDate),
         currency: invoice.currency,
         subtotal: invoice.subtotal,

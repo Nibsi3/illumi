@@ -32,17 +32,20 @@ export async function GET(req: Request) {
             .from('invoices')
             .select('*, customers(name, email), invoice_items(*)')
             .eq('status', 'scheduled')
-            .lte('issue_date', todayStr) // Issue date is today or in the past
+            // Prefer scheduled_date (timestamp). Fallback to issue_date for legacy rows.
+            .or(`scheduled_date.lte.${now.toISOString()},and(scheduled_date.is.null,issue_date.lte.${todayStr})`)
 
         if (error) throw error
 
         console.log(`[Scheduled Cron] Found ${scheduledInvoices?.length || 0} scheduled invoices to process`)
 
         for (const invoice of scheduledInvoices || []) {
-            const issueDate = new Date(invoice.issue_date + 'T00:00:00')
-            
-            // Check if it's time to send (issue date is today or past)
-            if (now >= issueDate) {
+            const scheduledAt = invoice.scheduled_date
+                ? new Date(invoice.scheduled_date)
+                : new Date(invoice.issue_date + 'T00:00:00')
+
+            // Check if it's time to send
+            if (now >= scheduledAt) {
                 console.log(`[Scheduled Cron] Sending scheduled invoice ${invoice.invoice_number}`)
 
                 // Update invoice status to 'sent'
@@ -78,12 +81,26 @@ export async function GET(req: Request) {
                         : 'Upon receipt'
 
                     try {
+                        let companyName: string | undefined
+                        try {
+                            const { data: ws } = await supabase
+                                .from('workspaces')
+                                .select('name')
+                                .eq('id', invoice.workspace_id)
+                                .maybeSingle()
+                            companyName = ws?.name
+                        } catch {
+                            companyName = undefined
+                        }
+
                         await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: invoice.customers.email,
+                                companyName,
+                                supportEmail: invoice.from_email,
                                 customerName: invoice.customers.name,
                                 invoiceNumber: invoice.invoice_number,
                                 amount: amount,

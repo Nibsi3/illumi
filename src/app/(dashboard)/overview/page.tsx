@@ -14,12 +14,7 @@ import {
     IconLayoutGrid,
     IconFileAnalytics,
     IconArrowUpRight,
-    IconPlus,
-    IconSparkles,
     IconChevronDown,
-    IconX,
-    IconSend,
-    IconMessage2,
     IconLoader2
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
@@ -35,7 +30,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
@@ -43,16 +37,12 @@ import { useSettings } from "@/lib/settings-context"
 export default function DashboardPage() {
     const router = useRouter();
     const { currency } = useSettings();
-    const [isInitialLoading, setIsInitialLoading] = useState(() => {
-        if (typeof window === "undefined") return true
-        return sessionStorage.getItem("illumi_overview_loaded") !== "true"
-    })
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState("1 year");
-    const [query, setQuery] = useState("");
-    const [isLoadingChat, setIsLoadingChat] = useState(false);
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [messages, setMessages] = useState<{ role: string, content: string }[]>([]);
+
+    const [recentPayments, setRecentPayments] = useState<
+        { invoiceNumber: string; customerName: string; amount: number; paidAt: string }[]
+    >([])
 
     // Real metrics state
     const [metrics, setMetrics] = useState({
@@ -69,15 +59,15 @@ export default function DashboardPage() {
         outstanding: 0,
         overdue: 0,
         paidYTD: 0,
-        dso: 0, // Days Sales Outstanding
         vatEstimate: 0,
-        momGrowth: 0,
         projectedRevenue: 0,
         topClients: [] as { name: string; total: number; count: number }[]
     })
     
     // Monthly revenue data for charts
     const [monthlyRevenue, setMonthlyRevenue] = useState<{ month: string; revenue: number; lastYear: number }[]>([])
+    const [monthlyExpenses, setMonthlyExpenses] = useState<{ month: string; total: number }[]>([])
+    const [netProfitYTD, setNetProfitYTD] = useState(0)
 
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
@@ -92,11 +82,12 @@ export default function DashboardPage() {
                 const currentYear = now.getFullYear()
                 const currentMonth = now.getMonth()
                 const startOfYear = new Date(currentYear, 0, 1).toISOString()
+                const startOfYearDate = new Date(currentYear, 0, 1)
 
                 // Fetch Invoices with full details for comprehensive metrics
                 const { data: invoices } = await supabase
                     .from('invoices')
-                    .select('total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
+                    .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
                     .eq('workspace_id', activeWorkspace.id)
 
                 // Fetch customers for top clients calculation
@@ -105,11 +96,48 @@ export default function DashboardPage() {
                     .select('id, name')
                     .eq('workspace_id', activeWorkspace.id)
 
+                const { data: expenses } = await supabase
+                    .from('expenses')
+                    .select('amount, expense_date')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
+
                 const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
 
                 // Basic metrics
                 const paidInvoices = invoices?.filter(i => i.status.toLowerCase() === 'paid') || []
                 const totalRevenue = paidInvoices.reduce((acc, curr) => acc + (Number(curr.total) || 0), 0)
+
+                const recent = paidInvoices
+                    .filter(i => Boolean(i.paid_at || i.issue_date))
+                    .map(i => ({
+                        invoiceNumber: i.invoice_number || '',
+                        customerName: customerMap.get(i.customer_id) || 'Unknown',
+                        amount: Number(i.total) || 0,
+                        paidAt: (i.paid_at || i.issue_date) as string,
+                    }))
+                    .sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime())
+                    .slice(0, 3)
+                setRecentPayments(recent)
+
+                const expensesYTD = (expenses || []).reduce((acc: number, e: any) => acc + (Number(e.amount) || 0), 0)
+                setNetProfitYTD(totalRevenue - expensesYTD)
+
+                const expensesByMonth = new Map<number, number>()
+                ;(expenses || []).forEach((e: any) => {
+                    const d = e?.expense_date ? new Date(e.expense_date) : null
+                    if (!d || Number.isNaN(d.getTime())) return
+                    const m = d.getMonth()
+                    expensesByMonth.set(m, (expensesByMonth.get(m) || 0) + (Number(e.amount) || 0))
+                })
+
+                const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                setMonthlyExpenses(
+                    Array.from({ length: 12 }).map((_, i) => ({
+                        month: monthLabels[i],
+                        total: Math.round(expensesByMonth.get(i) || 0),
+                    }))
+                )
 
                 const pendingCount = invoices
                     ?.filter(i => ['pending', 'draft', 'sent'].includes(i.status.toLowerCase()))
@@ -200,6 +228,7 @@ export default function DashboardPage() {
                     ?.filter(p => p.billing_type === 'recurring')
                     .reduce((acc, curr) => acc + (curr.price || 0), 0) || 0
 
+                // Update metrics state
                 setMetrics({
                     revenue: totalRevenue,
                     customers: customers?.length || 0,
@@ -213,11 +242,9 @@ export default function DashboardPage() {
                     outstanding,
                     overdue,
                     paidYTD,
-                    dso,
-                    vatEstimate,
-                    momGrowth,
-                    projectedRevenue,
-                    topClients
+                    vatEstimate: Math.round(vatEstimate),
+                    projectedRevenue: Math.round(projectedRevenue),
+                    topClients: topClients
                 })
 
                 // Calculate monthly revenue for charts using actual invoice dates
@@ -253,61 +280,13 @@ export default function DashboardPage() {
                 setMonthlyRevenue(monthlyData)
             } catch (error) {
                 console.error("Error fetching metrics:", error)
-            } finally {
-                setIsInitialLoading(false)
-                if (typeof window !== "undefined") {
-                    sessionStorage.setItem("illumi_overview_loaded", "true")
-                }
             }
         }
         fetchMetrics()
     }, [supabase, activeWorkspace])
 
-    const handleChatSubmit = async (e?: React.FormEvent, customQuery?: string) => {
-        if (e) e.preventDefault();
-        const activeQuery = customQuery || query;
-        if (!activeQuery.trim() || isLoadingChat) return;
-
-        setIsLoadingChat(true);
-        if (!isChatOpen) setIsChatOpen(true);
-
-        const userMessage = { role: "user", content: activeQuery };
-        setMessages(prev => [...prev, userMessage]);
-        setQuery("");
-
-        try {
-            const response = await fetch("/api/assistant", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    messages: [...messages, userMessage]
-                })
-            });
-
-            if (!response.ok) throw new Error("Failed to call assistant");
-
-            const data = await response.json();
-            setMessages(prev => [...prev, { role: "assistant", content: data.content }]);
-        } catch (error) {
-            toast.error("Assistant Error", {
-                description: "Failed to process your request."
-            });
-        } finally {
-            setIsLoadingChat(false);
-        }
-    }
-
     return (
-        <div className="relative flex flex-col gap-y-6 animate-in fade-in duration-700 min-h-full font-serif -mt-6">
-            {isInitialLoading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md" />
-                    <div className="relative flex flex-col items-center gap-3 text-white/80">
-                        <IconLoader2 className="h-5 w-5 animate-spin" />
-                        <div className="text-xs font-sans tracking-wide">Loading overview...</div>
-                    </div>
-                </div>
-            )}
+        <div className="relative flex flex-col gap-y-5 animate-in fade-in duration-700 font-serif">
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
@@ -365,110 +344,144 @@ export default function DashboardPage() {
             </div>
 
             {view === "overview" ? (
-                /* Compact Overview Grid - Full Width */
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                    {/* Grid items use #0c0c0c */}
-                    <Link href="/invoices" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconReceipt className="h-4 w-4" />
-                                    Invoices
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Net revenue - {period}</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
-                                    <div className="text-[9px] uppercase font-bold text-emerald-500/80 mt-1 flex items-center gap-1.5">
-                                        <IconTrendingUp className="h-3 w-3" />
-                                        +{metrics.growth}% vs last year
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 w-full">
+                    <div className="lg:col-span-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Link href="/recurring" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconClock className="h-4 w-4" />
+                                        Recurring
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} {metrics.recurring.toLocaleString()}</div>
+                                        <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Based on active subscriptions</div>
                                     </div>
                                 </div>
-                            </div>
-                        </Card>
-                    </Link>
+                            </Card>
+                        </Link>
 
-                    <Link href="/clients" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
+                        <Link href="/inbox" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconWallet className="h-4 w-4" />
+                                        Pending
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Pending / Draft Invoices</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{metrics.pendingInvoices}</div>
+                                        {metrics.pendingInvoices > 0 && <StatusDot variant="warning" className="mt-1">Requires action</StatusDot>}
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+
+                        <Link href="/invoices" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconReceipt className="h-4 w-4" />
+                                        Invoices
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Net revenue - {period}</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
+                                        <div className="text-[9px] uppercase font-bold text-white/40 mt-1 flex items-center gap-1.5">
+                                            <IconTrendingUp className="h-3 w-3" />
+                                            +{metrics.growth}% vs last month
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+
+                        <Link href="/clients" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconUsers className="h-4 w-4" />
+                                        Customers
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Total active customers</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{metrics.customers}</div>
+                                        <div className="text-[10px] text-neutral-500 font-medium">Keep growing!</div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+
+                        <Link href="/products" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconLayoutGrid className="h-4 w-4" />
+                                        Products
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Managed services & items</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{metrics.products}</div>
+                                        <div className="text-[10px] text-neutral-500 font-medium">Available for invoicing</div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+
+                        <Link href="/overview" onClick={(e) => { e.preventDefault(); setView("metrics"); }} className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                <div className="flex flex-col justify-between h-full">
+                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        <IconTrendingUp className="h-4 w-4" />
+                                        Revenue Summaries
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div className="text-[11px] text-muted-foreground">Estimated gross - {period}</div>
+                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
+                                        <div className="text-[9px] uppercase font-bold text-muted-foreground/30">Tax: {currency} {(metrics.revenue * 0.15).toLocaleString()}</div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </Link>
+                    </div>
+
+                    <div className="lg:col-span-7 flex flex-col gap-6">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[380px]">
+                            <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconUsers className="h-4 w-4" />
-                                    Customers
+                                    <IconChartBar className="h-4 w-4" />
+                                    Recent Payments
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Total active customers</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{metrics.customers}</div>
-                                    <div className="text-[10px] text-neutral-500 font-medium">Keep growing!</div>
-                                </div>
+                                <Link href="/invoices" className="text-[9px] uppercase tracking-widest font-bold text-white/30 hover:text-white/60 transition-colors">
+                                    View all
+                                </Link>
+                            </div>
+
+                            <div className="mt-6 flex flex-col gap-4">
+                                {recentPayments.length === 0 ? (
+                                    <div className="text-xs text-white/30">No recent payments yet.</div>
+                                ) : (
+                                    recentPayments.map((p) => (
+                                        <div key={`${p.invoiceNumber}-${p.paidAt}`} className="rounded-xl border border-white/5 bg-black/40 px-6 py-5">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div className="min-w-0">
+                                                    <div className="text-[11px] text-white/80 font-semibold truncate">Payment received for {p.invoiceNumber || "invoice"}</div>
+                                                    <div className="text-[10px] text-white/30 truncate">{p.customerName}</div>
+                                                    <div className="mt-2 text-[10px] text-white/20">{new Date(p.paidAt).toLocaleString()}</div>
+                                                </div>
+                                                <div className="text-right shrink-0">
+                                                    <div className="text-[11px] uppercase tracking-widest font-bold text-white/30">Payment received</div>
+                                                    <div className="mt-2 text-lg font-serif font-bold italic text-white">{currency} {Math.round(p.amount).toLocaleString()}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </Card>
-                    </Link>
 
-                    <Link href="/recurring" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconClock className="h-4 w-4" />
-                                    Recurring
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.recurring.toLocaleString()}</div>
-                                    <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Based on active subscriptions</div>
-                                </div>
-                            </div>
-                        </Card>
-                    </Link>
-
-                    <Link href="/inbox" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconWallet className="h-4 w-4" />
-                                    Pending
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Pending / Draft Invoices</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{metrics.pendingInvoices}</div>
-                                    {metrics.pendingInvoices > 0 && <StatusDot variant="warning" className="mt-1">Requires action</StatusDot>}
-                                </div>
-                            </div>
-                        </Card>
-                    </Link>
-
-                    <Link href="/products" className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconLayoutGrid className="h-4 w-4" />
-                                    Products
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Managed services & items</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{metrics.products}</div>
-                                    <div className="text-[10px] text-neutral-500 font-medium">Available for invoicing</div>
-                                </div>
-                            </div>
-                        </Card>
-                    </Link>
-
-                    <Link href="/overview" onClick={(e) => { e.preventDefault(); setView("metrics"); }} className="block transform transition-transform hover:scale-[1.02]">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group h-[220px] shadow-2xl">
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                    <IconTrendingUp className="h-4 w-4" />
-                                    Revenue Summaries
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="text-[11px] text-muted-foreground">Estimated gross - {period}</div>
-                                    <div className="text-3xl font-serif font-bold tracking-tight italic">{currency} {metrics.revenue.toLocaleString()}</div>
-                                    <div className="text-[9px] uppercase font-bold text-muted-foreground/30">Tax: {currency} {(metrics.revenue * 0.15).toLocaleString()}</div>
-                                </div>
-                            </div>
-                        </Card>
-                    </Link>
-
-                    <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/1 transition-colors group h-[220px] shadow-2xl col-span-1 md:col-span-2">
-                        <div className="flex flex-col justify-between h-full">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[220px]">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconFileAnalytics className="h-4 w-4" />
@@ -476,23 +489,32 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="text-[9px] text-white/20">Updated just now</div>
                             </div>
-                            <div className="flex items-end gap-x-2 h-32 pt-4">
-                                {[40, 70, 45, 90, 65, 80, 50, 60, 100, 85].map((h, i) => (
-                                    <div key={i} className="flex-1 bg-white/5 hover:bg-white/20 transition-all rounded-sm cursor-pointer" style={{ height: `${h}%` }} />
-                                ))}
+                            <div className="mt-6 flex items-end gap-x-2 h-32">
+                                {monthlyRevenue.map((m, i, arr) => {
+                                    const max = Math.max(...arr.map(x => x.revenue), 1)
+                                    const h = (m.revenue / max) * 100
+                                    return (
+                                        <div
+                                            key={`ap-${m.month}-${i}`}
+                                            className="flex-1 bg-white/5 hover:bg-white/20 transition-all rounded-sm cursor-pointer"
+                                            style={{ height: `${Math.max(h, 6)}%` }}
+                                            title={`${m.month}: ${currency} ${m.revenue.toLocaleString()}`}
+                                        />
+                                    )
+                                })}
                             </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
             ) : (
                 /* Metrics View - Comprehensive Cash Flow Dashboard */
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 w-full">
                     {/* Cash Flow Trio */}
                     <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Outstanding</span>
-                                <div className="px-2 py-0.5 bg-amber-500/10 rounded text-[8px] font-bold text-amber-500">RECEIVABLE</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">RECEIVABLE</div>
                             </div>
                             <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {cashFlowMetrics.outstanding.toLocaleString()}</h3>
                             <p className="text-[10px] text-neutral-500">Invoices awaiting payment</p>
@@ -503,9 +525,9 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Overdue</span>
-                                <div className="px-2 py-0.5 bg-red-500/10 rounded text-[8px] font-bold text-red-500">URGENT</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">URGENT</div>
                             </div>
-                            <h3 className="text-3xl font-serif font-bold italic text-red-400">{currency} {cashFlowMetrics.overdue.toLocaleString()}</h3>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {cashFlowMetrics.overdue.toLocaleString()}</h3>
                             <p className="text-[10px] text-neutral-500">Past due date invoices</p>
                         </div>
                     </Card>
@@ -514,27 +536,38 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Paid YTD</span>
-                                <div className="px-2 py-0.5 bg-emerald-500/10 rounded text-[8px] font-bold text-emerald-500">COLLECTED</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">COLLECTED</div>
                             </div>
-                            <h3 className="text-3xl font-serif font-bold italic text-emerald-400">{currency} {cashFlowMetrics.paidYTD.toLocaleString()}</h3>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {cashFlowMetrics.paidYTD.toLocaleString()}</h3>
                             <p className="text-[10px] text-neutral-500">Revenue collected this year</p>
                         </div>
                     </Card>
 
-                    {/* Efficiency Metrics */}
                     <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">DSO</span>
-                                <div className="px-2 py-0.5 bg-blue-500/10 rounded text-[8px] font-bold text-blue-500">EFFICIENCY</div>
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Expenses</span>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">MONTHLY</div>
                             </div>
-                            <h3 className="text-3xl font-serif font-bold italic text-white">{cashFlowMetrics.dso} <span className="text-lg text-neutral-500">days</span></h3>
-                            <p className="text-[10px] text-neutral-500">Days Sales Outstanding</p>
-                            <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                <div 
-                                    className={cn("h-full rounded-full transition-all", cashFlowMetrics.dso < 30 ? "bg-emerald-500" : cashFlowMetrics.dso < 60 ? "bg-amber-500" : "bg-red-500")}
-                                    style={{ width: `${Math.min(cashFlowMetrics.dso / 90 * 100, 100)}%` }}
-                                />
+                            <h3 className="text-3xl font-serif font-bold italic text-white">
+                                {currency} {(monthlyExpenses[new Date().getMonth()]?.total || 0).toLocaleString()}
+                            </h3>
+                            <p className="text-[10px] text-neutral-500">Total expenses this month</p>
+                            <div className="flex items-end gap-1 h-16 mt-1">
+                                {monthlyExpenses.slice(Math.max(new Date().getMonth() - 5, 0), new Date().getMonth() + 1).map((m, i, arr) => {
+                                    const max = Math.max(...arr.map(x => x.total), 1)
+                                    const h = (m.total / max) * 100
+                                    return (
+                                        <div key={`exp-${m.month}-${i}`} className="flex-1 flex flex-col items-center gap-1">
+                                            <div
+                                                className="w-full rounded-t bg-white/10 hover:bg-white/20 transition-all"
+                                                style={{ height: `${Math.max(h, 6)}%` }}
+                                                title={`${m.month}: ${currency} ${m.total.toLocaleString()}`}
+                                            />
+                                            <span className="text-[7px] text-neutral-600">{m.month}</span>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     </Card>
@@ -542,15 +575,13 @@ export default function DashboardPage() {
                     <Card className="bg-[#0c0c0c] border border-white/5 rounded-xl p-6 hover:border-white/10 transition-all">
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">MoM Growth</span>
-                                <div className={cn("px-2 py-0.5 rounded text-[8px] font-bold", cashFlowMetrics.momGrowth >= 0 ? "bg-emerald-500/10 text-emerald-500" : "bg-red-500/10 text-red-500")}>
-                                    {cashFlowMetrics.momGrowth >= 0 ? "UP" : "DOWN"}
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Net Profit</span>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">
+                                    {netProfitYTD >= 0 ? "PROFIT" : "LOSS"}
                                 </div>
                             </div>
-                            <h3 className={cn("text-3xl font-serif font-bold italic", cashFlowMetrics.momGrowth >= 0 ? "text-emerald-400" : "text-red-400")}>
-                                {cashFlowMetrics.momGrowth >= 0 ? "+" : ""}{cashFlowMetrics.momGrowth}%
-                            </h3>
-                            <p className="text-[10px] text-neutral-500">Month-over-month revenue change</p>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {Math.round(netProfitYTD).toLocaleString()}</h3>
+                            <p className="text-[10px] text-neutral-500">Revenue minus expenses (YTD)</p>
                         </div>
                     </Card>
 
@@ -558,9 +589,9 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">VAT Liability</span>
-                                <div className="px-2 py-0.5 bg-violet-500/10 rounded text-[8px] font-bold text-violet-500">TAX</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">TAX</div>
                             </div>
-                            <h3 className="text-3xl font-serif font-bold italic text-violet-400">{currency} {cashFlowMetrics.vatEstimate.toLocaleString()}</h3>
+                            <h3 className="text-3xl font-serif font-bold italic text-white">{currency} {cashFlowMetrics.vatEstimate.toLocaleString()}</h3>
                             <p className="text-[10px] text-neutral-500">Estimated VAT collected YTD</p>
                         </div>
                     </Card>
@@ -570,7 +601,7 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Projected Annual Revenue</span>
-                                <div className="px-2 py-0.5 bg-white/10 rounded text-[8px] font-bold text-white">FORECAST</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">FORECAST</div>
                             </div>
                             <div className="flex items-baseline gap-4">
                                 <h3 className="text-4xl font-serif font-bold italic text-white">{currency} {Math.round(cashFlowMetrics.projectedRevenue).toLocaleString()}</h3>
@@ -602,7 +633,7 @@ export default function DashboardPage() {
                         <div className="flex flex-col gap-4 h-full">
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-500">Top Clients</span>
-                                <div className="px-2 py-0.5 bg-white/10 rounded text-[8px] font-bold text-white">BY REVENUE</div>
+                                <div className="px-2 py-0.5 bg-white/10 rounded text-[9px] font-medium text-white">BY REVENUE</div>
                             </div>
                             <div className="flex-1 space-y-3">
                                 {cashFlowMetrics.topClients.length > 0 ? (
@@ -635,148 +666,6 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* AI Assistant Chat Input - Fixed at Bottom (Pic 3) */}
-            <div className="fixed bottom-12 left-[calc(50%+36px)] -translate-x-1/2 w-full max-w-5xl px-6 z-40">
-                <div
-                    onClick={() => setIsChatOpen(true)}
-                    className="sticky bottom-0 -mx-4 md:-mx-10 -mb-6 md:-mb-10 bg-[#080808]/95 backdrop-blur-3xl border-t border-white/10 p-2 shadow-[0_-10px_40px_-15px_rgba(0,0,0,1)] flex items-center gap-4 group hover:border-white/20 focus-within:border-white/20 focus-within:translate-y-[-4px] transition-all min-h-[80px] cursor-text z-40 mt-auto"
-                >
-                    <div className="w-10 h-10 flex items-center justify-center shrink-0 ml-4">
-                        <div className="w-5 h-5 border-2 border-white/20 border-t-white/80 rounded-full animate-spin invisible group-hover:visible" />
-                        <IconMessage2 className="h-5 w-5 text-white absolute group-hover:invisible" />
-                    </div>
-                    <div className="flex-1 text-sm text-white/20 font-sans tracking-tight">
-                        Ask anything...
-                    </div>
-                    <div className="flex items-center gap-2 pr-2 mr-4">
-                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5 rounded-none">
-                            <IconPlus className="h-5 w-5" />
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 text-white/40 hover:text-white hover:bg-white/5 rounded-none">
-                            <IconFileAnalytics className="h-5 w-5" />
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="h-10 w-10 bg-white text-black hover:bg-neutral-200 rounded-none transition-all ml-2">
-                            <IconArrowUpRight className="h-5 w-5" />
-                        </Button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Full-Page AI Chat Overlay */}
-            <AnimatePresence>
-                {isChatOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        className="fixed inset-0 z-100 bg-black/95 backdrop-blur-3xl flex flex-col items-center"
-                    >
-                        {/* Header */}
-                        <div className="w-full max-w-5xl flex items-center justify-between p-8">
-                            <div className="flex items-center gap-4">
-                                <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
-                                    <IconSparkles className="h-6 w-6 text-white" />
-                                </div>
-                                <div>
-                                    <h2 className="text-xl font-serif italic text-white">Illumi Assistant</h2>
-                                    <p className="text-xs text-white/40 font-sans">Powered by advanced AI for your business</p>
-                                </div>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setIsChatOpen(false)}
-                                className="h-12 w-12 rounded-full hover:bg-white/5 text-white/40 hover:text-white transition-all"
-                            >
-                                <IconX className="h-6 w-6" />
-                            </Button>
-                        </div>
-
-                        {/* Chat History */}
-                        <div className="flex-1 w-full max-w-3xl overflow-y-auto no-scrollbar px-6 py-12 space-y-8">
-                            {messages.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-                                    <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center animate-pulse">
-                                        <IconSparkles className="h-10 w-10 text-white/20" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-3xl font-serif italic text-white/80">How can I help you today?</h3>
-                                        <p className="text-white/40 max-w-md mx-auto">Ask about invoices, customers, financial analysis, or anything else in your business.</p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-3 w-full max-w-lg mt-8">
-                                        {[
-                                            "What's my revenue this month?",
-                                            "Show me unpaid invoices",
-                                            "Who are my top customers?",
-                                            "Connect my Stripe account"
-                                        ].map((suggestion) => (
-                                            <button
-                                                key={suggestion}
-                                                onClick={() => handleChatSubmit(undefined, suggestion)}
-                                                className="p-4 bg-white/5 border border-white/10 hover:border-white/20 rounded-2xl text-xs text-white/60 hover:text-white transition-all text-left"
-                                            >
-                                                {suggestion}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                messages.map((m, i) => (
-                                    <motion.div
-                                        key={i}
-                                        initial={{ opacity: 0, x: m.role === 'user' ? 20 : -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        className={cn(
-                                            "flex flex-col max-w-[80%] space-y-2",
-                                            m.role === 'user' ? "ml-auto items-end" : "mr-auto items-start"
-                                        )}
-                                    >
-                                        <div className={cn(
-                                            "p-6 rounded-3xl text-sm leading-relaxed",
-                                            m.role === 'user'
-                                                ? "bg-white text-black font-medium rounded-tr-none"
-                                                : "bg-white/5 border border-white/10 text-white/90 rounded-tl-none"
-                                        )}>
-                                            {m.content}
-                                        </div>
-                                        <span className="text-[10px] text-white/20 uppercase font-black tracking-widest">
-                                            {m.role === 'user' ? 'You' : 'Assistant'}
-                                        </span>
-                                    </motion.div>
-                                ))
-                            )}
-                            {isLoadingChat && (
-                                <div className="flex flex-col items-start space-y-2 mr-auto">
-                                    <div className="p-6 rounded-3xl bg-white/5 border border-white/10 text-white/40 rounded-tl-none animate-pulse">
-                                        Thinking...
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Overlay Input Area */}
-                        <div className="w-full max-w-4xl p-8 pb-12">
-                            <form onSubmit={handleChatSubmit} className="bg-white/5 border border-white/10 p-2 pr-4 focus-within:border-white/20 transition-all rounded-2xl flex items-center gap-4">
-                                <div className="p-4 text-white/20">
-                                    <IconSparkles className="h-6 w-6" />
-                                </div>
-                                <input
-                                    autoFocus
-                                    type="text"
-                                    placeholder="Type your message..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    disabled={isLoadingChat}
-                                    className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder:text-white/10 disabled:opacity-50 font-sans py-4"
-                                />
-                                <Button type="submit" disabled={isLoadingChat || !query.trim()} className="h-12 w-12 bg-white text-black hover:bg-neutral-200 rounded-xl transition-all shadow-2xl">
-                                    <IconSend className="h-5 w-5" />
-                                </Button>
-                            </form>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     )
 }

@@ -158,7 +158,7 @@ function BillingContent() {
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">
                                 {isPro ? "Pro Plan" : "Free Plan"}
                             </span>
-                            {!isPro && (
+                            {daysRemaining !== null && (
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{daysRemaining} days remaining</span>
                             )}
                         </div>
@@ -195,9 +195,9 @@ function BillingContent() {
                     </div>
                     {isPro ? (
                         <div className="flex flex-col items-end gap-3">
-                            <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full">
-                                <IconCircleCheckFilled size={16} className="text-emerald-500" />
-                                <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">Subscribed</span>
+                            <div className="flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                                <IconCircleCheckFilled size={16} className="text-white" />
+                                <span className="text-white text-xs font-bold uppercase tracking-widest">Subscribed</span>
                             </div>
                             <Button
                                 onClick={() => setIsManagePlanOpen(true)}
@@ -450,27 +450,27 @@ function BillingContent() {
                         
                         <ul className="space-y-3 mb-6">
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Unlimited invoices
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Client database
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Product catalog
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 WhatsApp & Email sharing
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 PDF Exports
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Basic reporting
                             </li>
                         </ul>
@@ -493,7 +493,7 @@ function BillingContent() {
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold text-white">Pro</h3>
                             {isPro && (
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Current</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/10 px-2 py-1 rounded">Current</span>
                             )}
                         </div>
                         <p className="text-3xl font-bold text-white mb-1">R350</p>
@@ -502,27 +502,27 @@ function BillingContent() {
                         <p className="text-xs text-neutral-400 mb-4">Everything in Starter, plus:</p>
                         <ul className="space-y-3 mb-6">
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Custom business logo
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 PayGate integration
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Client payment portal
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Recurring invoices
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Automated status updates
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Priority support
                             </li>
                         </ul>

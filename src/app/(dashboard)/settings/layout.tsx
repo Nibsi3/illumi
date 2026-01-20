@@ -15,7 +15,7 @@ import {
 
 const settingsNavItems = [
     {
-        title: "General",
+        title: "Invoice",
         href: "/settings",
     },
     {

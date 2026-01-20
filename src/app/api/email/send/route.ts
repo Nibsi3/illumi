@@ -9,6 +9,8 @@ function getResendClient() {
 
 type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
 
+const ILLUMI_PUBLIC_LOGO = "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png"
+
 interface InvoiceItem {
     description: string
     quantity: number
@@ -18,6 +20,12 @@ interface InvoiceItem {
 interface EmailPayload {
     type: EmailType
     to: string
+    cc?: string | string[]
+    fromEmail?: string
+    companyName?: string
+    supportEmail?: string
+    companyWebsite?: string
+    allowCustomBranding?: boolean
     subject?: string
     // For invite emails
     inviterName?: string
@@ -75,6 +83,53 @@ function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): str
     `
 }
 
+function extractAmountNumber(raw: string | undefined): number | null {
+    if (!raw) return null
+    const cleaned = raw.replace(/[^0-9.,-]/g, '').replace(/,/g, '')
+    const num = Number(cleaned)
+    return Number.isFinite(num) ? num : null
+}
+
+function buildGmailInvoiceSchema(payload: EmailPayload): string {
+    const currency = (payload.currency || 'ZAR').toUpperCase()
+    const amountNumber = extractAmountNumber(payload.amount)
+    const invoiceNumber = (payload.invoiceNumber || '').trim()
+    const paymentLink = (payload.paymentLink || '').trim()
+    const dueDate = (payload.dueDate || '').trim()
+
+    const schema: any = {
+        "@context": "http://schema.org",
+        "@type": "Invoice",
+        "provider": {
+            "@type": "Organization",
+            "name": "Illumi",
+            "email": "invoice@illumi.co.za",
+        },
+        ...(invoiceNumber ? { "confirmationNumber": invoiceNumber } : {}),
+        ...(amountNumber !== null
+            ? {
+                  "totalPaymentDue": {
+                      "@type": "PriceSpecification",
+                      "price": amountNumber,
+                      "priceCurrency": currency,
+                  },
+              }
+            : {}),
+        ...(dueDate ? { "paymentDueDate": dueDate } : {}),
+        ...(paymentLink
+            ? {
+                  "potentialAction": {
+                      "@type": "ViewAction",
+                      "name": "View invoice",
+                      "url": paymentLink,
+                  },
+              }
+            : {}),
+    }
+
+    return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`
+}
+
 export async function POST(req: Request) {
     try {
         const resend = getResendClient()
@@ -106,27 +161,41 @@ export async function POST(req: Request) {
             case "invite":
                 emailSubject = `You've been invited to join ${payload.workspaceName || "a workspace"} on Illumi`
                 emailHtml = `
-                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-                        <div style="text-align: center; margin-bottom: 40px;">
-                            <h1 style="color: #000; font-size: 28px; margin: 0;">You're Invited!</h1>
-                        </div>
-                        <p style="color: #333; font-size: 16px; line-height: 1.6;">
-                            ${payload.inviterName || "Someone"} has invited you to join <strong>${payload.workspaceName || "their workspace"}</strong> on Illumi.
-                        </p>
-                        <p style="color: #666; font-size: 14px; line-height: 1.6;">
-                            Illumi is a modern invoicing platform that helps businesses manage their finances efficiently.
-                        </p>
-                        <div style="text-align: center; margin: 40px 0;">
-                            <a href="${payload.inviteLink || process.env.NEXT_PUBLIC_URL}" 
-                               style="background: #000; color: #fff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
-                                Accept Invitation
-                            </a>
-                        </div>
-                        <p style="color: #999; font-size: 12px; text-align: center;">
-                            If you didn't expect this invitation, you can safely ignore this email.
-                        </p>
-                        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <strong>Illumi</strong></p>
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f7f9; padding: 40px 16px;">
+                        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e9eaee;">
+                            <div style="background: #0a0a0a; padding: 24px; text-align: center;">
+                                <img src="${ILLUMI_PUBLIC_LOGO}" alt="Illumi" width="48" height="48" style="display: inline-block;" />
+                                <div style="color: #ffffff; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; margin-top: 12px;">Workspace Invitation</div>
+                            </div>
+                            <div style="padding: 28px 24px 8px 24px;">
+                                <h1 style="color: #0a0a0a; font-size: 24px; margin: 0 0 12px 0;">You're invited to join ${payload.workspaceName || "a workspace"}</h1>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    <strong>${payload.inviterName || "Someone"}</strong> invited you to help manage <strong>${payload.workspaceName || "their workspace"}</strong> on Illumi.
+                                </p>
+                                <div style="background: #f6f7f9; border: 1px solid #e9eaee; border-radius: 12px; padding: 14px 16px; margin: 18px 0;">
+                                    <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #6b7280; font-weight: 700;">What you can do</div>
+                                    <div style="margin-top: 10px; color: #111827; font-size: 14px; line-height: 1.7;">
+                                        • Create and send invoices<br />
+                                        • Track payments and customers<br />
+                                        • Collaborate with your team
+                                    </div>
+                                </div>
+                                <div style="text-align: center; margin: 22px 0 18px 0;">
+                                    <a href="${payload.inviteLink || process.env.NEXT_PUBLIC_URL}" 
+                                       style="background: #0a0a0a; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: 700; display: inline-block;">
+                                        Accept invitation
+                                    </a>
+                                </div>
+                                <p style="color: #6b7280; font-size: 12px; line-height: 1.6; margin: 0 0 12px 0; text-align: center;">
+                                    If the button doesn't work, copy and paste this link:
+                                </p>
+                                <p style="color: #0a0a0a; font-size: 12px; line-height: 1.6; margin: 0 0 18px 0; text-align: center; word-break: break-all;">
+                                    <a href="${payload.inviteLink || process.env.NEXT_PUBLIC_URL}" style="color: #0a0a0a; text-decoration: underline;">${payload.inviteLink || process.env.NEXT_PUBLIC_URL}</a>
+                                </p>
+                            </div>
+                            <div style="padding: 16px 24px 22px 24px; border-top: 1px solid #e9eaee; text-align: center;">
+                                <p style="color: #9ca3af; font-size: 11px; margin: 0;">If you didn't expect this invitation, you can safely ignore this email.</p>
+                            </div>
                         </div>
                     </div>
                 `
@@ -170,8 +239,16 @@ export async function POST(req: Request) {
                 break
 
             case "invoice":
-                emailSubject = payload.subject || `Invoice ${payload.invoiceNumber || ""} from Illumi`
+                const invoiceCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
+                const invoiceSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const invoiceCompanyWebsite = (payload.companyWebsite || "").trim()
+                const invoiceAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const invoicePoweredByName = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyName : "Illumi"
+                const invoicePoweredByUrl = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyWebsite : "https://illumi.co.za"
+                emailSubject = payload.subject || `Invoice ${payload.invoiceNumber || ""} from ${invoiceCompanyName}`
+                const invoiceSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
+                    ${invoiceSchema}
                     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                         <div style="text-align: center; margin-bottom: 40px;">
                             <h1 style="color: #000; font-size: 28px; margin: 0;">Invoice ${payload.invoiceNumber || ""}</h1>
@@ -196,18 +273,26 @@ export async function POST(req: Request) {
                             </a>
                         </div>
                         <p style="color: #999; font-size: 12px; text-align: center;">
-                            Questions? Reply to this email or contact our support team.
+                            Questions? Send an email to ${invoiceSupportEmail}
                         </p>
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <strong>Illumi</strong></p>
+                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${invoicePoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${invoicePoweredByName}</strong></a></p>
                         </div>
                     </div>
                 `
                 break
 
             case "payment_reminder":
-                emailSubject = `Reminder: Invoice ${payload.invoiceNumber || ""} - Payment Due Soon`
+                const reminderCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
+                const reminderSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const reminderCompanyWebsite = (payload.companyWebsite || "").trim()
+                const reminderAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const reminderPoweredByName = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyName : "Illumi"
+                const reminderPoweredByUrl = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyWebsite : "https://illumi.co.za"
+                emailSubject = `Reminder: Invoice ${payload.invoiceNumber || ""} from ${reminderCompanyName} - Payment Due Soon`
+                const reminderSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
+                    ${reminderSchema}
                     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                         <div style="text-align: center; margin-bottom: 40px;">
                             <h1 style="color: #000; font-size: 28px; margin: 0;">Payment Reminder</h1>
@@ -233,16 +318,27 @@ export async function POST(req: Request) {
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             If you've already made this payment, please disregard this reminder.
                         </p>
+                        <p style="color: #999; font-size: 12px; text-align: center;">
+                            Questions? Send an email to ${reminderSupportEmail}
+                        </p>
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <strong>Illumi</strong></p>
+                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${reminderPoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${reminderPoweredByName}</strong></a></p>
                         </div>
                     </div>
                 `
                 break
 
             case "final_notice":
-                emailSubject = `FINAL NOTICE: Invoice ${payload.invoiceNumber || ""} - Payment Due Today`
+                const finalCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
+                const finalSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const finalCompanyWebsite = (payload.companyWebsite || "").trim()
+                const finalAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const finalPoweredByName = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyName : "Illumi"
+                const finalPoweredByUrl = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyWebsite : "https://illumi.co.za"
+                emailSubject = `FINAL NOTICE: Invoice ${payload.invoiceNumber || ""} from ${finalCompanyName} - Payment Due Today`
+                const finalNoticeSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
+                    ${finalNoticeSchema}
                     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
                         <div style="text-align: center; margin-bottom: 40px;">
                             <div style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 4px; display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;">Final Notice</div>
@@ -269,8 +365,11 @@ export async function POST(req: Request) {
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             If you've already made this payment, please disregard this notice.
                         </p>
+                        <p style="color: #999; font-size: 12px; text-align: center;">
+                            Questions? Send an email to ${finalSupportEmail}
+                        </p>
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <strong>Illumi</strong></p>
+                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${finalPoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${finalPoweredByName}</strong></a></p>
                         </div>
                     </div>
                 `
@@ -283,20 +382,37 @@ export async function POST(req: Request) {
                 )
         }
 
-        // Determine the "from" address
-        let fromAddress = type === "support" || type === "contact"
-            ? "support@illumi.co.za"
-            : "invoices@illumi.co.za"
+        const INVOICE_FROM = "invoice@illumi.co.za"
+        const INVITE_FROM = "invite@illumi.co.za"
+        const isInvoiceLike = type === "invoice" || type === "payment_reminder" || type === "final_notice"
 
-        const isVerified = process.env.RESEND_DOMAIN_VERIFIED === "true"
-        if (!isVerified) {
-            fromAddress = "onboarding@resend.dev"
-        }
+        // Determine the "from" address
+        const fromAddress = (type === "support" || type === "contact")
+            ? (type === "support" ? "support@illumi.co.za" : "info@illumi.co.za")
+            : isInvoiceLike
+                ? INVOICE_FROM
+                : type === "invite"
+                    ? INVITE_FROM
+                : "invoices@illumi.co.za"
+
+        const replyToAddress =
+            (type === "support" || type === "contact")
+                ? payload.userEmail
+                : isInvoiceLike
+                    ? INVOICE_FROM
+                    : type === "invite"
+                        ? INVITE_FROM
+                    : (payload.fromEmail || undefined)
 
         const { data, error } = await resend.emails.send({
-            from: isVerified ? `Illumi <${fromAddress}>` : `Illumi (Test) <onboarding@resend.dev>`,
-            to: type === "support" ? "support@illumi.co.za" : cleanTo,
-            replyTo: (type === "support" || type === "contact") ? payload.userEmail : undefined,
+            from: `Illumi <${fromAddress}>`,
+            to: type === "support"
+                ? "support@illumi.co.za"
+                : type === "contact"
+                    ? "info@illumi.co.za"
+                    : cleanTo,
+            cc: payload.cc,
+            replyTo: replyToAddress,
             subject: emailSubject,
             html: emailHtml,
         })
