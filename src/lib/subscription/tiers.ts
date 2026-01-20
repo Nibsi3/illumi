@@ -49,7 +49,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
         connectedBanks: 0, // No bank connections for free
         inboxItemsPerMonth: Infinity,
         vaultStorageGB: 5,
-        maxUsers: 1,
+        maxUsers: 1, // Owner only, no team members
         features: {
             // Pro-only features - all disabled for free
             customLogo: false,
@@ -70,7 +70,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
         connectedBanks: 10,
         inboxItemsPerMonth: Infinity,
         vaultStorageGB: 100,
-        maxUsers: 10,
+        maxUsers: 5, // Owner + 4 team members
         features: {
             // All Pro features enabled
             customLogo: true,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
@@ -12,11 +13,14 @@ export default function InviteAcceptPage() {
     const router = useRouter()
     const inviteId = params.id as string
     const supabase = createClient()
+    const { refreshWorkspaces } = useWorkspace()
 
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
     const [workspaceName, setWorkspaceName] = useState<string | null>(null)
+
+    const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
     useEffect(() => {
         const run = async () => {
@@ -61,6 +65,23 @@ export default function InviteAcceptPage() {
                 localStorage.setItem('activeWorkspaceId', json.workspaceId)
                 setSuccess(true)
 
+                try {
+                    // Wait briefly for the invited workspace to be visible before redirecting
+                    for (let i = 0; i < 10; i++) {
+                        const wsRes = await fetch('/api/workspaces', { credentials: 'include' })
+                        const wsJson = await wsRes.json().catch(() => null)
+                        const list = Array.isArray(wsJson?.workspaces) ? wsJson.workspaces : []
+                        if (wsRes.ok && wsJson?.success && list.some((w: any) => w?.id === json.workspaceId)) {
+                            break
+                        }
+                        await wait(250)
+                    }
+
+                    await refreshWorkspaces()
+                } catch {
+                    // ignore
+                }
+
                 setTimeout(() => {
                     router.replace('/overview')
                 }, 600)
@@ -72,7 +93,7 @@ export default function InviteAcceptPage() {
         }
 
         run()
-    }, [inviteId, router, supabase])
+    }, [inviteId, refreshWorkspaces, router, supabase])
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6">

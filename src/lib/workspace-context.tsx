@@ -58,36 +58,54 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             setUserId(user.id)
             setUserEmail((user.email || '').toLowerCase().trim() || null)
 
-            const { data: ownedWorkspaces } = await supabase
-                .from('workspaces')
-                .select('*')
-                .eq('owner_id', user.id)
-                .order('created_at', { ascending: true })
-
-            let memberWorkspaceIds: string[] = []
+            // Fetch workspaces via server API to avoid RLS issues on workspace_members
+            // that can cause invited workspaces not to appear immediately after accepting an invite.
+            let deduped: Workspace[] = []
             try {
-                const { data: memberRows } = await supabase
-                    .from('workspace_members')
-                    .select('workspace_id, status')
-                    .eq('email', user.email || '')
-
-                memberWorkspaceIds = (memberRows || [])
-                    .filter((r: any) => Boolean(r.workspace_id) && (r.status || '').toString().toLowerCase() === 'active')
-                    .map((r: any) => r.workspace_id)
-            } catch (e) {
-                memberWorkspaceIds = []
+                const res = await fetch('/api/workspaces', { credentials: 'include' })
+                const json = await res.json().catch(() => null)
+                if (res.ok && json?.success && Array.isArray(json?.workspaces)) {
+                    deduped = json.workspaces as Workspace[]
+                } else {
+                    deduped = []
+                }
+            } catch {
+                deduped = []
             }
 
-            const { data: memberWorkspaces } = memberWorkspaceIds.length
-                ? await supabase
+            // Fallback to previous client-side behavior if API returns nothing
+            if (deduped.length === 0) {
+                const { data: ownedWorkspaces } = await supabase
                     .from('workspaces')
                     .select('*')
-                    .in('id', memberWorkspaceIds)
-                : { data: [] as Workspace[] }
+                    .eq('owner_id', user.id)
+                    .order('created_at', { ascending: true })
 
-            const combined = [...(ownedWorkspaces || []), ...(memberWorkspaces || [])]
-            const deduped = Array.from(new Map(combined.map(w => [w.id, w])).values())
-                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                let memberWorkspaceIds: string[] = []
+                try {
+                    const { data: memberRows } = await supabase
+                        .from('workspace_members')
+                        .select('workspace_id, status')
+                        .eq('email', user.email || '')
+
+                    memberWorkspaceIds = (memberRows || [])
+                        .filter((r: any) => Boolean(r.workspace_id) && (r.status || '').toString().toLowerCase() === 'active')
+                        .map((r: any) => r.workspace_id)
+                } catch (e) {
+                    memberWorkspaceIds = []
+                }
+
+                const { data: memberWorkspaces } = memberWorkspaceIds.length
+                    ? await supabase
+                        .from('workspaces')
+                        .select('*')
+                        .in('id', memberWorkspaceIds)
+                    : { data: [] as Workspace[] }
+
+                const combined = [...(ownedWorkspaces || []), ...(memberWorkspaces || [])]
+                deduped = Array.from(new Map(combined.map(w => [w.id, w])).values())
+                    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+            }
 
             setWorkspaces(deduped)
 
@@ -101,8 +119,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 if (!savedWorkspaceId || savedWorkspace) {
                     setActiveWorkspaceState(savedWorkspace || deduped[0])
                 } else {
-                    // Stale workspace selection (e.g., user was removed)
-                    localStorage.removeItem('activeWorkspaceId')
+                    // Saved workspace isn't in the current list yet (e.g., invite just accepted and
+                    // memberships/workspaces haven't propagated). Keep the saved ID and fall back for now.
                     setActiveWorkspaceState(deduped[0])
                 }
             } else {

@@ -5,7 +5,7 @@ import { StatusDot } from "@/components/status-dot"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2, Loader2 } from "lucide-react"
+import { Plus, MoreHorizontal, Mail, UserPlus, Shield, ShieldCheck, User as UserIcon, AlertCircle, Sparkles, Trash2, Loader2, Users } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -252,28 +252,43 @@ export default function MembersPage() {
                     <h1 className="text-4xl font-serif font-medium mb-1">Members</h1>
                     <p className="text-muted-foreground">Manage team members and their access to your workspace.</p>
                 </div>
-                {!reachedLimit ? (
-                    <Button
-                        onClick={() => setShowInviteForm(!showInviteForm)}
-                        className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg"
-                    >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Invite member
-                    </Button>
-                ) : (
-                    <Link href="/settings/billing">
+                {isOwner ? (
+                    !reachedLimit ? (
                         <Button
-                            className="bg-white text-white hover:bg-white/90 h-11 px-6 font-semibold rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                            onClick={() => setShowInviteForm(!showInviteForm)}
+                            className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg"
                         >
-                            <Sparkles className="h-4 w-4 mr-2" />
-                            Upgrade to Invite
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Invite member
                         </Button>
-                    </Link>
-                )}
+                    ) : (
+                        <Link href="/settings/billing">
+                            <Button
+                                className="bg-white text-white hover:bg-white/90 h-11 px-6 font-semibold rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                            >
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Upgrade to Invite
+                            </Button>
+                        </Link>
+                    )
+                ) : null}
             </div>
 
+            {/* Non-owner info banner */}
+            {!isOwner && (
+                <div className="mb-8 p-6 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                        <Users className="h-6 w-6 text-neutral-400" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-white">View Only</p>
+                        <p className="text-sm text-neutral-400">Only workspace owners can manage team members.</p>
+                    </div>
+                </div>
+            )}
+
             {/* Limit Warning Banner */}
-            {!isPro && reachedLimit && (
+            {isOwner && !isPro && reachedLimit && (
                 <div className="mb-8 p-6 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-between group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Sparkles className="h-12 w-12 text-white" />
@@ -296,7 +311,7 @@ export default function MembersPage() {
             )}
 
             {/* Invite Form */}
-            {showInviteForm && !reachedLimit && (
+            {isOwner && showInviteForm && !reachedLimit && (
                 <div className="mb-8 p-8 border border-white/5 rounded-2xl bg-[#09090b] shadow-2xl">
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Invite via Email</label>
@@ -391,7 +406,7 @@ export default function MembersPage() {
                                 </div>
                             </div>
 
-                            {member.role !== "Owner" && (
+                            {isOwner && member.role !== "Owner" && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">

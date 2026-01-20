@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button"
 import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Building2, Check, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/hooks/use-cached-data"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -58,8 +60,6 @@ export default function ClientsPage() {
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
         "name", "email", "status", "totalInvoiced", "lastActivity", "tags"
     ])
-    const [customers, setCustomers] = useState<Customer[]>([])
-    const [isLoading, setIsLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [historyCustomer, setHistoryCustomer] = useState<Customer | null>(null)
@@ -67,6 +67,23 @@ export default function ClientsPage() {
     const [isHistoryLoading, setIsHistoryLoading] = useState(false)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
+
+    // Cached customer fetching with React Query
+    const { data: customers = [], isLoading, refetch } = useQuery({
+        queryKey: queryKeys.customers(activeWorkspace?.id || ""),
+        queryFn: async () => {
+            if (!activeWorkspace) return []
+            const { data, error } = await supabase
+                .from('customers')
+                .select('*')
+                .eq('workspace_id', activeWorkspace.id)
+                .order('created_at', { ascending: false })
+            if (error) throw error
+            return data || []
+        },
+        enabled: !!activeWorkspace?.id,
+        staleTime: 2 * 60 * 1000, // 2 minutes
+    })
 
     const toggleCustomerStatus = async (customer: Customer) => {
         try {
@@ -77,7 +94,7 @@ export default function ClientsPage() {
                 .eq('id', customer.id)
 
             if (error) throw error
-            setCustomers(prev => prev.map(c => (c.id === customer.id ? { ...c, status: nextStatus } : c)))
+            refetch()
         } catch (error: any) {
             toast.error("Failed to update customer", { description: error.message })
         }
@@ -106,28 +123,6 @@ export default function ClientsPage() {
         }
     }
 
-    useEffect(() => {
-        const fetchCustomers = async () => {
-            try {
-                if (!activeWorkspace) return
-
-                const { data, error } = await supabase
-                    .from('customers')
-                    .select('*')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .order('created_at', { ascending: false })
-
-                if (error) throw error
-                setCustomers(data || [])
-            } catch (error: any) {
-                toast.error("Failed to load customers", { description: error.message })
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        fetchCustomers()
-    }, [supabase, activeWorkspace])
-
     const handleDeleteCustomer = async (customerId: string) => {
         try {
             const { error } = await supabase
@@ -137,7 +132,7 @@ export default function ClientsPage() {
 
             if (error) throw error
 
-            setCustomers(prev => prev.filter(c => c.id !== customerId))
+            refetch()
             toast.success("Customer deleted")
         } catch (error: any) {
             toast.error("Failed to delete customer", { description: error.message })

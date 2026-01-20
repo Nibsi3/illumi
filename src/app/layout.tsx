@@ -3,6 +3,8 @@ import "./globals.css";
 
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import localFont from "next/font/local";
 import {
@@ -112,6 +114,8 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Analytics />
+        <SpeedInsights />
         <Toaster
           position="top-center"
           theme="dark"

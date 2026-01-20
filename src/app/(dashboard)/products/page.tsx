@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/hooks/use-cached-data"
 import { Input } from "@/components/ui/input"
 import { Plus, Search, Filter, MoreHorizontal, Package, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -47,8 +49,6 @@ const productColumns = [
 ]
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [editing, setEditing] = useState<Product | null>(null)
@@ -65,27 +65,22 @@ export default function ProductsPage() {
   const { activeWorkspace } = useWorkspace()
   const { currency } = useSettings()
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        if (!activeWorkspace) return
-
-        const { data, error } = await supabase
-          .from('products')
-          .select('*')
-          .eq('workspace_id', activeWorkspace.id)
-          .order('created_at', { ascending: false })
-
-        if (error) throw error
-        setProducts(data || [])
-      } catch (error: any) {
-        toast.error("Failed to load products", { description: error.message })
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchProducts()
-  }, [supabase, activeWorkspace])
+  // Cached product fetching with React Query
+  const { data: products = [], isLoading, refetch } = useQuery({
+    queryKey: queryKeys.products(activeWorkspace?.id || ""),
+    queryFn: async () => {
+      if (!activeWorkspace) return []
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('workspace_id', activeWorkspace.id)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data || []
+    },
+    enabled: !!activeWorkspace?.id,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  })
 
   const handleArchiveProduct = async (productId: string) => {
     try {
@@ -96,7 +91,7 @@ export default function ProductsPage() {
 
       if (error) throw error
 
-      setProducts(prev => prev.map(p => (p.id === productId ? { ...p, status: 'archived' } : p)))
+      refetch()
       toast.success("Product archived")
     } catch (error: any) {
       toast.error("Failed to archive product", { description: error.message })
@@ -123,7 +118,7 @@ export default function ProductsPage() {
         .eq('id', editing.id)
 
       if (error) throw error
-      setProducts(prev => prev.map(p => (p.id === editing.id ? editing : p)))
+      refetch()
       setIsEditOpen(false)
       setEditing(null)
       toast.success('Product updated')
@@ -160,7 +155,7 @@ export default function ProductsPage() {
         .single()
 
       if (error) throw error
-      setProducts(prev => [data as Product, ...prev])
+      refetch()
       toast.success('Product duplicated')
     } catch (error: any) {
       toast.error('Failed to duplicate product', { description: error.message })

@@ -35,6 +35,8 @@ import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
 import { useSubscription } from "@/lib/subscription/hooks"
+import { useQuery } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/hooks/use-cached-data"
 
 // Kept for type reference only, not using mock data
 
@@ -48,12 +50,49 @@ const columnsList = [
 ]
 
 export default function InvoicesPage() {
-    const [invoices, setInvoices] = useState<any[]>([])
-    const [isLoading, setIsLoading] = useState(true)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
     const { currency, activePaymentProvider, fromEmail, companyName, companyWebsite, sendInvoiceCopyToSelf } = useSettings()
     const { isPro } = useSubscription()
+
+    // Cached invoice fetching with React Query
+    const { data: rawInvoices = [], isLoading, refetch } = useQuery({
+        queryKey: [...queryKeys.invoices(activeWorkspace?.id || ""), currency],
+        queryFn: async () => {
+            if (!activeWorkspace) return []
+            const { data, error } = await supabase
+                .from('invoices')
+                .select('*, customers(name)')
+                .eq('workspace_id', activeWorkspace.id)
+                .order('created_at', { ascending: false })
+            if (error) throw error
+            return data || []
+        },
+        enabled: !!activeWorkspace?.id,
+        staleTime: 2 * 60 * 1000, // 2 minutes
+    })
+
+    // Transform raw data for display
+    const invoices = useMemo(() => {
+        return rawInvoices.map((inv: any) => {
+            const now = new Date()
+            now.setHours(0, 0, 0, 0)
+            const rawStatus = (inv.status || '').toLowerCase()
+            const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null
+            const isOverdue = rawStatus !== 'paid' && rawStatus !== 'scheduled' && dueDate && dueDate < now
+
+            return {
+                ...inv,
+                raw_status: rawStatus,
+                displayId: inv.invoice_number,
+                customer: inv.customers?.name || 'Unknown',
+                amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
+                dueDate: inv.due_date,
+                issueDate: inv.issue_date,
+                status: isOverdue ? 'Overdue' : rawStatus ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1) : ''
+            }
+        })
+    }, [rawInvoices, currency])
 
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -74,54 +113,6 @@ export default function InvoicesPage() {
     // Sorting state
     const [sortColumn, setSortColumn] = useState<string | null>(null)
     const [sortDirection, setSortDirection] = useState<string | null>(null)
-
-    useEffect(() => {
-        const fetchInvoices = async () => {
-            if (!activeWorkspace) {
-                setIsLoading(false)
-                return
-            }
-
-            try {
-                const { data, error } = await supabase
-                    .from('invoices')
-                    .select('*, customers(name)')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .order('created_at', { ascending: false })
-
-                if (error) throw error
-
-                // Transform data to match UI expectations
-                const formattedInvoices = (data || []).map(inv => {
-                    const now = new Date();
-                    now.setHours(0, 0, 0, 0);
-                    const rawStatus = (inv.status || '').toLowerCase()
-                    // Parse due date as local midnight to avoid UTC offsets making today overdue
-                    const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null;
-                    const isOverdue = rawStatus !== 'paid' && rawStatus !== 'scheduled' && dueDate && dueDate < now;
-
-                    return {
-                        ...inv,
-                        raw_status: rawStatus,
-                        displayId: inv.invoice_number, // Use the readable invoice number for display
-                        customer: inv.customers?.name || 'Unknown',
-                        amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
-                        dueDate: inv.due_date,
-                        issueDate: inv.issue_date,
-                        status: isOverdue ? 'Overdue' : rawStatus ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1) : ''
-                    };
-                })
-
-                setInvoices(formattedInvoices)
-            } catch (e) {
-                console.error("Error fetching invoices:", e)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        fetchInvoices()
-    }, [activeWorkspace?.id, currency])
 
     // Compute unique clients with invoice counts
     const clientFolders = useMemo(() => {
@@ -161,8 +152,8 @@ export default function InvoicesPage() {
 
             toast.success("Invoice deleted")
 
-            // Refresh the list reactively
-            setInvoices(prev => prev.filter(inv => inv.id !== invoiceId))
+            // Refresh the cached list
+            refetch()
             setSelectedIds(prev => prev.filter(id => id !== invoiceId))
         } catch (error: any) {
             console.error('Delete failed:', error)
@@ -207,10 +198,8 @@ export default function InvoicesPage() {
                 description: `Paid on ${format(markPaidDate, 'dd/MM/yyyy')}`
             })
 
-            // Refresh the list reactively
-            setInvoices(prev => prev.map(inv =>
-                inv.id === markPaidInvoice.id ? { ...inv, status: 'Paid' } : inv
-            ))
+            // Refresh the cached list
+            refetch()
             setMarkPaidDialogOpen(false)
             setMarkPaidInvoice(null)
         } catch (error: any) {
@@ -342,32 +331,8 @@ export default function InvoicesPage() {
                 description: `Created new draft invoice ${newInvoiceNumber}`
             })
 
-            // Refresh the list
-            const { data: refreshed } = await supabase
-                .from('invoices')
-                .select('*, customers(name)')
-                .eq('workspace_id', activeWorkspace?.id)
-                .order('created_at', { ascending: false })
-
-            if (refreshed) {
-                const formattedInvoices = refreshed.map(inv => {
-                    const now = new Date()
-                    now.setHours(0, 0, 0, 0)
-                    const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null
-                    const isOverdue = inv.status.toLowerCase() !== 'paid' && dueDate && dueDate < now
-
-                    return {
-                        ...inv,
-                        displayId: inv.invoice_number,
-                        customer: inv.customers?.name || 'Unknown',
-                        amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
-                        dueDate: inv.due_date,
-                        issueDate: inv.issue_date,
-                        status: isOverdue ? 'Overdue' : inv.status.charAt(0).toUpperCase() + inv.status.slice(1)
-                    }
-                })
-                setInvoices(formattedInvoices)
-            }
+            // Refresh the cached list
+            refetch()
         } catch (error: any) {
             console.error('Duplicate failed:', error)
             toast.error("Failed to duplicate invoice", {
