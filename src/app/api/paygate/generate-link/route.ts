@@ -1,10 +1,49 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import fs from 'fs'
+import path from 'path'
 
 const API_BUILD_MARKER = 'generate-link@2026-01-20T09:47Z'
 
+function loadRuntimeEnvFromFiles() {
+    const candidates = ['.env.production', '.env.local', '.env']
+    for (const filename of candidates) {
+        try {
+            const filePath = path.join(process.cwd(), filename)
+            if (!fs.existsSync(filePath)) continue
+            const raw = fs.readFileSync(filePath, 'utf8')
+            const lines = raw.split(/\r?\n/)
+            for (const line of lines) {
+                const trimmed = line.trim()
+                if (!trimmed || trimmed.startsWith('#')) continue
+                const idx = trimmed.indexOf('=')
+                if (idx <= 0) continue
+                const key = trimmed.slice(0, idx).trim()
+                let value = trimmed.slice(idx + 1).trim()
+                if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+                    value = value.slice(1, -1)
+                }
+                if (!process.env[key]) {
+                    process.env[key] = value
+                }
+            }
+            return
+        } catch {
+            continue
+        }
+    }
+}
+
+function ensureRuntimeEnvLoaded() {
+    if (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.YOCO_SECRET_KEY) {
+        return
+    }
+    loadRuntimeEnvFromFiles()
+}
+
 // Service role client for reading secrets (bypasses RLS)
 function getServiceClient() {
+    ensureRuntimeEnvLoaded()
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!url) {
         console.log('[getServiceClient] Missing NEXT_PUBLIC_SUPABASE_URL')
@@ -44,6 +83,7 @@ async function resolveWorkspaceIdFromInvoiceId(invoiceId: unknown): Promise<stri
 }
 
 export async function GET() {
+    ensureRuntimeEnvLoaded()
     const res = NextResponse.json(
         {
             success: true,
@@ -123,6 +163,7 @@ async function getWorkspaceSettings(workspaceId: string) {
 // PayGate link generator
 export async function POST(req: Request) {
     try {
+        ensureRuntimeEnvLoaded()
         const { invoiceId, amount, currency, provider, invoiceNumber, workspaceId } = await req.json()
         
         const resolvedWorkspaceId =
