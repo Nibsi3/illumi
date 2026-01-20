@@ -7,8 +7,10 @@ import { useState } from "react"
 
 const featureDropdownItems = [
     { name: "Overview", href: "/features/overview" },
-    { name: "Invoicing", href: "/features/invoice" },
-    { name: "Inbox", href: "/features/inbox" },
+    { name: "Invoicing", href: "/features/invoicing" },
+    { name: "Expense Tracking", href: "/features/expenses" },
+    { name: "Client Management", href: "/features/clients" },
+    { name: "PayGate", href: "/features/paygate" },
     { name: "Vault", href: "/features/vault" },
 ]
 

@@ -15,14 +15,95 @@ import {
     IconLink,
     IconRefresh,
     IconCalendar,
+    IconShieldCheck,
+    IconCurrencyDollar,
+    IconUsers,
+    IconChartBar,
+    IconReceipt,
 } from "@tabler/icons-react"
+import Script from "next/script"
 
 const stats = [
     { label: "Invoices created", value: "15,000+" },
-    { label: "Active businesses", value: "2,500+" },
+    { label: "SA businesses", value: "2,500+" },
     { label: "Clients managed", value: "8,400+" },
-    { label: "Products saved", value: "12,000+" },
+    { label: "ZAR processed", value: "R12M+" },
 ]
+
+const featureCards = [
+    {
+        icon: IconBrandWhatsapp,
+        title: "WhatsApp Invoicing",
+        description: "Send invoices directly via WhatsApp in one click. Perfect for South African businesses.",
+        keyword: "WhatsApp invoice sharing",
+    },
+    {
+        icon: IconFolder,
+        title: "Client Folders",
+        description: "Organize invoices by company with folder-style client management.",
+        keyword: "Client invoice organization",
+    },
+    {
+        icon: IconChartBar,
+        title: "Net Profit Tracking",
+        description: "See your real profit after expenses. Track income vs expenses in ZAR.",
+        keyword: "Business expense tracker SA",
+    },
+    {
+        icon: IconShieldCheck,
+        title: "PayFast Integration",
+        description: "Accept payments via PayFast. Invoices auto-update when paid.",
+        keyword: "PayFast invoice payments",
+    },
+    {
+        icon: IconReceipt,
+        title: "SARS-Ready Reports",
+        description: "Export invoices and expenses for tax season. VAT-ready reporting.",
+        keyword: "SARS invoice reporting",
+    },
+    {
+        icon: IconRefresh,
+        title: "Recurring Invoices",
+        description: "Set up recurring invoices for retainer clients. Save time on billing.",
+        keyword: "Recurring invoice automation",
+    },
+]
+
+const faqs = [
+    {
+        question: "Can I send invoices via WhatsApp?",
+        answer: "Yes! Illumi lets you share invoices directly via WhatsApp with one click. Your clients receive a professional PDF invoice instantly - perfect for the South African market where WhatsApp is the primary business communication tool.",
+    },
+    {
+        question: "Does Illumi support South African VAT?",
+        answer: "Yes, Illumi is built for South African businesses. All invoices display amounts in ZAR (Rands), support VAT calculations, and exports are SARS-ready for tax submissions.",
+    },
+    {
+        question: "How does PayFast integration work?",
+        answer: "Pro users can connect their PayFast merchant account to enable a 'Pay Now' button on every invoice. When clients pay, your invoice status automatically updates to 'Paid' - no manual tracking needed.",
+    },
+    {
+        question: "Is Illumi really free to use?",
+        answer: "Yes! Our Free plan includes unlimited invoices, client database, product catalog, WhatsApp/Email sharing, and PDF exports - free forever. Pro features like PayFast integration and custom branding are R350/month.",
+    },
+    {
+        question: "Can I track my business expenses?",
+        answer: "Absolutely. Track once-off and recurring expenses, categorize them, and see your net profit (income minus expenses) on your dashboard. Export expense reports as CSV for your accountant.",
+    },
+]
+
+const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer,
+        },
+    })),
+}
 
 const invoicingFeatures = [
     "Build your client database",
@@ -53,7 +134,13 @@ const proFeatures = [
 
 export default function LandingPage() {
     return (
-        <div className="bg-black font-sans text-white">
+        <>
+            <Script
+                id="faq-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
+            <div className="bg-black font-sans text-white">
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden">
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8 w-full pt-20">
@@ -65,12 +152,12 @@ export default function LandingPage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-[60px] leading-[1.2] text-[#fafafa] mb-8 font-sans font-medium">
-                                The Invoicing App for South African Businesses,{" "}
-                                <span className="text-[#878787]">simplified.</span>
+                                Professional Invoicing & Expense Tracking for{" "}
+                                <span className="text-[#878787]">South African SMEs.</span>
                             </h1>
 
                             <p className="text-lg text-[#878787] mb-8 max-w-lg">
-                                Build your client database, manage products, create beautiful invoices, and get paid faster with WhatsApp, Email, or a shareable link.
+                                Manage clients, track net profit, and get paid faster with WhatsApp invoice sharing and PayFast integration. Built for South African small businesses.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -340,6 +427,99 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            {/* Feature Grid - SEO Goldmine */}
+            <section className="py-24 border-t border-white/5">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="mb-16 text-center">
+                        <h2 className="text-4xl font-medium text-[#fafafa] mb-4 font-sans">Built for South African Small Businesses</h2>
+                        <p className="text-[#878787] text-lg font-sans max-w-2xl mx-auto">
+                            Everything you need to invoice clients, track expenses, and grow your business in ZAR.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {featureCards.map((feature, i) => (
+                            <div key={i} className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-colors">
+                                <feature.icon className="h-10 w-10 text-white/70 mb-6" />
+                                <h3 className="text-xl font-medium text-white mb-3">{feature.title}</h3>
+                                <p className="text-[#878787] text-sm leading-relaxed mb-4">{feature.description}</p>
+                                <span className="text-xs text-white/30 uppercase tracking-wider">{feature.keyword}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Trust Badges */}
+            <section className="py-16 border-t border-white/5">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-white/50">
+                        <div className="flex items-center gap-2">
+                            <IconShieldCheck className="h-5 w-5" />
+                            <span>Secure payments via PayFast</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <IconReceipt className="h-5 w-5" />
+                            <span>VAT-ready reporting</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <IconCurrencyDollar className="h-5 w-5" />
+                            <span>ZAR currency support</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <IconBrandWhatsapp className="h-5 w-5" />
+                            <span>WhatsApp invoice sharing</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* FAQ Section with Schema */}
+            <section className="py-24 border-t border-white/5">
+                <div className="mx-auto max-w-3xl px-6 lg:px-8">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-medium text-white mb-4">Frequently Asked Questions</h2>
+                        <p className="text-[#878787]">Everything you need to know about Illumi invoicing software.</p>
+                    </div>
+
+                    <div className="space-y-4">
+                        {faqs.map((faq, i) => (
+                            <div key={i} className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-6">
+                                <h3 className="text-white font-medium mb-3">{faq.question}</h3>
+                                <p className="text-[#878787] text-sm leading-relaxed">{faq.answer}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Final CTA */}
+            <section className="py-24 border-t border-white/5">
+                <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
+                    <h2 className="text-4xl font-medium text-white mb-6">Start invoicing today</h2>
+                    <p className="text-[#878787] text-lg mb-8 max-w-xl mx-auto">
+                        Join thousands of South African businesses using Illumi to manage invoices, track expenses, and get paid faster.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button
+                            asChild
+                            className="bg-white text-black hover:bg-neutral-200 rounded-lg px-8 h-12 font-sans"
+                        >
+                            <Link href="/login">Get Started for Free</Link>
+                        </Button>
+                        <Button
+                            asChild
+                            variant="outline"
+                            className="rounded-lg px-8 h-12 border-white/20 text-white hover:bg-white/5 font-sans"
+                        >
+                            <Link href="/pricing">View Pricing</Link>
+                        </Button>
+                    </div>
+                    <p className="text-sm text-[#878787] mt-4">Free forever • No credit card required • Cancel anytime</p>
+                </div>
+            </section>
         </div>
+        </>
     )
 }

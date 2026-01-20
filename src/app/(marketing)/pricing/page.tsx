@@ -5,41 +5,48 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconChevronDown } from "@tabler/icons-react"
 
-const starterFeatures = [
+const freeFeatures = [
     "Unlimited invoices",
     "Client database",
     "Product catalog",
     "WhatsApp & Email sharing",
     "PDF Exports",
-    "Basic reporting",
+    "Expense tracking",
+    "Net profit calculator",
+    "CSV exports",
 ]
 
 const proFeatures = [
-    "Everything in Starter",
+    "Everything in Free, plus:",
     "Custom business logo",
-    "PayGate integration",
+    "PayFast integration",
     "Client payment portal",
     "Recurring invoices",
-    "Automated status updates",
+    "Auto-update invoice status",
+    "Team members",
     "Priority support",
 ]
 
 const faqs = [
     {
-        question: "Is there really a free version?",
-        answer: "Yes! Our Starter plan is free forever and includes everything you need to start invoicing today.",
+        question: "Is Illumi really free to use?",
+        answer: "Yes! Our Free plan includes unlimited invoices, client database, expense tracking, and WhatsApp sharing - free forever. No credit card required.",
     },
     {
-        question: "How does the PayGate integration work?",
-        answer: "Pro users can connect their PayGate account in seconds. Once connected, a 'Pay Now' button will appear on every invoice you send.",
+        question: "How does PayFast integration work?",
+        answer: "Pro users can connect their PayFast merchant account in Settings > PayGate. Once connected, a 'Pay Now' button appears on every invoice, and payment status updates automatically.",
     },
     {
         question: "Can I cancel my Pro subscription?",
-        answer: "Of course. You can cancel at any time from your settings page. You'll keep your Pro features until the end of your billing cycle.",
+        answer: "Yes, cancel anytime from Settings > Billing. You'll keep Pro features until the end of your billing cycle, then revert to the Free plan.",
     },
     {
         question: "Is my data secure?",
-        answer: "Abstracted: We take security seriously. All data is encrypted and stored securely in our South African data centers.",
+        answer: "Absolutely. All data is encrypted and stored securely. Payments are processed via PayFast, South Africa's leading payment gateway.",
+    },
+    {
+        question: "Does Illumi support South African VAT?",
+        answer: "Yes, Illumi is built for South African businesses. All invoices support VAT calculations and display amounts in ZAR (Rands).",
     },
 ]
 
@@ -80,10 +87,10 @@ export default function PricingPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-                        Simple, transparent pricing
+                        Free Invoicing Software for South Africa
                     </h1>
                     <p className="text-white/50 max-w-xl mx-auto text-lg">
-                        Choose the plan that's right for your business. All plans include a 14-day free trial.
+                        Start free, upgrade when you need PayFast integration and automated payments.
                     </p>
                 </div>
             </section>
@@ -92,19 +99,19 @@ export default function PricingPage() {
             <section className="py-16">
                 <div className="mx-auto max-w-5xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Starter Plan */}
+                        {/* Free Plan */}
                         <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/10">
                             <div className="mb-6">
-                                <div className="text-sm font-medium text-white/50 mb-2">Starter</div>
+                                <div className="text-sm font-medium text-white/50 mb-2">Free</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-white font-serif">R349</span>
+                                    <span className="text-4xl font-bold text-white font-serif">R0</span>
                                     <span className="text-white/50">/month</span>
                                 </div>
-                                <div className="text-sm text-white/40 mt-1">Perfect for freelancers and small businesses</div>
+                                <div className="text-sm text-white/40 mt-1">Free forever for freelancers and small businesses</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
-                                {starterFeatures.map((feature, i) => (
+                                {freeFeatures.map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/70">
                                         <IconCheck className="h-4 w-4 text-white/50 flex-shrink-0" />
                                         {feature}
@@ -113,27 +120,27 @@ export default function PricingPage() {
                             </ul>
 
                             <Button
+                                asChild
                                 variant="outline"
                                 className="w-full rounded-full h-12 border-white/20 text-white hover:bg-white/5"
                             >
-                                Start free trial
+                                <Link href="/login">Get Started Free</Link>
                             </Button>
                         </div>
 
                         {/* Pro Plan */}
                         <div className="p-8 rounded-3xl bg-white border border-white/10 relative overflow-hidden">
                             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-black text-white text-xs font-medium">
-                                Popular
+                                Most Popular
                             </div>
 
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-black/50 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-sm text-black/40 line-through mr-2">R899</span>
-                                    <span className="text-4xl font-bold text-black font-serif">R649</span>
+                                    <span className="text-4xl font-bold text-black font-serif">R350</span>
                                     <span className="text-black/50">/month</span>
                                 </div>
-                                <div className="text-sm text-black/40 mt-1">For growing businesses and teams</div>
+                                <div className="text-sm text-black/40 mt-1">For businesses that want PayFast payments</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
