@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResendClient() {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) return null
+    return new Resend(apiKey)
+}
 
 type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
 
@@ -73,6 +77,14 @@ function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): str
 
 export async function POST(req: Request) {
     try {
+        const resend = getResendClient()
+        if (!resend) {
+            return NextResponse.json(
+                { success: false, error: "RESEND_API_KEY is not configured" },
+                { status: 500 }
+            )
+        }
+
         const payload: EmailPayload = await req.json()
         const { type, to } = payload
 
