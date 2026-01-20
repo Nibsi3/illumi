@@ -20,7 +20,13 @@ function getServiceClient() {
     return createClient(url, serviceKey)
 }
 
-// GET: Fetch paygate settings for a workspace (public config only, keys are server-only)
+// Helper to mask a key for display (show first 8 and last 4 chars)
+function maskKey(key: string): string {
+    if (!key || key.length < 16) return key ? '••••••••' : ''
+    return key.substring(0, 8) + '••••••••' + key.substring(key.length - 4)
+}
+
+// GET: Fetch paygate settings for a workspace (includes masked keys for display)
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url)
@@ -49,6 +55,41 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: error.message }, { status: 500 })
         }
 
+        // Fetch keys using service role (masked for display)
+        const serviceClient = getServiceClient()
+        const providerKeys: Record<string, { testMerchantId?: string; testSecretKey?: string; liveMerchantId?: string; liveSecretKey?: string }> = {}
+        
+        if (serviceClient && settings?.connected_providers) {
+            for (const provider of settings.connected_providers) {
+                const { data: testKeys } = await serviceClient
+                    .from('workspace_paygate_keys')
+                    .select('key_name, key_value')
+                    .eq('workspace_id', workspaceId)
+                    .eq('provider', provider)
+                    .eq('mode', 'test')
+                
+                const { data: liveKeys } = await serviceClient
+                    .from('workspace_paygate_keys')
+                    .select('key_name, key_value')
+                    .eq('workspace_id', workspaceId)
+                    .eq('provider', provider)
+                    .eq('mode', 'live')
+                
+                const keys: any = {}
+                for (const k of testKeys || []) {
+                    if (k.key_name === 'merchant_id') keys.testMerchantId = maskKey(k.key_value)
+                    if (k.key_name === 'secret_key') keys.testSecretKey = maskKey(k.key_value)
+                }
+                for (const k of liveKeys || []) {
+                    if (k.key_name === 'merchant_id') keys.liveMerchantId = maskKey(k.key_value)
+                    if (k.key_name === 'secret_key') keys.liveSecretKey = maskKey(k.key_value)
+                }
+                if (Object.keys(keys).length > 0) {
+                    providerKeys[provider] = keys
+                }
+            }
+        }
+
         return NextResponse.json({
             success: true,
             settings: settings || {
@@ -56,7 +97,8 @@ export async function GET(req: Request) {
                 active_provider: 'payfast',
                 test_mode: true,
                 connected_providers: []
-            }
+            },
+            providerKeys
         })
     } catch (error: any) {
         console.error('[Paygate Config GET] Error:', error)

@@ -36,6 +36,8 @@ type InvoiceRow = {
   recurring_end_date: string | null
   recurring_end_type?: string | null
   recurring_end_count?: number | null
+  payment_provider?: string | null
+  logo_url?: string | null
   customers?: CustomerRow | null
   invoice_items?: InvoiceItemRow[]
 }
@@ -215,8 +217,14 @@ Deno.serve(async (req: Request) => {
 
     const endType = (invoice as any).recurring_end_type as string | null | undefined
     const endCount = (invoice as any).recurring_end_count as number | null | undefined
-    if (endType === "after" && typeof endCount === "number" && alreadyGenerated >= endCount) {
-      continue
+    // Treat recurring_end_count as TOTAL occurrences INCLUDING the parent invoice.
+    // i.e. end_count=4 means: 1 parent + 3 children.
+    const endTypeNormalized = endType === "after_minutes" ? "after" : endType
+    if (endTypeNormalized === "after" && typeof endCount === "number") {
+      const maxChildren = Math.max(0, endCount - 1)
+      if (alreadyGenerated >= maxChildren) {
+        continue
+      }
     }
 
     const createdAt = new Date(invoice.created_at)
@@ -263,6 +271,8 @@ Deno.serve(async (req: Request) => {
         tax_amount: invoice.tax_amount,
         total: invoice.total,
         notes: invoice.notes,
+        payment_provider: (invoice as any).payment_provider ?? null,
+        logo_url: (invoice as any).logo_url ?? null,
         is_recurring: false,
         parent_invoice_id: invoice.id,
       })

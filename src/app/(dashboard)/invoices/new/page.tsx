@@ -307,19 +307,23 @@ export default function NewInvoicePage() {
                 tax_amount: taxAmount,
                 total: total,
                 notes: invoiceNote,
+                payment_provider: activePaymentProvider || 'payfast',
+                logo_url: logo || null,
                 is_recurring: isRecurring,
                 ...(isRecurring
                     ? {
                           recurring_interval: recurringIntervalForDb,
+                          recurring_end_type: recurringEndTypeForDb || 'never',
                           ...(normalizedEndType === 'on'
                               ? {
                                     recurring_end_date: recurringEndDateForDb
                                         ? format(recurringEndDateForDb, 'yyyy-MM-dd')
                                         : null,
-                                    recurring_end_type: recurringEndTypeForDb,
                                 }
                               : normalizedEndType === 'after'
-                                ? { recurring_end_type: recurringEndTypeForDb }
+                                ? {
+                                    recurring_end_count: overrides.recurringEndCount ?? recurringEndCount,
+                                  }
                                 : {}),
                       }
                     : {

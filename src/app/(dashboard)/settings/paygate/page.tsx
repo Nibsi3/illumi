@@ -80,6 +80,10 @@ export default function PayGatePage() {
                     setActivePaymentProvider(data.settings.active_provider || null)
                     setConnectedProviders(data.settings.connected_providers || [])
                     setIsTestMode(data.settings.test_mode ?? true)
+                    // Load masked keys for display
+                    if (data.providerKeys) {
+                        setProviderKeys(data.providerKeys)
+                    }
                 }
             } catch (err) {
                 console.error('Failed to load paygate settings:', err)
@@ -88,7 +92,7 @@ export default function PayGatePage() {
             }
         }
         loadSettings()
-    }, [activeWorkspace?.id, setActivePaymentProvider, setConnectedProviders])
+    }, [activeWorkspace?.id, setActivePaymentProvider, setConnectedProviders, setProviderKeys])
     
     // Disconnect all paygates for free users
     useEffect(() => {
