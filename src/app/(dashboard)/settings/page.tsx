@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,6 +41,7 @@ import { toast } from "sonner"
 
 export default function GeneralSettings() {
     const { isPro } = useSubscription()
+    const router = useRouter()
     const {
         logo, setLogo,
         companyName, setCompanyName,
@@ -120,7 +122,14 @@ export default function GeneralSettings() {
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Button variant="outline" className="h-9 border-white/10 bg-white/5 hover:bg-white/10" onClick={handleLogoUpload} disabled={!isPro}>
+                        <Button
+                            variant="outline"
+                            className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
+                            onClick={() => {
+                                if (isPro) return handleLogoUpload()
+                                router.push('/settings/billing')
+                            }}
+                        >
                             {isPro ? "Replace Logo" : "Upgrade to Pro"}
                         </Button>
                         {isPro && (

@@ -6,13 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getURL = () => {
-    // In the browser, always prefer the actual origin when running locally.
-    // This prevents auth redirects to production when NEXT_PUBLIC_URL is set.
+    // In the browser, prefer the actual origin so auth redirects match the
+    // current domain (e.g. www vs apex) and avoid cookie/session mismatches.
     if (typeof window !== 'undefined' && window.location?.origin) {
-        const hostname = (window.location.hostname || '').toLowerCase()
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            return window.location.origin.replace(/\/$/, '')
-        }
+        return window.location.origin.replace(/\/$/, '')
     }
 
     let url = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL
