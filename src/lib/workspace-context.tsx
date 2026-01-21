@@ -43,6 +43,9 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const [userId, setUserId] = useState<string | null>(null)
     const supabase = createClient()
 
+    const SIGNED_IN_AT_KEY = 'illumi_auth_signed_in_at'
+    const MAX_SESSION_AGE_MS = 7 * 24 * 60 * 60 * 1000
+
     const isOwner = Boolean(activeWorkspace && userId && activeWorkspace.owner_id === userId)
 
     const refreshWorkspaces = useCallback(async () => {
@@ -131,6 +134,65 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             console.error('Error loading workspaces:', error)
         } finally {
             setIsLoading(false)
+        }
+    }, [supabase])
+
+    useEffect(() => {
+        // Enforce a 7-day max "stay signed in" window.
+        const enforceMaxSessionAge = async () => {
+            try {
+                const { data: { session } } = await supabase.auth.getSession()
+                if (!session) return
+
+                const existing = localStorage.getItem(SIGNED_IN_AT_KEY)
+                const signedInAt = existing ? Number(existing) : NaN
+
+                // If we have a valid session but no timestamp yet (existing users), set it now.
+                if (!existing || Number.isNaN(signedInAt)) {
+                    localStorage.setItem(SIGNED_IN_AT_KEY, String(Date.now()))
+                    return
+                }
+
+                if (Date.now() - signedInAt > MAX_SESSION_AGE_MS) {
+                    await supabase.auth.signOut()
+                    localStorage.removeItem(SIGNED_IN_AT_KEY)
+                    localStorage.removeItem('activeWorkspaceId')
+                    window.location.assign('/login')
+                }
+            } catch {
+                // ignore
+            }
+        }
+
+        const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_IN') {
+                try {
+                    localStorage.setItem(SIGNED_IN_AT_KEY, String(Date.now()))
+                } catch {
+                    // ignore
+                }
+            }
+            if (event === 'SIGNED_OUT') {
+                try {
+                    localStorage.removeItem(SIGNED_IN_AT_KEY)
+                } catch {
+                    // ignore
+                }
+            }
+        })
+
+        enforceMaxSessionAge()
+
+        // Check occasionally while the app is open too.
+        const interval = window.setInterval(enforceMaxSessionAge, 60 * 1000)
+
+        return () => {
+            try {
+                sub?.subscription?.unsubscribe()
+            } catch {
+                // ignore
+            }
+            window.clearInterval(interval)
         }
     }, [supabase])
 

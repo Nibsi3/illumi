@@ -73,6 +73,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
+        try {
+            localStorage.removeItem('illumi_auth_signed_in_at')
+        } catch {
+            // ignore
+        }
         router.push("/");
     };
 
