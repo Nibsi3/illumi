@@ -57,22 +57,85 @@ export default function InvoicesPage() {
     const { currency, activePaymentProvider, fromEmail, companyName, companyWebsite, sendInvoiceCopyToSelf } = useSettings()
     const { isPro } = useSubscription()
 
-    // Cached invoice fetching with React Query
-    const { data: rawInvoices = [], isLoading, refetch } = useQuery({
-        queryKey: [...queryKeys.invoices(activeWorkspace?.id || ""), currency],
+    const moneyFormatter = useMemo(() => {
+        return new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' })
+    }, [currency])
+
+    const { data: customers = [] } = useQuery({
+        queryKey: queryKeys.customers(activeWorkspace?.id || ""),
         queryFn: async () => {
-            if (!activeWorkspace) return []
+            if (!activeWorkspace?.id) return []
             const { data, error } = await supabase
-                .from('invoices')
-                .select('*, customers(name)')
+                .from('customers')
+                .select('id, name, email')
                 .eq('workspace_id', activeWorkspace.id)
-                .order('created_at', { ascending: false })
+
             if (error) throw error
             return data || []
         },
         enabled: !!activeWorkspace?.id,
-        staleTime: 2 * 60 * 1000, // 2 minutes
+        staleTime: 5 * 60 * 1000,
     })
+
+    const customerMap = useMemo(() => {
+        const map = new Map<string, { name?: string | null, email?: string | null }>()
+        for (const c of customers as any[]) {
+            if (c?.id) map.set(c.id, { name: c.name, email: c.email })
+        }
+        return map
+    }, [customers])
+
+    // Filtering state (customerId-based so we can paginate server-side)
+    const [filterCustomerId, setFilterCustomerId] = useState<string | null>(null)
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
+
+    // Cached invoice fetching with React Query (server-side pagination)
+    const {
+        data: invoicePageData,
+        isLoading,
+        refetch,
+    } = useQuery({
+        queryKey: [
+            ...queryKeys.invoices(activeWorkspace?.id || ""),
+            currency,
+            currentPage,
+            filterCustomerId || "all",
+        ],
+        queryFn: async () => {
+            if (!activeWorkspace?.id) return { rows: [], totalCount: 0 }
+
+            const from = (currentPage - 1) * ITEMS_PER_PAGE
+            const to = from + ITEMS_PER_PAGE - 1
+
+            let dataQuery = supabase
+                .from('invoices')
+                .select('id, invoice_number, status, total, currency, due_date, issue_date, created_at, scheduled_date, is_recurring, parent_invoice_id, recurring_interval, customer_id, workspace_id', { count: 'exact', head: false })
+                .eq('workspace_id', activeWorkspace.id)
+
+            if (filterCustomerId) {
+                dataQuery = dataQuery.eq('customer_id', filterCustomerId)
+            }
+
+            const res = await dataQuery
+                .order('created_at', { ascending: false })
+                .range(from, to)
+
+            if (res.error) throw res.error
+
+            return {
+                rows: res.data || [],
+                totalCount: res.count || 0,
+            }
+        },
+        enabled: !!activeWorkspace?.id,
+        staleTime: 2 * 60 * 1000,
+        placeholderData: (prev) => prev,
+    })
+
+    const rawInvoices = (invoicePageData?.rows || []) as any[]
+    const totalInvoiceCount = invoicePageData?.totalCount || 0
 
     // Transform raw data for display
     const invoices = useMemo(() => {
@@ -90,20 +153,20 @@ export default function InvoicesPage() {
                 ...inv,
                 raw_status: rawStatus,
                 displayId: inv.invoice_number,
-                customer: inv.customers?.name || 'Unknown',
-                amount: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || inv.currency || 'ZAR' }).format(inv.total),
+                customer: customerMap.get(inv.customer_id)?.name || 'Unknown',
+                customer_email: inv.customer_email || customerMap.get(inv.customer_id)?.email,
+                amount: moneyFormatter.format(inv.total),
                 dueDate: inv.due_date,
                 issueDate: inv.issue_date,
                 status: isOverdue ? 'Overdue' : rawStatus ? rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1) : ''
             }
         })
-    }, [rawInvoices, currency])
+    }, [rawInvoices, customerMap, moneyFormatter])
 
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
-    const [filterClient, setFilterClient] = useState<string | null>(null)
-    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('invoices')
+    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
 
     // Mark as Paid dialog state
     const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
@@ -119,20 +182,16 @@ export default function InvoicesPage() {
     const [sortColumn, setSortColumn] = useState<string | null>(null)
     const [sortDirection, setSortDirection] = useState<string | null>(null)
 
-    // Pagination state
-    const [currentPage, setCurrentPage] = useState(1)
-
     // Compute unique clients with invoice counts
     const clientFolders = useMemo(() => {
-        const clientMap = new Map<string, number>()
-        invoices.forEach((inv: any) => {
-            clientMap.set(inv.customer, (clientMap.get(inv.customer) || 0) + 1)
-        })
-        return Array.from(clientMap.entries()).map(([name, count]) => ({
-            name,
-            count
-        }))
-    }, [invoices])
+        return (customers as any[])
+            .map((c) => ({
+                id: c.id,
+                name: c.name || 'Unknown',
+                count: undefined as number | undefined,
+            }))
+            .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+    }, [customers])
 
     const toggleSelect = (id: string) => {
         setSelectedIds(prev =>
@@ -234,7 +293,8 @@ export default function InvoicesPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     type: 'invoice',
-                    to: invoice.customers?.email || invoice.customer_email || 'customer@example.com',
+                    to: invoice.customer_email || 'customer@example.com',
+                    cc: sendInvoiceCopyToSelf ? user.email : undefined,
                     companyName: companyName,
                     supportEmail: fromEmail,
                     companyWebsite: companyWebsite,
@@ -392,7 +452,7 @@ export default function InvoicesPage() {
             statusMatch = inv.status.toLowerCase() === filterStatus.toLowerCase()
         }
 
-        const clientMatch = !filterClient || inv.customer === filterClient
+        const clientMatch = !filterCustomerId || inv.customer_id === filterCustomerId
 
         const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled' || Boolean(inv.scheduled_date)
         const isRecurring = Boolean(inv.is_recurring) || Boolean(inv.parent_invoice_id) || Boolean(inv.recurring_interval)
@@ -466,16 +526,13 @@ export default function InvoicesPage() {
     })
 
     // Pagination logic
-    const totalPages = Math.ceil(sortedInvoices.length / ITEMS_PER_PAGE)
-    const paginatedInvoices = sortedInvoices.slice(
-        (currentPage - 1) * ITEMS_PER_PAGE,
-        currentPage * ITEMS_PER_PAGE
-    )
+    const totalPages = Math.max(1, Math.ceil(totalInvoiceCount / ITEMS_PER_PAGE))
+    const paginatedInvoices = sortedInvoices
 
     // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1)
-    }, [filterStatus, filterClient, filterInvoiceType, sortColumn, sortDirection])
+    }, [filterStatus, filterCustomerId, filterInvoiceType, sortColumn, sortDirection])
 
     // Group invoices by company for the folder view
     const invoicesByCompany = filteredInvoices.reduce((acc: any, inv: any) => {
@@ -497,34 +554,36 @@ export default function InvoicesPage() {
                     <div className="space-y-1">
                         {/* All Invoices */}
                         <button
-                            onClick={() => setFilterClient(null)}
+                            onClick={() => setFilterCustomerId(null)}
                             className={cn(
                                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all",
-                                !filterClient
+                                !filterCustomerId
                                     ? "bg-white/10 text-white"
                                     : "text-neutral-400 hover:bg-white/5 hover:text-white"
                             )}
                         >
                             <FolderOpen className="h-4 w-4 shrink-0" />
                             <span className="flex-1 text-sm font-medium truncate">All Invoices</span>
-                            <span className="text-xs text-neutral-500">{invoices.length}</span>
+                            <span className="text-xs text-neutral-500">{totalInvoiceCount}</span>
                         </button>
 
                         {/* Client Folders */}
                         {clientFolders.map((folder) => (
                             <button
-                                key={folder.name}
-                                onClick={() => setFilterClient(filterClient === folder.name ? null : folder.name)}
+                                key={folder.id}
+                                onClick={() => setFilterCustomerId(filterCustomerId === folder.id ? null : folder.id)}
                                 className={cn(
                                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all",
-                                    filterClient === folder.name
+                                    filterCustomerId === folder.id
                                         ? "bg-white/10 text-white"
                                         : "text-neutral-400 hover:bg-white/5 hover:text-white"
                                 )}
                             >
                                 <Folder className="h-4 w-4 shrink-0" />
                                 <span className="flex-1 text-sm font-medium truncate">{folder.name}</span>
-                                <span className="text-xs text-neutral-500">{folder.count}</span>
+                                {typeof folder.count === 'number' && (
+                                    <span className="text-xs text-neutral-500">{folder.count}</span>
+                                )}
                             </button>
                         ))}
                     </div>
@@ -873,7 +932,7 @@ export default function InvoicesPage() {
                         {totalPages > 1 && (
                             <div className="flex items-center justify-between px-5 py-4 border-t border-white/10">
                                 <div className="text-xs text-neutral-500">
-                                    Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, sortedInvoices.length)} of {sortedInvoices.length} invoices
+                                    Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, totalInvoiceCount)} of {totalInvoiceCount} invoices
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Button

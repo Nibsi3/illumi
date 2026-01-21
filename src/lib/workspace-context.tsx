@@ -48,7 +48,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
     const isOwner = Boolean(activeWorkspace && userId && activeWorkspace.owner_id === userId)
 
-    const refreshWorkspaces = useCallback(async () => {
+    const refreshWorkspaces = useCallback(async (forceRefresh = false) => {
         try {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) {
@@ -61,19 +61,45 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             setUserId(user.id)
             setUserEmail((user.email || '').toLowerCase().trim() || null)
 
+            // Use cached workspaces if available and not forcing refresh
+            const CACHE_KEY = 'illumi_workspaces_cache'
+            const CACHE_TTL = 2 * 60 * 1000 // 2 minutes
+            let deduped: Workspace[] = []
+
+            if (!forceRefresh) {
+                try {
+                    const cached = localStorage.getItem(CACHE_KEY)
+                    if (cached) {
+                        const { workspaces: cachedWs, timestamp } = JSON.parse(cached)
+                        if (Date.now() - timestamp < CACHE_TTL && Array.isArray(cachedWs) && cachedWs.length > 0) {
+                            deduped = cachedWs
+                        }
+                    }
+                } catch {
+                    // ignore cache errors
+                }
+            }
+
             // Fetch workspaces via server API to avoid RLS issues on workspace_members
             // that can cause invited workspaces not to appear immediately after accepting an invite.
-            let deduped: Workspace[] = []
-            try {
-                const res = await fetch('/api/workspaces', { credentials: 'include' })
-                const json = await res.json().catch(() => null)
-                if (res.ok && json?.success && Array.isArray(json?.workspaces)) {
-                    deduped = json.workspaces as Workspace[]
-                } else {
+            if (deduped.length === 0) {
+                try {
+                    const res = await fetch('/api/workspaces', { credentials: 'include' })
+                    const json = await res.json().catch(() => null)
+                    if (res.ok && json?.success && Array.isArray(json?.workspaces)) {
+                        deduped = json.workspaces as Workspace[]
+                        // Cache the result
+                        try {
+                            localStorage.setItem(CACHE_KEY, JSON.stringify({ workspaces: deduped, timestamp: Date.now() }))
+                        } catch {
+                            // ignore
+                        }
+                    } else {
+                        deduped = []
+                    }
+                } catch {
                     deduped = []
                 }
-            } catch {
-                deduped = []
             }
 
             // Fallback to previous client-side behavior if API returns nothing

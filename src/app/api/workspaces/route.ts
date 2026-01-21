@@ -37,26 +37,29 @@ export async function GET() {
 
         const service = getServiceClient()
 
-        const { data: ownedWorkspaces, error: ownedError } = await service
-            .from("workspaces")
-            .select("*")
-            .eq("owner_id", user.id)
-            .order("created_at", { ascending: true })
+        // Run owned workspaces and member rows queries in parallel
+        const [ownedRes, memberRes] = await Promise.all([
+            service
+                .from("workspaces")
+                .select("*")
+                .eq("owner_id", user.id)
+                .order("created_at", { ascending: true }),
+            service
+                .from("workspace_members")
+                .select("workspace_id, status")
+                .eq("email", userEmail),
+        ])
 
-        if (ownedError) {
-            return NextResponse.json({ success: false, error: ownedError.message }, { status: 500 })
+        if (ownedRes.error) {
+            return NextResponse.json({ success: false, error: ownedRes.error.message }, { status: 500 })
+        }
+        if (memberRes.error) {
+            return NextResponse.json({ success: false, error: memberRes.error.message }, { status: 500 })
         }
 
-        const { data: memberRows, error: memberError } = await service
-            .from("workspace_members")
-            .select("workspace_id, status")
-            .eq("email", userEmail)
+        const ownedWorkspaces = ownedRes.data || []
 
-        if (memberError) {
-            return NextResponse.json({ success: false, error: memberError.message }, { status: 500 })
-        }
-
-        const memberWorkspaceIds = (memberRows || [])
+        const memberWorkspaceIds = (memberRes.data || [])
             .filter((r: any) => Boolean(r.workspace_id) && (r.status || "").toString().toLowerCase() === "active")
             .map((r: any) => r.workspace_id)
 
