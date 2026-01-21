@@ -51,22 +51,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-
-  async redirects() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.illumi.co.za',
-          },
-        ],
-        destination: 'https://illumi.co.za/:path*',
-        permanent: true,
-      },
-    ]
-  },
 };
 
 export default nextConfig;
