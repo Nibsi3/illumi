@@ -40,6 +40,8 @@ import { queryKeys } from "@/lib/hooks/use-cached-data"
 
 // Kept for type reference only, not using mock data
 
+const ITEMS_PER_PAGE = 20
+
 const columnsList = [
     { label: "Invoice no.", id: "id", sortable: true },
     { label: "Status", id: "status", sortable: true, sortOptions: ["Paid", "Overdue"] },
@@ -113,6 +115,9 @@ export default function InvoicesPage() {
     // Sorting state
     const [sortColumn, setSortColumn] = useState<string | null>(null)
     const [sortDirection, setSortDirection] = useState<string | null>(null)
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1)
 
     // Compute unique clients with invoice counts
     const clientFolders = useMemo(() => {
@@ -212,12 +217,6 @@ export default function InvoicesPage() {
         const url = `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
         navigator.clipboard.writeText(url)
         toast.success("Link copied to clipboard")
-    }
-
-    const handleWhatsAppShare = (invoiceNumber: string, total: any) => {
-        const url = `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
-        const text = `Invoice #${invoiceNumber} from Emini Invoicing. Total: ${total}. View and pay here: ${url}`
-        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
     }
 
     const handleEmailShare = async (invoice: any) => {
@@ -462,6 +461,18 @@ export default function InvoicesPage() {
                 return 0
         }
     })
+
+    // Pagination logic
+    const totalPages = Math.ceil(sortedInvoices.length / ITEMS_PER_PAGE)
+    const paginatedInvoices = sortedInvoices.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    )
+
+    // Reset page when filters change
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [filterStatus, filterClient, filterInvoiceType, sortColumn, sortDirection])
 
     // Group invoices by company for the folder view
     const invoicesByCompany = filteredInvoices.reduce((acc: any, inv: any) => {
@@ -735,7 +746,7 @@ export default function InvoicesPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {sortedInvoices.map((invoice: any) => (
+                                    {paginatedInvoices.map((invoice: any) => (
                                         <tr key={invoice.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                             <td className="px-5 py-4 border-r border-white/10">
                                                 <div
@@ -818,12 +829,6 @@ export default function InvoicesPage() {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuSeparator className="bg-white/10 mx-1" />
                                                         <DropdownMenuItem
-                                                            className="focus:bg-green-500/10 focus:text-green-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
-                                                            onClick={() => handleWhatsAppShare(invoice.displayId, invoice.amount)}
-                                                        >
-                                                            Share via WhatsApp
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
                                                             className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => handleEmailShare(invoice)}
                                                         >
@@ -850,6 +855,62 @@ export default function InvoicesPage() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between px-5 py-4 border-t border-white/10">
+                                <div className="text-xs text-neutral-500">
+                                    Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, sortedInvoices.length)} of {sortedInvoices.length} invoices
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-8 px-3 text-xs text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        Previous
+                                    </Button>
+                                    <div className="flex items-center gap-1">
+                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            let pageNum: number
+                                            if (totalPages <= 5) {
+                                                pageNum = i + 1
+                                            } else if (currentPage <= 3) {
+                                                pageNum = i + 1
+                                            } else if (currentPage >= totalPages - 2) {
+                                                pageNum = totalPages - 4 + i
+                                            } else {
+                                                pageNum = currentPage - 2 + i
+                                            }
+                                            return (
+                                                <button
+                                                    key={pageNum}
+                                                    onClick={() => setCurrentPage(pageNum)}
+                                                    className={cn(
+                                                        "w-8 h-8 text-xs rounded-lg transition-colors",
+                                                        currentPage === pageNum
+                                                            ? "bg-white text-black font-bold"
+                                                            : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                                    )}
+                                                >
+                                                    {pageNum}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 px-3 text-xs text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                        Next
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
                 {/* Selection Toolbar */}

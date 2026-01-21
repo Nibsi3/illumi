@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { IconBrandGoogle, IconBrandOffice, IconBrandSlack, IconBrandWhatsapp, IconBrandStripe, IconLayoutGrid } from "@tabler/icons-react"
+import { IconBrandGoogle, IconBrandOffice, IconBrandSlack, IconBrandStripe, IconLayoutGrid } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 
 const apps = [
@@ -28,14 +28,6 @@ const apps = [
         icon: <IconBrandSlack className="w-6 h-6 text-purple-500" />,
         installed: false,
         bg: "bg-purple-500/10",
-        action: "Install",
-    },
-    {
-        name: "WhatsApp",
-        description: "Forward receipts and invoices directly from WhatsApp. Midday automatically extracts data and matches them to transactions.",
-        icon: <IconBrandWhatsapp className="w-6 h-6 text-green-500" />,
-        installed: false,
-        bg: "bg-green-500/10",
         action: "Install",
     },
     {

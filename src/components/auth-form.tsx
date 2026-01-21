@@ -14,15 +14,40 @@ import { getURL } from "@/lib/utils"
 
 export function AuthForm() {
     const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [mode, setMode] = useState<"sign_in" | "sign_up" | "verify">("sign_in")
+    const [verificationCode, setVerificationCode] = useState("")
     const [loading, setLoading] = useState(false)
     const supabase = createClient()
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!email || !password) return
         setLoading(true)
 
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: normalizedEmail,
+            password,
+        })
+
+        if (error) {
+            toast.error(error.message)
+        }
+        setLoading(false)
+    }
+
+    const handleSignUp = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email || !password) return
+        setLoading(true)
+
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.signUp({
+            email: normalizedEmail,
+            password,
             options: {
                 emailRedirectTo: `${getURL()}/auth/callback`,
             },
@@ -30,9 +55,35 @@ export function AuthForm() {
 
         if (error) {
             toast.error(error.message)
-        } else {
-            toast.success("Check your email for the magic link!")
+            setLoading(false)
+            return
         }
+
+        toast.success("Check your email for your verification code")
+        setMode("verify")
+        setLoading(false)
+    }
+
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email || !verificationCode) return
+        setLoading(true)
+
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.verifyOtp({
+            email: normalizedEmail,
+            token: verificationCode.trim(),
+            type: 'signup',
+        })
+
+        if (error) {
+            toast.error(error.message)
+            setLoading(false)
+            return
+        }
+
+        toast.success("Email verified")
         setLoading(false)
     }
 
@@ -40,29 +91,96 @@ export function AuthForm() {
         <Card className="w-full max-w-md border-none shadow-none bg-transparent">
             <CardHeader className="space-y-1 text-center">
                 <CardTitle className="text-3xl font-serif">Welcome to Illumi</CardTitle>
-                <CardDescription>
-                    Enter your email to receive a magic link to sign in.
-                </CardDescription>
+                <CardDescription>Sign in or create an account.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-                <form onSubmit={handleLogin} className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email" className="sr-only">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                            required
-                            className="bg-background border-border h-12"
-                        />
-                    </div>
-                    <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
-                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Continue with Email
+                <div className="grid grid-cols-2 gap-2">
+                    <Button
+                        type="button"
+                        variant={mode === "sign_in" ? "default" : "outline"}
+                        className="h-10"
+                        disabled={loading}
+                        onClick={() => setMode("sign_in")}
+                    >
+                        Sign in
                     </Button>
-                </form>
+                    <Button
+                        type="button"
+                        variant={mode === "sign_up" ? "default" : "outline"}
+                        className="h-10"
+                        disabled={loading}
+                        onClick={() => setMode("sign_up")}
+                    >
+                        Sign up
+                    </Button>
+                </div>
+
+                {mode === "verify" ? (
+                    <form onSubmit={handleVerify} className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="code" className="sr-only">Verification code</Label>
+                            <Input
+                                id="code"
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="Verification code"
+                                value={verificationCode}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVerificationCode(e.target.value)}
+                                required
+                                className="bg-background border-border h-12"
+                            />
+                        </div>
+                        <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Verify email
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            className="h-10 w-full text-sm"
+                            disabled={loading}
+                            onClick={async () => {
+                                const normalizedEmail = email.toLowerCase().trim()
+                                const { error } = await supabase.auth.resend({ type: 'signup', email: normalizedEmail })
+                                if (error) toast.error(error.message)
+                                else toast.success("Verification code resent")
+                            }}
+                        >
+                            Resend code
+                        </Button>
+                    </form>
+                ) : (
+                    <form onSubmit={mode === "sign_up" ? handleSignUp : handleSignIn} className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="email" className="sr-only">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                                required
+                                className="bg-background border-border h-12"
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="password" className="sr-only">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                                required
+                                className="bg-background border-border h-12"
+                            />
+                        </div>
+                        <Button type="submit" className="h-12 w-full text-base" disabled={loading}>
+                            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {mode === "sign_up" ? "Create account" : "Sign in"}
+                        </Button>
+                    </form>
+                )}
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t" />

@@ -37,7 +37,7 @@ const features = [
     {
         icon: IconMail,
         title: "Quick Contact",
-        description: "Email or WhatsApp clients directly from their profile. All contact details at your fingertips.",
+        description: "Email clients directly from their profile. All contact details at your fingertips.",
     },
 ]
 
@@ -60,7 +60,7 @@ export default function ClientsFeaturePage() {
         <div className="bg-black">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 text-center">
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6">
                         <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Simple CRM for Freelancers</span>
@@ -105,7 +105,7 @@ export default function ClientsFeaturePage() {
                             </div>
                             <div className="divide-y divide-white/5">
                                 {clients.map((client, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 hover:bg-white/[0.02]">
+                                    <div key={i} className="flex items-center justify-between p-4 hover:bg-white/2">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                                                 <span className="text-sm font-medium text-white">{client.name.charAt(0)}</span>
@@ -141,14 +141,14 @@ export default function ClientsFeaturePage() {
                                 </div>
                                 <div className="space-y-3">
                                     {clientHistory.map((invoice, i) => (
-                                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02]">
+                                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-white/2">
                                             <div>
                                                 <div className="text-sm text-white">{invoice.id}</div>
                                                 <div className="text-xs text-white/50">{invoice.date}</div>
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-sm text-white">{invoice.amount}</div>
-                                                <div className="text-xs text-green-400">{invoice.status}</div>
+                                                <div className="text-xs text-white/70">{invoice.status}</div>
                                             </div>
                                         </div>
                                     ))}
@@ -171,7 +171,7 @@ export default function ClientsFeaturePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {features.map((feature, i) => (
-                            <div key={i} className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+                            <div key={i} className="p-8 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                                 <feature.icon className="h-10 w-10 text-white/70 mb-6" />
                                 <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                                 <p className="text-white/50">{feature.description}</p>
@@ -198,7 +198,7 @@ export default function ClientsFeaturePage() {
                                     "See total outstanding per client",
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-white/70">
-                                        <IconCheck className="h-5 w-5 text-green-400 flex-shrink-0" />
+                                        <IconCheck className="h-5 w-5 text-white/50 shrink-0" />
                                         {item}
                                     </li>
                                 ))}
@@ -211,7 +211,7 @@ export default function ClientsFeaturePage() {
                                     { name: "TechStart SA", count: 8, amount: "R 28,500" },
                                     { name: "Design Studio", count: 5, amount: "R 15,200" },
                                 ].map((folder, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
+                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
                                         <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                                             <IconFolder className="h-5 w-5 text-white/50" />
                                         </div>
@@ -225,22 +225,6 @@ export default function ClientsFeaturePage() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* CTA */}
-            <section className="py-24 border-t border-white/5">
-                <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold text-white mb-4">Start managing clients today</h2>
-                    <p className="text-white/50 mb-8 max-w-xl mx-auto">
-                        Free client database included with every Illumi account. Track history, organize invoices, grow your business.
-                    </p>
-                    <Button
-                        asChild
-                        className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12"
-                    >
-                        <Link href="/login">Get Started Free</Link>
-                    </Button>
                 </div>
             </section>
         </div>

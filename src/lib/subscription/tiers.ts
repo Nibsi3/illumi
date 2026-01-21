@@ -5,7 +5,7 @@
  * - Unlimited invoices
  * - Client database
  * - Product catalog
- * - WhatsApp & Email sharing
+ * - Email sending
  * - PDF Exports
  * - Basic reporting
  * 

@@ -28,7 +28,6 @@ const invoiceNotifications: NotificationSetting[] = [
 ]
 
 const paymentNotifications: NotificationSetting[] = [
-    { id: "whatsapp-payment", label: "WhatsApp Payments", description: "Get notified when payments are received via WhatsApp", inApp: true, email: true },
     { id: "email-payment", label: "Email Payments", description: "Get notified when payment confirmations arrive via email", inApp: true, email: true },
     { id: "bank-payment", label: "Bank Payments", description: "Get notified when payments are detected from connected banks", inApp: true, email: false },
 ]

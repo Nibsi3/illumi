@@ -463,7 +463,7 @@ function BillingContent() {
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
                                 <IconCheck className="w-4 h-4 text-white" />
-                                WhatsApp & Email sharing
+                                Email sending & shareable links
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
                                 <IconCheck className="w-4 h-4 text-white" />

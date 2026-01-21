@@ -81,8 +81,8 @@ const invoiceRoboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Illumi | Invoicing & Finance for South Africa",
-  description: "Illumi helps you manage your invoicing and finances with ease.",
+  title: "Illumi | Invoicing for South African SMMEs",
+  description: "Create professional tax invoices, calculate 15% VAT, and get paid online in ZAR. Built for South African SMMEs, freelancers, and contractors.",
   icons: {
     icon: [
       {

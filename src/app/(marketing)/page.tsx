@@ -11,7 +11,6 @@ import {
     IconMail,
     IconWallet,
     IconFileExport,
-    IconBrandWhatsapp,
     IconLink,
     IconRefresh,
     IconCalendar,
@@ -32,10 +31,10 @@ const stats = [
 
 const featureCards = [
     {
-        icon: IconBrandWhatsapp,
-        title: "WhatsApp Invoicing",
-        description: "Send invoices directly via WhatsApp in one click. Perfect for South African businesses.",
-        keyword: "WhatsApp invoice sharing",
+        icon: IconMail,
+        title: "Email Invoicing",
+        description: "Send invoices by email in one click. Clients receive a secure link to view and pay.",
+        keyword: "Tax invoices in ZAR",
     },
     {
         icon: IconFolder,
@@ -51,15 +50,15 @@ const featureCards = [
     },
     {
         icon: IconShieldCheck,
-        title: "PayFast Integration",
-        description: "Accept payments via PayFast. Invoices auto-update when paid.",
-        keyword: "PayFast invoice payments",
+        title: "PayGate Integration",
+        description: "Accept online payments using your chosen provider. Invoices auto-update when paid.",
+        keyword: "Invoice payment gateway",
     },
     {
         icon: IconReceipt,
-        title: "SARS-Ready Reports",
+        title: "Tax & VAT Reports",
         description: "Export invoices and expenses for tax season. VAT-ready reporting.",
-        keyword: "SARS invoice reporting",
+        keyword: "VAT invoice generator South Africa",
     },
     {
         icon: IconRefresh,
@@ -71,20 +70,20 @@ const featureCards = [
 
 const faqs = [
     {
-        question: "Can I send invoices via WhatsApp?",
-        answer: "Yes! Illumi lets you share invoices directly via WhatsApp with one click. Your clients receive a professional PDF invoice instantly - perfect for the South African market where WhatsApp is the primary business communication tool.",
+        question: "How do clients receive invoices?",
+        answer: "Illumi sends invoices by email. Your client receives a secure link to view the invoice and pay online (when PayGate is enabled).",
     },
     {
         question: "Does Illumi support South African VAT?",
-        answer: "Yes, Illumi is built for South African businesses. All invoices display amounts in ZAR (Rands), support VAT calculations, and exports are SARS-ready for tax submissions.",
+        answer: "Yes, Illumi is built for South African businesses. All invoices display amounts in ZAR (Rands), support VAT calculations, and you can export reports for bookkeeping and tax season.",
     },
     {
-        question: "How does PayFast integration work?",
-        answer: "Pro users can connect their PayFast merchant account to enable a 'Pay Now' button on every invoice. When clients pay, your invoice status automatically updates to 'Paid' - no manual tracking needed.",
+        question: "How does PayGate work?",
+        answer: "Pro users connect their preferred payment provider in Settings > PayGate. Once connected, a 'Pay Now' button appears on invoices, clients can pay online, and invoice status updates automatically when paid.",
     },
     {
         question: "Is Illumi really free to use?",
-        answer: "Yes! Our Free plan includes unlimited invoices, client database, product catalog, WhatsApp/Email sharing, and PDF exports - free forever. Pro features like PayFast integration and custom branding are R350/month.",
+        answer: "Yes! Our Free plan includes unlimited invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments and custom branding are R350/month.",
     },
     {
         question: "Can I track my business expenses?",
@@ -95,7 +94,7 @@ const faqs = [
 const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
+    "mainEntity": faqs.map((faq) => ({
         "@type": "Question",
         "name": faq.question,
         "acceptedAnswer": {
@@ -105,11 +104,23 @@ const faqSchema = {
     })),
 }
 
+const softwareApplicationSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Invoicing App South Africa",
+    "operatingSystem": "Web-based",
+    "applicationCategory": "BusinessApplication",
+    "offers": {
+        "@type": "Offer",
+        "priceCurrency": "ZAR",
+    },
+}
+
 const invoicingFeatures = [
     "Build your client database",
     "Create product catalog",
     "Professional invoice templates",
-    "Send via WhatsApp, Email or Link",
+    "Send via Email or Link",
     "Schedule invoices for later",
     "Recurring invoices (Pro)",
     "Client Payment Portal (Pro)",
@@ -140,6 +151,11 @@ export default function LandingPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
+            <Script
+                id="software-application-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+            />
             <div className="bg-black font-sans text-white">
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden">
@@ -157,7 +173,7 @@ export default function LandingPage() {
                             </h1>
 
                             <p className="text-lg text-[#878787] mb-8 max-w-lg">
-                                Manage clients, track net profit, and get paid faster with WhatsApp invoice sharing and PayFast integration. Built for South African small businesses.
+                                Manage clients, track net profit, and get paid faster with email invoicing and PayGate integration. Built for South African small businesses.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -214,7 +230,7 @@ export default function LandingPage() {
                                         <div className="text-4xl font-serif text-white mb-8">R 5,278.50</div>
                                         <div className="h-32 flex items-end gap-1.5 mb-8">
                                             {[20, 35, 25, 50, 30, 45, 40, 60, 50, 65, 40, 75, 55, 70, 60, 80].map((h, i) => (
-                                                <div key={i} className="flex-1 bg-white/[0.08] rounded-t hover:bg-white/20 transition-colors" style={{ height: `${h}%` }} />
+                                                <div key={i} className="flex-1 bg-white/8 rounded-t hover:bg-white/20 transition-colors" style={{ height: `${h}%` }} />
                                             ))}
                                         </div>
                                         <div className="space-y-3">
@@ -222,7 +238,7 @@ export default function LandingPage() {
                                                 { client: "Acme Corp", amount: "R 2,500.00", status: "Paid" },
                                                 { client: "TechStart", amount: "R 1,800.00", status: "Pending" },
                                             ].map((invoice, i) => (
-                                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/3 border border-white/5">
                                                     <span className="text-sm text-white/60">{invoice.client}</span>
                                                     <div className="flex items-center gap-4">
                                                         <span className="text-sm text-white">{invoice.amount}</span>
@@ -260,7 +276,7 @@ export default function LandingPage() {
                                         { name: "Global Tech", contact: "Jane Smith", email: "jane@global.com" },
                                         { name: "Local Shop", contact: "Mike Jones", email: "mike@local.com" },
                                     ].map((client, i) => (
-                                        <div key={i} className="p-4 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+                                        <div key={i} className="p-4 rounded-xl bg-white/3 border border-white/5 flex items-center justify-between">
                                             <div>
                                                 <div className="text-sm font-medium text-white">{client.name}</div>
                                                 <div className="text-[10px] text-neutral-500">{client.email}</div>
@@ -331,7 +347,7 @@ export default function LandingPage() {
 
                         {/* Pro */}
                         <div className="bg-[#0a0a0a] border border-white/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-white/5 to-transparent" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-white/5 to-transparent" />
                             <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium mb-6">Pro</div>
                             <h3 className="text-2xl font-medium text-white mb-6">Automate your payments</h3>
                             <p className="text-[#878787] text-sm mb-8 leading-relaxed">
@@ -363,7 +379,7 @@ export default function LandingPage() {
                         <div className="lg:col-span-1 space-y-4">
                             <div className="grid grid-cols-1 gap-4">
                                 {["Company", "Contracts", "Office"].map((folder, i) => (
-                                    <div key={i} className="p-4 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-4">
+                                    <div key={i} className="p-4 rounded-xl bg-white/3 border border-white/5 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
                                             <IconFolder className="h-5 w-5 text-white/30" />
                                         </div>
@@ -376,7 +392,7 @@ export default function LandingPage() {
                             </div>
                             <div className="space-y-2 pt-4">
                                 {["Exports", "Brand.jpeg", "Client.txt"].map((file, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.03] border border-transparent hover:border-white/5 transition-colors">
+                                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/3 border border-transparent hover:border-white/5 transition-colors">
                                         <IconFolder className="h-4 w-4 text-white/20" />
                                         <div className="flex-1">
                                             <div className="text-sm text-white/70">{file}</div>
@@ -390,12 +406,12 @@ export default function LandingPage() {
                         {/* Vault Main Info */}
                         <div className="lg:col-span-2 p-8 lg:p-12 flex flex-col justify-center">
                             <h2 className="text-3xl font-medium text-white mb-6">Vault</h2>
-                            <p className="text-[#878787] text-sm mb-6 max-w-md">Store your files securely in Illumi.</p>
+                            <p className="text-[#878787] text-sm mb-6 max-w-md">Store and organise invoices per client in Illumi.</p>
                             <p className="text-[#878787] text-sm mb-8 leading-relaxed max-w-md">
-                                There's no need to scramble for things across different drives. Keep all of your files, such as contracts and agreements safe in one place.
+                                Keep every invoice and supporting file grouped by customer so it’s easy to track each client and pull up their history.
                             </p>
                             <ul className="space-y-4 mb-10">
-                                {["Automatic classification of documents for easy search & find", "Smart search"].map((item, i) => (
+                                {["Invoices stored per client", "Search and filter by client and date"].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-sm text-white/80">
                                         <IconCheck className="h-4 w-4 text-white/40" />
                                         {item}
@@ -416,7 +432,7 @@ export default function LandingPage() {
                                     Take the hassle out of tax season. Just select your invoicing period and hit export to generate professional reports for your accountant.
                                 </p>
                             </div>
-                            <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                            <div className="p-4 rounded-xl bg-white/3 border border-white/5">
                                 <div className="flex items-center gap-3 text-sm text-white/70">
                                     <div className="w-4 h-4 rounded-full border border-white/20 border-t-white/80 animate-spin" />
                                     Exporting transactions
@@ -457,7 +473,7 @@ export default function LandingPage() {
                     <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-white/50">
                         <div className="flex items-center gap-2">
                             <IconShieldCheck className="h-5 w-5" />
-                            <span>Secure payments via PayFast</span>
+                            <span>Secure payments via PayGate</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <IconReceipt className="h-5 w-5" />
@@ -468,8 +484,8 @@ export default function LandingPage() {
                             <span>ZAR currency support</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <IconBrandWhatsapp className="h-5 w-5" />
-                            <span>WhatsApp invoice sharing</span>
+                            <IconMail className="h-5 w-5" />
+                            <span>Email invoice delivery</span>
                         </div>
                     </div>
                 </div>
@@ -491,32 +507,6 @@ export default function LandingPage() {
                             </div>
                         ))}
                     </div>
-                </div>
-            </section>
-
-            {/* Final CTA */}
-            <section className="py-24 border-t border-white/5">
-                <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-                    <h2 className="text-4xl font-medium text-white mb-6">Start invoicing today</h2>
-                    <p className="text-[#878787] text-lg mb-8 max-w-xl mx-auto">
-                        Join thousands of South African businesses using Illumi to manage invoices, track expenses, and get paid faster.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button
-                            asChild
-                            className="bg-white text-black hover:bg-neutral-200 rounded-lg px-8 h-12 font-sans"
-                        >
-                            <Link href="/login">Get Started for Free</Link>
-                        </Button>
-                        <Button
-                            asChild
-                            variant="outline"
-                            className="rounded-lg px-8 h-12 border-white/20 text-white hover:bg-white/5 font-sans"
-                        >
-                            <Link href="/pricing">View Pricing</Link>
-                        </Button>
-                    </div>
-                    <p className="text-sm text-[#878787] mt-4">Free forever • No credit card required • Cancel anytime</p>
                 </div>
             </section>
         </div>

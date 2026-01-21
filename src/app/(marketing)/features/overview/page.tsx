@@ -1,13 +1,20 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconArrowRight, IconTrendingUp, IconWallet, IconChartBar } from "@tabler/icons-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Financial Overview Dashboard | Illumi",
+    description: "See income, expenses, and net position in one place. A simple financial overview dashboard built for South African small businesses.",
+    keywords: ["financial overview", "business dashboard", "income and expenses", "net profit", "South Africa invoicing"],
+}
 
 export default function OverviewFeaturePage() {
     return (
         <div className="bg-black">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 text-center">
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4">
                         <span className="font-serif italic text-white/70">Financial</span>
@@ -34,7 +41,7 @@ export default function OverviewFeaturePage() {
             <section className="py-16">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="relative border border-white/10 rounded-3xl bg-black/50 overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent z-10" />
 
                         <div className="p-8">
                             {/* Top bar mock */}
@@ -75,12 +82,12 @@ export default function OverviewFeaturePage() {
                                 <div>
                                     <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Income</div>
                                     <div className="text-2xl font-serif font-bold text-white">R 245,000</div>
-                                    <div className="text-sm text-green-400">+18.2%</div>
+                                    <div className="text-sm text-white/70">+18.2%</div>
                                 </div>
                                 <div>
                                     <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Expenses</div>
                                     <div className="text-2xl font-serif font-bold text-white">R 128,400</div>
-                                    <div className="text-sm text-red-400">+5.1%</div>
+                                    <div className="text-sm text-white/70">+5.1%</div>
                                 </div>
                                 <div>
                                     <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Spending</div>
@@ -97,21 +104,21 @@ export default function OverviewFeaturePage() {
             <section className="py-24 border-t border-white/5">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
                             <IconTrendingUp className="h-10 w-10 text-white/70 mb-6" />
                             <h3 className="text-xl font-bold text-white mb-3">Track income</h3>
                             <p className="text-white/50">
                                 Monitor all revenue streams in real-time. See where your money is coming from.
                             </p>
                         </div>
-                        <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
                             <IconWallet className="h-10 w-10 text-white/70 mb-6" />
                             <h3 className="text-xl font-bold text-white mb-3">Manage expenses</h3>
                             <p className="text-white/50">
                                 Keep track of every expense. Categorize and analyze your spending patterns.
                             </p>
                         </div>
-                        <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
                             <IconChartBar className="h-10 w-10 text-white/70 mb-6" />
                             <h3 className="text-xl font-bold text-white mb-3">Spending analysis</h3>
                             <p className="text-white/50">
@@ -148,7 +155,7 @@ export default function OverviewFeaturePage() {
                             ].map((month, i) => (
                                 <div key={i} className="flex flex-col items-center gap-2">
                                     <div
-                                        className="w-8 md:w-12 bg-gradient-to-t from-white/20 to-white/40 rounded-t"
+                                        className="w-8 md:w-12 bg-linear-to-t from-white/20 to-white/40 rounded-t"
                                         style={{ height: `${month.value * 2}px` }}
                                     />
                                     <span className="text-xs text-white/50">{month.label}</span>

@@ -16,6 +16,7 @@ const featureDropdownItems = [
 
 const navigation = [
     { name: "Pricing", href: "/pricing" },
+    { name: "Integrations", href: "/integrations" },
     { name: "Story", href: "/story" },
     { name: "Contact", href: "/contact" },
 ]

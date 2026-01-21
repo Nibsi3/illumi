@@ -7,11 +7,21 @@ import {
     Zap,
     LifeBuoy,
     ChevronRight,
-    ArrowRight
+    ArrowRight,
+    Receipt,
+    Settings,
+    Smartphone
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Documentation & Help Center | Illumi",
+    description: "Learn how to use Illumi for invoicing, expense tracking, and payment collection. Guides for South African freelancers and small businesses.",
+    keywords: ["illumi help", "invoicing guide", "payfast setup", "expense tracking tutorial"],
+}
 
 export default function DocsPage() {
     return (
@@ -26,8 +36,8 @@ export default function DocsPage() {
                         <span className="font-bold text-lg tracking-tight">Illumi<span className="text-neutral-500 font-medium ml-1">Help</span></span>
                     </div>
                     <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-400">
-                        <Link href="/overview" className="hover:text-white transition-colors">Dashboard</Link>
-                        <Link href="/settings/support" className="hover:text-white transition-colors">Support</Link>
+                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                        <Link href="/contact" className="hover:text-white transition-colors">Support</Link>
                         <div className="h-4 w-px bg-white/10"></div>
                         <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
                     </nav>
@@ -37,7 +47,7 @@ export default function DocsPage() {
             <main>
                 {/* Hero Search Section */}
                 <section className="relative pt-24 pb-20 px-6 border-b border-white/10 overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-50"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-50"></div>
                     <div className="max-w-3xl mx-auto text-center relative z-10">
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">How can we help you?</h1>
                         <p className="text-lg text-neutral-400 mb-8 max-w-xl mx-auto">
@@ -63,44 +73,71 @@ export default function DocsPage() {
                         <CategoryCard
                             icon={BookOpen}
                             title="Getting Started"
-                            description="Account setup, onboarding checklist, and workspace configuration."
-                            href="#"
+                            description="Create your account, set up your business profile, and send your first invoice in minutes."
+                            href="/docs/getting-started"
                         />
                         <CategoryCard
                             icon={FileText}
                             title="Invoicing"
-                            description="Creating invoices, recurring series, templates, and credit notes."
-                            href="#"
+                            description="Create professional invoices, set up recurring billing, send by email, and track payments."
+                            href="/docs/invoicing"
+                        />
+                        <CategoryCard
+                            icon={Receipt}
+                            title="Expenses"
+                            description="Track business expenses, set up recurring costs, calculate net profit, and export to CSV."
+                            href="/docs/expenses"
                         />
                         <CategoryCard
                             icon={CreditCard}
-                            title="Payments"
-                            description="Connecting PayGate, refunding payments, and payout schedules."
-                            href="#"
+                            title="PayGate & Payments"
+                            description="Connect PayFast, Yoco, or other providers. Accept card payments and EFT from invoices."
+                            href="/docs/payments"
                         />
                         <CategoryCard
                             icon={Users}
-                            title="Team Management"
-                            description="Inviting members, roles & permissions, and audit logs."
-                            href="#"
+                            title="Clients & CRM"
+                            description="Manage your client database, view invoice history, and organize by company."
+                            href="/docs/clients"
+                        />
+                        <CategoryCard
+                            icon={Smartphone}
+                            title="Client Portal Links"
+                            description="Send invoices by email with a secure link so clients can view and pay online."
+                            href="/docs/client-portal"
+                        />
+                        <CategoryCard
+                            icon={Settings}
+                            title="Settings & Billing"
+                            description="Manage your subscription, update payment methods, and configure notifications."
+                            href="/docs/settings"
+                        />
+                        <CategoryCard
+                            icon={LifeBuoy}
+                            title="Support"
+                            description="Contact our support team, report bugs, or request new features."
+                            href="/contact"
                         />
                     </div>
                 </section>
 
                 {/* Popular Articles */}
-                <section className="py-20 px-6 bg-white/[0.02] border-t border-white/5">
+                <section className="py-20 px-6 bg-white/2 border-t border-white/5">
                     <div className="max-w-4xl mx-auto">
                         <h2 className="text-2xl font-bold mb-8 text-center">Popular Articles</h2>
                         <div className="space-y-4">
-                            <ArticleRow title="How to connect PayFast or Yoco" category="Payments" time="3 min read" />
-                            <ArticleRow title="Setting up your first Recurring Invoice" category="Invoicing" time="5 min read" />
-                            <ArticleRow title="Customizing your Invoice Template" category="Invoicing" time="4 min read" />
-                            <ArticleRow title="Inviting your accountant" category="Team" time="2 min read" />
-                            <ArticleRow title="Resetting your password" category="Account" time="1 min read" />
+                            <ArticleRow href="/docs/payfast-online-payments" title="How to connect PayFast for online payments" category="Payments" time="3 min read" />
+                            <ArticleRow href="/docs/invoicing" title="Setting up recurring invoices for retainer clients" category="Invoicing" time="5 min read" />
+                            <ArticleRow href="/docs/send-invoices-by-email" title="Sending invoices by email" category="Invoicing" time="2 min read" />
+                            <ArticleRow href="/docs/expenses" title="Tracking expenses and calculating net profit" category="Expenses" time="4 min read" />
+                            <ArticleRow href="/docs/payments" title="Connecting Yoco for card payments" category="Payments" time="3 min read" />
+                            <ArticleRow href="/docs/settings" title="Understanding Free vs Pro plan features" category="Billing" time="3 min read" />
+                            <ArticleRow href="/docs/expenses" title="Exporting expenses to CSV for SARS" category="Expenses" time="2 min read" />
+                            <ArticleRow href="/docs/clients" title="Managing client folders and invoice history" category="Clients" time="3 min read" />
                         </div>
                         <div className="mt-10 text-center">
                             <Button variant="outline" className="border-white/10 hover:bg-white/5 text-neutral-300">
-                                View all 42 articles
+                                View all articles
                             </Button>
                         </div>
                     </div>
@@ -117,7 +154,7 @@ export default function DocsPage() {
                             </p>
                         </div>
                         <div className="flex gap-4 relative z-10">
-                            <Link href="/settings/support">
+                            <Link href="/contact">
                                 <Button className="h-12 px-8 bg-white text-black hover:bg-neutral-200 font-bold rounded-xl">
                                     <LifeBuoy className="mr-2 h-5 w-5" />
                                     Contact Support
@@ -130,7 +167,7 @@ export default function DocsPage() {
 
             <footer className="border-t border-white/5 py-12 bg-black">
                 <div className="max-w-7xl mx-auto px-6 text-center text-sm text-neutral-600">
-                    <p>&copy; 2024 Illumi Inc. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Illumi. Professional invoicing for South African businesses.</p>
                 </div>
             </footer>
         </div>
@@ -139,7 +176,7 @@ export default function DocsPage() {
 
 function CategoryCard({ icon: Icon, title, description, href }: { icon: any, title: string, description: string, href: string }) {
     return (
-        <Link href={href} className="group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:border-white/20 hover:bg-white/[0.02] transition-all">
+        <Link href={href} className="group p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:border-white/20 hover:bg-white/2 transition-all">
             <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                 <Icon className="w-6 h-6 text-white" />
             </div>
@@ -154,9 +191,9 @@ function CategoryCard({ icon: Icon, title, description, href }: { icon: any, tit
     )
 }
 
-function ArticleRow({ title, category, time }: { title: string, category: string, time: string }) {
+function ArticleRow({ href, title, category, time }: { href: string, title: string, category: string, time: string }) {
     return (
-        <Link href="#" className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-[#0a0a0a] hover:bg-white/[0.02] hover:border-white/10 transition-all group">
+        <Link href={href} className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-[#0a0a0a] hover:bg-white/2 hover:border-white/10 transition-all group">
             <div className="flex items-center gap-4">
                 <div className="p-2 rounded-lg bg-white/5 text-neutral-400 group-hover:text-white transition-colors">
                     <FileText className="w-4 h-4" />

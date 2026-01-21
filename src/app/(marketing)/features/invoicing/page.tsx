@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import {
     IconArrowRight,
     IconCheck,
-    IconBrandWhatsapp,
     IconMail,
     IconLink,
     IconFolder,
@@ -16,15 +15,15 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Free Invoice Generator for South Africa | Illumi",
-    description: "Create and send professional invoices via WhatsApp or Email. Free invoice generator with recurring invoices, payment tracking, and folder organization for SA businesses.",
-    keywords: ["free invoice generator", "WhatsApp invoicing", "recurring invoices South Africa", "track overdue payments", "invoice software ZAR"],
+    description: "Create and send professional invoices by email. Clients receive a secure link to view and pay online via your client portal. Built for South African businesses.",
+    keywords: ["free invoice generator", "email invoicing", "recurring invoices South Africa", "track overdue payments", "invoice software ZAR"],
 }
 
 const features = [
     {
-        icon: IconBrandWhatsapp,
-        title: "WhatsApp Invoice Sharing",
-        description: "Send invoices directly via WhatsApp with one click. Your clients receive a professional PDF instantly - perfect for the South African market.",
+        icon: IconMail,
+        title: "Email Sending",
+        description: "Send invoices by email with one click. Your client receives a secure link to view the invoice and pay online.",
     },
     {
         icon: IconFolder,
@@ -54,15 +53,14 @@ const features = [
 ]
 
 const sharingOptions = [
-    { icon: IconBrandWhatsapp, name: "WhatsApp", description: "Send via WhatsApp" },
     { icon: IconMail, name: "Email", description: "Send via Email" },
     { icon: IconLink, name: "Link", description: "Copy shareable link" },
 ]
 
 const invoiceStatuses = [
-    { status: "Paid", count: 24, amount: "R 125,000", color: "text-green-400", bg: "bg-green-400/10" },
-    { status: "Pending", count: 5, amount: "R 18,500", color: "text-yellow-400", bg: "bg-yellow-400/10" },
-    { status: "Overdue", count: 2, amount: "R 4,200", color: "text-red-400", bg: "bg-red-400/10" },
+    { status: "Paid", count: 24, amount: "R 125,000", color: "text-white", bg: "bg-white/5" },
+    { status: "Pending", count: 5, amount: "R 18,500", color: "text-white/80", bg: "bg-white/3" },
+    { status: "Overdue", count: 2, amount: "R 4,200", color: "text-white/70", bg: "bg-white/2" },
 ]
 
 export default function InvoicingFeaturePage() {
@@ -70,17 +68,17 @@ export default function InvoicingFeaturePage() {
         <div className="bg-black">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 text-center">
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6">
                         <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Free Invoice Generator</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
                         Send Invoices via<br />
-                        <span className="text-white/50">WhatsApp in Seconds</span>
+                        <span className="text-white/50">Email in Seconds</span>
                     </h1>
                     <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
-                        Create professional invoices and send them via WhatsApp, Email, or shareable link. Track payments, manage overdue invoices, and get paid faster.
+                        Create professional invoices and send them via Email or shareable link. Track payments, manage overdue invoices, and get paid faster.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
@@ -167,11 +165,11 @@ export default function InvoicingFeaturePage() {
 
                         {/* Sharing Options */}
                         <div className="space-y-6">
-                            <div className="border border-white/10 rounded-2xl p-6 bg-white/[0.02]">
+                            <div className="border border-white/10 rounded-2xl p-6 bg-white/2">
                                 <h3 className="text-lg font-medium text-white mb-4">Share Invoice</h3>
                                 <div className="space-y-3">
                                     {sharingOptions.map((option, i) => (
-                                        <button key={i} className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors text-left">
+                                        <button key={i} className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors text-left">
                                             <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                                                 <option.icon className="h-5 w-5 text-white/70" />
                                             </div>
@@ -183,11 +181,11 @@ export default function InvoicingFeaturePage() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="border border-white/10 rounded-2xl p-6 bg-white/[0.02]">
+                            <div className="border border-white/10 rounded-2xl p-6 bg-white/2">
                                 <h3 className="text-lg font-medium text-white mb-2">Quick Actions</h3>
                                 <p className="text-sm text-white/50 mb-4">Manage invoice status with one click</p>
                                 <div className="flex gap-3">
-                                    <button className="flex-1 px-4 py-2 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium hover:bg-green-500/30 transition-colors">
+                                    <button className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition-colors">
                                         Mark as Paid
                                     </button>
                                     <button className="flex-1 px-4 py-2 rounded-lg bg-white/5 text-white/70 text-sm font-medium hover:bg-white/10 transition-colors">
@@ -212,7 +210,7 @@ export default function InvoicingFeaturePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {features.map((feature, i) => (
-                            <div key={i} className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+                            <div key={i} className="p-8 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                                 <feature.icon className="h-10 w-10 text-white/70 mb-6" />
                                 <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                                 <p className="text-white/50 text-sm">{feature.description}</p>
@@ -239,7 +237,7 @@ export default function InvoicingFeaturePage() {
                                     "Quick search across all invoices",
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-white/70">
-                                        <IconCheck className="h-5 w-5 text-green-400 flex-shrink-0" />
+                                        <IconCheck className="h-5 w-5 text-white/50 shrink-0" />
                                         {item}
                                     </li>
                                 ))}
@@ -254,7 +252,7 @@ export default function InvoicingFeaturePage() {
                                     { name: "Design Studio", invoices: 5, pending: 0 },
                                     { name: "Local Shop", invoices: 3, pending: 1 },
                                 ].map((client, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
+                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
                                         <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                                             <IconFolder className="h-5 w-5 text-white/50" />
                                         </div>
@@ -263,7 +261,7 @@ export default function InvoicingFeaturePage() {
                                             <div className="text-xs text-white/50">{client.invoices} invoices</div>
                                         </div>
                                         {client.pending > 0 && (
-                                            <div className="px-2 py-1 rounded-full bg-yellow-400/20 text-yellow-400 text-xs">
+                                            <div className="px-2 py-1 rounded-full bg-white/10 text-white/70 text-xs">
                                                 {client.pending} pending
                                             </div>
                                         )}
@@ -272,25 +270,6 @@ export default function InvoicingFeaturePage() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            {/* CTA */}
-            <section className="py-24 border-t border-white/5">
-                <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl font-bold text-white mb-4">Start invoicing for free</h2>
-                    <p className="text-white/50 mb-8 max-w-xl mx-auto">
-                        Create unlimited invoices, send via WhatsApp, and track payments - all for free. Upgrade to Pro for recurring invoices and PayFast integration.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button
-                            asChild
-                            className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12"
-                        >
-                            <Link href="/login">Create Your First Invoice</Link>
-                        </Button>
-                    </div>
-                    <p className="text-sm text-white/40 mt-4">Free forever • No credit card required</p>
                 </div>
             </section>
         </div>

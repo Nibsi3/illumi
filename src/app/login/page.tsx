@@ -38,6 +38,9 @@ const testimonials = [
 export default function LoginPage() {
     const [currentTestimonial, setCurrentTestimonial] = useState(0)
     const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [mode, setMode] = useState<"sign_in" | "sign_up" | "verify">("sign_in")
+    const [verificationCode, setVerificationCode] = useState("")
     const [loading, setLoading] = useState(false)
     const [googleLoading, setGoogleLoading] = useState(false)
     const supabase = createClient()
@@ -82,7 +85,7 @@ export default function LoginPage() {
 
     const handleEmailSignIn = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!email) return
+        if (!email || !password) return
 
         setLoading(true)
         try {
@@ -90,8 +93,33 @@ export default function LoginPage() {
         } catch {
             // ignore
         }
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
+
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: normalizedEmail,
+            password,
+        })
+
+        if (error) {
+            toast.error(error.message)
+        } else {
+            window.location.assign(nextPath)
+        }
+
+        setLoading(false)
+    }
+
+    const handleEmailSignUp = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email || !password) return
+
+        setLoading(true)
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.signUp({
+            email: normalizedEmail,
+            password,
             options: {
                 emailRedirectTo: `${getURL()}/auth/callback`,
             },
@@ -99,9 +127,36 @@ export default function LoginPage() {
 
         if (error) {
             toast.error(error.message)
-        } else {
-            toast.success("Check your email for the login link!")
+            setLoading(false)
+            return
         }
+
+        toast.success("Check your email for your verification code")
+        setMode("verify")
+        setLoading(false)
+    }
+
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email || !verificationCode) return
+
+        setLoading(true)
+        const normalizedEmail = email.toLowerCase().trim()
+
+        const { error } = await supabase.auth.verifyOtp({
+            email: normalizedEmail,
+            token: verificationCode.trim(),
+            type: 'signup',
+        })
+
+        if (error) {
+            toast.error(error.message)
+            setLoading(false)
+            return
+        }
+
+        toast.success("Email verified")
+        window.location.assign(nextPath)
         setLoading(false)
     }
 
@@ -154,6 +209,23 @@ export default function LoginPage() {
                         <p className="text-sm text-[#878787]">Sign in or create an account</p>
                     </div>
 
+                    <div className="flex items-center gap-2 mb-6">
+                        <button
+                            type="button"
+                            onClick={() => setMode("sign_in")}
+                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_in" ? "bg-white text-black border-white" : "bg-transparent text-white/70 border-white/10 hover:bg-white/5"}`}
+                        >
+                            Sign in
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setMode("sign_up")}
+                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_up" ? "bg-white text-black border-white" : "bg-transparent text-white/70 border-white/10 hover:bg-white/5"}`}
+                        >
+                            Sign up
+                        </button>
+                    </div>
+
                     <div className="space-y-4">
                         {/* Google Sign In */}
                         <Button
@@ -179,27 +251,79 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Email Sign In */}
-                        <form onSubmit={handleEmailSignIn} className="space-y-4">
-                            <Input
-                                type="email"
-                                placeholder="name@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
-                            />
-                            <Button
-                                type="submit"
-                                disabled={loading || googleLoading}
-                                className="w-full h-12 bg-white/5 hover:bg-white/10 text-[#fafafa] rounded-lg border border-white/10"
-                            >
-                                {loading ? (
-                                    <IconLoader2 className="h-5 w-5 animate-spin mr-2" />
-                                ) : null}
-                                Continue with Email
-                            </Button>
-                        </form>
+                        {mode === "verify" ? (
+                            <form onSubmit={handleVerifyOtp} className="space-y-4">
+                                <div className="text-sm text-white/60">
+                                    We sent a verification code to <span className="text-white">{email}</span>.
+                                </div>
+                                <Input
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="Verification code"
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                    required
+                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={loading || googleLoading}
+                                    className="w-full h-12 bg-white text-black hover:bg-neutral-200 rounded-lg"
+                                >
+                                    {loading ? (
+                                        <IconLoader2 className="h-5 w-5 animate-spin mr-2" />
+                                    ) : null}
+                                    Verify email
+                                </Button>
+                                <button
+                                    type="button"
+                                    className="w-full text-xs text-white/50 hover:text-white transition-colors"
+                                    onClick={async () => {
+                                        if (!email) return
+                                        const normalizedEmail = email.toLowerCase().trim()
+                                        const { error } = await supabase.auth.resend({
+                                            type: 'signup',
+                                            email: normalizedEmail,
+                                        })
+                                        if (error) toast.error(error.message)
+                                        else toast.success("Verification code resent")
+                                    }}
+                                >
+                                    Resend code
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={mode === "sign_up" ? handleEmailSignUp : handleEmailSignIn} className="space-y-4">
+                                <Input
+                                    type="email"
+                                    placeholder="name@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                />
+                                <Input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                />
+                                <Button
+                                    type="submit"
+                                    disabled={loading || googleLoading}
+                                    className={mode === "sign_up"
+                                        ? "w-full h-12 bg-white text-black hover:bg-neutral-200 rounded-lg"
+                                        : "w-full h-12 bg-white/5 hover:bg-white/10 text-[#fafafa] rounded-lg border border-white/10"}
+                                >
+                                    {loading ? (
+                                        <IconLoader2 className="h-5 w-5 animate-spin mr-2" />
+                                    ) : null}
+                                    {mode === "sign_up" ? "Create account" : "Sign in"}
+                                </Button>
+                            </form>
+                        )}
                     </div>
                 </div>
 

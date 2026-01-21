@@ -13,15 +13,16 @@ import {
 const footerLinks = {
     features: [
         { name: "Overview", href: "/features/overview" },
-        { name: "Invoicing", href: "/features/invoice" },
-        { name: "Inbox", href: "/features/inbox" },
+        { name: "Invoicing", href: "/features/invoicing" },
+        { name: "Client Portal", href: "/features/inbox" },
         { name: "Vault", href: "/features/vault" },
     ],
     resources: [
-        { name: "Documentation", href: "https://illumi.co.za/docs" },
+        { name: "Documentation", href: "/docs" },
+        { name: "Integrations", href: "/integrations" },
         { name: "Support", href: "/contact" },
-        { name: "Privacy Policy", href: "#" },
-        { name: "Terms of Service", href: "#" },
+        { name: "Privacy Policy", href: "/privacy" },
+        { name: "Terms", href: "/terms-and-conditions" },
     ],
     company: [
         { name: "Story", href: "/story" },
@@ -40,30 +41,6 @@ const socialLinks = [
 export function MarketingFooter() {
     return (
         <footer className="bg-black border-t border-white/5">
-            {/* CTA Section */}
-            <div className="py-24 text-center">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                    Stress free by <span className="font-serif italic">illumi.</span>
-                </h2>
-                <p className="text-white/50 text-sm max-w-xl mx-auto mb-8">
-                    Invoicing. Time tracking. File reconciliation. Storage. Financial Overview.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button
-                        variant="outline"
-                        className="rounded-full px-8 h-11 border-white/20 text-white hover:bg-white/5"
-                    >
-                        Talk to founders
-                    </Button>
-                    <Button
-                        asChild
-                        className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-11"
-                    >
-                        <Link href="/login">Get Started</Link>
-                    </Button>
-                </div>
-            </div>
-
             {/* Links Section */}
             <div className="border-t border-white/5 py-16">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -160,7 +137,7 @@ export function MarketingFooter() {
 
             {/* Bottom watermark */}
             <div className="relative overflow-hidden py-12">
-                <div className="text-[12rem] md:text-[18rem] font-bold text-white/[0.02] text-center leading-none tracking-tighter select-none">
+                <div className="text-[12rem] md:text-[18rem] font-bold text-white/2 text-center leading-none tracking-tighter select-none">
                     illumi
                 </div>
             </div>

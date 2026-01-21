@@ -7,7 +7,7 @@ export default function StoryPage() {
         <div className="bg-black">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32">
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
                 <div className="relative mx-auto max-w-4xl px-6 lg:px-8">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-center">
                         This is why we're building{" "}
@@ -44,8 +44,8 @@ export default function StoryPage() {
                             </p>
                             <p>
                                 With Illumi, you can build a client database, create a product catalog, and
-                                generate professional invoices in seconds. Send them via WhatsApp, Email, or
-                                just copy a link — whatever works for you and your clients.
+                                generate professional invoices in seconds. Send them by email or share a link —
+                                your clients get a secure portal to view and pay.
                             </p>
                             <p>
                                 We added features we actually needed: scheduling invoices for later, setting up
@@ -85,7 +85,7 @@ export default function StoryPage() {
                             variant="outline"
                             className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5"
                         >
-                            <Link href="https://illumi.co.za/docs" target="_blank">View Docs</Link>
+                            <Link href="/docs">View Docs</Link>
                         </Button>
                         <Button
                             asChild
