@@ -1,49 +1,10 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import fs from 'fs'
-import path from 'path'
 
 const API_BUILD_MARKER = 'generate-link@2026-01-20T09:47Z'
 
-function loadRuntimeEnvFromFiles() {
-    const candidates = ['.env.production', '.env.local', '.env']
-    for (const filename of candidates) {
-        try {
-            const filePath = path.join(process.cwd(), filename)
-            if (!fs.existsSync(filePath)) continue
-            const raw = fs.readFileSync(filePath, 'utf8')
-            const lines = raw.split(/\r?\n/)
-            for (const line of lines) {
-                const trimmed = line.trim()
-                if (!trimmed || trimmed.startsWith('#')) continue
-                const idx = trimmed.indexOf('=')
-                if (idx <= 0) continue
-                const key = trimmed.slice(0, idx).trim()
-                let value = trimmed.slice(idx + 1).trim()
-                if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-                    value = value.slice(1, -1)
-                }
-                if (!process.env[key]) {
-                    process.env[key] = value
-                }
-            }
-            return
-        } catch {
-            continue
-        }
-    }
-}
-
-function ensureRuntimeEnvLoaded() {
-    if (process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.YOCO_SECRET_KEY) {
-        return
-    }
-    loadRuntimeEnvFromFiles()
-}
-
 // Service role client for reading secrets (bypasses RLS)
 function getServiceClient() {
-    ensureRuntimeEnvLoaded()
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!url) {
         console.log('[getServiceClient] Missing NEXT_PUBLIC_SUPABASE_URL')
@@ -83,27 +44,8 @@ async function resolveWorkspaceIdFromInvoiceId(invoiceId: unknown): Promise<stri
 }
 
 export async function GET() {
-    ensureRuntimeEnvLoaded()
-    const res = NextResponse.json(
-        {
-            success: true,
-            marker: API_BUILD_MARKER,
-            runtime: {
-                hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-                hasServiceRoleKey:
-                    !!process.env.SUPABASE_SERVICE_KEY ||
-                    !!process.env.SUPABASE_SERVICE_ROLE_KEY ||
-                    !!process.env.SUPABASE_SERVICE_ROLE_SECRET ||
-                    !!process.env.SUPABASE_SERVICE_ROLE ||
-                    !!process.env.SERVICE_ROLE_KEY,
-                hasServiceClient: !!getServiceClient(),
-                envYocoKeyPresent: !!(process.env.YOCO_SECRET_KEY || '').trim(),
-            },
-        },
-        { status: 200 }
-    )
-    res.headers.set('Cache-Control', 'no-store')
-    return res
+    // Don't expose runtime environment diagnostics publicly.
+    return NextResponse.json({ success: false, marker: API_BUILD_MARKER }, { status: 404 })
 }
 
 // Helper to get workspace keys from Supabase
@@ -163,7 +105,6 @@ async function getWorkspaceSettings(workspaceId: string) {
 // PayGate link generator
 export async function POST(req: Request) {
     try {
-        ensureRuntimeEnvLoaded()
         const { invoiceId, amount, currency, provider, invoiceNumber, workspaceId } = await req.json()
         
         const resolvedWorkspaceId =
@@ -196,8 +137,8 @@ export async function POST(req: Request) {
                 : "https://www.payfast.co.za/eng/process"
 
             // Try to get keys from Supabase first, fallback to env vars
-            let merchantId = process.env.PAYFAST_MERCHANT_ID || "10000100"
-            let merchantKey = process.env.PAYFAST_MERCHANT_KEY || "46f0cd694581a"
+            let merchantId = (process.env.PAYFAST_MERCHANT_ID || '').trim()
+            let merchantKey = (process.env.PAYFAST_MERCHANT_KEY || '').trim()
             
             if (resolvedWorkspaceId) {
                 const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'payfast', mode)
@@ -205,6 +146,16 @@ export async function POST(req: Request) {
                     merchantId = keys.merchant_id || merchantId
                     merchantKey = keys.secret_key || merchantKey
                 }
+            }
+
+            if (!merchantId || !merchantKey) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: "PayFast credentials not configured. Add PayFast keys in Settings > PayGate or set PAYFAST_MERCHANT_ID/PAYFAST_MERCHANT_KEY on the server.",
+                    },
+                    { status: 500 }
+                )
             }
 
             const params = new URLSearchParams({
