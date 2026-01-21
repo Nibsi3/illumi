@@ -1,6 +1,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import {
     IconFileInvoice,
     IconFolder,
@@ -143,7 +145,13 @@ const proFeatures = [
     "Auto-update invoice status",
 ]
 
-export default function LandingPage() {
+export default async function LandingPage() {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+        redirect('/overview')
+    }
+
     return (
         <>
             <Script

@@ -86,17 +86,17 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/favicon-v2.png.png",
+        url: "/favicon.ico",
       },
     ],
     shortcut: [
       {
-        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/favicon-v2.png.png",
+        url: "/favicon.ico",
       },
     ],
     apple: [
       {
-        url: "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/favicon-v2.png.png",
+        url: "/favicon.ico",
       },
     ],
   },
