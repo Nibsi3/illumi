@@ -178,7 +178,7 @@ export default function PayInvoicePage() {
     const isPaid = invoice.status === 'paid' || invoice.status === 'Paid'
     const template = invoice.template || "Classic"
     const mode = invoice.invoice_mode || "dark"
-    const logoBg = (invoice.logo_bg || mode || "dark") as "light" | "dark"
+    const logoBg = (mode || "dark") as "light" | "dark"
 
     const urlProvider = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('provider') : null
     const invoiceProvider = invoice.payment_provider

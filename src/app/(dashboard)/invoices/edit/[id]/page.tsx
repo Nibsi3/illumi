@@ -70,7 +70,6 @@ import { CreateProductModal } from "../../components/create-product-modal"
 import { RecurringModal } from "../../components/recurring-modal"
 
 type TemplateType = "Classic" | "Minimal" | "Modern"
-type LogoBgMode = "light" | "dark"
 
 export default function EditInvoicePage() {
     const router = useRouter()
@@ -98,13 +97,12 @@ export default function EditInvoicePage() {
     const [clientPhone, setClientPhone] = useState("")
 
     const [fromEmail, setFromEmail] = useState(settings.fromEmail ?? "hello@illumi.co.za")
-    const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0])
+    const [issueDate, setIssueDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [dueDate, setDueDate] = useState("")
     const [logo, setLogo] = useState<string | null>(null)
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
-    const [logoBg, setLogoBg] = useState<LogoBgMode>("dark")
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
     // Recurring State
@@ -185,7 +183,6 @@ export default function EditInvoicePage() {
                         setInvoiceNumber(invoice.invoice_number)
                         setTemplate(invoice.template as TemplateType || "Classic")
                         setInvoiceMode(invoice.invoice_mode as any || "dark")
-                        setLogoBg((invoice as any).logo_bg || "dark")
                         setCurrency(invoice.currency || "ZAR")
                         setTaxRate(invoice.tax_rate || 0)
                         setIssueDate(invoice.issue_date || invoice.created_at.split('T')[0])
@@ -251,7 +248,7 @@ export default function EditInvoicePage() {
                 template: template,
                 invoice_mode: invoiceMode,
                 logo_url: logo,
-                logo_bg: logoBg,
+                logo_bg: null,
             }
 
             // Update Invoice
@@ -433,7 +430,7 @@ export default function EditInvoicePage() {
                         )}>
 
                             {template === "Modern" && (
-                                <div className="h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 w-full" />
+                                <div className="h-2 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 w-full" />
                             )}
 
                             <div className={cn(template === "Modern" && "p-12")}>
@@ -482,16 +479,6 @@ export default function EditInvoicePage() {
                                                                             <SelectItem value="0">0%</SelectItem>
                                                                             <SelectItem value="15">15% (VAT)</SelectItem>
                                                                             <SelectItem value="20">20%</SelectItem>
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="space-y-2">
-                                                                    <div className="flex items-center gap-2 text-neutral-400"><LayoutTemplate className="h-4 w-4" /><span className="text-xs">Logo background</span></div>
-                                                                    <Select value={logoBg} onValueChange={(v: any) => setLogoBg(v)}>
-                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                                                            <SelectItem value="dark">Dark</SelectItem>
-                                                                            <SelectItem value="light">Light</SelectItem>
                                                                         </SelectContent>
                                                                     </Select>
                                                                 </div>
@@ -553,7 +540,7 @@ export default function EditInvoicePage() {
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                logoBg === "light"
+                                                invoiceMode === "light"
                                                     ? "bg-white border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300"
                                                     : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
                                             )}

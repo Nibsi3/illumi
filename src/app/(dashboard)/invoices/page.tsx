@@ -81,7 +81,10 @@ export default function InvoicesPage() {
             now.setHours(0, 0, 0, 0)
             const rawStatus = (inv.status || '').toLowerCase()
             const dueDate = inv.due_date ? new Date(inv.due_date + "T00:00:00") : null
-            const isOverdue = rawStatus !== 'paid' && rawStatus !== 'scheduled' && dueDate && dueDate < now
+            // Consider an invoice overdue only starting the day AFTER the due_date.
+            const dueDateEnd = dueDate ? new Date(dueDate) : null
+            if (dueDateEnd) dueDateEnd.setHours(23, 59, 59, 999)
+            const isOverdue = rawStatus !== 'paid' && rawStatus !== 'scheduled' && dueDateEnd && dueDateEnd < new Date()
 
             return {
                 ...inv,
@@ -100,7 +103,7 @@ export default function InvoicesPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
     const [filterClient, setFilterClient] = useState<string | null>(null)
-    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
+    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('invoices')
 
     // Mark as Paid dialog state
     const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
@@ -391,16 +394,16 @@ export default function InvoicesPage() {
 
         const clientMatch = !filterClient || inv.customer === filterClient
 
-        const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled'
-        const isRecurringParent = Boolean(inv.is_recurring)
+        const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled' || Boolean(inv.scheduled_date)
+        const isRecurring = Boolean(inv.is_recurring) || Boolean(inv.parent_invoice_id) || Boolean(inv.recurring_interval)
         const typeMatch =
             filterInvoiceType === 'all'
                 ? true
                 : filterInvoiceType === 'scheduled'
                     ? isScheduled
                     : filterInvoiceType === 'recurring'
-                        ? isRecurringParent
-                        : !isScheduled && !isRecurringParent
+                        ? isRecurring
+                        : !isScheduled && !isRecurring
 
         return statusMatch && clientMatch && typeMatch
     })
@@ -651,6 +654,17 @@ export default function InvoicesPage() {
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
                                     filterInvoiceType === 'all' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                )}
+                            >
+                                All
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setFilterInvoiceType('invoices')}
+                                className={cn(
+                                    "h-9 px-4 rounded-none text-xs transition-all",
+                                    filterInvoiceType === 'invoices' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
                                 )}
                             >
                                 Invoices

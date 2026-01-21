@@ -149,9 +149,6 @@ function BillingContent() {
 
             {/* Current Plan Card (High Contrast) */}
             <div className="mb-12 p-8 border border-white/5 rounded-2xl bg-[#09090b] relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <IconReceipt size={120} />
-                </div>
                 <div className="flex items-center justify-between relative z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
@@ -195,7 +192,7 @@ function BillingContent() {
                     </div>
                     {isPro ? (
                         <div className="flex flex-col items-end gap-3">
-                            <div className="flex items-center gap-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                            <div className="flex items-center justify-center gap-2 bg-white/10 border border-white/20 h-10 px-6 rounded-none">
                                 <IconCircleCheckFilled size={16} className="text-white" />
                                 <span className="text-white text-xs font-bold uppercase tracking-widest">Subscribed</span>
                             </div>

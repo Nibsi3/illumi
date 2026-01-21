@@ -31,7 +31,6 @@ interface Invoice {
     currency: string
     logo_url?: string | null
     invoice_mode?: "light" | "dark" | null
-    logo_bg?: "light" | "dark" | null
     customer: {
         name: string
         email: string
@@ -147,7 +146,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             {/* Invoice Paper Layout */}
             <main className="max-w-5xl mx-auto mt-12 px-6">
                 {(() => {
-                    const logoBg = (invoice.logo_bg || invoice.invoice_mode || 'dark') as 'light' | 'dark'
+                    const logoBg = (invoice.invoice_mode || 'dark') as 'light' | 'dark'
                     const logoContainerClass = logoBg === 'light' ? 'bg-white border-neutral-100' : 'bg-[#0c0c0c] border-white/10'
                     return (
                 <div className="bg-white text-black rounded-lg shadow-2xl p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
