@@ -1,7 +1,16 @@
 import { updateSession } from '@/lib/supabase/middleware'
 import { type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+    // Some OAuth flows can land on '/' with a `code` param if redirect URLs
+    // are misconfigured. Forward to the proper callback handler to avoid loops.
+    const url = request.nextUrl
+    if (url.pathname === '/' && url.searchParams.get('code')) {
+        const redirectUrl = url.clone()
+        redirectUrl.pathname = '/auth/callback'
+        return NextResponse.redirect(redirectUrl)
+    }
     return await updateSession(request)
 }
 
