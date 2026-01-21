@@ -158,6 +158,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             <div className="h-px w-full bg-white/10 shrink-0" />
 
             <div className="flex flex-1 overflow-hidden relative">
+                <div className="pointer-events-none absolute left-0 right-0 top-16 border-b border-white/5 z-70" />
                 {/* Sidebar rewritten from scratch with hover logic */}
                 <motion.aside
                     initial={false}
@@ -167,10 +168,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         setOpen(false);
                         setShowSwitcher(false);
                     }}
-                    className="h-full bg-black border-r border-white/10 flex flex-col z-50 transition-colors duration-300 absolute left-0 top-0 shadow-2xl"
+                    className="h-full bg-black border-r border-white/10 flex flex-col z-60 transition-colors duration-300 absolute left-0 top-0 shadow-2xl"
                 >
                     {/* Logo Section - Centered and Icon only */}
-                    <div className="h-20 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
+                    <div className="h-16 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
                         <Link href="/overview" className="flex items-center justify-center w-full">
                             <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
                         </Link>
@@ -338,7 +339,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </div>
                     )}
                     {/* Header (Stayed relatively similar but polished) */}
-                    <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 backdrop-blur-md bg-black/50 sticky top-0 z-40">
+                    <header className="h-16 flex items-center justify-between px-8 backdrop-blur-md bg-black/50 sticky top-0 z-50">
                         <div className="flex items-center gap-6 flex-1">
                             <button 
                                 type="button"
