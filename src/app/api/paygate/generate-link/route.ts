@@ -105,7 +105,7 @@ async function getWorkspaceSettings(workspaceId: string) {
 // PayGate link generator
 export async function POST(req: Request) {
     try {
-        const { invoiceId, amount, currency, provider, invoiceNumber, workspaceId } = await req.json()
+        const { invoiceId, amount, currency, provider, invoiceNumber, workspaceId, email } = await req.json()
         
         const resolvedWorkspaceId =
             (isUuid(workspaceId) ? workspaceId : null) || (await resolveWorkspaceIdFromInvoiceId(invoiceId))
@@ -144,7 +144,7 @@ export async function POST(req: Request) {
                 const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'payfast', mode)
                 if (keys) {
                     merchantId = keys.merchant_id || merchantId
-                    merchantKey = keys.secret_key || merchantKey
+                    merchantKey = keys.merchant_key || keys.secret_key || merchantKey
                 }
             }
 
@@ -299,13 +299,79 @@ export async function POST(req: Request) {
 
         // PayStack Implementation
         if (provider === 'paystack') {
-            const paystackSecretKey = process.env.PAYSTACK_SECRET_KEY || ''
-            
-            // PayStack hosted checkout
+            let paystackSecretKey = (process.env.PAYSTACK_SECRET_KEY || '').trim()
+
+            if (resolvedWorkspaceId) {
+                const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'paystack', mode)
+                if (keys?.secret_key) {
+                    paystackSecretKey = keys.secret_key.trim()
+                }
+            }
+
+            if (!paystackSecretKey) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: "Paystack secret key not configured. Add Paystack keys in Settings > PayGate or set PAYSTACK_SECRET_KEY on the server.",
+                        provider: 'paystack',
+                    },
+                    { status: 500 }
+                )
+            }
+
+            const amountKobo = Math.round(Number(amount) * 100)
+            if (!Number.isFinite(amountKobo) || amountKobo <= 0) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid amount', provider: 'paystack' },
+                    { status: 400 }
+                )
+            }
+
+            const customerEmail = (typeof email === 'string' && email.trim()) ? email.trim() : 'customer@example.com'
+            const reference = String(invoiceNumber || invoiceId)
+            const callback_url = `${domain}/pay/${invoiceId}?status=success&provider=paystack`
+
+            const initRes = await fetch('https://api.paystack.co/transaction/initialize', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${paystackSecretKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: customerEmail,
+                    amount: amountKobo,
+                    currency: currency || 'ZAR',
+                    reference,
+                    callback_url,
+                    metadata: {
+                        invoiceId,
+                        invoiceNumber: invoiceNumber || null,
+                    },
+                }),
+            })
+
+            const initJson = await initRes.json().catch(() => null)
+            if (!initRes.ok) {
+                const message = (initJson && (initJson.message || initJson.error)) || `Paystack initialize failed (${initRes.status})`
+                return NextResponse.json(
+                    { success: false, error: message, provider: 'paystack' },
+                    { status: 502 }
+                )
+            }
+
+            const authorizationUrl = initJson?.data?.authorization_url
+            if (!authorizationUrl) {
+                return NextResponse.json(
+                    { success: false, error: 'Paystack response missing authorization_url', provider: 'paystack' },
+                    { status: 502 }
+                )
+            }
+
             return NextResponse.json({
                 success: true,
-                link: `https://checkout.paystack.com/initialize?amount=${Math.round(amount * 100)}&email=customer@example.com&reference=${invoiceNumber || invoiceId}&callback_url=${encodeURIComponent(`${domain}/pay/${invoiceId}?status=success`)}`,
-                provider: 'paystack'
+                link: authorizationUrl,
+                provider: 'paystack',
+                reference,
             })
         }
 

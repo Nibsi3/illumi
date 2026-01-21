@@ -57,7 +57,7 @@ export async function GET(req: Request) {
 
         // Fetch keys using service role (masked for display)
         const serviceClient = getServiceClient()
-        const providerKeys: Record<string, { testMerchantId?: string; testSecretKey?: string; liveMerchantId?: string; liveSecretKey?: string }> = {}
+        const providerKeys: Record<string, any> = {}
         
         if (serviceClient && settings?.connected_providers) {
             for (const provider of settings.connected_providers) {
@@ -79,10 +79,24 @@ export async function GET(req: Request) {
                 for (const k of testKeys || []) {
                     if (k.key_name === 'merchant_id') keys.testMerchantId = maskKey(k.key_value)
                     if (k.key_name === 'secret_key') keys.testSecretKey = maskKey(k.key_value)
+                    if (k.key_name === 'merchant_key') keys.testMerchantKey = maskKey(k.key_value)
+                    if (k.key_name === 'passphrase') keys.testPassphrase = maskKey(k.key_value)
+                    if (k.key_name === 'public_key') keys.testPublicKey = maskKey(k.key_value)
+                    if (k.key_name === 'site_code') keys.testSiteCode = maskKey(k.key_value)
+                    if (k.key_name === 'private_key') keys.testPrivateKey = maskKey(k.key_value)
+                    if (k.key_name === 'entity_id') keys.testEntityId = maskKey(k.key_value)
+                    if (k.key_name === 'access_token') keys.testAccessToken = maskKey(k.key_value)
                 }
                 for (const k of liveKeys || []) {
                     if (k.key_name === 'merchant_id') keys.liveMerchantId = maskKey(k.key_value)
                     if (k.key_name === 'secret_key') keys.liveSecretKey = maskKey(k.key_value)
+                    if (k.key_name === 'merchant_key') keys.liveMerchantKey = maskKey(k.key_value)
+                    if (k.key_name === 'passphrase') keys.livePassphrase = maskKey(k.key_value)
+                    if (k.key_name === 'public_key') keys.livePublicKey = maskKey(k.key_value)
+                    if (k.key_name === 'site_code') keys.liveSiteCode = maskKey(k.key_value)
+                    if (k.key_name === 'private_key') keys.livePrivateKey = maskKey(k.key_value)
+                    if (k.key_name === 'entity_id') keys.liveEntityId = maskKey(k.key_value)
+                    if (k.key_name === 'access_token') keys.liveAccessToken = maskKey(k.key_value)
                 }
                 if (Object.keys(keys).length > 0) {
                     providerKeys[provider] = keys
@@ -158,21 +172,54 @@ export async function POST(req: Request) {
         if (keys && provider) {
             const keyEntries: { workspace_id: string; provider: string; mode: string; key_name: string; key_value: string }[] = []
 
-            // Test keys
-            if (keys.testMerchantId) {
-                keyEntries.push({ workspace_id, provider, mode: 'test', key_name: 'merchant_id', key_value: keys.testMerchantId })
-            }
-            if (keys.testSecretKey) {
-                keyEntries.push({ workspace_id, provider, mode: 'test', key_name: 'secret_key', key_value: keys.testSecretKey })
+            const add = (mode: 'test' | 'live', key_name: string, key_value: unknown) => {
+                if (typeof key_value === 'string' && key_value.trim()) {
+                    keyEntries.push({ workspace_id, provider, mode, key_name, key_value: key_value.trim() })
+                }
             }
 
-            // Live keys
-            if (keys.liveMerchantId) {
-                keyEntries.push({ workspace_id, provider, mode: 'live', key_name: 'merchant_id', key_value: keys.liveMerchantId })
+            // Backward compatible keys (used historically across providers)
+            add('test', 'merchant_id', keys.testMerchantId)
+            add('test', 'secret_key', keys.testSecretKey)
+            add('live', 'merchant_id', keys.liveMerchantId)
+            add('live', 'secret_key', keys.liveSecretKey)
+
+            // Yoco: test/live public + secret
+            add('test', 'public_key', keys.testPublicKey)
+            add('test', 'secret_key', keys.testSecretKey || keys.testSecret)
+            add('live', 'public_key', keys.livePublicKey)
+            add('live', 'secret_key', keys.liveSecretKey || keys.liveSecret)
+
+            // PayFast: merchant id + merchant key + optional passphrase (shared credentials)
+            // We store them in *both* modes so other code that reads by mode still works.
+            if (provider === 'payfast') {
+                add('test', 'merchant_id', keys.merchantId || keys.liveMerchantId || keys.testMerchantId)
+                add('live', 'merchant_id', keys.merchantId || keys.liveMerchantId || keys.testMerchantId)
+
+                add('test', 'merchant_key', keys.merchantKey || keys.liveMerchantKey || keys.testMerchantKey)
+                add('live', 'merchant_key', keys.merchantKey || keys.liveMerchantKey || keys.testMerchantKey)
+
+                add('test', 'passphrase', keys.passphrase || keys.livePassphrase || keys.testPassphrase)
+                add('live', 'passphrase', keys.passphrase || keys.livePassphrase || keys.testPassphrase)
+            } else {
+                // Other providers that use merchant_key/passphrase per mode
+                add('test', 'merchant_key', keys.testMerchantKey)
+                add('live', 'merchant_key', keys.liveMerchantKey)
+                add('test', 'passphrase', keys.testPassphrase)
+                add('live', 'passphrase', keys.livePassphrase)
             }
-            if (keys.liveSecretKey) {
-                keyEntries.push({ workspace_id, provider, mode: 'live', key_name: 'secret_key', key_value: keys.liveSecretKey })
-            }
+
+            // Ozow: test/live site code + private key
+            add('test', 'site_code', keys.testSiteCode)
+            add('test', 'private_key', keys.testPrivateKey)
+            add('live', 'site_code', keys.liveSiteCode)
+            add('live', 'private_key', keys.livePrivateKey)
+
+            // Peach: test/live entity id + access token
+            add('test', 'entity_id', keys.testEntityId)
+            add('test', 'access_token', keys.testAccessToken)
+            add('live', 'entity_id', keys.liveEntityId)
+            add('live', 'access_token', keys.liveAccessToken)
 
             for (const entry of keyEntries) {
                 const { error: keyError } = await serviceClient

@@ -105,10 +105,200 @@ export default function PayGatePage() {
     const [isConnecting, setIsConnecting] = useState(false)
 
     // Separate state for credentials
-    const [liveMerchantId, setLiveMerchantId] = useState("")
-    const [liveSecretKey, setLiveSecretKey] = useState("")
-    const [testMerchantId, setTestMerchantId] = useState("")
-    const [testSecretKey, setTestSecretKey] = useState("")
+    const [liveKey1, setLiveKey1] = useState("")
+    const [liveKey2, setLiveKey2] = useState("")
+    const [testKey1, setTestKey1] = useState("")
+    const [testKey2, setTestKey2] = useState("")
+    const [passphrase, setPassphrase] = useState("")
+
+    const getProviderFieldLabels = (providerId: string) => {
+        switch (providerId) {
+            case 'yoco':
+                return {
+                    test1: 'Test public key',
+                    test2: 'Test secret key',
+                    live1: 'Live public key',
+                    live2: 'Live secret key',
+                }
+            case 'ozow':
+                return {
+                    test1: 'Test site code',
+                    test2: 'Test private key',
+                    live1: 'Live site code',
+                    live2: 'Live private key',
+                }
+            case 'peach':
+                return {
+                    test1: 'Test entity ID',
+                    test2: 'Test access token',
+                    live1: 'Live entity ID',
+                    live2: 'Live access token',
+                }
+            case 'payfast':
+                return {
+                    test1: 'Merchant ID',
+                    test2: 'Merchant key',
+                    live1: 'Merchant ID',
+                    live2: 'Merchant key',
+                }
+            case 'paystack':
+                return {
+                    test1: 'Test public key (optional)',
+                    test2: 'Test secret key',
+                    live1: 'Live public key (optional)',
+                    live2: 'Live secret key',
+                }
+            default:
+                return {
+                    test1: 'Test key 1',
+                    test2: 'Test key 2',
+                    live1: 'Live key 1',
+                    live2: 'Live key 2',
+                }
+        }
+    }
+
+    const getProviderPlaceholders = (providerId: string) => {
+        switch (providerId) {
+            case 'yoco':
+                return {
+                    test1: 'pk_test_...',
+                    test2: 'sk_test_...',
+                    live1: 'pk_live_...',
+                    live2: 'sk_live_...',
+                }
+            case 'paystack':
+                return {
+                    test1: 'pk_test_... (optional)',
+                    test2: 'sk_test_...',
+                    live1: 'pk_live_... (optional)',
+                    live2: 'sk_live_...',
+                }
+            case 'payfast':
+                return {
+                    test1: '10000100',
+                    test2: 'merchant key',
+                    live1: '10000100',
+                    live2: 'merchant key',
+                }
+            case 'ozow':
+                return {
+                    test1: 'TESTSITE',
+                    test2: 'private key',
+                    live1: 'LIVESITE',
+                    live2: 'private key',
+                }
+            case 'peach':
+                return {
+                    test1: 'entity id',
+                    test2: 'access token',
+                    live1: 'entity id',
+                    live2: 'access token',
+                }
+            default:
+                return {
+                    test1: 'test-...',
+                    test2: 'test-...',
+                    live1: 'live-...',
+                    live2: 'live-...',
+                }
+        }
+    }
+
+    const mapProviderKeysToState = (providerId: string, savedKeys: any) => {
+        if (!savedKeys) {
+            setTestKey1("")
+            setTestKey2("")
+            setLiveKey1("")
+            setLiveKey2("")
+            setPassphrase("")
+            return
+        }
+
+        if (providerId === 'yoco') {
+            setTestKey1(savedKeys.testPublicKey || "")
+            setTestKey2(savedKeys.testSecretKey || "")
+            setLiveKey1(savedKeys.livePublicKey || "")
+            setLiveKey2(savedKeys.liveSecretKey || "")
+            setPassphrase("")
+            return
+        }
+        if (providerId === 'ozow') {
+            setTestKey1(savedKeys.testSiteCode || "")
+            setTestKey2(savedKeys.testPrivateKey || "")
+            setLiveKey1(savedKeys.liveSiteCode || "")
+            setLiveKey2(savedKeys.livePrivateKey || "")
+            setPassphrase("")
+            return
+        }
+        if (providerId === 'peach') {
+            setTestKey1(savedKeys.testEntityId || "")
+            setTestKey2(savedKeys.testAccessToken || "")
+            setLiveKey1(savedKeys.liveEntityId || "")
+            setLiveKey2(savedKeys.liveAccessToken || "")
+            setPassphrase("")
+            return
+        }
+        if (providerId === 'payfast') {
+            const merchantId = savedKeys.liveMerchantId || savedKeys.testMerchantId || ""
+            const merchantKey = savedKeys.liveMerchantKey || savedKeys.testMerchantKey || ""
+            setTestKey1(merchantId)
+            setTestKey2(merchantKey)
+            setLiveKey1(merchantId)
+            setLiveKey2(merchantKey)
+            setPassphrase(savedKeys.livePassphrase || savedKeys.testPassphrase || "")
+            return
+        }
+
+        // Generic fallback (legacy)
+        setTestKey1(savedKeys.testMerchantId || "")
+        setTestKey2(savedKeys.testSecretKey || "")
+        setLiveKey1(savedKeys.liveMerchantId || "")
+        setLiveKey2(savedKeys.liveSecretKey || "")
+        setPassphrase(savedKeys.passphrase || savedKeys.livePassphrase || savedKeys.testPassphrase || "")
+    }
+
+    const buildKeysPayload = (providerId: string) => {
+        if (providerId === 'yoco') {
+            return {
+                testPublicKey: testKey1,
+                testSecretKey: testKey2,
+                livePublicKey: liveKey1,
+                liveSecretKey: liveKey2,
+            }
+        }
+        if (providerId === 'ozow') {
+            return {
+                testSiteCode: testKey1,
+                testPrivateKey: testKey2,
+                liveSiteCode: liveKey1,
+                livePrivateKey: liveKey2,
+            }
+        }
+        if (providerId === 'peach') {
+            return {
+                testEntityId: testKey1,
+                testAccessToken: testKey2,
+                liveEntityId: liveKey1,
+                liveAccessToken: liveKey2,
+            }
+        }
+        if (providerId === 'payfast') {
+            return {
+                merchantId: testKey1,
+                merchantKey: testKey2,
+                passphrase,
+            }
+        }
+
+        // Paystack + others: keep backward-compatible naming
+        return {
+            testMerchantId: testKey1,
+            testSecretKey: testKey2,
+            liveMerchantId: liveKey1,
+            liveSecretKey: liveKey2,
+        }
+    }
 
     // Request Provider Dialog State
     const [isRequestOpen, setIsRequestOpen] = useState(false)
@@ -123,66 +313,69 @@ export default function PayGatePage() {
         }
         // Reset inputs on fresh connect
         const savedKeys = providerKeys[id] || {}
-        setLiveMerchantId(savedKeys.liveMerchantId || "")
-        setLiveSecretKey(savedKeys.liveSecretKey || "")
-        setTestMerchantId(savedKeys.testMerchantId || "")
-        setTestSecretKey(savedKeys.testSecretKey || "")
+        mapProviderKeysToState(id, savedKeys)
         setIsTestMode(savedKeys.isTestMode !== undefined ? savedKeys.isTestMode : true)
         setConfiguringProvider(id)
     }
 
     // Validate keys based on provider
     const validateProviderKeys = (providerId: string): { valid: boolean; error?: string } => {
-        const merchantId = isTestMode ? testMerchantId : liveMerchantId
-        const secretKey = isTestMode ? testSecretKey : liveSecretKey
-        
-        if (!merchantId.trim() || !secretKey.trim()) {
-            return { valid: false, error: "Both Merchant ID and Secret Key are required" }
-        }
-        
+        const key1 = (isTestMode ? testKey1 : liveKey1).trim()
+        const key2 = (isTestMode ? testKey2 : liveKey2).trim()
+
         switch (providerId) {
             case 'payfast':
-                // PayFast: Merchant ID should be numeric, key should be alphanumeric
-                if (!/^\d+$/.test(merchantId)) {
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Merchant ID and Merchant Key are required" }
+                }
+                if (!/^\d+$/.test(key1)) {
                     return { valid: false, error: "PayFast Merchant ID must be numeric (e.g., 10000100)" }
                 }
-                if (merchantId.length < 5) {
+                if (key1.length < 5) {
                     return { valid: false, error: "PayFast Merchant ID seems too short" }
                 }
                 break
                 
             case 'yoco':
-                // Yoco: Secret keys start with sk_test_ or sk_live_
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Public Key and Secret Key are required" }
+                }
                 const yocoPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
-                if (!secretKey.startsWith(yocoPrefix)) {
+                if (!key2.startsWith(yocoPrefix)) {
                     return { valid: false, error: `Yoco ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${yocoPrefix}"` }
                 }
                 break
                 
             case 'paystack':
-                // PayStack: Secret keys start with sk_test_ or sk_live_
+                if (!key2) {
+                    return { valid: false, error: "Secret Key is required" }
+                }
                 const paystackPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
-                if (!secretKey.startsWith(paystackPrefix)) {
+                if (!key2.startsWith(paystackPrefix)) {
                     return { valid: false, error: `PayStack ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${paystackPrefix}"` }
                 }
                 break
                 
             case 'ozow':
-                // Ozow: Site Code and Private Key validation
-                if (merchantId.length < 4) {
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Site Code and Private Key are required" }
+                }
+                if (key1.length < 4) {
                     return { valid: false, error: "Ozow Site Code seems too short" }
                 }
-                if (secretKey.length < 10) {
+                if (key2.length < 10) {
                     return { valid: false, error: "Ozow Private Key seems too short" }
                 }
                 break
                 
             case 'peach':
-                // Peach Payments: Entity ID and Access Token
-                if (merchantId.length < 10) {
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Entity ID and Access Token are required" }
+                }
+                if (key1.length < 10) {
                     return { valid: false, error: "Peach Payments Entity ID seems too short" }
                 }
-                if (secretKey.length < 20) {
+                if (key2.length < 20) {
                     return { valid: false, error: "Peach Payments Access Token seems too short" }
                 }
                 break
@@ -222,12 +415,7 @@ export default function PayGatePage() {
                     active_provider: newActiveProvider,
                     test_mode: isTestMode,
                     connected_providers: newConnectedProviders,
-                    keys: {
-                        liveMerchantId,
-                        liveSecretKey,
-                        testMerchantId,
-                        testSecretKey
-                    }
+                    keys: buildKeysPayload(id)
                 })
             })
             
@@ -242,8 +430,13 @@ export default function PayGatePage() {
             setProviderKeys({
                 ...providerKeys,
                 [id]: {
-                    liveMerchantId, liveSecretKey,
-                    testMerchantId, testSecretKey,
+                    ...buildKeysPayload(id),
+                    // Also keep the raw fields for local edits in the dialog.
+                    testKey1,
+                    testKey2,
+                    liveKey1,
+                    liveKey2,
+                    passphrase,
                     isTestMode
                 }
             })
@@ -444,29 +637,80 @@ export default function PayGatePage() {
                                                 <Switch checked={isTestMode} onCheckedChange={handleTestModeChange} />
                                             </div>
 
-                                            <div className="space-y-1.5">
-                                                <Label className="text-[10px] uppercase font-bold text-neutral-500">
-                                                    {isTestMode ? "Test Merchant ID" : "Live Merchant ID"}
-                                                </Label>
-                                                <Input
-                                                    value={isTestMode ? testMerchantId : liveMerchantId}
-                                                    onChange={(e) => isTestMode ? setTestMerchantId(e.target.value) : setLiveMerchantId(e.target.value)}
-                                                    placeholder={isTestMode ? "test-123..." : "live-123..."}
-                                                    className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
-                                                />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <Label className="text-[10px] uppercase font-bold text-neutral-500">
-                                                    {isTestMode ? "Test Secret Key" : "Live Secret Key"}
-                                                </Label>
-                                                <Input
-                                                    type="password"
-                                                    value={isTestMode ? testSecretKey : liveSecretKey}
-                                                    onChange={(e) => isTestMode ? setTestSecretKey(e.target.value) : setLiveSecretKey(e.target.value)}
-                                                    placeholder={isTestMode ? "sk_test_..." : "sk_live_..."}
-                                                    className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
-                                                />
-                                            </div>
+                                            {provider.id === 'payfast' ? (
+                                                <>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Merchant ID</Label>
+                                                        <Input
+                                                            value={testKey1}
+                                                            onChange={(e) => setTestKey1(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).test1}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Merchant Key</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={testKey2}
+                                                            onChange={(e) => setTestKey2(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).test2}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Salt Passphrase (Optional)</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={passphrase}
+                                                            onChange={(e) => setPassphrase(e.target.value)}
+                                                            placeholder="Optional but recommended"
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).test1}</Label>
+                                                        <Input
+                                                            value={testKey1}
+                                                            onChange={(e) => setTestKey1(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).test1}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).test2}</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={testKey2}
+                                                            onChange={(e) => setTestKey2(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).test2}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).live1}</Label>
+                                                        <Input
+                                                            value={liveKey1}
+                                                            onChange={(e) => setLiveKey1(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).live1}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).live2}</Label>
+                                                        <Input
+                                                            type="password"
+                                                            value={liveKey2}
+                                                            onChange={(e) => setLiveKey2(e.target.value)}
+                                                            placeholder={getProviderPlaceholders(provider.id).live2}
+                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                        />
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
 
                                         <Button
