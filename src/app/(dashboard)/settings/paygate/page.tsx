@@ -51,6 +51,13 @@ const providers = [
         logo: "https://www.peachpayments.com/hubfs/Peach%20Payments%20Logo.svg",
         connected: false,
     },
+    {
+        id: "stripe",
+        name: "Stripe",
+        description: "Global payments platform. Accept cards and wallets worldwide via Stripe Checkout.",
+        logo: "https://stripe.com/img/v3/home/social.png",
+        connected: false,
+    },
 ]
 
 export default function PayGatePage() {
@@ -148,6 +155,13 @@ export default function PayGatePage() {
                     live1: 'Live public key (optional)',
                     live2: 'Live secret key',
                 }
+            case 'stripe':
+                return {
+                    test1: 'Test publishable key',
+                    test2: 'Test secret key',
+                    live1: 'Live publishable key',
+                    live2: 'Live secret key',
+                }
             default:
                 return {
                     test1: 'Test key 1',
@@ -195,6 +209,13 @@ export default function PayGatePage() {
                     live1: 'entity id',
                     live2: 'access token',
                 }
+            case 'stripe':
+                return {
+                    test1: 'pk_test_...',
+                    test2: 'sk_test_...',
+                    live1: 'pk_live_...',
+                    live2: 'sk_live_...',
+                }
             default:
                 return {
                     test1: 'test-...',
@@ -211,6 +232,15 @@ export default function PayGatePage() {
             setTestKey2("")
             setLiveKey1("")
             setLiveKey2("")
+            setPassphrase("")
+            return
+        }
+
+        if (providerId === 'stripe') {
+            setTestKey1(savedKeys.testPublishableKey || "")
+            setTestKey2(savedKeys.testSecretKey || "")
+            setLiveKey1(savedKeys.livePublishableKey || "")
+            setLiveKey2(savedKeys.liveSecretKey || "")
             setPassphrase("")
             return
         }
@@ -288,6 +318,15 @@ export default function PayGatePage() {
                 merchantId: testKey1,
                 merchantKey: testKey2,
                 passphrase,
+            }
+        }
+
+        if (providerId === 'stripe') {
+            return {
+                testPublishableKey: testKey1,
+                testSecretKey: testKey2,
+                livePublishableKey: liveKey1,
+                liveSecretKey: liveKey2,
             }
         }
 
@@ -672,40 +711,25 @@ export default function PayGatePage() {
                                             ) : (
                                                 <>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).test1}</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">
+                                                            {isTestMode ? getProviderFieldLabels(provider.id).test1 : getProviderFieldLabels(provider.id).live1}
+                                                        </Label>
                                                         <Input
-                                                            value={testKey1}
-                                                            onChange={(e) => setTestKey1(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).test1}
+                                                            value={isTestMode ? testKey1 : liveKey1}
+                                                            onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
+                                                            placeholder={isTestMode ? getProviderPlaceholders(provider.id).test1 : getProviderPlaceholders(provider.id).live1}
                                                             className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).test2}</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">
+                                                            {isTestMode ? getProviderFieldLabels(provider.id).test2 : getProviderFieldLabels(provider.id).live2}
+                                                        </Label>
                                                         <Input
                                                             type="password"
-                                                            value={testKey2}
-                                                            onChange={(e) => setTestKey2(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).test2}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).live1}</Label>
-                                                        <Input
-                                                            value={liveKey1}
-                                                            onChange={(e) => setLiveKey1(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).live1}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">{getProviderFieldLabels(provider.id).live2}</Label>
-                                                        <Input
-                                                            type="password"
-                                                            value={liveKey2}
-                                                            onChange={(e) => setLiveKey2(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).live2}
+                                                            value={isTestMode ? testKey2 : liveKey2}
+                                                            onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
+                                                            placeholder={isTestMode ? getProviderPlaceholders(provider.id).test2 : getProviderPlaceholders(provider.id).live2}
                                                             className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>

@@ -67,10 +67,38 @@ export default function PayInvoicePage() {
         if (typeof window !== 'undefined' && invoice) {
             const params = new URLSearchParams(window.location.search)
             const status = params.get('status')
+            const provider = params.get('provider')
+            const sessionId = params.get('session_id')
             if (status === 'success') {
                 toast.success("Payment Received", {
                     description: "Your payment is being processed. Thank you!"
                 })
+
+                // Stripe requires verifying the Checkout Session before marking an invoice paid.
+                if (provider === 'stripe' && sessionId) {
+                    fetch('/api/paygate/verify-stripe', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            invoiceId: invoice.id,
+                            sessionId,
+                            workspaceId: invoice.workspace_id,
+                        })
+                    }).then(async (res) => {
+                        const json = await res.json().catch(() => null)
+                        if (!res.ok || !json?.success) {
+                            throw new Error(json?.error || 'Stripe verification failed')
+                        }
+                        window.location.href = window.location.pathname
+                    }).catch(err => {
+                        console.error("Stripe verification failed:", err)
+                        toast.error("Payment verification failed", {
+                            description: err?.message || 'Please contact the sender.'
+                        })
+                    })
+                    return
+                }
+
                 // Fallback: Update invoice status directly in case webhook didn't fire
                 // This handles cases where PayFast can't reach our webhook (e.g., localhost)
                 fetch('/api/invoices/mark-paid', {
@@ -108,6 +136,8 @@ export default function PayInvoicePage() {
             const urlProvider = new URLSearchParams(window.location.search).get('provider')
             const invoiceProvider = invoice.payment_provider
             const provider = urlProvider || invoiceProvider || 'payfast'
+
+            const customerEmail = invoice?.customers?.email || invoice?.customer_email
             
             const response = await fetch('/api/paygate/generate-link', {
                 method: 'POST',
@@ -118,7 +148,8 @@ export default function PayInvoicePage() {
                     currency: invoice.currency || 'ZAR',
                     provider,
                     invoiceNumber: invoice.invoice_number,
-                    workspaceId: invoice.workspace_id
+                    workspaceId: invoice.workspace_id,
+                    email: customerEmail
                 })
             })
 

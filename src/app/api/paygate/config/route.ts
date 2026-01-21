@@ -86,6 +86,8 @@ export async function GET(req: Request) {
                     if (k.key_name === 'private_key') keys.testPrivateKey = maskKey(k.key_value)
                     if (k.key_name === 'entity_id') keys.testEntityId = maskKey(k.key_value)
                     if (k.key_name === 'access_token') keys.testAccessToken = maskKey(k.key_value)
+                    if (k.key_name === 'publishable_key') keys.testPublishableKey = maskKey(k.key_value)
+                    if (k.key_name === 'secret_key') keys.testSecretKey = maskKey(k.key_value)
                 }
                 for (const k of liveKeys || []) {
                     if (k.key_name === 'merchant_id') keys.liveMerchantId = maskKey(k.key_value)
@@ -97,6 +99,8 @@ export async function GET(req: Request) {
                     if (k.key_name === 'private_key') keys.livePrivateKey = maskKey(k.key_value)
                     if (k.key_name === 'entity_id') keys.liveEntityId = maskKey(k.key_value)
                     if (k.key_name === 'access_token') keys.liveAccessToken = maskKey(k.key_value)
+                    if (k.key_name === 'publishable_key') keys.livePublishableKey = maskKey(k.key_value)
+                    if (k.key_name === 'secret_key') keys.liveSecretKey = maskKey(k.key_value)
                 }
                 if (Object.keys(keys).length > 0) {
                     providerKeys[provider] = keys
@@ -220,6 +224,12 @@ export async function POST(req: Request) {
             add('test', 'access_token', keys.testAccessToken)
             add('live', 'entity_id', keys.liveEntityId)
             add('live', 'access_token', keys.liveAccessToken)
+
+            // Stripe: test/live publishable + secret
+            add('test', 'publishable_key', keys.testPublishableKey)
+            add('test', 'secret_key', keys.testSecretKey)
+            add('live', 'publishable_key', keys.livePublishableKey)
+            add('live', 'secret_key', keys.liveSecretKey)
 
             for (const entry of keyEntries) {
                 const { error: keyError } = await serviceClient
