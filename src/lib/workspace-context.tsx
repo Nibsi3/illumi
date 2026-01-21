@@ -141,8 +141,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         // Enforce a 7-day max "stay signed in" window.
         const enforceMaxSessionAge = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession()
-                if (!session) return
+                const { data: { user }, error: userError } = await supabase.auth.getUser()
+                if (userError || !user) return
 
                 const existing = localStorage.getItem(SIGNED_IN_AT_KEY)
                 const signedInAt = existing ? Number(existing) : NaN

@@ -40,7 +40,11 @@ export async function GET(request: NextRequest) {
                     },
                     setAll(cookiesToSet) {
                         cookiesToSet.forEach(({ name, value, options }) => {
-                            response.cookies.set(name, value, options)
+                            const opts: any = { ...(options || {}) }
+                            if (opts.maxAge === undefined && !opts.expires) {
+                                opts.maxAge = 60 * 60 * 24 * 7
+                            }
+                            response.cookies.set(name, value, opts)
                         })
                     },
                 },
