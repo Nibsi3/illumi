@@ -76,7 +76,7 @@ export function CustomerDrawer({ open, onOpenChange, onCustomerCreated }: Custom
 
             if (error) throw error
 
-            toast.success("Customer created successfully")
+            toast.success("Client created successfully")
             if (onCustomerCreated) onCustomerCreated(data)
             onOpenChange(false)
 
@@ -95,7 +95,7 @@ export function CustomerDrawer({ open, onOpenChange, onCustomerCreated }: Custom
             setTaxId("")
             setNotes("")
         } catch (error: any) {
-            toast.error("Failed to create customer", {
+            toast.error("Failed to create client", {
                 description: error.message
             })
         } finally {
@@ -111,7 +111,7 @@ export function CustomerDrawer({ open, onOpenChange, onCustomerCreated }: Custom
                     <div className="p-8 flex-1 overflow-y-auto">
                         <div className="flex items-center justify-between mb-8">
                             <Drawer.Title className="text-3xl font-serif font-bold tracking-tight">
-                                Create Customer
+                                Create Client
                             </Drawer.Title>
                             <Button
                                 variant="ghost"

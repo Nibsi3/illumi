@@ -166,7 +166,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 
                     {!loading && !query && (
                         <div className="p-4 text-center text-neutral-500 text-sm">
-                            Start typing to search vault files and customers...
+                            Start typing to search vault files and clients...
                         </div>
                     )}
 
@@ -238,7 +238,7 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
                     {groupedResults.customer.length > 0 && (
                         <div>
                             <div className="px-4 py-2 text-xs font-medium text-amber-500">
-                                Customers
+                                Clients
                             </div>
                             {groupedResults.customer.map((result, index) => {
                                 const globalIndex = groupedResults.vault.length + index

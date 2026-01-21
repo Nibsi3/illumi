@@ -763,7 +763,7 @@ export default function NewInvoicePage() {
                                                     <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
                                                     <p className="text-[10px] text-neutral-500">Recurring invoices are only available on the Pro plan.</p>
                                                     <Button
-                                                        onClick={() => toast.error("Pro Feature", { description: "Recurring invoices are only available on the Pro plan." })}
+                                                        onClick={() => router.push('/settings/billing')}
                                                         className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
                                                     >
                                                         Upgrade to Pro

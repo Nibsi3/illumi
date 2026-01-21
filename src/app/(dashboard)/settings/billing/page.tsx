@@ -232,9 +232,9 @@ function BillingContent() {
                         </Button>
                     </div>
 
-                    <div className="space-y-3 flex-1">
+                    <div className="border border-white/5 rounded-xl bg-[#09090b] flex-1">
                         {billingMethods.length === 0 && (
-                            <div className="p-8 border border-white/5 border-dashed rounded-xl bg-[#09090b] text-center min-h-[96px] flex items-center justify-center">
+                            <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
                                 <p className="text-sm text-neutral-500">No payment methods added.</p>
                             </div>
                         )}
@@ -242,8 +242,8 @@ function BillingContent() {
                             <div
                                 key={card.id}
                                 className={cn(
-                                    "p-4 rounded-xl border transition-all flex items-center justify-between group",
-                                    card.isDefault ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b] hover:bg-white/2"
+                                    "p-4 border-t border-white/5 transition-all flex items-center justify-between group first:border-t-0",
+                                    card.isDefault ? "bg-white/5" : "hover:bg-white/2"
                                 )}
                             >
                                 <div className="flex items-center gap-4">

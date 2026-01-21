@@ -56,7 +56,25 @@ type ExpenseOccurrence = Expense & {
     is_generated: boolean
 }
 
-const CATEGORIES = ["Rent", "Supplies", "Marketing", "Utilities", "Other"] as const
+const CATEGORIES = [
+    "Rent",
+    "Utilities",
+    "Internet & Phone",
+    "Software & Subscriptions",
+    "Office Supplies",
+    "Equipment",
+    "Repairs & Maintenance",
+    "Fuel & Travel",
+    "Meals & Entertainment",
+    "Marketing & Advertising",
+    "Bank Fees",
+    "Professional Services",
+    "Insurance",
+    "Training",
+    "Salaries & Wages",
+    "SARS & Tax",
+    "Other",
+] as const
 
 function startOfMonthISO(d: Date) {
     const x = new Date(d)

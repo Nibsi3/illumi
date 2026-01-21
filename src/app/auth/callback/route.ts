@@ -20,11 +20,19 @@ export async function GET(request: Request) {
     const hostLower = (host || '').toLowerCase()
     const isLocalHost = hostLower.includes('localhost') || hostLower.includes('127.0.0.1')
 
-    // In local dev, always redirect back to the *current* host/origin (e.g. localhost:3001)
-    // even if NEXT_PUBLIC_URL is set to production.
-    let origin = isLocalHost && host
-        ? `${proto}://${host}`
-        : (process.env.NEXT_PUBLIC_URL || (host ? `${proto}://${host}` : requestUrl.origin))
+    // Prefer redirecting back to the *request* host/origin. This avoids bouncing between
+    // www and non-www, which causes users to appear logged out and re-prompt Google OAuth.
+    let origin = host ? `${proto}://${host}` : requestUrl.origin
+
+    // In local dev, always use the current host.
+    if (isLocalHost && host) {
+        origin = `${proto}://${host}`
+    }
+
+    // As a last resort (misconfigured proxies), fall back to configured site URL.
+    if (!origin || origin === 'null') {
+        origin = process.env.NEXT_PUBLIC_URL || requestUrl.origin
+    }
 
     origin = origin.replace(/\/$/, '')
 

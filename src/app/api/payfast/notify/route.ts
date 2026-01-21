@@ -68,14 +68,11 @@ function validateSignature(data: Record<string, string>, signature: string): boo
 
 // Validate source IP
 function validateIP(ip: string): boolean {
-    // In development, allow localhost
-    if (process.env.NODE_ENV === "development") {
-        return true
-    }
-    
+    // In development, allow all
+    if (process.env.NODE_ENV === "development") return true
+
     // Extract IP from possible X-Forwarded-For header format
     const cleanIP = ip.split(",")[0].trim()
-    
     return PAYFAST_IPS.includes(cleanIP)
 }
 
@@ -87,11 +84,11 @@ export async function POST(request: NextRequest) {
         const clientIP = forwardedFor || realIP || "unknown"
         
         console.log("[PayFast ITN] Received notification from IP:", clientIP)
-        
-        // Validate IP address
-        if (!validateIP(clientIP)) {
-            console.error("[PayFast ITN] Invalid source IP:", clientIP)
-            return new NextResponse("Invalid source IP", { status: 403 })
+
+        // Best-effort IP validation.
+        // On Vercel, proxy headers can be inconsistent; signature/passphrase validation is the primary security control.
+        if (clientIP !== "unknown" && !validateIP(clientIP)) {
+            console.warn("[PayFast ITN] Source IP not in known PayFast ranges (continuing due to signature validation):", clientIP)
         }
         
         // Parse form data

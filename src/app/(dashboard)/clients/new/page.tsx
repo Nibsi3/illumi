@@ -62,7 +62,7 @@ export default function NewClientPage() {
 
     const handleCreate = async () => {
         if (!name) {
-            toast.error("Customer name is required")
+            toast.error("Client name is required")
             return
         }
         if (!email) {
@@ -100,10 +100,10 @@ export default function NewClientPage() {
 
             if (error) throw error
 
-            toast.success("Customer created successfully")
+            toast.success("Client created successfully")
             router.push("/clients")
         } catch (error: any) {
-            toast.error("Failed to create customer", { description: error.message })
+            toast.error("Failed to create client", { description: error.message })
         } finally {
             setIsLoading(false)
         }
@@ -117,12 +117,12 @@ export default function NewClientPage() {
                     {/* Back Link */}
                     <Link href="/clients" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
                         <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Back to Customers</span>
+                        <span className="text-xs font-bold uppercase tracking-widest">Back to Clients</span>
                     </Link>
 
                     <div className="flex items-center justify-between mb-20">
                         <div>
-                            <h1 className="text-5xl font-serif text-white mb-2 italic">New Customer</h1>
+                            <h1 className="text-5xl font-serif text-white mb-2 italic">New Client</h1>
                             <p className="text-neutral-500 font-mono text-sm tracking-widest">Add a new client to your workspace</p>
                         </div>
                     </div>
@@ -257,7 +257,7 @@ export default function NewClientPage() {
                             <div className="space-y-4 text-left">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Information</span>
                                 <p className="text-[10px] text-neutral-500 leading-relaxed font-medium">
-                                    Creating a customer allows you to assign invoices, track expenses, and manage communications in one place. Ensure the contact person is correct for automated reminders.
+                                    Creating a client allows you to assign invoices, track expenses, and manage communications in one place. Ensure the contact person is correct for automated reminders.
                                 </p>
                             </div>
 
@@ -280,22 +280,22 @@ export default function NewClientPage() {
                             </div>
                         </div>
 
-                        {/* Actions at the bottom of the centered block */}
-                        <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="flex items-center gap-3 pt-2">
                             <Button
-                                className="w-full h-12 bg-white text-black hover:bg-neutral-200 transition-colors font-black uppercase tracking-tighter text-xs"
+                                variant="outline"
+                                className="h-12 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 px-6 font-bold"
+                                onClick={() => router.push("/clients")}
+                                disabled={isLoading}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                className="h-12 rounded-xl bg-white text-black hover:bg-neutral-200 shadow-2xl px-8 font-bold"
                                 onClick={handleCreate}
                                 disabled={isLoading}
                             >
                                 <Plus className="h-4 w-4 mr-2" />
-                                {isLoading ? "Saving..." : "Create Customer"}
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full h-12 border-white/10 bg-transparent hover:bg-white/5 text-white transition-colors font-bold uppercase tracking-tighter text-xs"
-                                onClick={() => router.back()}
-                            >
-                                Cancel
+                                {isLoading ? "Saving..." : "Create Client"}
                             </Button>
                         </div>
                     </div>

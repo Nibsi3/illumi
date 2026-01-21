@@ -96,7 +96,7 @@ export default function ClientsPage() {
             if (error) throw error
             refetch()
         } catch (error: any) {
-            toast.error("Failed to update customer", { description: error.message })
+            toast.error("Failed to update client", { description: error.message })
         }
     }
 
@@ -133,9 +133,9 @@ export default function ClientsPage() {
             if (error) throw error
 
             refetch()
-            toast.success("Customer deleted")
+            toast.success("Client deleted")
         } catch (error: any) {
-            toast.error("Failed to delete customer", { description: error.message })
+            toast.error("Failed to delete client", { description: error.message })
         }
     }
 
@@ -148,8 +148,8 @@ export default function ClientsPage() {
         <div className="flex flex-col gap-y-10 font-sans pb-20">
             {/* Header Section */}
             <div>
-                <h1 className="text-4xl font-serif text-white tracking-tight italic">Customers</h1>
-                <p className="text-neutral-500 mt-1">Manage your customers and the invoices you send to them.</p>
+                <h1 className="text-4xl font-serif text-white tracking-tight italic">Clients</h1>
+                <p className="text-neutral-500 mt-1">Manage your clients and the invoices you send to them.</p>
             </div>
 
             {/* Filter & Actions Bar */}
@@ -198,7 +198,7 @@ export default function ClientsPage() {
                     <Link href="/clients/new">
                         <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-semibold rounded-none">
                             <Plus className="mr-2 h-4 w-4" />
-                            Create Customer
+                            Create Client
                         </Button>
                     </Link>
                 </div>
@@ -217,14 +217,14 @@ export default function ClientsPage() {
                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
                         <Building2 className="h-8 w-8 text-white/40" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">No customers yet</h3>
+                    <h3 className="text-xl font-bold text-white mb-2">No clients yet</h3>
                     <p className="text-neutral-500 mb-6 max-w-md mx-auto">
-                        Start by adding your first customer. You'll be able to send invoices and track payments.
+                        Start by adding your first client. You'll be able to send invoices and track payments.
                     </p>
                     <Link href="/clients/new">
                         <Button className="bg-white text-black hover:bg-neutral-200 font-semibold">
                             <Plus className="mr-2 h-4 w-4" />
-                            Create Your First Customer
+                            Create Your First Client
                         </Button>
                     </Link>
                 </div>

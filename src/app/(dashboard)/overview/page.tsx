@@ -33,10 +33,12 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
+import { useSubscription } from "@/lib/subscription/hooks"
 
 export default function DashboardPage() {
     const router = useRouter();
     const { currency } = useSettings();
+    const { isPro } = useSubscription()
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState("1 year");
 
@@ -346,21 +348,47 @@ export default function DashboardPage() {
             {view === "overview" ? (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 w-full">
                     <div className="lg:col-span-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Link href="/recurring" className="block">
-                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
-                                <div className="flex flex-col justify-between h-full">
-                                    <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
-                                        <IconClock className="h-4 w-4" />
-                                        Recurring
+                        {isPro ? (
+                            <Link href="/recurring" className="block">
+                                <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
+                                    <div className="flex flex-col justify-between h-full">
+                                        <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                            <IconClock className="h-4 w-4" />
+                                            Recurring
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
+                                            <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} {metrics.recurring.toLocaleString()}</div>
+                                            <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Based on active subscriptions</div>
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
-                                        <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} {metrics.recurring.toLocaleString()}</div>
-                                        <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Based on active subscriptions</div>
+                                </Card>
+                            </Link>
+                        ) : (
+                            <div className="block">
+                                <Card
+                                    className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 group min-h-[190px] shadow-2xl opacity-70 cursor-not-allowed"
+                                    onClick={() => router.push('/settings/billing')}
+                                    role="button"
+                                    tabIndex={0}
+                                >
+                                    <div className="flex flex-col justify-between h-full">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
+                                                <IconClock className="h-4 w-4" />
+                                                Recurring
+                                            </div>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">Pro</span>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <div className="text-[11px] text-muted-foreground">Monthly Recurring Revenue</div>
+                                            <div className="text-4xl font-serif font-bold tracking-tight italic">{currency} 0</div>
+                                            <div className="text-[10px] text-neutral-500 font-medium tracking-tight">Upgrade to enable recurring invoices</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </Card>
-                        </Link>
+                                </Card>
+                            </div>
+                        )}
 
                         <Link href="/inbox" className="block">
                             <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
@@ -402,10 +430,10 @@ export default function DashboardPage() {
                                 <div className="flex flex-col justify-between h-full">
                                     <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                         <IconUsers className="h-4 w-4" />
-                                        Customers
+                                        Clients
                                     </div>
                                     <div className="space-y-2">
-                                        <div className="text-[11px] text-muted-foreground">Total active customers</div>
+                                        <div className="text-[11px] text-muted-foreground">Total active clients</div>
                                         <div className="text-4xl font-serif font-bold tracking-tight italic">{metrics.customers}</div>
                                         <div className="text-[10px] text-neutral-500 font-medium">Keep growing!</div>
                                     </div>
@@ -447,7 +475,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="lg:col-span-7 flex flex-col gap-6">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[380px]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[386px]">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconChartBar className="h-4 w-4" />
@@ -481,7 +509,7 @@ export default function DashboardPage() {
                             </div>
                         </Card>
 
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[220px]">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 shadow-2xl min-h-[190px]">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">
                                     <IconFileAnalytics className="h-4 w-4" />

@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Clock, Calendar, ArrowRight, MoreHorizontal, User, RefreshCw } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { useSubscription } from "@/lib/subscription/hooks"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,6 +42,27 @@ const mockRecurring = [
 
 export default function RecurringInvoicesPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const { isPro, isLoading } = useSubscription()
+
+    if (isLoading) return null
+
+    if (!isPro) {
+        return (
+            <div className="flex flex-col gap-y-8 animate-in fade-in duration-500 pb-20">
+                <div className="flex flex-col items-start justify-center min-h-[60vh]">
+                    <h1 className="text-4xl font-serif text-white tracking-tight italic">Recurring</h1>
+                    <p className="text-muted-foreground mt-2 max-w-xl">Recurring invoices are a Pro feature. Upgrade to automate your monthly billing.</p>
+                    <div className="mt-6">
+                        <Link href="/settings/billing">
+                            <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-bold">
+                                Upgrade to Pro
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col gap-y-8 animate-in fade-in duration-500 pb-20">
@@ -114,7 +137,7 @@ export default function RecurringInvoicesPage() {
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-left text-[13px]">
                         <thead>
-                            <tr className="bg-white/[0.02] border-b border-white/10">
+                            <tr className="bg-white/2 border-b border-white/10">
                                 <th className="px-5 py-3 w-10 border-r border-white/10">
                                     <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors" />
                                 </th>
@@ -128,7 +151,7 @@ export default function RecurringInvoicesPage() {
                         </thead>
                         <tbody>
                             {mockRecurring.map((item) => (
-                                <tr key={item.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/10 group last:border-0">
+                                <tr key={item.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
                                     <td className="px-5 py-4 border-r border-white/10">
                                         <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
                                     </td>

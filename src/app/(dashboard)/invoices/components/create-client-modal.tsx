@@ -30,7 +30,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {
-                toast.error("You must be logged in to create a customer")
+                toast.error("You must be logged in to create a client")
                 return
             }
 
@@ -48,7 +48,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
 
             if (error) throw error
 
-            toast.success("Customer created successfully")
+            toast.success("Client created successfully")
             if (onSuccess) {
                 onSuccess(data)
             }
@@ -57,7 +57,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
             setEmail("")
             setAddress("")
         } catch (error: any) {
-            toast.error("Failed to create customer", {
+            toast.error("Failed to create client", {
                 description: error.message
             })
         } finally {
@@ -69,11 +69,11 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Create New Customer</DialogTitle>
+                    <DialogTitle>Create New Client</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6 pt-4">
                     <div className="space-y-2">
-                        <Label>Customer Name</Label>
+                        <Label>Client Name</Label>
                         <Input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
@@ -108,7 +108,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                         </Button>
                         <Button type="submit" disabled={isLoading} className="bg-white text-black hover:bg-neutral-200">
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                            Create Customer
+                            Create Client
                         </Button>
                     </div>
                 </form>

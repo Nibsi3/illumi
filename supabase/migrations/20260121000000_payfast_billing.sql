@@ -80,10 +80,6 @@ ALTER TABLE public.subscription_payments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view their own subscription payments" ON public.subscription_payments
   FOR SELECT USING (auth.uid() = user_id);
 
--- Service role can insert payments (for ITN webhook)
-CREATE POLICY "Service role can insert payments" ON public.subscription_payments
-  FOR INSERT WITH CHECK (true);
-
 -- Index for performance
 CREATE INDEX IF NOT EXISTS idx_subscription_payments_workspace_id ON public.subscription_payments(workspace_id);
 CREATE INDEX IF NOT EXISTS idx_subscription_payments_user_id ON public.subscription_payments(user_id);

@@ -124,7 +124,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             icon: <IconCash className="h-5 w-5 shrink-0" />,
         },
         {
-            label: "Customers",
+            label: "Clients",
             href: "/clients",
             icon: <IconUsers className="h-5 w-5 shrink-0" />,
         },
@@ -226,7 +226,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-[60] max-h-64 overflow-y-auto"
+                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-60 max-h-64 overflow-y-auto"
                                     >
                                         {workspaces.map((ws) => (
                                             <div
