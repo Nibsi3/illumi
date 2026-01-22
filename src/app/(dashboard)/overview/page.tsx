@@ -394,7 +394,7 @@ export default function DashboardPage() {
                             </div>
                         )}
 
-                        <Link href="/inbox" className="block">
+                        <Link href="/invoices?status=pending" className="block">
                             <Card className="bg-[#0c0c0c] border border-white/5 rounded-2xl p-6 hover:bg-white/2 transition-colors group min-h-[190px] shadow-2xl">
                                 <div className="flex flex-col justify-between h-full">
                                     <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest font-bold text-muted-foreground">

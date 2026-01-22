@@ -1,10 +1,49 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { addDays, addWeeks, addMonths, addYears } from "date-fns"
+import { addDays, addWeeks, addMonths, addYears, setDay, lastDayOfMonth, getDay } from "date-fns"
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+
+// Helper function to calculate monthly recurring date based on week of month
+// e.g., "fourth Thursday" or "last Friday"
+function calculateMonthlyWeekDate(baseDate: Date, monthsToAdd: number, weekOfMonth: string | null, dayOfWeek: number | null): Date {
+    if (!weekOfMonth || dayOfWeek === null || dayOfWeek === undefined) {
+        return addMonths(baseDate, monthsToAdd)
+    }
+
+    const targetMonth = addMonths(baseDate, monthsToAdd)
+    const year = targetMonth.getFullYear()
+    const month = targetMonth.getMonth()
+
+    if (weekOfMonth === 'last') {
+        // Find last occurrence of dayOfWeek in the month
+        const lastDay = lastDayOfMonth(new Date(year, month, 1))
+        let date = new Date(lastDay)
+        while (getDay(date) !== dayOfWeek) {
+            date = addDays(date, -1)
+        }
+        return date
+    }
+
+    // Find first occurrence of dayOfWeek in the month
+    const firstDay = new Date(year, month, 1)
+    let firstOccurrence = new Date(firstDay)
+    while (getDay(firstOccurrence) !== dayOfWeek) {
+        firstOccurrence = addDays(firstOccurrence, 1)
+    }
+
+    // Add weeks based on weekOfMonth
+    const weekMap: { [key: string]: number } = {
+        'first': 0,
+        'second': 1,
+        'third': 2,
+        'fourth': 3
+    }
+    const weeksToAdd = weekMap[weekOfMonth] || 0
+    return addWeeks(firstOccurrence, weeksToAdd)
+}
 
 // Cron job endpoint for processing recurring invoices
 // Should be called daily for production
@@ -97,16 +136,82 @@ export async function GET(req: Request) {
                     baseDate = addDays(issueDateBase, occurrences)
                     break
                 case 'weekly':
-                    baseDate = addWeeks(issueDateBase, occurrences)
+                    // Weekly on specific day of week
+                    if (invoice.recurring_day_of_week !== null && invoice.recurring_day_of_week !== undefined) {
+                        baseDate = setDay(addWeeks(issueDateBase, occurrences), invoice.recurring_day_of_week)
+                    } else {
+                        baseDate = addWeeks(issueDateBase, occurrences)
+                    }
+                    break
+                case 'bi-weekly':
+                    // Bi-weekly on specific day of week
+                    if (invoice.recurring_day_of_week !== null && invoice.recurring_day_of_week !== undefined) {
+                        baseDate = setDay(addWeeks(issueDateBase, occurrences * 2), invoice.recurring_day_of_week)
+                    } else {
+                        baseDate = addWeeks(issueDateBase, occurrences * 2)
+                    }
                     break
                 case 'monthly':
-                    baseDate = addMonths(issueDateBase, occurrences)
+                    // Monthly on specific day of month
+                    if (invoice.recurring_day_of_month) {
+                        let monthDate = addMonths(issueDateBase, occurrences)
+                        monthDate.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(monthDate).getDate()))
+                        baseDate = monthDate
+                    } else {
+                        baseDate = addMonths(issueDateBase, occurrences)
+                    }
+                    break
+                case 'monthly-week':
+                    // Monthly on specific week and day (e.g., "fourth Thursday")
+                    baseDate = calculateMonthlyWeekDate(issueDateBase, occurrences, invoice.recurring_week_of_month, invoice.recurring_day_of_week)
+                    break
+                case 'monthly-last':
+                    // Monthly on last day of month
+                    baseDate = lastDayOfMonth(addMonths(issueDateBase, occurrences))
                     break
                 case 'quarterly':
-                    baseDate = addMonths(issueDateBase, occurrences * 3)
+                    // Quarterly on specific day of month
+                    if (invoice.recurring_day_of_month) {
+                        let quarterDate = addMonths(issueDateBase, occurrences * 3)
+                        quarterDate.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(quarterDate).getDate()))
+                        baseDate = quarterDate
+                    } else {
+                        baseDate = addMonths(issueDateBase, occurrences * 3)
+                    }
+                    break
+                case 'semi-annually':
+                    // Semi-annually on specific day of month
+                    if (invoice.recurring_day_of_month) {
+                        let semiDate = addMonths(issueDateBase, occurrences * 6)
+                        semiDate.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(semiDate).getDate()))
+                        baseDate = semiDate
+                    } else {
+                        baseDate = addMonths(issueDateBase, occurrences * 6)
+                    }
                     break
                 case 'yearly':
-                    baseDate = addYears(issueDateBase, occurrences)
+                    // Yearly on specific day of month
+                    if (invoice.recurring_day_of_month) {
+                        let yearDate = addYears(issueDateBase, occurrences)
+                        yearDate.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(yearDate).getDate()))
+                        baseDate = yearDate
+                    } else {
+                        baseDate = addYears(issueDateBase, occurrences)
+                    }
+                    break
+                case 'custom':
+                    // Custom interval (e.g., every 3 days, every 2 weeks, every 4 months)
+                    const interval = invoice.recurring_custom_interval || 1
+                    const unit = invoice.recurring_custom_unit || 'days'
+                    if (unit === 'days') {
+                        baseDate = addDays(issueDateBase, occurrences * interval)
+                    } else if (unit === 'weeks') {
+                        baseDate = addWeeks(issueDateBase, occurrences * interval)
+                    } else if (unit === 'months') {
+                        baseDate = addMonths(issueDateBase, occurrences * interval)
+                    } else {
+                        baseDate = addMonths(issueDateBase, occurrences)
+                    }
                     break
                 default:
                     baseDate = addMonths(issueDateBase, occurrences)
@@ -117,13 +222,58 @@ export async function GET(req: Request) {
                     case 'daily':
                         return addDays(from, 1)
                     case 'weekly':
+                        if (invoice.recurring_day_of_week !== null && invoice.recurring_day_of_week !== undefined) {
+                            return setDay(addWeeks(from, 1), invoice.recurring_day_of_week)
+                        }
                         return addWeeks(from, 1)
+                    case 'bi-weekly':
+                        if (invoice.recurring_day_of_week !== null && invoice.recurring_day_of_week !== undefined) {
+                            return setDay(addWeeks(from, 2), invoice.recurring_day_of_week)
+                        }
+                        return addWeeks(from, 2)
                     case 'monthly':
+                        if (invoice.recurring_day_of_month) {
+                            let nextMonth = addMonths(from, 1)
+                            nextMonth.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(nextMonth).getDate()))
+                            return nextMonth
+                        }
                         return addMonths(from, 1)
+                    case 'monthly-week':
+                        return calculateMonthlyWeekDate(from, 1, invoice.recurring_week_of_month, invoice.recurring_day_of_week)
+                    case 'monthly-last':
+                        return lastDayOfMonth(addMonths(from, 1))
                     case 'quarterly':
+                        if (invoice.recurring_day_of_month) {
+                            let nextQuarter = addMonths(from, 3)
+                            nextQuarter.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(nextQuarter).getDate()))
+                            return nextQuarter
+                        }
                         return addMonths(from, 3)
+                    case 'semi-annually':
+                        if (invoice.recurring_day_of_month) {
+                            let nextSemi = addMonths(from, 6)
+                            nextSemi.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(nextSemi).getDate()))
+                            return nextSemi
+                        }
+                        return addMonths(from, 6)
                     case 'yearly':
+                        if (invoice.recurring_day_of_month) {
+                            let nextYear = addYears(from, 1)
+                            nextYear.setDate(Math.min(invoice.recurring_day_of_month, lastDayOfMonth(nextYear).getDate()))
+                            return nextYear
+                        }
                         return addYears(from, 1)
+                    case 'custom':
+                        const interval = invoice.recurring_custom_interval || 1
+                        const unit = invoice.recurring_custom_unit || 'days'
+                        if (unit === 'days') {
+                            return addDays(from, interval)
+                        } else if (unit === 'weeks') {
+                            return addWeeks(from, interval)
+                        } else if (unit === 'months') {
+                            return addMonths(from, interval)
+                        }
+                        return addMonths(from, 1)
                     default:
                         return addMonths(from, 1)
                 }
