@@ -143,9 +143,14 @@ export default function NewInvoicePage() {
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
     const [recurringInterval, setRecurringInterval] = useState("monthly")
-    const [recurringEndType, setRecurringEndType] = useState<"on" | "after" | "never" | "after_minutes">("never")
+    const [recurringEndType, setRecurringEndType] = useState<"on" | "after" | "never">("never")
     const [recurringEndDate, setRecurringEndDate] = useState<Date | undefined>(new Date(new Date().setFullYear(new Date().getFullYear() + 1)))
     const [recurringEndCount, setRecurringEndCount] = useState(12)
+    const [recurringDayOfWeek, setRecurringDayOfWeek] = useState<number>(4) // Thursday
+    const [recurringDayOfMonth, setRecurringDayOfMonth] = useState<number>(22)
+    const [recurringWeekOfMonth, setRecurringWeekOfMonth] = useState<string>("fourth")
+    const [recurringCustomInterval, setRecurringCustomInterval] = useState<number>(1)
+    const [recurringCustomUnit, setRecurringCustomUnit] = useState<string>("days")
     const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
     // Schedule State
@@ -377,8 +382,12 @@ export default function NewInvoicePage() {
                     isRecurring && recurringEndTypeForDb === 'after'
                         ? (overrides.recurringEndCount ?? recurringEndCount)
                         : null,
+                recurring_day_of_week: isRecurring && (recurringIntervalForDb === 'weekly' || recurringIntervalForDb === 'bi-weekly' || recurringIntervalForDb === 'monthly-week') ? recurringDayOfWeek : null,
+                recurring_day_of_month: isRecurring && (recurringIntervalForDb === 'monthly' || recurringIntervalForDb === 'quarterly' || recurringIntervalForDb === 'semi-annually' || recurringIntervalForDb === 'yearly') ? recurringDayOfMonth : null,
+                recurring_week_of_month: isRecurring && recurringIntervalForDb === 'monthly-week' ? recurringWeekOfMonth : null,
+                recurring_custom_interval: isRecurring && recurringIntervalForDb === 'custom' ? recurringCustomInterval : null,
+                recurring_custom_unit: isRecurring && recurringIntervalForDb === 'custom' ? recurringCustomUnit : null,
             }
-            console.log('[Invoice Save] Invoice data to insert:', invoiceData)
 
             const optionalInvoiceExtras = {
                 template: template,
@@ -779,20 +788,57 @@ export default function NewInvoicePage() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Frequency</Label>
-                                                        <Select value={recurringInterval} onValueChange={setRecurringInterval}>
+                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Repeat</Label>
+                                                        <Select value={recurringInterval} onValueChange={(val) => {
+                                                            setRecurringInterval(val)
+                                                            // Set sensible defaults based on selection
+                                                            if (val === 'weekly' || val === 'bi-weekly') {
+                                                                setRecurringDayOfWeek(4) // Thursday
+                                                            } else if (val === 'monthly' || val === 'quarterly' || val === 'semi-annually' || val === 'yearly') {
+                                                                setRecurringDayOfMonth(22)
+                                                            }
+                                                        }}>
                                                             <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs">
                                                                 <SelectValue placeholder="Select frequency" />
                                                             </SelectTrigger>
                                                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                                                <SelectItem value="minute">Every Minute (Testing)</SelectItem>
-                                                                <SelectItem value="daily">Daily</SelectItem>
-                                                                <SelectItem value="weekly">Weekly</SelectItem>
-                                                                <SelectItem value="monthly">Monthly</SelectItem>
-                                                                <SelectItem value="yearly">Yearly</SelectItem>
+                                                                <SelectItem value="weekly">Weekly on {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][recurringDayOfWeek]}</SelectItem>
+                                                                <SelectItem value="bi-weekly">Bi-weekly on {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][recurringDayOfWeek]}</SelectItem>
+                                                                <SelectItem value="monthly">Monthly on the {recurringDayOfMonth}{recurringDayOfMonth === 1 ? 'st' : recurringDayOfMonth === 2 ? 'nd' : recurringDayOfMonth === 3 ? 'rd' : 'th'}</SelectItem>
+                                                                <SelectItem value="monthly-week">Monthly on the {recurringWeekOfMonth} {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][recurringDayOfWeek]}</SelectItem>
+                                                                <SelectItem value="monthly-last">Monthly on the last day</SelectItem>
+                                                                <SelectItem value="quarterly">Quarterly on the {recurringDayOfMonth}{recurringDayOfMonth === 1 ? 'st' : recurringDayOfMonth === 2 ? 'nd' : recurringDayOfMonth === 3 ? 'rd' : 'th'}</SelectItem>
+                                                                <SelectItem value="semi-annually">Semi-annually on the {recurringDayOfMonth}{recurringDayOfMonth === 1 ? 'st' : recurringDayOfMonth === 2 ? 'nd' : recurringDayOfMonth === 3 ? 'rd' : 'th'}</SelectItem>
+                                                                <SelectItem value="yearly">Annually on the {recurringDayOfMonth}{recurringDayOfMonth === 1 ? 'st' : recurringDayOfMonth === 2 ? 'nd' : recurringDayOfMonth === 3 ? 'rd' : 'th'}</SelectItem>
+                                                                <SelectItem value="custom">Custom</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                     </div>
+
+                                                    {recurringInterval === 'custom' && (
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Repeat every</Label>
+                                                            <div className="flex gap-2">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="1"
+                                                                    value={recurringCustomInterval}
+                                                                    onChange={(e) => setRecurringCustomInterval(parseInt(e.target.value) || 1)}
+                                                                    className="bg-white/5 border-white/10 h-10 text-xs w-20"
+                                                                />
+                                                                <Select value={recurringCustomUnit} onValueChange={setRecurringCustomUnit}>
+                                                                    <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs flex-1">
+                                                                        <SelectValue />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                        <SelectItem value="days">days</SelectItem>
+                                                                        <SelectItem value="weeks">weeks</SelectItem>
+                                                                        <SelectItem value="months">months</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </div>
+                                                        </div>
+                                                    )}
 
                                                     <div className="space-y-2">
                                                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Ends</Label>
@@ -804,7 +850,6 @@ export default function NewInvoicePage() {
                                                                 <SelectItem value="never">Never</SelectItem>
                                                                 <SelectItem value="on">On Date</SelectItem>
                                                                 <SelectItem value="after">After X Times</SelectItem>
-                                                                <SelectItem value="after_minutes">In X Minutes (Testing)</SelectItem>
                                                             </SelectContent>
                                                         </Select>
                                                     </div>
@@ -832,10 +877,10 @@ export default function NewInvoicePage() {
                                                         </div>
                                                     )}
 
-                                                    {(recurringEndType === 'after' || recurringEndType === 'after_minutes') && (
+                                                    {recurringEndType === 'after' && (
                                                         <div className="space-y-2">
                                                             <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
-                                                                {recurringEndType === 'after' ? 'Number of Invoices' : 'End in X Minutes'}
+                                                                Number of Invoices
                                                             </Label>
                                                             <Input
                                                                 type="number"

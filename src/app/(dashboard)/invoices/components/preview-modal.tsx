@@ -119,14 +119,14 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         <div className="flex justify-between items-start mb-24">
                             <div className={cn(
                                 "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border",
-                                isLight ? "bg-white border-neutral-200" : "bg-white border-white/10"
+                                isLight ? "bg-[#0c0c0c] border-white/10" : "bg-white border-white/10"
                             )}>
                                 {data.logo ? (
                                     <img src={data.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                 ) : (
                                     <div className={cn(
                                         "invoice-font-title font-black text-3xl",
-                                        "text-black"
+                                        isLight ? "text-white" : "text-black"
                                     )}>E.</div>
                                 )}
                             </div>

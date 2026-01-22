@@ -73,7 +73,6 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                 <SelectValue placeholder="Select frequency" />
                             </SelectTrigger>
                             <SelectContent className="bg-[#09090b] border-white/10 text-white">
-                                <SelectItem value="minute">Every Minute (Testing)</SelectItem>
                                 <SelectItem value="daily">Daily</SelectItem>
                                 <SelectItem value="weekly">Weekly</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
@@ -92,7 +91,6 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                 <SelectItem value="never">Never</SelectItem>
                                 <SelectItem value="on">On Date</SelectItem>
                                 <SelectItem value="after">After X Times</SelectItem>
-                                <SelectItem value="after_minutes">In X Minutes (Testing)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

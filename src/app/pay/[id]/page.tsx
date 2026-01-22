@@ -296,12 +296,15 @@ export default function PayInvoicePage() {
                                 <div className="flex justify-between items-start mb-24">
                                     <div className={cn(
                                         "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border shadow-sm",
-                                        logoBg === "light" ? "bg-white border-neutral-100" : "bg-[#0c0c0c] border-white/10"
+                                        logoBg === "light" ? "bg-[#0c0c0c] border-white/10" : "bg-[#0c0c0c] border-white/10"
                                     )}>
                                         {invoice.logo_url ? (
                                             <img src={invoice.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
                                         ) : (
-                                            <div className="invoice-font-title font-black text-3xl text-black">E.</div>
+                                            <div className={cn(
+                                                "invoice-font-title font-black text-3xl",
+                                                logoBg === "light" ? "text-white" : "text-white"
+                                            )}>E.</div>
                                         )}
                                     </div>
                                     <div className="text-right">

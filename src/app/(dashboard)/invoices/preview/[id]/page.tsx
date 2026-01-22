@@ -147,7 +147,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             <main className="max-w-5xl mx-auto mt-12 px-6">
                 {(() => {
                     const logoBg = (invoice.invoice_mode || 'dark') as 'light' | 'dark'
-                    const logoContainerClass = logoBg === 'light' ? 'bg-white border-neutral-100' : 'bg-[#0c0c0c] border-white/10'
+                    const logoContainerClass = logoBg === 'light' ? 'bg-[#0c0c0c] border-white/10' : 'bg-[#0c0c0c] border-white/10'
+                    const logoTextClass = logoBg === 'light' ? 'text-white' : 'text-white'
                     return (
                 <div className="bg-white text-black rounded-lg shadow-2xl p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
                     {/* Header: Logo & Title */}
@@ -156,7 +157,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             {invoice.logo_url ? (
                                 <img src={invoice.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
                             ) : (
-                                <div className="invoice-font-title font-black text-2xl">E.</div>
+                                <div className={"invoice-font-title font-black text-2xl " + logoTextClass}>E.</div>
                             )}
                         </div>
                         <div className="text-right">
