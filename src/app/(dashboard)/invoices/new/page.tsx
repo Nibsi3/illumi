@@ -1396,10 +1396,12 @@ export default function NewInvoicePage() {
                                             <span className="text-neutral-500">Subtotal</span>
                                             <span className="invoice-font-amount text-white">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span className="text-neutral-500">Tax ({taxRate}%)</span>
-                                            <span className="invoice-font-amount text-white">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
-                                        </div>
+                                        {taxRate > 0 && (
+                                            <div className="flex justify-between items-center text-sm">
+                                                <span className="text-neutral-500">Tax ({taxRate}%)</span>
+                                                <span className="invoice-font-amount text-white">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                            </div>
+                                        )}
                                         <div className="flex justify-between items-center pt-6 border-t border-white/5">
                                             <span className="text-sm font-bold text-white uppercase tracking-widest">Total</span>
                                             <span className="text-3xl font-black text-white invoice-font-amount">

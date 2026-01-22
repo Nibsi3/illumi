@@ -74,11 +74,11 @@ const featureCards = [
 const faqs = [
     {
         question: "What must be on a South African tax invoice?",
-        answer: "According to SARS requirements, a valid tax invoice must include: the words 'Tax Invoice' or 'VAT Invoice', your business name and VAT number, invoice number and date, customer details, itemized description of goods/services, amounts excluding VAT, VAT amount at 15%, and total amount including VAT. Illumi automatically includes all these fields.",
+        answer: "A professional invoice should include: your business name and details, invoice number and date, customer details, itemized description of goods/services, and clear pricing. For VAT-registered businesses, you should also include your VAT number and VAT breakdown. Illumi handles all of this automatically based on your settings.",
     },
     {
-        question: "Is Illumi SARS-compliant?",
-        answer: "Yes, Illumi generates SARS-compliant tax invoices that meet all South African Revenue Service requirements. All invoices display amounts in ZAR (Rands), calculate 15% VAT correctly, include mandatory fields like VAT numbers, and can be exported as PDF for your records and SARS submissions.",
+        question: "Does Illumi work for VAT-registered businesses?",
+        answer: "Yes! Illumi works for both VAT-registered and non-VAT registered businesses. You can set your VAT rate to 15% (or any rate) in settings, and invoices will automatically calculate and display VAT. For non-VAT registered businesses, simply keep the tax rate at 0% for clean, simple invoices.",
     },
     {
         question: "How do clients receive invoices?",
@@ -90,7 +90,7 @@ const faqs = [
     },
     {
         question: "Is Illumi really free for South African businesses?",
-        answer: "Yes! Our Free plan includes unlimited SARS-compliant invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R350/month.",
+        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R350/month.",
     },
     {
         question: "Can I track business expenses and calculate net profit?",
@@ -114,10 +114,10 @@ const faqSchema = {
 const softwareApplicationSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Illumi - SARS-Compliant Invoice Generator",
+    "name": "Illumi - Professional Invoice Generator for South Africa",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
-    "description": "Create SARS-compliant tax invoices with VAT for South African businesses. Free invoicing software in ZAR.",
+    "description": "Create professional invoices in ZAR for South African businesses. Optional VAT calculation. Free invoicing software.",
     "offers": {
         "@type": "Offer",
         "price": "0.00",
@@ -133,8 +133,8 @@ const softwareApplicationSchema = {
         "worstRating": "1",
     },
     "featureList": [
-        "SARS-compliant tax invoices",
-        "15% VAT calculation",
+        "Professional invoices for South Africa",
+        "Optional VAT calculation",
         "ZAR currency support",
         "Email invoicing",
         "Online payment integration",
@@ -209,13 +209,13 @@ export default async function LandingPage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-[62px] leading-[1.08] text-[#fafafa] mb-6 font-sans font-medium tracking-tight">
-                                SARS-Compliant Invoice Generator
+                                Professional Invoicing
                                 <br className="hidden md:block" />
-                                <span className="text-[#878787]">for South Africa</span>
+                                <span className="text-[#878787]">for South African Businesses</span>
                             </h1>
 
                             <p className="text-lg text-[#878787] mb-7 max-w-xl leading-relaxed">
-                                Create professional tax invoices in ZAR with 15% VAT. SARS-compliant, free forever. Get paid online with PayFast, Yoco, Ozow. No signup required.
+                                Create professional invoices in ZAR with optional VAT. Perfect for VAT and non-VAT registered businesses. Get paid online with PayFast, Yoco, Ozow. Free forever.
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">

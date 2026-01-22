@@ -277,7 +277,7 @@ export default function VATCalculatorPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Automate VAT calculations with SARS-compliant invoices</p>
+                    <p className="text-white/60 mb-4">Automate VAT calculations with professional invoices</p>
                     <Link
                         href="/login"
                         className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"

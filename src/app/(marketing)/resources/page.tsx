@@ -260,7 +260,7 @@ export default function ResourcesPage() {
                         Ready to track your own metrics?
                     </h2>
                     <p className="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
-                        Use Illumi to create SARS-compliant invoices, track expenses, and monitor your cash flow in real-time. 
+                        Use Illumi to create professional invoices, track expenses, and monitor your cash flow in real-time. 
                         Compare your performance against these benchmarks automatically.
                     </p>
                     <Link

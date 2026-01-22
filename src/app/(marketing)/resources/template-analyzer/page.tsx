@@ -53,7 +53,7 @@ export default function TemplateAnalyzerPage() {
     }
 
     const getScoreLabel = (score: number) => {
-        if (score >= 90) return "Excellent - SARS Compliant"
+        if (score >= 90) return "Excellent - Professional Quality"
         if (score >= 70) return "Good - Minor improvements needed"
         if (score >= 50) return "Fair - Several issues to fix"
         return "Poor - Major improvements required"
@@ -327,7 +327,7 @@ export default function TemplateAnalyzerPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Use SARS-compliant templates automatically with Illumi</p>
+                    <p className="text-white/60 mb-4">Use professional invoice templates automatically with Illumi</p>
                     <Link
                         href="/login"
                         className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"

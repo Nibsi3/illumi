@@ -258,10 +258,12 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 <span className="text-neutral-400">Subtotal</span>
                                 <span className="invoice-font-amount">{formatCurrency(invoice.subtotal)}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-neutral-400">Tax ({invoice.tax_rate || 0}%)</span>
-                                <span className="invoice-font-amount">{formatCurrency(invoice.tax_amount || 0)}</span>
-                            </div>
+                            {(invoice.tax_rate > 0 || invoice.tax_amount > 0) && (
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-neutral-400">Tax ({invoice.tax_rate || 0}%)</span>
+                                    <span className="invoice-font-amount">{formatCurrency(invoice.tax_amount || 0)}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between items-center text-4xl invoice-font-amount font-bold mt-6 pt-6 border-t border-neutral-100">
                                 <span className="text-neutral-400 text-2xl">Total</span>
                                 <span>{formatCurrency(invoice.total)}</span>

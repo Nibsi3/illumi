@@ -65,7 +65,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const { activeWorkspace } = useWorkspace()
     const [currency, setCurrency] = useState("ZAR")
-    const [taxRate, setTaxRate] = useState(15)
+    const [taxRate, setTaxRate] = useState(0)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
     const [fromEmail, setFromEmail] = useState("hello@illumi.co.za")
     const [sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf] = useState(false)
