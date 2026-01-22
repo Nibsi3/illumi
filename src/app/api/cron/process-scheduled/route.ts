@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 
 // Cron job endpoint for processing scheduled invoices
-// Should be called regularly (e.g., every minute or hourly)
+// Should be called regularly (e.g., hourly or daily)
 export async function GET(req: Request) {
     // Verify cron secret for security
     const authHeader = req.headers.get("authorization")
@@ -37,7 +37,6 @@ export async function GET(req: Request) {
 
         if (error) throw error
 
-        console.log(`[Scheduled Cron] Found ${scheduledInvoices?.length || 0} scheduled invoices to process`)
 
         for (const invoice of scheduledInvoices || []) {
             const scheduledAt = invoice.scheduled_date
@@ -46,7 +45,6 @@ export async function GET(req: Request) {
 
             // Check if it's time to send
             if (now >= scheduledAt) {
-                console.log(`[Scheduled Cron] Sending scheduled invoice ${invoice.invoice_number}`)
 
                 // Update invoice status to 'sent'
                 const { error: updateError } = await supabase
@@ -58,7 +56,6 @@ export async function GET(req: Request) {
                     .eq('id', invoice.id)
 
                 if (updateError) {
-                    console.error(`[Scheduled Cron] Failed to update invoice status:`, updateError)
                     continue
                 }
 
@@ -100,7 +97,8 @@ export async function GET(req: Request) {
                                 type: 'invoice',
                                 to: invoice.customers.email,
                                 companyName,
-                                supportEmail: invoice.from_email,
+                                fromEmail: 'invoice@illumi.co.za',
+                                supportEmail: invoice.from_email || 'invoice@illumi.co.za',
                                 customerName: invoice.customers.name,
                                 invoiceNumber: invoice.invoice_number,
                                 amount: amount,
@@ -110,9 +108,12 @@ export async function GET(req: Request) {
                             })
                         })
                         emailsSent++
-                        console.log(`[Scheduled Cron] Email sent for ${invoice.invoice_number} to ${invoice.customers.email}`)
                     } catch (emailError) {
-                        console.error(`[Scheduled Cron] Failed to send email:`, emailError)
+                        // Email failed - mark invoice as draft instead of sent
+                        await supabase
+                            .from('invoices')
+                            .update({ status: 'draft' })
+                            .eq('id', invoice.id)
                     }
                 }
             }

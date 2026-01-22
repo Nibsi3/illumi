@@ -144,7 +144,6 @@ export async function POST(req: Request) {
         const { type, to } = payload
 
         if (!to || !type) {
-            console.error("[Email API] Missing fields:", { to, type })
             return NextResponse.json(
                 { success: false, error: "Missing required fields: to, type" },
                 { status: 400 }
@@ -152,7 +151,6 @@ export async function POST(req: Request) {
         }
 
         const cleanTo = typeof to === 'string' ? to.trim() : to
-        console.log(`[Email API] Sending ${type} email to:`, cleanTo)
 
         let emailSubject: string
         let emailHtml: string
@@ -418,7 +416,6 @@ export async function POST(req: Request) {
         })
 
         if (error) {
-            console.error("[Email API] Error:", error)
             return NextResponse.json(
                 { success: false, error: error.message },
                 { status: 500 }
@@ -430,7 +427,6 @@ export async function POST(req: Request) {
             messageId: data?.id,
         })
     } catch (error: any) {
-        console.error("[Email API] Error:", error)
         return NextResponse.json(
             { success: false, error: error.message || "Failed to send email" },
             { status: 500 }

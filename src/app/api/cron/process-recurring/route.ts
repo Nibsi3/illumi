@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
-import { addDays, addWeeks, addMonths, addYears, addMinutes } from "date-fns"
+import { addDays, addWeeks, addMonths, addYears } from "date-fns"
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 // Cron job endpoint for processing recurring invoices
-// Should be called regularly (e.g., every minute for testing, daily for production)
+// Should be called daily for production
 export async function GET(req: Request) {
     // Verify cron secret for security
     const authHeader = req.headers.get("authorization")
@@ -60,14 +60,12 @@ export async function GET(req: Request) {
 
         if (error) throw error
 
-        console.log(`[Recurring Cron] Found ${recurringInvoices?.length || 0} recurring invoices`)
 
         for (const invoice of recurringInvoices || []) {
             // End-on-date support (safe even if recurring_end_type column does not exist)
             if (invoice.recurring_end_date) {
                 const endDate = new Date(`${invoice.recurring_end_date}T00:00:00`)
                 if (now > endDate) {
-                    console.log(`[Recurring Cron] Invoice ${invoice.invoice_number} recurring period ended`)
                     continue
                 }
             }
@@ -75,8 +73,6 @@ export async function GET(req: Request) {
             // Calculate next invoice date based on interval.
             // We can't rely on last_recurring_at being present in every DB schema, so we derive it
             // by looking up the most recent child invoice (parent_invoice_id).
-            // IMPORTANT: For minute/daily testing, many invoices will share the same issue_date.
-            // Ordering by issue_date alone would return an arbitrary invoice, so we use created_at.
             const createdAt = new Date(invoice.created_at)
             const issueDateBase = invoice.issue_date
                 ? new Date(`${invoice.issue_date}T00:00:00`)
@@ -88,7 +84,7 @@ export async function GET(req: Request) {
                 .eq('parent_invoice_id', invoice.id)
 
             if (childCountError) {
-                console.warn('[Recurring Cron] Failed to fetch child invoice count:', childCountError)
+                continue
             }
 
             const occurrences = childCount || 0
@@ -97,9 +93,6 @@ export async function GET(req: Request) {
             // This enables catch-up even if the cron endpoint is called late.
             let baseDate: Date
             switch (invoice.recurring_interval) {
-                case 'minute':
-                    baseDate = addMinutes(createdAt, occurrences)
-                    break
                 case 'daily':
                     baseDate = addDays(issueDateBase, occurrences)
                     break
@@ -121,8 +114,6 @@ export async function GET(req: Request) {
 
             const computeNextDate = (from: Date): Date => {
                 switch (invoice.recurring_interval) {
-                    case 'minute':
-                        return addMinutes(from, 1)
                     case 'daily':
                         return addDays(from, 1)
                     case 'weekly':
@@ -146,7 +137,6 @@ export async function GET(req: Request) {
             let nextInvoiceDate = computeNextDate(baseDate)
 
             while (now >= nextInvoiceDate && createdThisParent < maxPerRun) {
-                console.log(`[Recurring Cron] Creating new invoice from recurring ${invoice.invoice_number} (next=${nextInvoiceDate.toISOString()})`)
 
                 // Generate new invoice number
                 const timestamp = Date.now().toString().slice(-6)
@@ -186,7 +176,6 @@ export async function GET(req: Request) {
                     .single()
 
                 if (insertError) {
-                    console.error(`[Recurring Cron] Failed to create invoice:`, insertError)
                     break
                 }
 
@@ -241,7 +230,8 @@ export async function GET(req: Request) {
                                 type: 'invoice',
                                 to: invoice.customers.email,
                                 companyName,
-                                supportEmail: invoice.from_email,
+                                fromEmail: 'invoice@illumi.co.za',
+                                supportEmail: invoice.from_email || 'invoice@illumi.co.za',
                                 customerName: invoice.customers.name,
                                 invoiceNumber: newInvoiceNumber,
                                 amount: amount,
@@ -255,9 +245,12 @@ export async function GET(req: Request) {
                             })
                         })
                         emailsSent++
-                        console.log(`[Recurring Cron] Email sent for ${newInvoiceNumber} to ${invoice.customers.email}`)
                     } catch (emailError) {
-                        console.error(`[Recurring Cron] Failed to send email:`, emailError)
+                        // Email failed - mark invoice as draft instead of sent
+                        await supabase
+                            .from('invoices')
+                            .update({ status: 'draft' })
+                            .eq('id', newInvoice.id)
                     }
                 }
 
