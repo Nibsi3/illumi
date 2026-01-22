@@ -8,6 +8,28 @@ export async function updateSession(request: NextRequest) {
         },
     })
 
+    const pathname = request.nextUrl.pathname
+
+    const publicPrefixes = [
+        '/login',
+        '/auth',
+        '/view',
+        '/pay',
+        '/contact',
+        '/pricing',
+        '/integrations',
+        '/story',
+        '/features',
+        '/docs',
+        '/resources',
+    ]
+
+    const isPublicRoute = pathname === '/' || publicPrefixes.some((p) => pathname.startsWith(p))
+
+    if (isPublicRoute) {
+        return supabaseResponse
+    }
+
     // Skip Supabase auth if credentials are not configured
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -53,22 +75,6 @@ export async function updateSession(request: NextRequest) {
         const {
             data: { user },
         } = await supabase.auth.getUser()
-
-        const pathname = request.nextUrl.pathname
-
-        const publicPrefixes = [
-            '/login',
-            '/auth',
-            '/view',
-            '/pay',
-            '/contact',
-            '/pricing',
-            '/story',
-            '/features',
-            '/docs',
-        ]
-
-        const isPublicRoute = pathname === '/' || publicPrefixes.some((p) => pathname.startsWith(p))
 
         if (
             !user &&

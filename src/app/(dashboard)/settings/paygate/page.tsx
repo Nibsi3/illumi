@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useSubscription } from "@/lib/subscription/hooks"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { IconCreditCard, IconCheck, IconPlug, IconArrowRight, IconRefresh, IconPlus, IconSettings, IconLock } from "@tabler/icons-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
@@ -589,12 +590,14 @@ export default function PayGatePage() {
                         Payment gateway integration is only available on the Pro plan. 
                         Upgrade to accept payments directly from your invoices.
                     </p>
-                    <Button 
+                    <HoverBorderGradient
+                        as="button"
                         onClick={() => window.location.href = '/settings/billing'}
-                        className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-bold"
+                        containerClassName=""
+                        className="bg-white text-black font-bold h-12 px-8"
                     >
                         Upgrade to Pro — R350/mo
-                    </Button>
+                    </HoverBorderGradient>
                 </div>
             </div>
         )

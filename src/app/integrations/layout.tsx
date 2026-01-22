@@ -7,9 +7,9 @@ export default function IntegrationsLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="dark min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-black text-white grainy-gradient">
             <MarketingHeader />
-            <main className="pt-[73px]">
+            <main className="relative z-10">
                 {children}
             </main>
             <MarketingFooter />

@@ -24,7 +24,7 @@ import {
 
 export default function DeveloperDocsPage() {
     return (
-        <div className="flex flex-col h-full bg-black text-white font-sans overflow-hidden rounded-3xl border border-white/5">
+        <div className="flex flex-col h-full bg-background text-foreground font-sans overflow-hidden rounded-3xl border border-white/5">
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar Navigation */}
                 <aside className="w-64 hidden lg:flex flex-col border-r border-white/5 bg-[#050505] shrink-0 overflow-y-auto no-scrollbar">

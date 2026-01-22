@@ -12,24 +12,24 @@ import { getURL } from "@/lib/utils"
 
 const testimonials = [
     {
-        quote: "Due to improved invoice reconciliation, we are now saving 1-2 man-days each month, and we have a better understanding of our finances thanks to dashboards.",
-        author: "Sarah Chen",
-        role: "VC, TechStart • South Africa",
+        quote: "Creating and sending invoices used to take me hours. Now I can generate a professional invoice in under a minute and email it straight to my client.",
+        author: "Sarah M.",
+        role: "Freelance Consultant",
     },
     {
-        quote: "Illumi has transformed how we handle invoicing. It's incredibly helpful for finding past transactions and staying organized quickly.",
-        author: "Michael Torres",
-        role: "Founder, DesignCo • Cape Town",
+        quote: "The recurring invoice feature is a game-changer. My monthly retainer clients get billed automatically, and I never miss a payment deadline.",
+        author: "Michael T.",
+        role: "Creative Agency Owner",
     },
     {
-        quote: "Finally, an invoicing tool that actually understands small business needs. The vault feature alone has saved us countless hours.",
-        author: "Emma Wilson",
-        role: "CEO, CloudSoft • Johannesburg",
+        quote: "I love that I can track expenses and see my net profit in real-time. It's helped me make better business decisions and stay on top of my finances.",
+        author: "Emma W.",
+        role: "Small Business Owner",
     },
     {
-        quote: "We switched from traditional accounting software and haven't looked back. The interface is clean and intuitive.",
-        author: "David Park",
-        role: "Operations, MediaHub • Durban",
+        quote: "PayGate integration means my clients can pay invoices online instantly. I get paid faster and don't have to chase payments anymore.",
+        author: "David K.",
+        role: "Contractor",
     },
 ]
 

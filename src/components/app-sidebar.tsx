@@ -14,7 +14,6 @@ import {
     IconUserCircle,
     IconMessageCircle,
     IconUsersGroup,
-    IconMoon,
     IconChevronDown,
     IconPlus,
 } from "@tabler/icons-react";
@@ -148,17 +147,16 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     const userEmail = user?.email || "cameronfalck03@gmail.com";
     const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0];
-    const userImage = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
     const initials = userName.substring(0, 2).toUpperCase();
-    const headerLogo = logo || userImage;
+    const headerLogo = logo || "/logo.png";
 
     return (
-        <div className="flex flex-col h-screen bg-black text-white selection:bg-white/10 overflow-hidden relative font-sans">
+        <div className="flex flex-col h-screen bg-background text-foreground selection:bg-primary/10 overflow-hidden relative font-sans">
             {/* Global Top Header Line */}
-            <div className="h-px w-full bg-white/10 shrink-0" />
+            <div className="h-px w-full bg-border shrink-0" />
 
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="pointer-events-none absolute left-0 right-0 top-16 border-b border-white/5 z-70" />
+                <div className="pointer-events-none absolute left-0 right-0 top-16 border-b border-border z-70" />
                 {/* Sidebar rewritten from scratch with hover logic */}
                 <motion.aside
                     initial={false}
@@ -168,7 +166,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         setOpen(false);
                         setShowSwitcher(false);
                     }}
-                    className="h-full bg-black border-r border-white/10 flex flex-col z-60 transition-colors duration-300 absolute left-0 top-0 shadow-2xl"
+                    className="h-full bg-sidebar border-r border-sidebar-border flex flex-col z-60 transition-colors duration-300 absolute left-0 top-0 shadow-xl"
                 >
                     {/* Logo Section - Centered and Icon only */}
                     <div className="h-16 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
@@ -187,13 +185,13 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                     href={link.href}
                                     className={cn(
                                         "flex items-center px-3 py-2.5 transition-all duration-200 group relative",
-                                        isActive ? "text-white" : "text-neutral-500 hover:text-white",
-                                        isActive && "bg-white/5"
+                                        isActive ? "text-sidebar-foreground" : "text-muted-foreground hover:text-sidebar-foreground",
+                                        isActive && "bg-sidebar-accent"
                                     )}
                                 >
                                     <div className={cn(
                                         "w-11 h-6 flex items-center justify-center shrink-0 transition-colors duration-200",
-                                        isActive ? "text-white" : "text-neutral-500 group-hover:text-white"
+                                        isActive ? "text-sidebar-foreground" : "text-muted-foreground group-hover:text-sidebar-foreground"
                                     )}>
                                         {link.icon}
                                     </div>
@@ -215,7 +213,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                     {isActive && (
                                         <motion.div
                                             layoutId="active-pill"
-                                            className="absolute left-0 w-[2.5px] h-6 bg-white rounded-r-full"
+                                            className="absolute left-0 w-[2.5px] h-6 bg-sidebar-foreground rounded-r-full"
                                         />
                                     )}
                                 </Link>
@@ -232,7 +230,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-[#0a0a0a] border border-white/10 rounded-xl shadow-2xl space-y-1 z-60 max-h-64 overflow-y-auto"
+                                        className="absolute bottom-full left-3 right-3 mb-2 p-2 bg-popover border border-border rounded-xl shadow-2xl space-y-1 z-60 max-h-64 overflow-y-auto"
                                     >
                                         {workspaces.map((ws) => (
                                             <div
@@ -256,11 +254,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                                     }, 800)
                                                 }}
                                                 className={cn(
-                                                    "flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors",
-                                                    activeWorkspace?.id === ws.id && "bg-white/5"
+                                                    "flex items-center gap-3 p-2 hover:bg-accent rounded-lg cursor-pointer transition-colors",
+                                                    activeWorkspace?.id === ws.id && "bg-accent"
                                                 )}
                                             >
-                                                <div className="w-8 h-8 rounded bg-white text-black flex items-center justify-center text-[10px] font-bold">
+                                                <div className="w-8 h-8 rounded bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">
                                                     {ws.name.substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <span className="text-xs font-medium">{ws.name}</span>
@@ -268,20 +266,20 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                         ))}
 
                                         {workspaces.length === 0 && (
-                                            <div className="p-3 text-xs text-neutral-500 text-center">No workspaces yet</div>
+                                            <div className="p-3 text-xs text-muted-foreground text-center">No workspaces yet</div>
                                         )}
-                                        <DropdownMenuSeparator className="bg-white/5" />
+                                        <DropdownMenuSeparator className="bg-border" />
                                         {isOwner ? (
                                             <Button
                                                 onClick={() => setIsWorkspaceDialogOpen(true)}
                                                 variant="ghost"
-                                                className="w-full justify-start h-10 px-2 hover:bg-white/5 rounded-lg text-neutral-400 hover:text-white text-xs gap-3"
+                                                className="w-full justify-start h-10 px-2 hover:bg-accent rounded-lg text-muted-foreground hover:text-foreground text-xs gap-3"
                                             >
                                                 <IconPlus className="h-4 w-4" />
                                                 <span>Add workspace</span>
                                             </Button>
                                         ) : (
-                                            <div className="px-2 py-2 text-[10px] text-neutral-500 text-center">
+                                            <div className="px-2 py-2 text-[10px] text-muted-foreground text-center">
                                                 Only workspace owners can create new workspaces
                                             </div>
                                         )}
@@ -293,11 +291,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                 onClick={() => open && setShowSwitcher(!showSwitcher)}
                                 className={cn(
                                     "flex items-center transition-all duration-200 cursor-pointer h-14 w-full px-4 group justify-center",
-                                    showSwitcher ? "text-white" : "text-neutral-500 hover:text-white"
+                                    showSwitcher ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 <div className="flex items-center justify-center shrink-0">
-                                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-bold text-white/40 uppercase group-hover:text-white group-hover:bg-white/10 group-hover:border-white/20 transition-all">
+                                    <div className="w-8 h-8 rounded-full bg-accent border border-border flex items-center justify-center text-[10px] font-bold text-muted-foreground uppercase group-hover:text-foreground group-hover:bg-accent group-hover:border-border transition-all">
                                         {activeWorkspace?.name?.substring(0, 2).toUpperCase() || user?.email?.substring(0, 2).toUpperCase() || 'WS'}
                                     </div>
                                 </div>
@@ -312,9 +310,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis">{activeWorkspace?.name || 'Select Workspace'}</span>
-                                                    <IconChevronDown className={cn("h-3 w-3 text-neutral-500 transition-transform", showSwitcher && "rotate-180")} />
+                                                    <IconChevronDown className={cn("h-3 w-3 text-muted-foreground transition-transform", showSwitcher && "rotate-180")} />
                                                 </div>
-                                                <span className="text-[10px] text-neutral-500 font-sans">Pro Plan</span>
+                                                <span className="text-[10px] text-muted-foreground font-sans">Pro Plan</span>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
@@ -328,23 +326,23 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 <div className="w-[72px] shrink-0" />
 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col min-w-0 bg-black relative">
+                <div className="flex-1 flex flex-col min-w-0 bg-background relative">
                     {isSwitchingWorkspace && (
                         <div className="absolute inset-0 z-50 flex items-center justify-center">
-                            <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
-                            <div className="relative flex flex-col items-center gap-3 text-white/80">
+                            <div className="absolute inset-0 bg-background/60 backdrop-blur-md" />
+                            <div className="relative flex flex-col items-center gap-3 text-foreground/80">
                                 <Loader2 className="h-5 w-5 animate-spin" />
                                 <div className="text-xs font-sans tracking-wide">Loading workspace…</div>
                             </div>
                         </div>
                     )}
                     {/* Header (Stayed relatively similar but polished) */}
-                    <header className="h-16 flex items-center justify-between px-8 backdrop-blur-md bg-black/50 sticky top-0 z-50">
+                    <header className="h-16 flex items-center justify-between px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50">
                         <div className="flex items-center gap-6 flex-1">
                             <button 
                                 type="button"
                                 onClick={() => setIsSearchOpen(true)}
-                                className="flex items-center gap-3 text-neutral-500 hover:text-white transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
+                                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
                             >
                                 <IconSearch className="h-4 w-4" />
                                 <span className="text-sm font-medium">Search anything...</span>
@@ -352,7 +350,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Link href="/settings/billing" className="text-[11px] text-neutral-500 hover:text-white transition-colors">
+                            <Link href="/settings/billing" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
                                 {subscriptionLoading ? (
                                     "Loading..."
                                 ) : isSubscribed && daysRemaining !== null ? (
@@ -367,55 +365,45 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="outline-none focus:ring-0">
-                                        <Avatar className="h-8 w-8 border border-white/10 hover:border-white/20 transition-colors cursor-pointer">
+                                        <Avatar className="h-8 w-8 border border-border hover:border-muted-foreground transition-colors cursor-pointer">
                                             <AvatarImage src={headerLogo} />
-                                            <AvatarFallback className="bg-white/5 text-[10px] font-bold text-white border border-white/10">
+                                            <AvatarFallback className="bg-accent text-[10px] font-bold text-foreground border border-border">
                                                 {initials}
                                             </AvatarFallback>
                                         </Avatar>
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[240px] bg-black border border-white/10 text-white p-2 shadow-2xl rounded-xl mt-2 animate-in fade-in zoom-in-95">
+                                <DropdownMenuContent align="end" className="w-[240px] bg-popover border border-border text-popover-foreground p-2 shadow-2xl rounded-xl mt-2 animate-in fade-in zoom-in-95">
                                     <DropdownMenuLabel className="px-3 py-2">
                                         <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-white">{userName}</span>
-                                            <span className="text-[10px] text-neutral-500 font-sans truncate">{userEmail}</span>
+                                            <span className="text-xs font-bold text-foreground">{userName}</span>
+                                            <span className="text-[10px] text-muted-foreground font-sans truncate">{userEmail}</span>
                                         </div>
                                     </DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <DropdownMenuSeparator className="bg-border mx-2" />
                                     <div className="py-1">
                                         <Link href="/settings/account">
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconUserCircle className="h-4 w-4 text-neutral-400" />
+                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconUserCircle className="h-4 w-4 text-muted-foreground" />
                                                 <span className="text-xs">Account Settings</span>
                                             </DropdownMenuItem>
                                         </Link>
                                         <Link href="/settings/support">
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconMessageCircle className="h-4 w-4 text-neutral-400" />
+                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconMessageCircle className="h-4 w-4 text-muted-foreground" />
                                                 <span className="text-xs">Support</span>
                                             </DropdownMenuItem>
                                         </Link>
                                         <Link href="/settings/members">
-                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconUsersGroup className="h-4 w-4 text-neutral-400" />
+                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconUsersGroup className="h-4 w-4 text-muted-foreground" />
                                                 <span className="text-xs">Manage Team</span>
                                             </DropdownMenuItem>
                                         </Link>
                                     </div>
-                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
+                                    <DropdownMenuSeparator className="bg-border mx-2" />
                                     <div className="py-1">
-                                        <div className="flex items-center justify-between px-3 py-2 text-xs">
-                                            <div className="flex items-center gap-3">
-                                                <IconMoon className="h-4 w-4 text-neutral-400" />
-                                                <span>Display</span>
-                                            </div>
-                                            <span className="text-[10px] text-neutral-500">Dark</span>
-                                        </div>
-                                    </div>
-                                    <DropdownMenuSeparator className="bg-white/10 mx-2" />
-                                    <div className="py-1">
-                                        <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 focus:text-red-500 text-neutral-400 cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                        <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 focus:text-red-500 text-muted-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
                                             <IconLogout className="h-4 w-4" />
                                             <span className="text-xs">Sign out</span>
                                         </DropdownMenuItem>
@@ -442,10 +430,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
             {/* Workspace Creation Dialog */}
             <Dialog open={isWorkspaceDialogOpen} onOpenChange={setIsWorkspaceDialogOpen}>
-                <DialogContent className="bg-[#09090b] border-white/10 text-white">
+                <DialogContent className="bg-card border-border text-card-foreground">
                     <DialogHeader>
                         <DialogTitle>Create Workspace</DialogTitle>
-                        <DialogDescription className="text-neutral-400">
+                        <DialogDescription className="text-muted-foreground">
                             Create a new workspace to organize your team and projects.
                         </DialogDescription>
                     </DialogHeader>
@@ -456,15 +444,15 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                 value={newWorkspaceName}
                                 onChange={(e) => setNewWorkspaceName(e.target.value)}
                                 placeholder="My New Workspace"
-                                className="bg-white/5 border-white/10"
+                                className="bg-muted border-border"
                                 required
                             />
                         </div>
                         <div className="flex justify-end gap-3 pt-4">
-                            <Button type="button" variant="ghost" onClick={() => setIsWorkspaceDialogOpen(false)} className="hover:bg-white/5">
+                            <Button type="button" variant="ghost" onClick={() => setIsWorkspaceDialogOpen(false)} className="hover:bg-accent">
                                 Cancel
                             </Button>
-                            <Button type="submit" disabled={isCreatingWorkspace} className="bg-white text-black hover:bg-neutral-200">
+                            <Button type="submit" disabled={isCreatingWorkspace} className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 {isCreatingWorkspace && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                                 Create Workspace
                             </Button>

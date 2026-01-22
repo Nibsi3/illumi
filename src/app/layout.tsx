@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Toaster } from "sonner";
 import { SettingsProvider } from "@/lib/settings-context";
+import { ThemeProvider } from "@/lib/theme-context";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -81,8 +82,26 @@ const invoiceRoboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Illumi | Invoicing for South African SMMEs",
-  description: "Create professional tax invoices, calculate 15% VAT, and get paid online in ZAR. Built for South African SMMEs, freelancers, and contractors.",
+  title: "Illumi | SARS-Compliant Invoice Generator for South Africa",
+  description: "Create SARS-compliant tax invoices with VAT, track expenses, and get paid online in ZAR. Free invoicing software for South African SMMEs, freelancers, and contractors in Johannesburg, Cape Town, Durban.",
+  keywords: [
+    "SARS compliant invoice generator",
+    "tax invoice South Africa",
+    "VAT invoice generator South Africa",
+    "free invoice software South Africa",
+    "invoice generator ZAR",
+    "SMME invoicing software",
+    "freelance invoice template South Africa",
+    "online invoice payment South Africa",
+    "expense tracker South Africa",
+    "proforma invoice South Africa",
+  ],
+  openGraph: {
+    title: "Illumi | SARS-Compliant Invoice Generator for South Africa",
+    description: "Create professional tax invoices in ZAR. Free forever for South African businesses.",
+    type: "website",
+    locale: "en_ZA",
+  },
   icons: {
     icon: [
       {
@@ -110,21 +129,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} ${invoiceMontserrat.variable} ${invoiceRobotoSlab.variable} ${invoiceLato.variable} ${invoicePlayfair.variable} ${invoiceSourceSans.variable} ${invoiceOpenSans.variable} ${invoicePoppins.variable} ${invoiceRoboto.variable} antialiased bg-black text-white font-serif`}
+        className={`${hedvigSans.variable} ${hedvigSerif.variable} ${geistMono.variable} ${invoiceMontserrat.variable} ${invoiceRobotoSlab.variable} ${invoiceLato.variable} ${invoicePlayfair.variable} ${invoiceSourceSans.variable} ${invoiceOpenSans.variable} ${invoicePoppins.variable} ${invoiceRoboto.variable} antialiased bg-background text-foreground font-serif`}
         suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
         <Toaster
           position="top-center"
-          theme="dark"
           toastOptions={{
-            style: {
-              background: '#09090b',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff',
-            },
             className: 'font-sans',
           }}
         />

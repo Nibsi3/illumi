@@ -50,40 +50,44 @@ const INTEGRATIONS = [
 
 export default function IntegrationsIndexPage() {
     return (
-        <div className="bg-black text-white">
-            <section className="relative overflow-hidden border-b border-white/5">
-                <div className="absolute inset-0 bg-linear-to-b from-white/5 via-black to-black" />
-                <div className="relative mx-auto max-w-7xl px-6 py-20">
-                    <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 mb-6">
-                            <IconPlugConnected className="h-4 w-4" />
-                            Integrations
+        <div className="bg-black text-white grainy-gradient">
+            <section className="relative overflow-hidden border-b border-white/5 py-24 md:py-32 pt-32 md:pt-40 text-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="absolute inset-0 bg-black/60" />
+                </div>
+                <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6 justify-center">
+                            <span className="px-3 py-1 bg-white/10 text-white/70">Payment Provider Integrations</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Connect the payment provider you already use</h1>
-                        <p className="mt-4 text-white/60 text-lg leading-relaxed">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                            Connect the payment provider you already use
+                        </h1>
+                        <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
                             Illumi connects your preferred South African payment gateway via PayGate so clients can pay online and you can get paid in ZAR.
                         </p>
-                        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/features/paygate"
-                                className="inline-flex items-center justify-center rounded-xl bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold"
                             >
                                 Learn about PayGate
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                             <Link
                                 href="/pricing"
-                                className="inline-flex items-center justify-center rounded-xl border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center px-8 h-12 border border-white/20 text-white hover:bg-white/5 text-sm font-semibold"
                             >
                                 View Pro plan
                             </Link>
                         </div>
                     </div>
 
-                    <div className="mt-12 max-w-4xl">
+                    <div className="mt-12 max-w-4xl mx-auto">
                         <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
                             <div className="grid grid-cols-1 md:grid-cols-3">
-                                <div className="p-6 md:p-7">
+                                <div className="p-6 md:p-7 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-white">
                                         <IconShieldCheck className="h-4 w-4 text-white/60" />
                                         Secure payment links
@@ -92,7 +96,7 @@ export default function IntegrationsIndexPage() {
                                         Provider dependent, configurable in PayGate.
                                     </div>
                                 </div>
-                                <div className="border-t border-white/10 md:border-t-0 md:border-l p-6 md:p-7">
+                                <div className="border-t border-white/10 md:border-t-0 md:border-l p-6 md:p-7 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-white">
                                         <IconCurrencyDollar className="h-4 w-4 text-white/60" />
                                         ZAR-first invoicing
@@ -101,7 +105,7 @@ export default function IntegrationsIndexPage() {
                                         Built for South African SMMEs and contractors.
                                     </div>
                                 </div>
-                                <div className="border-t border-white/10 md:border-t-0 md:border-l p-6 md:p-7">
+                                <div className="border-t border-white/10 md:border-t-0 md:border-l p-6 md:p-7 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-white">
                                         <IconPlugConnected className="h-4 w-4 text-white/60" />
                                         Multiple provider options

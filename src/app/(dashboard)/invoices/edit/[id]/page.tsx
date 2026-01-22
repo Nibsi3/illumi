@@ -102,8 +102,9 @@ export default function EditInvoicePage() {
     const [logo, setLogo] = useState<string | null>(null)
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
-    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
+
+    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
 
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
@@ -182,9 +183,9 @@ export default function EditInvoicePage() {
                     if (invoice) {
                         setInvoiceNumber(invoice.invoice_number)
                         setTemplate(invoice.template as TemplateType || "Classic")
-                        setInvoiceMode(invoice.invoice_mode as any || "dark")
                         setCurrency(invoice.currency || "ZAR")
                         setTaxRate(invoice.tax_rate || 0)
+                        setInvoiceMode((invoice.invoice_mode as "light" | "dark") || "dark")
                         setIssueDate(invoice.issue_date || invoice.created_at.split('T')[0])
                         setDueDate(invoice.due_date || "")
                         setCustomerId(invoice.customer_id)
@@ -361,13 +362,13 @@ export default function EditInvoicePage() {
     }
 
     return (
-        <div className="h-full bg-black text-white font-sans flex overflow-hidden">
+        <div className="h-full bg-background text-foreground font-sans flex overflow-hidden">
             {/* Reuse the UI from new/page.tsx but with Edit context */}
             {/* Since the UI is identical, I will copy the JSX here */}
             {/* NOTE: I'm omitting the full JSX for brevity in this thought but I'll write the full file */}
 
-            <div className="flex-1 flex flex-col relative h-full bg-black">
-                <div className="h-20 px-8 flex justify-between items-center border-b border-white/5 bg-black z-20 shrink-0">
+            <div className="flex-1 flex flex-col relative h-full bg-background">
+                <div className="h-20 px-8 flex justify-between items-center border-b border-white/5 bg-background z-20 shrink-0">
                     <div className="flex items-center gap-4">
                         <Link href="/invoices" className="text-neutral-500 hover:text-white transition-colors">
                             <ChevronLeft className="h-5 w-5" />
@@ -512,26 +513,26 @@ export default function EditInvoicePage() {
                                             <div className={cn("h-px w-8", invoiceMode === "light" ? "bg-black/10" : "bg-white/20")} />
                                             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#878787]">Editing Invoice</span>
                                         </div>
-                                        <div className={cn("flex items-center p-0.5 rounded-full border transition-all", invoiceMode === "light" ? "bg-white border-neutral-200" : "bg-[#0a0a0a] border-white/5")}>
+                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-[#0a0a0a] border-white/5">
                                             <button
+                                                type="button"
                                                 onClick={() => setInvoiceMode("light")}
                                                 className={cn(
-                                                    "h-7 w-7 rounded-full flex items-center justify-center transition-all",
-                                                    invoiceMode === "light" ? "bg-black text-white shadow-sm" : "text-neutral-500 hover:text-white"
+                                                    "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
+                                                    invoiceMode === "light" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                                                 )}
-                                                title="Light Mode"
                                             >
-                                                <div className="w-4 h-4 rounded-full bg-current" />
+                                                Light
                                             </button>
                                             <button
+                                                type="button"
                                                 onClick={() => setInvoiceMode("dark")}
                                                 className={cn(
-                                                    "h-7 w-7 rounded-full flex items-center justify-center transition-all",
-                                                    invoiceMode === "dark" ? "bg-white text-black shadow-sm" : "text-neutral-500 hover:text-black"
+                                                    "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
+                                                    invoiceMode === "dark" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                                                 )}
-                                                title="Dark Mode"
                                             >
-                                                <div className="w-4 h-4 rounded-full border-2 border-current" />
+                                                Dark
                                             </button>
                                         </div>
                                     </div>
@@ -541,7 +542,7 @@ export default function EditInvoicePage() {
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
                                                 invoiceMode === "light"
-                                                    ? "bg-white border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300"
+                                                    ? "bg-[#0c0c0c] border-neutral-200 hover:border-neutral-300"
                                                     : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
                                             )}
                                         >

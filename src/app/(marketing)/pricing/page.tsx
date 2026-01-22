@@ -76,17 +76,31 @@ const testimonials = [
 
 export default function PricingPage() {
     return (
-        <div className="bg-black">
+        <div className="bg-black grainy-gradient">
             {/* Hero Section */}
-            <section className="relative py-24 md:py-32 text-center">
-                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
+            <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="absolute inset-0 bg-black/60" />
+                </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+                    <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6 justify-center">
+                        <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Pricing</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
                         Free Invoicing Software for South Africa
                     </h1>
-                    <p className="text-white/50 max-w-xl mx-auto text-lg">
+                    <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
                         Start free, upgrade when you need PayGate integration and automated payments.
                     </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button asChild className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12">
+                            <Link href="/login">Get Started for Free</Link>
+                        </Button>
+                        <Button asChild variant="outline" className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5">
+                            <Link href="/features/paygate">Explore PayGate</Link>
+                        </Button>
+                    </div>
                 </div>
             </section>
 

@@ -38,6 +38,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useSettings } from "@/lib/settings-context"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 
 export default function GeneralSettings() {
     const { isPro } = useSubscription()
@@ -122,16 +123,27 @@ export default function GeneralSettings() {
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
-                        <Button
-                            variant="outline"
-                            className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
-                            onClick={() => {
-                                if (isPro) return handleLogoUpload()
-                                router.push('/settings/billing')
-                            }}
-                        >
-                            {isPro ? "Replace Logo" : "Upgrade to Pro"}
-                        </Button>
+                        {isPro ? (
+                            <Button
+                                variant="outline"
+                                className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
+                                onClick={() => {
+                                    if (isPro) return handleLogoUpload()
+                                    router.push('/settings/billing')
+                                }}
+                            >
+                                Replace Logo
+                            </Button>
+                        ) : (
+                            <HoverBorderGradient
+                                as="button"
+                                onClick={() => router.push('/settings/billing')}
+                                containerClassName="w-fit"
+                                className="bg-white text-black font-bold h-9 px-4 flex items-center justify-center"
+                            >
+                                Upgrade to Pro
+                            </HoverBorderGradient>
+                        )}
                         {isPro && (
                             <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
                                 Remove

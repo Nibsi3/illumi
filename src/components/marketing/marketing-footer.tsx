@@ -18,6 +18,7 @@ const footerLinks = {
         { name: "Vault", href: "/features/vault" },
     ],
     resources: [
+        { name: "SME Resources", href: "/resources" },
         { name: "Documentation", href: "/docs" },
         { name: "Integrations", href: "/integrations" },
         { name: "Support", href: "/contact" },
@@ -139,6 +140,9 @@ export function MarketingFooter() {
             <div className="relative overflow-hidden py-12">
                 <div className="text-[12rem] md:text-[18rem] font-bold text-white/2 text-center leading-none tracking-tighter select-none">
                     illumi
+                </div>
+                <div className="text-center mt-8 text-xs text-white/40">
+                    Proudly supporting small businesses in Johannesburg, Cape Town, Durban, Pretoria, and across South Africa, including Bloemfontein, Port Elizabeth, East London, and the Garden Route.
                 </div>
             </div>
         </footer>

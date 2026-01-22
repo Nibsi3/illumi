@@ -7,6 +7,7 @@ import { Plus, Clock, Calendar, ArrowRight, MoreHorizontal, User, RefreshCw } fr
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useSubscription } from "@/lib/subscription/hooks"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -54,9 +55,9 @@ export default function RecurringInvoicesPage() {
                     <p className="text-muted-foreground mt-2 max-w-xl">Recurring invoices are a Pro feature. Upgrade to automate your monthly billing.</p>
                     <div className="mt-6">
                         <Link href="/settings/billing">
-                            <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-bold">
+                            <HoverBorderGradient as="div" containerClassName="w-full" className="bg-white text-black font-bold h-11 px-6 flex items-center justify-center">
                                 Upgrade to Pro
-                            </Button>
+                            </HoverBorderGradient>
                         </Link>
                     </div>
                 </div>
@@ -74,7 +75,7 @@ export default function RecurringInvoicesPage() {
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Button className="px-6 bg-primary text-primary-foreground hover:bg-primary/90">
                             <Plus className="mr-2 h-4 w-4" />
                             New Schedule
                         </Button>
@@ -126,7 +127,7 @@ export default function RecurringInvoicesPage() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" className="w-full rounded-full" onClick={() => setIsDialogOpen(false)}>Start Automation</Button>
+                            <Button type="submit" className="w-full" onClick={() => setIsDialogOpen(false)}>Start Automation</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

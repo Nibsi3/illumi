@@ -223,14 +223,14 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
                         <div className="mt-8 flex flex-col sm:flex-row gap-3">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center rounded-xl bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
                             >
                                 Connect {p.short}
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                             <Link
                                 href="/features/paygate"
-                                className="inline-flex items-center justify-center rounded-xl border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
                             >
                                 How PayGate works
                             </Link>
@@ -305,13 +305,13 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center rounded-xl bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
                             >
                                 Get started
                             </Link>
                             <Link
                                 href="/pricing"
-                                className="inline-flex items-center justify-center rounded-xl border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
                             >
                                 View pricing
                             </Link>

@@ -4,15 +4,35 @@ import { IconArrowRight } from "@tabler/icons-react"
 
 export default function StoryPage() {
     return (
-        <div className="bg-black">
+        <div className="bg-black grainy-gradient">
             {/* Hero Section */}
-            <section className="relative py-24 md:py-32">
-                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
+            <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="absolute inset-0 bg-black/60" />
+                </div>
                 <div className="relative mx-auto max-w-4xl px-6 lg:px-8">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-center">
+                    <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6 justify-center">
+                        <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Our Story</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
                         This is why we're building{" "}
                         <span className="font-serif italic">Illumi.</span>
                     </h1>
+                    <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
+                        A simpler way to invoice, track expenses, and get paid—built specifically for South African small businesses.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button asChild className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12">
+                            <Link href="/login">
+                                Get Started
+                                <IconArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                        <Button asChild variant="outline" className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5">
+                            <Link href="/pricing">View Pricing</Link>
+                        </Button>
+                    </div>
                 </div>
             </section>
 

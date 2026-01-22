@@ -85,24 +85,34 @@ export default function DashboardPage() {
                 const currentMonth = now.getMonth()
                 const startOfYear = new Date(currentYear, 0, 1).toISOString()
                 const startOfYearDate = new Date(currentYear, 0, 1)
+                const startOfLastYearDate = new Date(currentYear - 1, 0, 1)
 
-                // Fetch Invoices with full details for comprehensive metrics
-                const { data: invoices } = await supabase
-                    .from('invoices')
-                    .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
-                    .eq('workspace_id', activeWorkspace.id)
-
-                // Fetch customers for top clients calculation
-                const { data: customers } = await supabase
-                    .from('customers')
-                    .select('id, name')
-                    .eq('workspace_id', activeWorkspace.id)
-
-                const { data: expenses } = await supabase
-                    .from('expenses')
-                    .select('amount, expense_date')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
+                const [
+                    { data: invoices },
+                    { data: customers },
+                    { data: expenses },
+                    { data: products },
+                ] = await Promise.all([
+                    // Restrict invoice scan to current + last year (used by monthly charts)
+                    supabase
+                        .from('invoices')
+                        .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10)),
+                    supabase
+                        .from('customers')
+                        .select('id, name')
+                        .eq('workspace_id', activeWorkspace.id),
+                    supabase
+                        .from('expenses')
+                        .select('amount, expense_date')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .gte('expense_date', startOfYearDate.toISOString().slice(0, 10)),
+                    supabase
+                        .from('products')
+                        .select('price, billing_type')
+                        .eq('workspace_id', activeWorkspace.id),
+                ])
 
                 const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
 
@@ -218,12 +228,6 @@ export default function DashboardPage() {
                     }))
                     .sort((a, b) => b.total - a.total)
                     .slice(0, 5)
-
-                // Fetch Products
-                const { data: products } = await supabase
-                    .from('products')
-                    .select('price, billing_type')
-                    .eq('workspace_id', activeWorkspace.id)
 
                 const productCount = products?.length || 0
                 const recurring = products

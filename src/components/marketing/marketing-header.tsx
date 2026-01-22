@@ -6,7 +6,7 @@ import { IconMenu2, IconX, IconChevronDown } from "@tabler/icons-react"
 import { useState } from "react"
 
 const featureDropdownItems = [
-    { name: "Overview", href: "/features/overview" },
+    { name: "Financial Overview", href: "/features/overview" },
     { name: "Invoicing", href: "/features/invoicing" },
     { name: "Expense Tracking", href: "/features/expenses" },
     { name: "Client Management", href: "/features/clients" },
@@ -29,7 +29,7 @@ export function MarketingHeader() {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
             {/* Wider navigation with reduced height */}
-            <nav className="mx-auto max-w-4xl flex items-center justify-center gap-6 px-6 py-1.5 bg-[#111]/90 backdrop-blur-xl rounded-lg border border-white/10">
+            <nav className="mx-auto max-w-4xl flex items-center justify-center gap-6 px-6 py-1.5 bg-black/40 backdrop-blur-xl rounded-lg border border-white/10">
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
@@ -53,7 +53,7 @@ export function MarketingHeader() {
                     </button>
 
                     {featuresOpen && (
-                        <div className="absolute top-full left-0 mt-2 w-48 bg-[#111] border border-white/10 rounded-lg shadow-xl overflow-hidden">
+                        <div className="absolute top-full left-0 mt-2 w-48 bg-black/90 backdrop-blur-xl border border-white/10 rounded-lg shadow-xl overflow-hidden">
                             {featureDropdownItems.map((item) => (
                                 <Link
                                     key={item.name}
@@ -107,7 +107,7 @@ export function MarketingHeader() {
 
             {/* Mobile menu */}
             {mobileMenuOpen && (
-                <div className="md:hidden mt-2 mx-auto max-w-3xl bg-[#111] rounded-lg border border-white/10 overflow-hidden">
+                <div className="md:hidden mt-2 mx-auto max-w-3xl bg-black/90 backdrop-blur-xl rounded-lg border border-white/10 overflow-hidden">
                     <div className="px-4 py-3 space-y-3">
                         <div className="text-xs uppercase tracking-wider text-white/40 mb-2">Features</div>
                         {featureDropdownItems.map((item) => (

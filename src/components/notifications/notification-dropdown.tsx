@@ -155,7 +155,7 @@ export function NotificationDropdown() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="text-neutral-400 hover:text-white hover:bg-white/5 rounded-none relative"
+                    className="text-muted-foreground hover:text-foreground hover:bg-accent rounded-none relative"
                 >
                     <IconBell className="h-5 w-5" />
                     {unreadCount > 0 && (
@@ -165,18 +165,18 @@ export function NotificationDropdown() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
-                className="w-[420px] bg-[#09090b] border-white/10 text-white p-0 shadow-2xl rounded-lg mt-2"
+                className="w-[420px] bg-popover border-border text-popover-foreground p-0 shadow-2xl rounded-lg mt-2"
             >
                 {/* Header with Tabs */}
-                <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-border px-4 py-3">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setActiveTab("inbox")}
                             className={cn(
                                 "text-sm font-medium transition-colors pb-1 border-b-2",
                                 activeTab === "inbox"
-                                    ? "text-white border-white"
-                                    : "text-neutral-500 border-transparent hover:text-white"
+                                    ? "text-foreground border-foreground"
+                                    : "text-muted-foreground border-transparent hover:text-foreground"
                             )}
                         >
                             Inbox {unreadCount > 0 && `(${unreadCount})`}
@@ -186,8 +186,8 @@ export function NotificationDropdown() {
                             className={cn(
                                 "text-sm font-medium transition-colors pb-1 border-b-2",
                                 activeTab === "archive"
-                                    ? "text-white border-white"
-                                    : "text-neutral-500 border-transparent hover:text-white"
+                                    ? "text-foreground border-foreground"
+                                    : "text-muted-foreground border-transparent hover:text-foreground"
                             )}
                         >
                             Archive
@@ -197,7 +197,7 @@ export function NotificationDropdown() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 text-neutral-500 hover:text-white hover:bg-white/5 rounded-md"
+                            className="h-6 w-6 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -211,11 +211,11 @@ export function NotificationDropdown() {
                 <div className="max-h-[400px] overflow-y-auto">
                     {loading ? (
                         <div className="px-4 py-12 text-center">
-                            <p className="text-sm text-neutral-500">Loading...</p>
+                            <p className="text-sm text-muted-foreground">Loading...</p>
                         </div>
                     ) : activeTab === "inbox" ? (
                         notifications.length > 0 ? (
-                            <div className="divide-y divide-white/5">
+                            <div className="divide-y divide-border">
                                 {notifications.map((notification) => {
                                     const Icon = typeIcons[notification.type] || IconBell
                                     const colorClass = typeColors[notification.type] || "text-white"
@@ -224,7 +224,7 @@ export function NotificationDropdown() {
                                         <div
                                             key={notification.id}
                                             className={cn(
-                                                "px-4 py-3 hover:bg-white/5 transition-colors group relative",
+                                                "px-4 py-3 hover:bg-accent transition-colors group relative",
                                                 notification.invoice_id ? "cursor-pointer" : ""
                                             )}
                                             onClick={async () => {
@@ -240,11 +240,11 @@ export function NotificationDropdown() {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="flex-1">
-                                                            <p className="text-sm font-medium text-white leading-snug">
+                                                            <p className="text-sm font-medium text-foreground leading-snug">
                                                                 {notification.title}
                                                             </p>
                                                             {notification.message && (
-                                                                <p className="text-xs text-neutral-400 mt-0.5 truncate">
+                                                                <p className="text-xs text-muted-foreground mt-0.5 truncate">
                                                                     {notification.message}
                                                                 </p>
                                                             )}
@@ -253,7 +253,7 @@ export function NotificationDropdown() {
                                                                     {formatAmount(notification.amount, notification.invoices?.currency)}
                                                                 </p>
                                                             )}
-                                                            <p className="text-[10px] text-neutral-500 mt-1 uppercase tracking-wider">
+                                                            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
                                                                 {formatTime(notification.created_at)}
                                                             </p>
                                                         </div>
@@ -263,7 +263,7 @@ export function NotificationDropdown() {
                                                                     e.stopPropagation()
                                                                     handleMarkAsRead(notification.id)
                                                                 }}
-                                                                className="p-1.5 text-neutral-500 hover:text-white hover:bg-white/10 rounded-md transition-all"
+                                                                className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-all"
                                                                 title="Archive"
                                                             >
                                                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -275,7 +275,7 @@ export function NotificationDropdown() {
                                                                     e.stopPropagation()
                                                                     handleRemove(notification.id)
                                                                 }}
-                                                                className="p-1.5 text-neutral-500 hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all"
+                                                                className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-md transition-all"
                                                                 title="Delete"
                                                             >
                                                                 <IconX className="h-4 w-4" />
@@ -291,12 +291,12 @@ export function NotificationDropdown() {
                             </div>
                         ) : (
                             <div className="px-4 py-12 text-center">
-                                <p className="text-sm text-neutral-500">No new notifications</p>
+                                <p className="text-sm text-muted-foreground">No new notifications</p>
                             </div>
                         )
                     ) : (
                         archived.length > 0 ? (
-                            <div className="divide-y divide-white/5">
+                            <div className="divide-y divide-border">
                                 {archived.map((notification) => {
                                     const Icon = typeIcons[notification.type] || IconBell
 
@@ -304,7 +304,7 @@ export function NotificationDropdown() {
                                         <div
                                             key={notification.id}
                                             className={cn(
-                                                "px-4 py-3 hover:bg-white/5 transition-colors group relative opacity-60 hover:opacity-100",
+                                                "px-4 py-3 hover:bg-accent transition-colors group relative opacity-60 hover:opacity-100",
                                                 notification.invoice_id ? "cursor-pointer" : ""
                                             )}
                                             onClick={() => {
@@ -313,16 +313,16 @@ export function NotificationDropdown() {
                                             }}
                                         >
                                             <div className="flex items-start gap-3">
-                                                <div className="mt-0.5 text-neutral-500">
+                                                <div className="mt-0.5 text-muted-foreground">
                                                     <Icon className="h-5 w-5" />
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="flex-1">
-                                                            <p className="text-sm font-medium text-white leading-snug">
+                                                            <p className="text-sm font-medium text-foreground leading-snug">
                                                                 {notification.title}
                                                             </p>
-                                                            <p className="text-xs text-neutral-500 mt-1">
+                                                            <p className="text-xs text-muted-foreground mt-1">
                                                                 {formatTime(notification.created_at)}
                                                             </p>
                                                         </div>
@@ -331,7 +331,7 @@ export function NotificationDropdown() {
                                                                 e.stopPropagation()
                                                                 handleRemove(notification.id, true)
                                                             }}
-                                                            className="p-1 text-neutral-500 hover:text-red-500 transition-colors"
+                                                            className="p-1 text-muted-foreground hover:text-red-500 transition-colors"
                                                             title="Delete"
                                                         >
                                                             <IconX className="h-4 w-4" />
@@ -345,25 +345,25 @@ export function NotificationDropdown() {
                             </div>
                         ) : (
                             <div className="px-4 py-12 text-center">
-                                <p className="text-sm text-neutral-500">No archived notifications</p>
+                                <p className="text-sm text-muted-foreground">No archived notifications</p>
                             </div>
                         )
                     )}
                 </div>
 
                 {/* Footer */}
-                <div className="border-t border-white/5 px-4 py-3 flex items-center justify-between">
+                <div className="border-t border-border px-4 py-3 flex items-center justify-between">
                     <div>
                         {activeTab === "inbox" && notifications.length > 0 && (
                             <button
                                 onClick={handleArchiveAll}
-                                className="text-sm text-neutral-400 hover:text-white transition-colors"
+                                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 Archive all
                             </button>
                         )}
                     </div>
-                    <Link href="/notifications" className="text-sm text-neutral-400 hover:text-white transition-colors">
+                    <Link href="/notifications" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                         View all
                     </Link>
                 </div>

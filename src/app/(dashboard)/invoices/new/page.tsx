@@ -65,6 +65,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { format, parseISO } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 
 import { CreateClientModal } from "../components/create-client-modal"
 import { CreateProductModal } from "../components/create-product-modal"
@@ -135,8 +136,9 @@ export default function NewInvoicePage() {
     const [dueDate, setDueDate] = useState("")
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
-    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
+
+    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
 
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
@@ -638,12 +640,12 @@ export default function NewInvoicePage() {
 
 
     return (
-        <div className="h-full bg-black text-white font-sans flex overflow-hidden">
+        <div className="h-full bg-background text-foreground font-sans flex overflow-hidden">
 
             {/* MAIN CONTENT WRAPPER */}
-            <div className="flex-1 flex flex-col relative h-full bg-black">
+            <div className="flex-1 flex flex-col relative h-full bg-background">
                 {/* STATIC TOP ACTION BAR */}
-                <div className="h-20 px-8 flex justify-end items-center border-b border-white/5 bg-black z-20 shrink-0">
+                <div className="h-20 px-8 flex justify-end items-center border-b border-white/5 bg-background z-20 shrink-0">
                     <div className="flex items-center gap-3">
                         <Button
                             variant="ghost"
@@ -760,12 +762,14 @@ export default function NewInvoicePage() {
                                                 <div className="space-y-3">
                                                     <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
                                                     <p className="text-[10px] text-neutral-500">Recurring invoices are only available on the Pro plan.</p>
-                                                    <Button
+                                                    <HoverBorderGradient
+                                                        as="button"
                                                         onClick={() => router.push('/settings/billing')}
-                                                        className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                        containerClassName="w-full"
+                                                        className="bg-white text-black font-bold h-8 text-xs w-full flex items-center justify-center"
                                                     >
                                                         Upgrade to Pro
-                                                    </Button>
+                                                    </HoverBorderGradient>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-4">
@@ -940,7 +944,7 @@ export default function NewInvoicePage() {
                                             <div className="flex items-center gap-2">
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-500 hover:bg-neutral-200" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", "text-neutral-500 hover:text-white hover:bg-white/5")}>
                                                             <Settings2 className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
@@ -967,29 +971,29 @@ export default function NewInvoicePage() {
 
                                             </div>
 
-                                            <div className={cn("h-px w-8", invoiceMode === "light" ? "bg-black/10" : "bg-white/20")} />
+                                            <div className={cn("h-px w-8", "bg-white/20")} />
                                             <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#878787]">Draft Invoice</span>
                                         </div>
-                                        <div className={cn("flex items-center p-0.5 rounded-full border transition-all", invoiceMode === "light" ? "bg-white border-neutral-200" : "bg-[#0a0a0a] border-white/5")}>
+                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-[#0a0a0a] border-white/5">
                                             <button
+                                                type="button"
                                                 onClick={() => setInvoiceMode("light")}
                                                 className={cn(
-                                                    "h-7 w-7 rounded-full flex items-center justify-center transition-all",
-                                                    invoiceMode === "light" ? "bg-black text-white shadow-sm" : "text-neutral-500 hover:text-white"
+                                                    "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
+                                                    invoiceMode === "light" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                                                 )}
-                                                title="Light Mode"
                                             >
-                                                <div className="w-4 h-4 rounded-full bg-current" />
+                                                Light
                                             </button>
                                             <button
+                                                type="button"
                                                 onClick={() => setInvoiceMode("dark")}
                                                 className={cn(
-                                                    "h-7 w-7 rounded-full flex items-center justify-center transition-all",
-                                                    invoiceMode === "dark" ? "bg-white text-black shadow-sm" : "text-neutral-500 hover:text-black"
+                                                    "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
+                                                    invoiceMode === "dark" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
                                                 )}
-                                                title="Dark Mode"
                                             >
-                                                <div className="w-4 h-4 rounded-full border-2 border-current" />
+                                                Dark
                                             </button>
                                         </div>
                                     </div>
@@ -999,7 +1003,7 @@ export default function NewInvoicePage() {
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
                                                 invoiceMode === "light"
-                                                    ? "bg-white border-neutral-200 hover:bg-neutral-100 hover:border-neutral-300"
+                                                    ? "bg-[#0c0c0c] border-neutral-200 hover:border-neutral-300"
                                                     : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
                                             )}
                                         >
@@ -1007,8 +1011,8 @@ export default function NewInvoicePage() {
                                                 <img src={logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                             ) : (
                                                 <>
-                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", invoiceMode === "light" ? "text-neutral-400" : "text-white")} />
-                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-400" : "text-white")}>Logo</span>
+                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", "text-white")} />
+                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", "text-white")}>Logo</span>
                                                 </>
                                             )}
                                             <input
@@ -1376,7 +1380,7 @@ export default function NewInvoicePage() {
                     currency,
                     taxRate,
                     dateFormat,
-                    invoiceMode, // Pass the mode state
+                    invoiceMode,
                     clientName,
                     clientEmail,
                     clientPhone,

@@ -16,6 +16,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Metadata } from "next";
+import { MarketingHeader } from "@/components/marketing/marketing-header";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { DocsSidebar } from "@/components/docs/docs-sidebar";
 
 export const metadata: Metadata = {
     title: "Documentation & Help Center | Illumi",
@@ -25,29 +28,15 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
     return (
-        <div className="min-h-screen bg-black text-white font-sans selection:bg-white/20">
-            {/* Header */}
-            <header className="sticky top-0 z-50 border-b border-white/10 bg-black/80 backdrop-blur-md">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black">
-                            <Zap className="w-5 h-5 fill-current" />
-                        </div>
-                        <span className="font-bold text-lg tracking-tight">Illumi<span className="text-neutral-500 font-medium ml-1">Help</span></span>
-                    </div>
-                    <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-400">
-                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                        <Link href="/contact" className="hover:text-white transition-colors">Support</Link>
-                        <div className="h-4 w-px bg-white/10"></div>
-                        <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
-                    </nav>
-                </div>
-            </header>
-
-            <main>
+        <div className="min-h-screen bg-black text-white font-sans selection:bg-white/20 grainy-gradient">
+            <MarketingHeader />
+            <main className="relative z-10">
                 {/* Hero Search Section */}
-                <section className="relative pt-24 pb-20 px-6 border-b border-white/10 overflow-hidden">
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-white/10 via-black to-black opacity-50"></div>
+                <section className="relative pt-24 md:pt-28 pb-16 px-6 border-b border-white/10 overflow-hidden">
+                    <div className="absolute inset-0 z-0">
+                        <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                        <div className="absolute inset-0 bg-black/60" />
+                    </div>
                     <div className="max-w-3xl mx-auto text-center relative z-10">
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">How can we help you?</h1>
                         <p className="text-lg text-neutral-400 mb-8 max-w-xl mx-auto">
@@ -66,8 +55,64 @@ export default function DocsPage() {
                     </div>
                 </section>
 
-                {/* Categories Grid */}
-                <section className="py-20 px-6 max-w-7xl mx-auto">
+                <section className="flex">
+                    <aside className="hidden lg:block w-80 border-r border-white/10 bg-[#0a0a0a] sticky top-0 h-screen overflow-y-auto">
+                        <DocsSidebar />
+                    </aside>
+
+                    <div className="flex-1 py-16 px-6 lg:px-12">
+                        <div className="max-w-5xl mx-auto">
+                            {/* Categories Grid */}
+                    <div className="mb-12 rounded-3xl border border-white/10 bg-[#0a0a0a] p-8 md:p-10">
+                        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                            <div className="max-w-2xl">
+                                <div className="text-sm font-bold uppercase tracking-widest text-neutral-500">Recommended path</div>
+                                <h2 className="text-2xl md:text-3xl font-bold text-white mt-3">Get set up in 30 minutes</h2>
+                                <p className="text-neutral-400 mt-3 leading-relaxed">
+                                    Follow the guided setup path from workspace → clients → invoices → PayGate → vault. Each page includes steps, links, and UI previews.
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:max-w-xl">
+                                <Link href="/docs/getting-started" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">1. Getting started</div>
+                                    <div className="text-xs text-white/50 mt-1">Start here</div>
+                                </Link>
+                                <Link href="/docs/workspace" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">2. Workspace</div>
+                                    <div className="text-xs text-white/50 mt-1">Defaults & team</div>
+                                </Link>
+                                <Link href="/docs/clients" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">3. Clients</div>
+                                    <div className="text-xs text-white/50 mt-1">Billing details</div>
+                                </Link>
+                                <Link href="/docs/invoicing" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">4. Invoices</div>
+                                    <div className="text-xs text-white/50 mt-1">Create & send</div>
+                                </Link>
+                                <Link href="/docs/paygate" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">5. PayGate</div>
+                                    <div className="text-xs text-white/50 mt-1">Get paid online</div>
+                                </Link>
+                                <Link href="/docs/vault" className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5">
+                                    <div className="text-sm font-semibold text-white">6. Vault</div>
+                                    <div className="text-xs text-white/50 mt-1">Store receipts</div>
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                            <Link href="/docs/troubleshooting">
+                                <Button variant="outline" className="border-white/10 hover:bg-white/5 text-neutral-200">
+                                    Troubleshooting
+                                </Button>
+                            </Link>
+                            <Link href="/contact">
+                                <Button className="bg-white text-black hover:bg-neutral-200">
+                                    Contact support
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+
                     <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-8">Browse by Category</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <CategoryCard
@@ -95,6 +140,12 @@ export default function DocsPage() {
                             href="/docs/payments"
                         />
                         <CategoryCard
+                            icon={Zap}
+                            title="PayGate setup"
+                            description="Enable PayGate, set a primary provider, and verify webhooks are working."
+                            href="/docs/paygate"
+                        />
+                        <CategoryCard
                             icon={Users}
                             title="Clients & CRM"
                             description="Manage your client database, view invoice history, and organize by company."
@@ -113,63 +164,78 @@ export default function DocsPage() {
                             href="/docs/settings"
                         />
                         <CategoryCard
+                            icon={BookOpen}
+                            title="Workspace"
+                            description="Workspace defaults, team members, and multi-business setups."
+                            href="/docs/workspace"
+                        />
+                        <CategoryCard
+                            icon={Receipt}
+                            title="Vault"
+                            description="Store receipts and documents, and keep your admin organised."
+                            href="/docs/vault"
+                        />
+                        <CategoryCard
+                            icon={LifeBuoy}
+                            title="Troubleshooting"
+                            description="Quick fixes for common issues and where to look first."
+                            href="/docs/troubleshooting"
+                        />
+                        <CategoryCard
                             icon={LifeBuoy}
                             title="Support"
                             description="Contact our support team, report bugs, or request new features."
                             href="/contact"
                         />
                     </div>
-                </section>
+ 
+                            {/* Popular Articles */}
+                            <section className="py-20 bg-white/2 border-t border-white/5 mt-16">
+                                <div className="max-w-none">
+                                    <h2 className="text-2xl font-bold mb-8 text-center">Popular Articles</h2>
+                                    <div className="space-y-4">
+                                        <ArticleRow href="/docs/payfast-online-payments" title="How to connect PayFast for online payments" category="Payments" time="3 min read" />
+                                        <ArticleRow href="/docs/invoicing" title="Setting up recurring invoices for retainer clients" category="Invoicing" time="5 min read" />
+                                        <ArticleRow href="/docs/send-invoices-by-email" title="Sending invoices by email" category="Invoicing" time="2 min read" />
+                                        <ArticleRow href="/docs/expenses" title="Tracking expenses and calculating net profit" category="Expenses" time="4 min read" />
+                                        <ArticleRow href="/docs/payments" title="Connecting Yoco for card payments" category="Payments" time="3 min read" />
+                                        <ArticleRow href="/docs/settings" title="Understanding Free vs Pro plan features" category="Billing" time="3 min read" />
+                                        <ArticleRow href="/docs/expenses" title="Exporting expenses to CSV for SARS" category="Expenses" time="2 min read" />
+                                        <ArticleRow href="/docs/clients" title="Managing client folders and invoice history" category="Clients" time="3 min read" />
+                                    </div>
+                                    <div className="mt-10 text-center">
+                                        <Button variant="outline" className="border-white/10 hover:bg-white/5 text-neutral-300">
+                                            View all articles
+                                        </Button>
+                                    </div>
+                                </div>
+                            </section>
 
-                {/* Popular Articles */}
-                <section className="py-20 px-6 bg-white/2 border-t border-white/5">
-                    <div className="max-w-4xl mx-auto">
-                        <h2 className="text-2xl font-bold mb-8 text-center">Popular Articles</h2>
-                        <div className="space-y-4">
-                            <ArticleRow href="/docs/payfast-online-payments" title="How to connect PayFast for online payments" category="Payments" time="3 min read" />
-                            <ArticleRow href="/docs/invoicing" title="Setting up recurring invoices for retainer clients" category="Invoicing" time="5 min read" />
-                            <ArticleRow href="/docs/send-invoices-by-email" title="Sending invoices by email" category="Invoicing" time="2 min read" />
-                            <ArticleRow href="/docs/expenses" title="Tracking expenses and calculating net profit" category="Expenses" time="4 min read" />
-                            <ArticleRow href="/docs/payments" title="Connecting Yoco for card payments" category="Payments" time="3 min read" />
-                            <ArticleRow href="/docs/settings" title="Understanding Free vs Pro plan features" category="Billing" time="3 min read" />
-                            <ArticleRow href="/docs/expenses" title="Exporting expenses to CSV for SARS" category="Expenses" time="2 min read" />
-                            <ArticleRow href="/docs/clients" title="Managing client folders and invoice history" category="Clients" time="3 min read" />
-                        </div>
-                        <div className="mt-10 text-center">
-                            <Button variant="outline" className="border-white/10 hover:bg-white/5 text-neutral-300">
-                                View all articles
-                            </Button>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Still Stuck Banner */}
-                <section className="py-20 px-6">
-                    <div className="max-w-5xl mx-auto bg-[#0F0F11] border border-white/10 rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px]"></div>
-                        <div className="relative z-10 text-center md:text-left">
-                            <h2 className="text-3xl font-bold mb-4">Still need help?</h2>
-                            <p className="text-neutral-400 max-w-md text-lg">
-                                Our support team is available Monday to Friday to assist you with any complex issues.
-                            </p>
-                        </div>
-                        <div className="flex gap-4 relative z-10">
-                            <Link href="/contact">
-                                <Button className="h-12 px-8 bg-white text-black hover:bg-neutral-200 font-bold rounded-xl">
-                                    <LifeBuoy className="mr-2 h-5 w-5" />
-                                    Contact Support
-                                </Button>
-                            </Link>
+                            {/* Still Stuck Banner */}
+                            <section className="py-20">
+                                <div className="max-w-5xl mx-auto bg-[#0F0F11] border border-white/10 rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px]"></div>
+                                    <div className="relative z-10 text-center md:text-left">
+                                        <h2 className="text-3xl font-bold mb-4">Still need help?</h2>
+                                        <p className="text-neutral-400 max-w-md text-lg">
+                                            Our support team is available Monday to Friday to assist you with any complex issues.
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-4 relative z-10">
+                                        <Link href="/contact">
+                                            <Button className="h-12 px-8 bg-white text-black hover:bg-neutral-200 font-bold rounded-xl">
+                                                <LifeBuoy className="mr-2 h-5 w-5" />
+                                                Contact Support
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </section>
             </main>
-
-            <footer className="border-t border-white/5 py-12 bg-black">
-                <div className="max-w-7xl mx-auto px-6 text-center text-sm text-neutral-600">
-                    <p>&copy; {new Date().getFullYear()} Illumi. Professional invoicing for South African businesses.</p>
-                </div>
-            </footer>
+            <MarketingFooter />
         </div>
     );
 }

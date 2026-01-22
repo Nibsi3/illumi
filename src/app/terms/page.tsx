@@ -10,10 +10,20 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
     return (
-        <div className="bg-black text-white">
+        <div className="bg-black text-white grainy-gradient">
             <MarketingHeader />
-            <main className="mx-auto max-w-4xl px-6 pt-28 pb-20">
-                <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
+            {/* Hero Section */}
+            <section className="relative py-24 pt-32 md:pt-40">
+                <div className="absolute inset-0 z-0">
+                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="absolute inset-0 bg-black/60" />
+                </div>
+                <div className="relative mx-auto max-w-4xl px-6">
+                    <h1 className="text-4xl font-bold tracking-tight">Terms of Service</h1>
+                </div>
+            </section>
+            <main className="mx-auto max-w-4xl px-6 pb-20">
+                <div className="hidden"></div>
                 <p className="mt-3 text-white/60">
                     These Terms of Service ("Terms") govern your use of Illumi (the "Service").
                     By accessing or using the Service, you agree to these Terms.

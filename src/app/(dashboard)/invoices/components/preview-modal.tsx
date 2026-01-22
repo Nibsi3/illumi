@@ -35,6 +35,8 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     if (!isOpen) return null
     const { activePaymentProvider } = useSettings()
 
+    const isLight = data.invoiceMode === "light"
+
     const formatDate = (dateString: string) => {
         if (!dateString) return "--/--/----"
         try {
@@ -104,7 +106,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
             < div className="flex-1 overflow-y-auto p-12 scrollbar-hide" >
                 <div className={cn(
                     "mx-auto shadow-2xl min-h-[1000px] printable-area transition-all duration-500",
-                    data.invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#0a0a0a] text-white border border-white/5",
+                    isLight ? "bg-white text-black border border-neutral-200" : "bg-[#0a0a0a] text-white border border-white/5",
                     data.template === "Classic" && "p-16 max-w-4xl",
                     data.template === "Minimal" && "p-20 max-w-3xl",
                     data.template === "Modern" && "max-w-4xl p-0 overflow-hidden"
@@ -117,14 +119,14 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         <div className="flex justify-between items-start mb-24">
                             <div className={cn(
                                 "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border",
-                                data.invoiceMode === "light" ? "bg-black border-black/5" : "bg-white border-white/10"
+                                isLight ? "bg-white border-neutral-200" : "bg-white border-white/10"
                             )}>
                                 {data.logo ? (
                                     <img src={data.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                 ) : (
                                     <div className={cn(
                                         "invoice-font-title font-black text-3xl",
-                                        data.invoiceMode === "light" ? "text-white" : "text-black"
+                                        "text-black"
                                     )}>E.</div>
                                 )}
                             </div>
@@ -132,7 +134,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                 <h1 className="text-6xl invoice-font-title font-bold mb-3 tracking-tighter">Invoice</h1>
                                 <p className={cn(
                                     "invoice-font-id text-xs tracking-[0.3em] uppercase opacity-40",
-                                    data.invoiceMode === "light" ? "text-neutral-400" : "text-white/40"
+                                    isLight ? "text-neutral-500" : "text-white/40"
                                 )}>{data.invoiceNumber}</p>
                             </div>
                         </div>
@@ -140,19 +142,19 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         {/* From / To */}
                         <div className={cn(
                             "grid grid-cols-2 gap-20 mb-12 pb-12 border-b",
-                            data.invoiceMode === "light" ? "border-neutral-100" : "border-white/5"
+                            isLight ? "border-black/10" : "border-white/5"
                         )}>
                             <div className="flex flex-col gap-4">
                                 <span className={cn(
                                     "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                    data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
+                                    isLight ? "text-neutral-500" : "text-white/20"
                                 )}>From</span>
                                 <div className="space-y-1 invoice-font-from">
                                     <p className="text-lg font-bold">Illumi Professional</p>
                                     {data.fromEmail && <p className="text-xs font-medium opacity-60">{data.fromEmail}</p>}
                                     <p className={cn(
                                         "text-xs leading-relaxed",
-                                        data.invoiceMode === "light" ? "text-neutral-500" : "text-white/40"
+                                        isLight ? "text-neutral-600" : "text-white/40"
                                     )}>
                                         123 Business Avenue<br />
                                         Cape Town, 8001
@@ -162,7 +164,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             <div className="flex flex-col gap-4 text-right">
                                 <span className={cn(
                                     "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                    data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
+                                    isLight ? "text-neutral-500" : "text-white/20"
                                 )}>To</span>
                                 <div className="space-y-1 invoice-font-client">
                                     <p className="text-lg font-bold opacity-90">{data.clientName || "Valued Customer"}</p>
@@ -170,7 +172,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     {data.clientPhone && <p className="text-xs font-medium opacity-60 mb-2">{data.clientPhone}</p>}
                                     <p className={cn(
                                         "text-xs leading-relaxed whitespace-pre-wrap",
-                                        data.invoiceMode === "light" ? "text-neutral-500" : "text-white/40"
+                                        isLight ? "text-neutral-600" : "text-white/40"
                                     )}>
                                         {data.clientAddress || "Customer Address Details"}
                                     </p>
@@ -183,7 +185,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             <div className="flex flex-col gap-1">
                                 <span className={cn(
                                     "text-[10px] font-bold uppercase tracking-widest",
-                                    data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
+                                    isLight ? "text-neutral-500" : "text-white/20"
                                 )}>Issue Date</span>
                                 <p className="invoice-font-date font-semibold text-sm">
                                     {formatDate(data.issueDate)}
@@ -192,7 +194,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             <div className="flex flex-col gap-1">
                                 <span className={cn(
                                     "text-[10px] font-bold uppercase tracking-widest",
-                                    data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
+                                    isLight ? "text-neutral-500" : "text-white/20"
                                 )}>Due Date</span>
                                 <p className="invoice-font-date font-semibold text-sm">
                                     {formatDate(data.dueDate)}
@@ -204,7 +206,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         <table className="w-full mb-12">
                             <thead className={cn(
                                 "border-b-2 text-[10px] font-bold uppercase tracking-widest",
-                                data.invoiceMode === "light" ? "border-black" : "border-white"
+                                isLight ? "border-black" : "border-white"
                             )}>
                                 <tr>
                                     <th className="py-4 text-left">Description</th>
@@ -215,7 +217,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             </thead>
                             <tbody className={cn(
                                 "divide-y",
-                                data.invoiceMode === "light" ? "divide-neutral-100" : "divide-white/5"
+                                isLight ? "divide-black/10" : "divide-white/5"
                             )}>
                                 {data.tasks.map((task, i) => (
                                     <tr key={i} className="text-sm">
@@ -231,17 +233,17 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         {/* Footer Section */}
                         <div className={cn(
                             "grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t",
-                            data.invoiceMode === "light" ? "border-black/10" : "border-white/5"
+                            isLight ? "border-black/10" : "border-white/5"
                         )}>
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <span className={cn(
                                         "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                        data.invoiceMode === "light" ? "text-neutral-400" : "text-white/20"
+                                        isLight ? "text-neutral-500" : "text-white/20"
                                     )}>Note</span>
                                     <p className={cn(
                                         "text-sm invoice-font-notes leading-relaxed opacity-60",
-                                        data.invoiceMode === "light" ? "text-black/60" : "text-white/60"
+                                        isLight ? "text-neutral-700" : "text-white/60"
                                     )}>
                                         {data.note?.trim() || ""}
                                     </p>
@@ -250,18 +252,18 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Subtotal</span>
+                                    <span className={cn("text-[10px] uppercase font-bold tracking-widest", isLight ? "text-neutral-500" : "text-neutral-500")}>Subtotal</span>
                                     <span className="invoice-font-amount">{subtotal.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">Tax ({data.taxRate}%)</span>
-                                    <span className="invoice-font-amount text-neutral-400">{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
+                                    <span className={cn("text-[10px] uppercase font-bold tracking-widest", isLight ? "text-neutral-500" : "text-neutral-500")}>Tax ({data.taxRate}%)</span>
+                                    <span className={cn("invoice-font-amount", isLight ? "text-neutral-700" : "text-neutral-400")}>{tax.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</span>
                                 </div>
                                 <div className={cn(
                                     "pt-10 border-t flex justify-between items-end",
-                                    data.invoiceMode === "light" ? "border-black/5" : "border-white/10"
+                                    isLight ? "border-black/10" : "border-white/10"
                                 )}>
-                                    <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/20 mb-2">Total Due</span>
+                                    <span className={cn("text-[10px] uppercase font-bold tracking-[0.3em] mb-2", isLight ? "text-neutral-500" : "text-white/20")}>Total Due</span>
                                     <span className="text-5xl invoice-font-amount font-bold tracking-tighter">
                                         {total.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}
                                     </span>

@@ -51,10 +51,13 @@ const expenseCategories = [
 
 export default function ExpensesFeaturePage() {
     return (
-        <div className="bg-black">
+        <div className="bg-black grainy-gradient">
             {/* Hero Section */}
-            <section className="relative py-24 md:py-32 text-center">
-                <div className="absolute inset-0 bg-linear-to-b from-white/2 to-transparent" />
+            <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="absolute inset-0 bg-black/60" />
+                </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6">
                         <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Business Expense Tracker SA</span>
@@ -97,6 +100,8 @@ export default function ExpensesFeaturePage() {
                             title="Track expenses and net profit"
                             width={1920}
                             height={1080}
+                            quality={100}
+                            priority
                             sizes="(max-width: 1024px) 100vw, 1024px"
                             className="w-full h-auto"
                         />

@@ -100,7 +100,7 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="h-full bg-black text-white font-sans flex overflow-hidden">
+    <div className="h-full bg-background text-foreground font-sans flex overflow-hidden">
       {/* Main Form Area */}
       <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
         <div className="max-w-4xl mx-auto pt-16 px-12">
