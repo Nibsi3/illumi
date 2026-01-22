@@ -18,7 +18,7 @@ import {
     IconLoader2
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import {
     DropdownMenu,
@@ -73,8 +73,10 @@ export default function DashboardPage() {
 
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
+        setIsLoading(true)
         async function fetchMetrics() {
             try {
                 const { data: { user } } = await supabase.auth.getUser()
@@ -93,25 +95,29 @@ export default function DashboardPage() {
                     { data: expenses },
                     { data: products },
                 ] = await Promise.all([
-                    // Restrict invoice scan to current + last year (used by monthly charts)
+                    // Restrict invoice scan to current + last year only
                     supabase
                         .from('invoices')
                         .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
                         .eq('workspace_id', activeWorkspace.id)
-                        .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10)),
+                        .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10))
+                        .order('issue_date', { ascending: false }),
                     supabase
                         .from('customers')
                         .select('id, name')
-                        .eq('workspace_id', activeWorkspace.id),
+                        .eq('workspace_id', activeWorkspace.id)
+                        .limit(1000),
                     supabase
                         .from('expenses')
                         .select('amount, expense_date')
                         .eq('workspace_id', activeWorkspace.id)
-                        .gte('expense_date', startOfYearDate.toISOString().slice(0, 10)),
+                        .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
+                        .order('expense_date', { ascending: false }),
                     supabase
                         .from('products')
                         .select('price, billing_type')
-                        .eq('workspace_id', activeWorkspace.id),
+                        .eq('workspace_id', activeWorkspace.id)
+                        .limit(500),
                 ])
 
                 const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
@@ -286,10 +292,30 @@ export default function DashboardPage() {
                 setMonthlyRevenue(monthlyData)
             } catch (error) {
                 console.error("Error fetching metrics:", error)
+            } finally {
+                setIsLoading(false)
             }
         }
         fetchMetrics()
     }, [supabase, activeWorkspace])
+
+    if (isLoading) {
+        return (
+            <div className="relative flex flex-col gap-y-5 animate-in fade-in duration-700 font-serif">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2 px-4 md:px-0">
+                    <div className="flex flex-col gap-y-1">
+                        <div className="h-10 w-64 bg-white/5 animate-pulse rounded" />
+                        <div className="h-4 w-48 bg-white/5 animate-pulse rounded mt-2" />
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-0">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-32 bg-[#0c0c0c] border border-white/10 animate-pulse rounded-lg" />
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="relative flex flex-col gap-y-5 animate-in fade-in duration-700 font-serif">

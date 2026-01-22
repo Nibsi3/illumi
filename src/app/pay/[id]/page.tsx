@@ -20,13 +20,16 @@ export default function PayInvoicePage() {
     const supabase = createClient()
 
     useEffect(() => {
+        if (!invoiceId) return
+
         const fetchInvoice = async () => {
             try {
                 const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
                 let query = supabase
                     .from('invoices')
-                    .select('*, customers(*), invoice_items(*)');
+                    .select('*, customers(*), invoice_items(*)')
+                    .limit(1);
 
                 if (isUUID(invoiceId)) {
                     query = query.eq('id', invoiceId);
@@ -48,76 +51,75 @@ export default function PayInvoicePage() {
             }
         }
 
-        if (invoiceId) {
-            fetchInvoice()
-        }
+        fetchInvoice()
     }, [invoiceId, supabase])
 
     useEffect(() => {
-        const isPrint = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('print') === 'true';
-        if (!loading && invoice && isPrint) {
+        if (loading || !invoice || typeof window === 'undefined') return
+
+        // Handle print parameter
+        const isPrint = new URLSearchParams(window.location.search).get('print') === 'true';
+        if (isPrint) {
             const timer = setTimeout(() => {
                 window.print();
-            }, 1500); // 1.5s delay to ensure full render
+            }, 1500);
             return () => clearTimeout(timer);
         }
-    }, [loading, invoice])
 
-    useEffect(() => {
-        if (typeof window !== 'undefined' && invoice) {
-            const params = new URLSearchParams(window.location.search)
-            const status = params.get('status')
-            const provider = params.get('provider')
-            const sessionId = params.get('session_id')
-            if (status === 'success') {
-                toast.success("Payment Received", {
-                    description: "Your payment is being processed. Thank you!"
-                })
+        // Handle payment status callbacks
+        const params = new URLSearchParams(window.location.search)
+        const status = params.get('status')
+        const provider = params.get('provider')
+        const sessionId = params.get('session_id')
+        
+        if (status === 'success') {
+            toast.success("Payment Received", {
+                description: "Your payment is being processed. Thank you!"
+            })
 
-                // Stripe requires verifying the Checkout Session before marking an invoice paid.
-                if (provider === 'stripe' && sessionId) {
-                    fetch('/api/paygate/verify-stripe', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            invoiceId: invoice.id,
-                            sessionId,
-                            workspaceId: invoice.workspace_id,
-                        })
-                    }).then(async (res) => {
-                        const json = await res.json().catch(() => null)
-                        if (!res.ok || !json?.success) {
-                            throw new Error(json?.error || 'Stripe verification failed')
-                        }
-                        window.location.href = window.location.pathname
-                    }).catch(err => {
-                        console.error("Stripe verification failed:", err)
-                        toast.error("Payment verification failed", {
-                            description: err?.message || 'Please contact the sender.'
-                        })
-                    })
-                    return
-                }
-
-                // Fallback: Update invoice status directly in case webhook didn't fire
-                // This handles cases where PayFast can't reach our webhook (e.g., localhost)
-                fetch('/api/invoices/mark-paid', {
+            // Stripe requires verifying the Checkout Session before marking an invoice paid.
+            if (provider === 'stripe' && sessionId) {
+                fetch('/api/paygate/verify-stripe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ invoiceId: invoice.id })
-                }).then(() => {
-                    // Refresh the page data after updating
+                    body: JSON.stringify({
+                        invoiceId: invoice.id,
+                        sessionId,
+                        workspaceId: invoice.workspace_id,
+                    })
+                }).then(async (res) => {
+                    const json = await res.json().catch(() => null)
+                    if (!res.ok || !json?.success) {
+                        throw new Error(json?.error || 'Stripe verification failed')
+                    }
                     window.location.href = window.location.pathname
                 }).catch(err => {
-                    console.error("Failed to update invoice status:", err)
+                    console.error("Stripe verification failed:", err)
+                    toast.error("Payment verification failed", {
+                        description: err?.message || 'Please contact the sender.'
+                    })
                 })
-            } else if (status === 'cancelled') {
-                toast.warning("Payment Cancelled", {
-                    description: "The payment process was cancelled."
-                })
+                return
             }
+
+            // Fallback: Update invoice status directly in case webhook didn't fire
+            // This handles cases where PayFast can't reach our webhook (e.g., localhost)
+            fetch('/api/invoices/mark-paid', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ invoiceId: invoice.id })
+            }).then(() => {
+                // Refresh the page data after updating
+                window.location.href = window.location.pathname
+            }).catch(err => {
+                console.error("Failed to update invoice status:", err)
+            })
+        } else if (status === 'cancelled') {
+            toast.warning("Payment Cancelled", {
+                description: "The payment process was cancelled."
+            })
         }
-    }, [invoice])
+    }, [loading, invoice])
 
     const handlePayment = async () => {
         setIsSimulating(true)
