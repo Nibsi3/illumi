@@ -11,6 +11,40 @@ export async function middleware(request: NextRequest) {
         redirectUrl.pathname = '/auth/callback'
         return NextResponse.redirect(redirectUrl)
     }
+
+    const marketingPrefixes = [
+        '/',
+        '/pricing',
+        '/contact',
+        '/story',
+        '/features',
+        '/resources',
+        '/docs',
+        '/integrations',
+        '/privacy',
+        '/terms',
+        '/terms-and-conditions',
+        '/site-map',
+    ]
+
+    const isMarketingPath = marketingPrefixes.some((p) => (p === '/' ? url.pathname === '/' : url.pathname.startsWith(p)))
+    if (isMarketingPath) {
+        let changed = false
+
+        for (const key of Array.from(url.searchParams.keys())) {
+            const isUtm = key.toLowerCase().startsWith('utm_')
+            const isClickId = ['gclid', 'fbclid', 'msclkid', 'ttclid', 'igshid'].includes(key.toLowerCase())
+            if (isUtm || isClickId) {
+                url.searchParams.delete(key)
+                changed = true
+            }
+        }
+
+        if (changed) {
+            return NextResponse.redirect(url, 308)
+        }
+    }
+
     return await updateSession(request)
 }
 

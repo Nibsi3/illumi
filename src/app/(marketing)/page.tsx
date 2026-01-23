@@ -191,16 +191,16 @@ export default async function LandingPage() {
             />
             <div className="bg-black font-sans text-white grainy-gradient">
             {/* Hero Section */}
-            <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+            <section className="relative overflow-hidden border-b border-white/5 py-24 md:py-32 pt-32 md:pt-40">
                 <div className="absolute inset-0 z-0">
                     <div
                         className="h-full w-full bg-center bg-cover"
                         style={{ backgroundImage: "url(/bg.webp)" }}
                     />
-                    <div className="absolute inset-0 bg-black/45" />
+                    <div className="absolute inset-0 bg-black/60" />
                 </div>
-                <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 w-full pt-20">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div>
                             <div className="inline-flex flex-wrap items-center gap-2 text-sm text-white/50 mb-6">
                                 <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Built for South Africa</span>
@@ -208,14 +208,16 @@ export default async function LandingPage() {
                                 <span className="px-3 py-1 rounded-full bg-white/5 text-white/60">PayGate-ready</span>
                             </div>
 
-                            <h1 className="text-4xl md:text-5xl lg:text-[62px] leading-[1.08] text-[#fafafa] mb-6 font-sans font-medium tracking-tight">
-                                Professional Invoicing
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-white mb-6 font-serif font-medium tracking-tight">
+                                SARS-Compliant
                                 <br className="hidden md:block" />
-                                <span className="text-[#878787]">for South African Businesses</span>
+                                Invoice Generator
+                                <br className="hidden md:block" />
+                                <span className="text-white/50">for South Africa</span>
                             </h1>
 
                             <p className="text-lg text-[#878787] mb-7 max-w-xl leading-relaxed">
-                                Create professional invoices in ZAR with optional VAT. Perfect for VAT and non-VAT registered businesses. Get paid online with PayFast, Yoco, Ozow. Free forever.
+                                Create professional tax invoices in ZAR with 15% VAT. SARS-compliant, free forever. Get paid online with PayFast, Yoco, Ozow. No signup required.
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">
@@ -224,7 +226,7 @@ export default async function LandingPage() {
                                     { title: "Client folders", meta: "Organised" },
                                     { title: "Recurring & scheduled", meta: "Automated" },
                                 ].map((item) => (
-                                    <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                                    <div key={item.title} className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-4">
                                         <div className="text-sm font-semibold text-white">{item.title}</div>
                                         <div className="text-[10px] font-bold uppercase tracking-widest text-white/40 mt-1">{item.meta}</div>
                                     </div>
@@ -269,11 +271,11 @@ export default async function LandingPage() {
                             </div>
                         </div>
 
-                        <div className="relative">
+                        <div className="relative flex lg:justify-end lg:pl-10">
                             <div
-                                className="relative"
+                                className="relative w-full max-w-xl lg:translate-x-10"
                                 style={{
-                                    transform: "perspective(1200px) rotateY(-12deg) rotateX(4deg)",
+                                    transform: "perspective(1200px) rotateY(-8deg) rotateX(2deg)",
                                     transformOrigin: "center center",
                                 }}
                             >
@@ -282,14 +284,20 @@ export default async function LandingPage() {
                                     <div className="p-6 border-b border-white/5 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-white/10" />
-                                            <div className="text-sm text-white/80">Overview <span className="text-white/40">•</span> <span className="font-serif italic text-white">Net Profit</span></div>
+                                            <div className="text-sm text-white/80">
+                                                Overview <span className="text-white/40">•</span> <span className="font-serif italic text-white">Net Profit</span>
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="p-8">
                                         <div className="text-4xl font-serif text-white mb-8">R 5,278.50</div>
                                         <div className="h-32 flex items-end gap-1.5 mb-8">
                                             {[20, 35, 25, 50, 30, 45, 40, 60, 50, 65, 40, 75, 55, 70, 60, 80].map((h, i) => (
-                                                <div key={i} className="flex-1 bg-white/8 rounded-t hover:bg-white/20 transition-colors" style={{ height: `${h}%` }} />
+                                                <div
+                                                    key={i}
+                                                    className="flex-1 bg-white/8 rounded-t hover:bg-white/20 transition-colors"
+                                                    style={{ height: `${h}%` }}
+                                                />
                                             ))}
                                         </div>
                                         <div className="space-y-3">
@@ -301,8 +309,11 @@ export default async function LandingPage() {
                                                     <span className="text-sm text-white/60">{invoice.client}</span>
                                                     <div className="flex items-center gap-4">
                                                         <span className="text-sm text-white">{invoice.amount}</span>
-                                                        <span className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider ${invoice.status === "Paid" ? "bg-white/10 text-white/80" : "bg-white/5 text-white/40"
-                                                            }`}>
+                                                        <span
+                                                            className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider ${
+                                                                invoice.status === "Paid" ? "bg-white/10 text-white/80" : "bg-white/5 text-white/40"
+                                                            }`}
+                                                        >
                                                             {invoice.status}
                                                         </span>
                                                     </div>
@@ -327,8 +338,8 @@ export default async function LandingPage() {
 
                     <div className="grid grid-cols-1 gap-6">
                         {/* Client Database - Large Box */}
-                        <div className="bg-card border border-border rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-                            <div className="p-8 lg:p-12 bg-muted/50 flex items-center justify-center border-r border-border">
+                        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+                            <div className="p-8 lg:p-12 bg-black/40 flex items-center justify-center border-r border-white/10">
                                 <div className="space-y-4 w-full max-w-sm">
                                     {[
                                         { name: "Acme Corp", contact: "John Doe", email: "john@acme.com" },
@@ -364,7 +375,7 @@ export default async function LandingPage() {
                         {/* Invoicing & Inbox - Two Boxes */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Invoicing */}
-                            <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                            <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
                                 <h3 className="text-2xl font-medium text-white mb-6">Invoicing</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
                                     Create and send invoices to your customers, monitor your sent balance, track overdue payments and send reminders.
@@ -384,7 +395,7 @@ export default async function LandingPage() {
                             </div>
 
                             {/* PayGate */}
-                            <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                            <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
                                 <h3 className="text-2xl font-medium text-white mb-6">PayGate</h3>
                                 <p className="text-[#878787] text-sm mb-8 leading-relaxed">
                                     Accept online payments via your preferred provider. Add a Pay Now button and let invoice status update automatically when paid.
@@ -413,7 +424,7 @@ export default async function LandingPage() {
                     {/* Free vs Pro - Two Boxes */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                         {/* Free */}
-                        <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                        <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
                             <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-white text-xs font-medium mb-6">Free Forever</div>
                             <h3 className="text-2xl font-medium text-white mb-6">Get started for free</h3>
                             <p className="text-[#878787] text-sm mb-8 leading-relaxed">
@@ -434,7 +445,7 @@ export default async function LandingPage() {
                         </div>
 
                         {/* Pro */}
-                        <div className="bg-card border border-primary/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+                        <div className="bg-[#0a0a0a] border border-white/15 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-white/5 to-transparent" />
                             <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium mb-6">Pro</div>
                             <h3 className="text-2xl font-medium text-white mb-6">Automate your payments</h3>

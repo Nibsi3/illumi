@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +17,7 @@ const footerLinks = {
     ],
     resources: [
         { name: "SME Resources", href: "/resources" },
+        { name: "Sitemap", href: "/site-map" },
         { name: "Documentation", href: "/docs" },
         { name: "Integrations", href: "/integrations" },
         { name: "Support", href: "/contact" },
@@ -126,6 +125,7 @@ export function MarketingFooter() {
                                         key={social.name}
                                         href={social.href}
                                         className="text-white/50 hover:text-white transition-colors"
+                                        aria-label={social.name}
                                     >
                                         <social.icon className="h-5 w-5" />
                                     </Link>

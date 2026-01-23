@@ -1,6 +1,15 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconCheck, IconChevronDown } from "@tabler/icons-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Pricing | Illumi",
+    description: "Simple pricing for South African businesses. Start free, upgrade to Pro for PayGate, recurring invoices, and advanced features.",
+    alternates: {
+        canonical: "/pricing",
+    },
+}
 
 const freeFeatures = [
     "Unlimited invoices",

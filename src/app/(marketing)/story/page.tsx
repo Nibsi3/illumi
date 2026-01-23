@@ -1,6 +1,15 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconArrowRight } from "@tabler/icons-react"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Story | Illumi",
+    description: "Learn why we’re building Illumi — simpler invoicing, expense tracking, and getting paid for South African small businesses.",
+    alternates: {
+        canonical: "/story",
+    },
+}
 
 export default function StoryPage() {
     return (
