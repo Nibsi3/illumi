@@ -65,6 +65,7 @@ export async function GET(req: Request) {
                     body: JSON.stringify({
                         type: 'payment_reminder',
                         to: invoice.customers.email,
+                        bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                         invoiceNumber: invoice.invoice_number,
                         customerName: invoice.customers.name,
                         amount: amount,
@@ -109,6 +110,7 @@ export async function GET(req: Request) {
                     body: JSON.stringify({
                         type: 'final_notice',
                         to: invoice.customers.email,
+                        bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                         invoiceNumber: invoice.invoice_number,
                         customerName: invoice.customers.name,
                         amount: amount,

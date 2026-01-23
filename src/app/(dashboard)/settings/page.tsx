@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
 import {
     Plus,
     Upload,
@@ -43,6 +45,7 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 export default function GeneralSettings() {
     const { isPro } = useSubscription()
     const router = useRouter()
+    const { activeWorkspace } = useWorkspace()
     const {
         logo, setLogo,
         companyName, setCompanyName,
@@ -83,8 +86,38 @@ export default function GeneralSettings() {
         input.click()
     }
 
-    const handleSave = () => {
-        toast.success("Settings saved successfully")
+    const handleSave = async () => {
+        try {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            const workspaceId = activeWorkspace?.id
+
+            if (user && workspaceId) {
+                await supabase
+                    .from('invoices')
+                    .update({
+                        send_copy_to_self: Boolean(sendInvoiceCopyToSelf),
+                    } as any)
+                    .eq('workspace_id', workspaceId)
+                    .eq('user_id', user.id)
+                    .or('status.eq.scheduled,is_recurring.eq.true')
+
+                // Only set from_email on templates that don't already have a per-invoice override.
+                await supabase
+                    .from('invoices')
+                    .update({
+                        from_email: fromEmail,
+                    } as any)
+                    .eq('workspace_id', workspaceId)
+                    .eq('user_id', user.id)
+                    .or('status.eq.scheduled,is_recurring.eq.true')
+                    .is('from_email', null)
+            }
+
+            toast.success("Settings saved successfully")
+        } catch {
+            toast.success("Settings saved successfully")
+        }
     }
 
     return (

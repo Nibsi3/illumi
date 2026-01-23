@@ -209,15 +209,13 @@ export default async function LandingPage() {
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-white mb-6 font-serif font-medium tracking-tight">
-                                SARS-Compliant
+                                Professional Invoicing
                                 <br className="hidden md:block" />
-                                Invoice Generator
-                                <br className="hidden md:block" />
-                                <span className="text-white/50">for South Africa</span>
+                                <span className="text-white/50">for South African Businesses</span>
                             </h1>
 
                             <p className="text-lg text-[#878787] mb-7 max-w-xl leading-relaxed">
-                                Create professional tax invoices in ZAR with 15% VAT. SARS-compliant, free forever. Get paid online with PayFast, Yoco, Ozow. No signup required.
+                                Create professional invoices in ZAR with optional VAT. Perfect for VAT and non-VAT registered businesses. Get paid online with PayFast, Yoco, Ozow. Free forever.
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">

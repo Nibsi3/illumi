@@ -101,7 +101,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const loadSettings = () => {
             try {
-                const storedSettings = localStorage.getItem(storageKey)
+                const legacyKey = "illumi_settings"
+                const storedSettings =
+                    localStorage.getItem(storageKey) ||
+                    (storageKey !== legacyKey ? localStorage.getItem(legacyKey) : null)
+
                 if (storedSettings) {
                     const parsed = JSON.parse(storedSettings)
                     if (parsed.currency) setCurrency(parsed.currency)
@@ -116,6 +120,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.country) setCountry(parsed.country)
                     if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
                     if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
+
+                    // Migrate legacy (non-workspace) settings into workspace-scoped storage.
+                    // This prevents losing preferences when the workspace loads after settings were saved.
+                    if (storageKey !== legacyKey && !localStorage.getItem(storageKey)) {
+                        localStorage.setItem(storageKey, storedSettings)
+                    }
                 }
             } catch (e) {
                 console.error("Failed to load settings", e)

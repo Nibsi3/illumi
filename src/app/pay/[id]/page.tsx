@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { CheckCircle2, AlertCircle, Loader2, CreditCard, Receipt, Calendar, User, ArrowRight, DollarSign, Download, Share2 } from "lucide-react"
@@ -17,32 +16,21 @@ export default function PayInvoicePage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [isSimulating, setIsSimulating] = useState(false)
-    const supabase = createClient()
 
     useEffect(() => {
         if (!invoiceId) return
 
         const fetchInvoice = async () => {
             try {
-                const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+                // Use the public API route to fetch invoice data securely
+                const res = await fetch(`/api/invoices/public?id=${encodeURIComponent(invoiceId)}`)
+                const json = await res.json()
 
-                let query = supabase
-                    .from('invoices')
-                    .select('*, customers(*), invoice_items(*)')
-                    .limit(1);
-
-                if (isUUID(invoiceId)) {
-                    query = query.eq('id', invoiceId);
-                } else {
-                    query = query.eq('invoice_number', invoiceId);
+                if (!res.ok || !json.success) {
+                    throw new Error(json.error || "Invoice not found")
                 }
 
-                const { data, error } = await query.single();
-
-                if (error) throw error
-                if (!data) throw new Error("Invoice not found")
-
-                setInvoice(data)
+                setInvoice(json.invoice)
             } catch (err: any) {
                 console.error("Error fetching invoice:", err)
                 setError(err.message || "Failed to load invoice")
@@ -52,7 +40,7 @@ export default function PayInvoicePage() {
         }
 
         fetchInvoice()
-    }, [invoiceId, supabase])
+    }, [invoiceId])
 
     useEffect(() => {
         if (loading || !invoice || typeof window === 'undefined') return

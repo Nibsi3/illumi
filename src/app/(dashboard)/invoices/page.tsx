@@ -111,7 +111,7 @@ export default function InvoicesPage() {
 
             let dataQuery = supabase
                 .from('invoices')
-                .select('id, invoice_number, status, total, currency, due_date, issue_date, created_at, scheduled_date, is_recurring, parent_invoice_id, recurring_interval, customer_id, workspace_id', { count: 'exact', head: false })
+                .select('id, invoice_number, status, total, currency, due_date, issue_date, created_at, scheduled_date, is_recurring, parent_invoice_id, recurring_interval, customer_id, workspace_id, from_email, send_copy_to_self', { count: 'exact', head: false })
                 .eq('workspace_id', activeWorkspace.id)
 
             if (filterCustomerId) {
@@ -286,6 +286,14 @@ export default function InvoicesPage() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("Not authenticated")
 
+            const { data: invoiceWithItems, error: invoiceFetchError } = await supabase
+                .from('invoices')
+                .select('invoice_items(description, quantity, unit_price)')
+                .eq('id', invoice.id)
+                .maybeSingle()
+
+            if (invoiceFetchError) throw invoiceFetchError
+
             const paymentLink = `${window.location.origin}/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
 
             const response = await fetch('/api/email/send', {
@@ -294,9 +302,9 @@ export default function InvoicesPage() {
                 body: JSON.stringify({
                     type: 'invoice',
                     to: invoice.customer_email || 'customer@example.com',
-                    cc: sendInvoiceCopyToSelf ? user.email : undefined,
+                    bcc: sendInvoiceCopyToSelf ? ((invoice.from_email as string) || fromEmail || undefined) : undefined,
                     companyName: companyName,
-                    supportEmail: fromEmail,
+                    supportEmail: ((invoice.from_email as string) || fromEmail || undefined),
                     companyWebsite: companyWebsite,
                     allowCustomBranding: Boolean(isPro),
                     customerName: invoice.customer,
@@ -305,12 +313,35 @@ export default function InvoicesPage() {
                     currency: invoice.currency || 'ZAR',
                     dueDate: invoice.dueDate,
                     paymentLink,
+                    items: (invoiceWithItems?.invoice_items || []).map((it: any) => ({
+                        description: it.description,
+                        quantity: it.quantity,
+                        unit_price: it.unit_price,
+                    })),
                 })
             })
 
             const data = await response.json()
             if (data.success) {
                 toast.success("Email sent successfully")
+                if (data.copy) {
+                    const requested = Array.isArray(data.copy.requested)
+                        ? data.copy.requested.join(', ')
+                        : ''
+                    const attempted = Array.isArray(data.copy.attempted)
+                        ? data.copy.attempted.join(', ')
+                        : ''
+
+                    if (data.copy.sent === false) {
+                        toast.warning("Email sent, but copy failed", {
+                            description: `${data.copy.error || 'Copy could not be delivered'}${attempted ? ` (attempted: ${attempted})` : requested ? ` (requested: ${requested})` : ''}`,
+                        })
+                    } else {
+                        toast.success("Copy sent", {
+                            description: attempted || requested || "Copy delivered",
+                        })
+                    }
+                }
             } else {
                 throw new Error(data.error || "Failed to send email")
             }

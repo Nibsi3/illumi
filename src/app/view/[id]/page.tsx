@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle2, Download, CreditCard, ShieldCheck, Loader2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
 
 type Invoice = {
     id: string
@@ -40,36 +39,32 @@ export default function PublicInvoicePage() {
     const [items, setItems] = useState<InvoiceItem[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const supabase = createClient()
 
     useEffect(() => {
         const fetchInvoice = async () => {
             try {
-                const { data: invoiceData, error: invoiceError } = await supabase
-                    .from('invoices')
-                    .select(`*, customer:customers(name, email)`)
-                    .eq('id', invoiceId)
-                    .single()
+                // Use the public API route to fetch invoice data securely
+                const res = await fetch(`/api/invoices/public?id=${encodeURIComponent(invoiceId)}`)
+                const json = await res.json()
 
-                if (invoiceError) throw invoiceError
-                if (!invoiceData) throw new Error("Invoice not found")
+                if (!res.ok || !json.success) {
+                    throw new Error(json.error || "Invoice not found")
+                }
 
-                setInvoice(invoiceData)
+                const invoiceData = json.invoice
+                setInvoice({
+                    ...invoiceData,
+                    customer: invoiceData.customers
+                })
+                setItems(invoiceData.invoice_items || [])
 
-                const { data: itemsData, error: itemsError } = await supabase
-                    .from('invoice_items')
-                    .select('*')
-                    .eq('invoice_id', invoiceId)
-                    .order('sort_order', { ascending: true })
-
-                if (itemsError) throw itemsError
-                setItems(itemsData || [])
-
+                // Mark as viewed if status is 'sent' (via separate API call)
                 if (invoiceData.status === 'sent') {
-                    await supabase
-                        .from('invoices')
-                        .update({ status: 'viewed', viewed_at: new Date().toISOString() })
-                        .eq('id', invoiceId)
+                    fetch('/api/invoices/mark-viewed', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ invoiceId: invoiceData.id })
+                    }).catch(() => {})
                 }
             } catch (err: any) {
                 setError(err.message || "Failed to load invoice")
@@ -81,7 +76,7 @@ export default function PublicInvoicePage() {
         if (invoiceId) {
             fetchInvoice()
         }
-    }, [invoiceId, supabase])
+    }, [invoiceId])
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('en-ZA', {

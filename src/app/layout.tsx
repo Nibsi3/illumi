@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/lib/theme-context";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
 
 import localFont from "next/font/local";
 import {
@@ -82,6 +83,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
+          <AnalyticsTracker />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

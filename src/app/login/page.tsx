@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { getURL } from "@/lib/utils"
+import { trackEvent } from "@/lib/analytics/client"
 
 const testimonials = [
     {
@@ -67,6 +68,8 @@ export default function LoginPage() {
         } catch {
             // ignore
         }
+
+        await trackEvent("auth_oauth_start", { provider: "google" })
         const redirectUrl = `${getURL()}/auth/callback`
         console.log('Initiating Google Sign-In with redirect:', redirectUrl)
 
@@ -104,6 +107,7 @@ export default function LoginPage() {
         if (error) {
             toast.error(error.message)
         } else {
+            await trackEvent("auth_sign_in", { method: "password" })
             window.location.assign(nextPath)
         }
 
@@ -131,6 +135,7 @@ export default function LoginPage() {
             return
         }
 
+        await trackEvent("auth_sign_up", { method: "password" })
         toast.success("Check your email for your verification code")
         setMode("verify")
         setLoading(false)
@@ -156,6 +161,7 @@ export default function LoginPage() {
         }
 
         toast.success("Email verified")
+        await trackEvent("auth_verify_email", { method: "otp" })
         window.location.assign(nextPath)
         setLoading(false)
     }

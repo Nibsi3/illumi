@@ -80,6 +80,14 @@ export default function NewInvoicePage() {
     const { activeWorkspace } = useWorkspace()
     const { activePaymentProvider } = settings
 
+    const isDev = process.env.NODE_ENV !== 'production'
+    const debugLog = (...args: any[]) => {
+        if (isDev) console.log(...args)
+    }
+    const debugWarn = (...args: any[]) => {
+        if (isDev) console.warn(...args)
+    }
+
     const invoiceCreationMode = (searchParams.get('mode') || 'invoice') as 'invoice' | 'scheduled' | 'recurring'
     const canDraft = invoiceCreationMode === 'invoice'
     const canSchedule = invoiceCreationMode === 'scheduled'
@@ -283,15 +291,15 @@ export default function NewInvoicePage() {
     const handleSaveInvoice = async (status: 'draft' | 'sent' | 'scheduled' = 'draft', overrides: any = {}) => {
         // Prevent double-submission
         if (isSaving) {
-            console.log('[Invoice Save] Already saving, ignoring duplicate call')
+            debugLog('[Invoice Save] Already saving, ignoring duplicate call')
             return
         }
         setIsSaving(true)
-        console.log('[Invoice Save] Starting save process...', { status, invoiceNumber, customerId })
+        debugLog('[Invoice Save] Starting save process...', { status, invoiceNumber, customerId })
 
         try {
             const { data: { user }, error: userError } = await supabase.auth.getUser()
-            console.log('[Invoice Save] Auth check:', { userId: user?.id, userError })
+            debugLog('[Invoice Save] Auth check:', { userId: user?.id, userError })
 
             if (userError || !user) {
                 toast.error("Session expired. Please log in again.")
@@ -299,13 +307,11 @@ export default function NewInvoicePage() {
                 return
             }
 
-            const ownerEmail = user.email
-
             // Calculate totals
             const subtotal = tasks.reduce((acc, t) => acc + (t.price * t.qty), 0)
             const taxAmount = subtotal * (taxRate / 100)
             const total = subtotal + taxAmount
-            console.log('[Invoice Save] Calculated totals:', { subtotal, taxAmount, total })
+            debugLog('[Invoice Save] Calculated totals:', { subtotal, taxAmount, total })
 
             // Prepare invoice data
             const isRecurring = overrides.isRecurring ?? isRecurringEnabled
@@ -369,7 +375,7 @@ export default function NewInvoicePage() {
                 logo_bg: null,
                 template,
                 invoice_mode: invoiceMode,
-                from_email: ownerEmail || fromEmail,
+                from_email: fromEmail,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 is_recurring: Boolean(isRecurring),
                 recurring_interval: isRecurring ? recurringIntervalForDb : null,
@@ -395,7 +401,7 @@ export default function NewInvoicePage() {
                 logo_url: logo,
                 logo_bg: null,
                 payment_provider: activePaymentProvider || null,
-                from_email: ownerEmail || fromEmail,
+                from_email: fromEmail,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
             }
 
@@ -412,7 +418,7 @@ export default function NewInvoicePage() {
                 (invoiceError as any).code === '23514' &&
                 (invoiceError.message || '').includes('invoices_recurring_interval_check')
             ) {
-                console.warn('[Invoice Save] Retrying with recurring_interval="monthly" due to DB constraint')
+                debugWarn('[Invoice Save] Retrying with recurring_interval="monthly" due to DB constraint')
                 const { data: retryInvoiceInterval, error: retryErrorInterval } = await supabase
                     .from('invoices')
                     .insert({
@@ -431,7 +437,7 @@ export default function NewInvoicePage() {
                     (invoiceError as any).code === '23514' &&
                     (invoiceError.message || '').includes('invoices_recurring_interval_check')
                 ) {
-                    console.warn('[Invoice Save] Retrying with recurring disabled due to interval constraint')
+                    debugWarn('[Invoice Save] Retrying with recurring disabled due to interval constraint')
                     const {
                         is_recurring,
                         recurring_interval,
@@ -461,7 +467,7 @@ export default function NewInvoicePage() {
             ) {
                 // Some DBs use 'on_date' instead of 'on'
                 if ((invoiceData as any).recurring_end_type === 'on') {
-                    console.warn('[Invoice Save] Retrying with recurring_end_type="on_date" due to DB constraint')
+                    debugWarn('[Invoice Save] Retrying with recurring_end_type="on_date" due to DB constraint')
                     const { data: retryInvoiceOnDate, error: retryErrorOnDate } = await supabase
                         .from('invoices')
                         .insert({
@@ -480,7 +486,7 @@ export default function NewInvoicePage() {
                     (invoiceError as any).code === '23514' &&
                     (invoiceError.message || '').includes('invoices_recurring_end_type_check')
                 ) {
-                    console.warn('[Invoice Save] Retrying with recurring fields omitted due to DB constraint')
+                    debugWarn('[Invoice Save] Retrying with recurring fields omitted due to DB constraint')
                     const { recurring_end_type, recurring_end_date, ...retryData } = invoiceData as any
                     const { data: retryInvoice, error: retryError } = await supabase
                         .from('invoices')
@@ -497,7 +503,7 @@ export default function NewInvoicePage() {
                     (invoiceError as any).code === '23514' &&
                     (invoiceError.message || '').includes('invoices_recurring_end_type_check')
                 ) {
-                    console.warn('[Invoice Save] Retrying with recurring disabled due to DB constraint')
+                    debugWarn('[Invoice Save] Retrying with recurring disabled due to DB constraint')
                     const {
                         is_recurring,
                         recurring_interval,
@@ -531,7 +537,7 @@ export default function NewInvoicePage() {
                 if (extrasError) {
                     const extrasCode = (extrasError as any).code
                     if (extrasCode !== 'PGRST204') {
-                        console.warn('[Invoice Save] Optional invoice extras update failed:', extrasError)
+                        debugWarn('[Invoice Save] Optional invoice extras update failed:', extrasError)
                     }
                 } else if (updatedInvoice) {
                     invoice = updatedInvoice
@@ -555,7 +561,7 @@ export default function NewInvoicePage() {
                     sort_order: index
                 }))
 
-                console.log('[Invoice Save] Items to insert:', itemsToInsert)
+                debugLog('[Invoice Save] Items to insert:', itemsToInsert)
 
                 if (itemsToInsert.length > 0) {
                     const { error: itemsError } = await supabase
@@ -566,22 +572,34 @@ export default function NewInvoicePage() {
                         console.error('[Invoice Save] Items insert failed:', itemsError)
                         throw itemsError
                     }
-                    console.log('[Invoice Save] Items inserted successfully')
+                    debugLog('[Invoice Save] Items inserted successfully')
                 }
 
                 // 3. Send Email if status is 'sent'
                 const targetEmail = clientEmail?.trim()
                 if (status === 'sent' && targetEmail) {
-                    console.log('[Invoice Save] Triggering email send to:', targetEmail)
+                    debugLog('[Invoice Save] Triggering email send to:', targetEmail)
                     try {
+                        const requestedBcc = settings.sendInvoiceCopyToSelf
+                            ? ((fromEmail || settings.fromEmail || '').trim() || undefined)
+                            : undefined
+
+                        debugLog('[Invoice Save] Copy config:', {
+                            sendInvoiceCopyToSelf: settings.sendInvoiceCopyToSelf,
+                            requestedBcc,
+                            fromEmail,
+                            settingsFromEmail: settings.fromEmail,
+                        })
+
                         const emailRes = await fetch('/api/email/send', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: targetEmail,
+                                bcc: requestedBcc,
                                 companyName: settings.companyName,
-                                supportEmail: settings.fromEmail,
+                                supportEmail: fromEmail,
                                 companyWebsite: settings.companyWebsite,
                                 allowCustomBranding: Boolean(isPro),
                                 invoiceNumber: invoiceNumber,
@@ -600,11 +618,30 @@ export default function NewInvoicePage() {
                         })
                         const emailData = await emailRes.json()
                         if (emailData.success) {
-                            console.log('[Invoice Save] Email sent successfully')
+                            debugLog('[Invoice Save] Email sent successfully')
+                            if (emailData.copy) {
+                                debugLog('[Invoice Save] Copy result:', emailData.copy)
+                                const requested = Array.isArray(emailData.copy.requested)
+                                    ? emailData.copy.requested.join(', ')
+                                    : ''
+                                const attempted = Array.isArray(emailData.copy.attempted)
+                                    ? emailData.copy.attempted.join(', ')
+                                    : ''
+
+                                if (emailData.copy.sent === false) {
+                                    toast.warning("Invoice sent, but copy failed", {
+                                        description: `${emailData.copy.error || 'Copy could not be delivered'}${attempted ? ` (attempted: ${attempted})` : requested ? ` (requested: ${requested})` : ''}`,
+                                    })
+                                } else {
+                                    toast.success("Copy sent", {
+                                        description: attempted || requested || "Copy delivered",
+                                    })
+                                }
+                            }
                         } else {
                             const isDomainError = emailData.error?.includes("verify a domain") || emailData.error?.includes("testing emails");
                             if (isDomainError) {
-                                console.warn('[Invoice Save] Email blocked by Resend domain verification/testing restriction:', emailData.error)
+                                debugWarn('[Invoice Save] Email blocked by Resend domain verification/testing restriction:', emailData.error)
                             } else {
                                 console.error('[Invoice Save] Email send failed:', emailData.error)
                             }
@@ -624,7 +661,7 @@ export default function NewInvoicePage() {
                     }
                 }
 
-                console.log('[Invoice Save] SUCCESS! Invoice created:', invoice?.id)
+                debugLog('[Invoice Save] SUCCESS! Invoice created:', invoice?.id)
 
                 toast.success("Invoice saved successfully", {
                     description: `Invoice ${invoiceNumber} has been created.`

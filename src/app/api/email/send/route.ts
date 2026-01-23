@@ -21,6 +21,7 @@ interface EmailPayload {
     type: EmailType
     to: string
     cc?: string | string[]
+    bcc?: string | string[]
     fromEmail?: string
     companyName?: string
     supportEmail?: string
@@ -48,6 +49,39 @@ interface EmailPayload {
     note?: string
 }
 
+function generateTotalsSummary(items: InvoiceItem[], currency: string = 'ZAR', totalRaw?: string): string {
+    if (!items || items.length === 0) return ''
+
+    const subtotal = (items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.unit_price) || 0), 0)
+    const totalNumber = extractAmountNumber(totalRaw)
+    const total = totalNumber !== null ? totalNumber : subtotal
+    const vat = total - subtotal
+
+    const formatter = new Intl.NumberFormat('en-ZA', { style: 'currency', currency })
+    const showVat = Number.isFinite(vat) && vat > 0.009
+
+    return `
+        <div style="display: flex; justify-content: flex-end; margin-top: -8px;">
+            <table style="border-collapse: collapse; width: 280px;">
+                <tr>
+                    <td style="padding: 6px 0; font-size: 12px; color: #666;">Subtotal</td>
+                    <td style="padding: 6px 0; font-size: 12px; color: #333; text-align: right; font-weight: 600;">${formatter.format(subtotal)}</td>
+                </tr>
+                ${showVat ? `
+                <tr>
+                    <td style="padding: 6px 0; font-size: 12px; color: #666;">VAT</td>
+                    <td style="padding: 6px 0; font-size: 12px; color: #333; text-align: right; font-weight: 600;">${formatter.format(vat)}</td>
+                </tr>
+                ` : ''}
+                <tr>
+                    <td style="padding: 10px 0 0 0; font-size: 12px; color: #000; font-weight: 700; border-top: 1px solid #e5e5e5;">Total</td>
+                    <td style="padding: 10px 0 0 0; font-size: 12px; color: #000; text-align: right; font-weight: 800; border-top: 1px solid #e5e5e5;">${formatter.format(total)}</td>
+                </tr>
+            </table>
+        </div>
+    `
+}
+
 // Generate items table HTML for invoice emails
 function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): string {
     if (!items || items.length === 0) return ''
@@ -72,7 +106,7 @@ function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): str
                     <th style="padding: 12px 0; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Description</th>
                     <th style="padding: 12px 0; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Qty</th>
                     <th style="padding: 12px 0; text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Price</th>
-                    <th style="padding: 12px 0; text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Total</th>
+                    <th style="padding: 12px 0; text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Total (excl. VAT)</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,6 +162,12 @@ function buildGmailInvoiceSchema(payload: EmailPayload): string {
     }
 
     return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`
+}
+
+function normalizeEmailList(value: string | string[] | undefined): string[] {
+    if (!value) return []
+    const raw = Array.isArray(value) ? value : [value]
+    return raw.map((v) => (typeof v === 'string' ? v.trim() : '')).filter(Boolean)
 }
 
 export async function POST(req: Request) {
@@ -258,6 +298,7 @@ export async function POST(req: Request) {
                             A new invoice has been created for you. Please find the details below:
                         </p>
                         ${generateItemsTable(payload.items || [], payload.currency)}
+                        ${generateTotalsSummary(payload.items || [], payload.currency, payload.amount)}
                         <div style="background: #f5f5f5; padding: 24px; border-radius: 12px; margin: 24px 0;">
                             <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Amount Due</p>
                             <p style="margin: 0; font-size: 32px; font-weight: bold; color: #000;">${payload.amount || "ZAR 0.00"}</p>
@@ -402,13 +443,19 @@ export async function POST(req: Request) {
                         ? INVITE_FROM
                     : (payload.fromEmail || undefined)
 
+        const primaryTo = type === "support"
+            ? "support@illumi.co.za"
+            : type === "contact"
+                ? "info@illumi.co.za"
+                : cleanTo
+
+        const requestedCopyRecipients = normalizeEmailList(payload.bcc)
+        const copyRecipients = requestedCopyRecipients
+            .filter((addr) => addr && addr.toLowerCase() !== String(primaryTo).toLowerCase())
+
         const { data, error } = await resend.emails.send({
             from: `Illumi <${fromAddress}>`,
-            to: type === "support"
-                ? "support@illumi.co.za"
-                : type === "contact"
-                    ? "info@illumi.co.za"
-                    : cleanTo,
+            to: primaryTo,
             cc: payload.cc,
             replyTo: replyToAddress,
             subject: emailSubject,
@@ -422,9 +469,46 @@ export async function POST(req: Request) {
             )
         }
 
+        let copySent = true
+        let copyError: string | null = null
+        const copyMessageIds: string[] = []
+
+        if (copyRecipients.length > 0 && type !== "support" && type !== "contact") {
+            for (const addr of copyRecipients) {
+                try {
+                    const copyRes = await resend.emails.send({
+                        from: `Illumi <${fromAddress}>`,
+                        to: addr,
+                        replyTo: replyToAddress,
+                        subject: emailSubject,
+                        html: emailHtml,
+                    })
+
+                    if ((copyRes as any)?.error) {
+                        copySent = false
+                        copyError = (copyRes as any).error?.message || "Failed to send copy"
+                    } else if (copyRes?.data?.id) {
+                        copyMessageIds.push(copyRes.data.id)
+                    }
+                } catch (err: any) {
+                    copySent = false
+                    copyError = err?.message || "Failed to send copy"
+                }
+            }
+        }
+
         return NextResponse.json({
             success: true,
             messageId: data?.id,
+            copy: requestedCopyRecipients.length
+                ? {
+                      requested: requestedCopyRecipients,
+                      attempted: copyRecipients,
+                      sent: copySent,
+                      messageIds: copyMessageIds,
+                      error: copyError,
+                  }
+                : undefined,
         })
     } catch (error: any) {
         return NextResponse.json(

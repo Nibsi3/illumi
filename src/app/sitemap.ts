@@ -21,6 +21,7 @@ const shouldExcludeFromSitemap = (segments: string[]) => {
 
   return (
     first === 'api' ||
+    first === 'admin' ||
     first === 'auth' ||
     first === 'pay' ||
     first === 'view' ||

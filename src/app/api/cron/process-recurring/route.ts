@@ -63,13 +63,6 @@ export async function GET(req: Request) {
         return NextResponse.json(
             {
                 error: "Missing Supabase credentials",
-                diagnostics: {
-                    has_NEXT_PUBLIC_SUPABASE_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-                    has_SUPABASE_URL: Boolean(process.env.SUPABASE_URL),
-                    has_SUPABASE_SERVICE_ROLE_KEY: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY),
-                    has_SUPABASE_SERVICE_KEY: Boolean(process.env.SUPABASE_SERVICE_KEY),
-                    node_env: process.env.NODE_ENV || null,
-                },
             },
             {
                 status: 500,
@@ -127,6 +120,18 @@ export async function GET(req: Request) {
             }
 
             const occurrences = childCount || 0
+
+            // End-after-X support: if the series already produced the requested number of child invoices,
+            // stop generating new ones.
+            if (
+                invoice.recurring_end_type === 'after' &&
+                invoice.recurring_end_count !== null &&
+                invoice.recurring_end_count !== undefined &&
+                Number.isFinite(Number(invoice.recurring_end_count)) &&
+                occurrences >= Number(invoice.recurring_end_count)
+            ) {
+                continue
+            }
 
             // Derive the last scheduled time based on how many child invoices already exist.
             // This enables catch-up even if the cron endpoint is called late.
@@ -286,7 +291,19 @@ export async function GET(req: Request) {
             let createdThisParent = 0
             let nextInvoiceDate = computeNextDate(baseDate)
 
-            while (now >= nextInvoiceDate && createdThisParent < maxPerRun) {
+            const endCount =
+                invoice.recurring_end_type === 'after' &&
+                invoice.recurring_end_count !== null &&
+                invoice.recurring_end_count !== undefined &&
+                Number.isFinite(Number(invoice.recurring_end_count))
+                    ? Number(invoice.recurring_end_count)
+                    : null
+
+            while (
+                now >= nextInvoiceDate &&
+                createdThisParent < maxPerRun &&
+                (endCount === null || occurrences + createdThisParent < endCount)
+            ) {
 
                 // Generate new invoice number
                 const timestamp = Date.now().toString().slice(-6)
@@ -319,6 +336,8 @@ export async function GET(req: Request) {
                         tax_amount: invoice.tax_amount,
                         total: invoice.total,
                         notes: invoice.notes,
+                        from_email: invoice.from_email || null,
+                        send_copy_to_self: Boolean(invoice.send_copy_to_self),
                         is_recurring: false, // New invoice is not recurring itself
                         parent_invoice_id: invoice.id, // Track parent
                     })
@@ -379,6 +398,7 @@ export async function GET(req: Request) {
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: invoice.customers.email,
+                                bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                                 companyName,
                                 fromEmail: 'invoice@illumi.co.za',
                                 supportEmail: invoice.from_email || 'invoice@illumi.co.za',
@@ -403,8 +423,6 @@ export async function GET(req: Request) {
                             .eq('id', newInvoice.id)
                     }
                 }
-
-                invoicesCreated++
                 createdThisParent++
                 baseDate = nextInvoiceDate
                 nextInvoiceDate = computeNextDate(baseDate)

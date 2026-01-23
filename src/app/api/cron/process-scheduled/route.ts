@@ -96,6 +96,7 @@ export async function GET(req: Request) {
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: invoice.customers.email,
+                                bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                                 companyName,
                                 fromEmail: 'invoice@illumi.co.za',
                                 supportEmail: invoice.from_email || 'invoice@illumi.co.za',

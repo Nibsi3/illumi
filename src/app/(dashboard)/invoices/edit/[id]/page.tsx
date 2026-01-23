@@ -192,6 +192,7 @@ export default function EditInvoicePage() {
                         setIsRecurringEnabled(invoice.is_recurring || false)
                         setRecurringInterval(invoice.recurring_interval || "monthly")
                         setLogo(invoice.logo_url || settings.logo)
+                        setFromEmail(invoice.from_email || settings.fromEmail)
                         setInvoiceNote((invoice.notes || invoice.note || "") as string)
 
                         if (invoice.customers) {
@@ -250,6 +251,8 @@ export default function EditInvoicePage() {
                 invoice_mode: invoiceMode,
                 logo_url: logo,
                 logo_bg: null,
+                from_email: fromEmail,
+                send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
             }
 
             // Update Invoice
@@ -298,20 +301,46 @@ export default function EditInvoicePage() {
                         body: JSON.stringify({
                             type: 'invoice',
                             to: clientEmail,
+                            bcc: settings.sendInvoiceCopyToSelf ? (fromEmail || undefined) : undefined,
                             companyName: settings.companyName,
-                            supportEmail: settings.fromEmail,
+                            supportEmail: fromEmail,
                             companyWebsite: settings.companyWebsite,
                             allowCustomBranding: Boolean(isPro),
                             invoiceNumber: invoiceNumber,
                             customerName: clientName,
                             amount: `${currency} ${total.toLocaleString()}`,
+                            currency,
                             dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
-                            paymentLink: `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
+                            paymentLink: `${window.location.origin}/pay/${invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`,
+                            note: invoiceNote,
+                            items: tasks.map(t => ({
+                                description: t.description,
+                                quantity: t.qty,
+                                unit_price: t.price
+                            })),
                         })
                     })
                     const emailData = await emailRes.json()
                     if (emailData.success) {
                         toast.success("Invoice updated and email sent")
+                        if (emailData.copy) {
+                            const requested = Array.isArray(emailData.copy.requested)
+                                ? emailData.copy.requested.join(', ')
+                                : ''
+                            const attempted = Array.isArray(emailData.copy.attempted)
+                                ? emailData.copy.attempted.join(', ')
+                                : ''
+
+                            if (emailData.copy.sent === false) {
+                                toast.warning("Invoice sent, but copy failed", {
+                                    description: `${emailData.copy.error || 'Copy could not be delivered'}${attempted ? ` (attempted: ${attempted})` : requested ? ` (requested: ${requested})` : ''}`,
+                                })
+                            } else {
+                                toast.success("Copy sent", {
+                                    description: attempted || requested || "Copy delivered",
+                                })
+                            }
+                        }
                     } else {
                         const isDomainError = emailData.error?.includes("verify a domain") || emailData.error?.includes("testing emails");
                         toast.warning("Invoice updated, but email failed", {
