@@ -394,7 +394,10 @@ export async function GET(req: Request) {
 
                         await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...(cronSecret ? { authorization: `Bearer ${cronSecret}` } : {}),
+                            },
                             body: JSON.stringify({
                                 type: 'invoice',
                                 to: invoice.customers.email,

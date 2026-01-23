@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
+import { checkBotId } from "botid/server"
 
 function getResendClient() {
     const apiKey = process.env.RESEND_API_KEY
@@ -172,6 +173,20 @@ function normalizeEmailList(value: string | string[] | undefined): string[] {
 
 export async function POST(req: Request) {
     try {
+        const cronSecret = process.env.CRON_SECRET
+        const authHeader = req.headers.get("authorization")
+        const isInternal = Boolean(cronSecret && authHeader === `Bearer ${cronSecret}`)
+
+        if (!isInternal) {
+            const verification = await checkBotId()
+            if (verification.isBot) {
+                return NextResponse.json(
+                    { success: false, error: "Bot detected. Access denied." },
+                    { status: 403 }
+                )
+            }
+        }
+
         const resend = getResendClient()
         if (!resend) {
             return NextResponse.json(

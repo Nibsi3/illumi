@@ -88,6 +88,14 @@ export default function InvoicesPage() {
     // Filtering state (customerId-based so we can paginate server-side)
     const [filterCustomerId, setFilterCustomerId] = useState<string | null>(null)
 
+    // State needed for UI (used by the server-side query key)
+    const [filterStatus, setFilterStatus] = useState<string | null>(null)
+    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
+
+    // Sorting state (used by the server-side query key)
+    const [sortColumn, setSortColumn] = useState<string | null>(null)
+    const [sortDirection, setSortDirection] = useState<string | null>(null)
+
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
 
@@ -102,6 +110,10 @@ export default function InvoicesPage() {
             currency,
             currentPage,
             filterCustomerId || "all",
+            filterStatus || "all",
+            filterInvoiceType,
+            sortColumn || "default",
+            sortDirection || "default",
         ],
         queryFn: async () => {
             if (!activeWorkspace?.id) return { rows: [], totalCount: 0 }
@@ -118,9 +130,92 @@ export default function InvoicesPage() {
                 dataQuery = dataQuery.eq('customer_id', filterCustomerId)
             }
 
-            const res = await dataQuery
-                .order('created_at', { ascending: false })
-                .range(from, to)
+            // Apply status filters server-side so pagination/counts match.
+            // Note: "overdue" is derived from due_date + status.
+            if (filterStatus === 'unpaid') {
+                dataQuery = dataQuery.in('status', ['sent', 'viewed', 'draft', 'scheduled'])
+            } else if (filterStatus === 'overdue') {
+                const today = new Date()
+                const y = today.getFullYear()
+                const m = String(today.getMonth() + 1).padStart(2, '0')
+                const d = String(today.getDate()).padStart(2, '0')
+                const todayStr = `${y}-${m}-${d}`
+                dataQuery = dataQuery
+                    .lt('due_date', todayStr)
+                    .neq('status', 'paid')
+                    .neq('status', 'scheduled')
+            } else if (filterStatus) {
+                dataQuery = dataQuery.eq('status', filterStatus.toLowerCase())
+            }
+
+            // Apply invoice type filters server-side so pagination/counts match.
+            if (filterInvoiceType === 'scheduled') {
+                dataQuery = dataQuery.or('status.eq.scheduled,scheduled_date.not.is.null')
+            } else if (filterInvoiceType === 'recurring') {
+                dataQuery = dataQuery.or('is_recurring.eq.true,parent_invoice_id.not.is.null,recurring_interval.not.is.null')
+            } else if (filterInvoiceType === 'invoices') {
+                dataQuery = dataQuery
+                    .neq('status', 'scheduled')
+                    .is('scheduled_date', null)
+                    .or('is_recurring.is.false,is_recurring.is.null')
+                    .is('parent_invoice_id', null)
+                    .is('recurring_interval', null)
+            }
+
+            // Apply basic sorting server-side.
+            // Some UI sorts (like Paid/Overdue priority) are client-only; we keep server sorting simple.
+            let orderColumn: string = 'created_at'
+            let ascending = false
+            let secondaryOrderColumn: string | null = null
+            let secondaryAscending = false
+            let nullsFirst: boolean | undefined = undefined
+
+            // Default ordering per tab (when no explicit sort is selected)
+            if (!sortColumn || !sortDirection) {
+                if (filterInvoiceType === 'scheduled') {
+                    orderColumn = 'scheduled_date'
+                    ascending = true
+                    nullsFirst = false
+                    secondaryOrderColumn = 'created_at'
+                    secondaryAscending = false
+                } else if (filterInvoiceType === 'recurring') {
+                    orderColumn = 'issue_date'
+                    ascending = false
+                    nullsFirst = false
+                    secondaryOrderColumn = 'created_at'
+                    secondaryAscending = false
+                } else {
+                    orderColumn = 'created_at'
+                    ascending = false
+                }
+            } else {
+                if (sortColumn === 'id') {
+                    orderColumn = 'invoice_number'
+                    ascending = sortDirection === 'asc'
+                } else if (sortColumn === 'amount') {
+                    orderColumn = 'total'
+                    ascending = sortDirection === 'lowest'
+                } else if (sortColumn === 'dueDate') {
+                    orderColumn = 'due_date'
+                    ascending = sortDirection === 'closest'
+                    nullsFirst = false
+                } else if (sortColumn === 'issueDate') {
+                    orderColumn = 'issue_date'
+                    ascending = sortDirection === 'closest'
+                    nullsFirst = false
+                } else if (sortColumn === 'status') {
+                    orderColumn = 'status'
+                    ascending = true
+                }
+            }
+
+            // Apply ordering. Add a stable secondary ordering when helpful.
+            let orderedQuery = dataQuery.order(orderColumn, { ascending, nullsFirst })
+            if (secondaryOrderColumn) {
+                orderedQuery = orderedQuery.order(secondaryOrderColumn, { ascending: secondaryAscending })
+            }
+
+            const res = await orderedQuery.range(from, to)
 
             if (res.error) throw res.error
 
@@ -165,8 +260,6 @@ export default function InvoicesPage() {
 
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
-    const [filterStatus, setFilterStatus] = useState<string | null>(null)
-    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
 
     // Mark as Paid dialog state
     const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
@@ -177,10 +270,6 @@ export default function InvoicesPage() {
     const [visibleColumns, setVisibleColumns] = useState<string[]>([
         "id", "status", "dueDate", "customer", "amount", "issueDate"
     ])
-
-    // Sorting state
-    const [sortColumn, setSortColumn] = useState<string | null>(null)
-    const [sortDirection, setSortDirection] = useState<string | null>(null)
 
     // Compute unique clients with invoice counts
     const clientFolders = useMemo(() => {
@@ -471,90 +560,11 @@ export default function InvoicesPage() {
         }
     }
 
-    // Filter by both status and client
-    const filteredInvoices = invoices.filter((inv: any) => {
-        let statusMatch = !filterStatus
-        if (filterStatus === 'unpaid') {
-            const statusForMatch = (inv.raw_status || inv.status || '').toLowerCase()
-            statusMatch = ['sent', 'viewed', 'draft', 'scheduled'].includes(statusForMatch)
-        } else if (filterStatus === 'overdue') {
-            statusMatch = inv.status.toLowerCase() === 'overdue'
-        } else if (filterStatus) {
-            statusMatch = inv.status.toLowerCase() === filterStatus.toLowerCase()
-        }
-
-        const clientMatch = !filterCustomerId || inv.customer_id === filterCustomerId
-
-        const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled' || Boolean(inv.scheduled_date)
-        const isRecurring = Boolean(inv.is_recurring) || Boolean(inv.parent_invoice_id) || Boolean(inv.recurring_interval)
-        const typeMatch =
-            filterInvoiceType === 'all'
-                ? true
-                : filterInvoiceType === 'scheduled'
-                    ? isScheduled
-                    : filterInvoiceType === 'recurring'
-                        ? isRecurring
-                        : !isScheduled && !isRecurring
-
-        return statusMatch && clientMatch && typeMatch
-    })
-
-    // Sort filtered invoices
-    const sortedInvoices = [...filteredInvoices].sort((a, b) => {
-        if (!sortColumn || !sortDirection) return 0
-
-        switch (sortColumn) {
-            case 'id':
-                // Sort by invoice number
-                const numA = a.displayId?.replace(/\D/g, '') || '0'
-                const numB = b.displayId?.replace(/\D/g, '') || '0'
-                return sortDirection === 'asc' 
-                    ? parseInt(numA) - parseInt(numB)
-                    : parseInt(numB) - parseInt(numA)
-
-            case 'status':
-                // Sort by status: Paid first or Overdue first
-                if (sortDirection === 'Paid') {
-                    if (a.status === 'Paid' && b.status !== 'Paid') return -1
-                    if (a.status !== 'Paid' && b.status === 'Paid') return 1
-                } else if (sortDirection === 'Overdue') {
-                    if (a.status === 'Overdue' && b.status !== 'Overdue') return -1
-                    if (a.status !== 'Overdue' && b.status === 'Overdue') return 1
-                }
-                return 0
-
-            case 'dueDate':
-                const dueDateA = a.dueDate ? new Date(a.dueDate).getTime() : 0
-                const dueDateB = b.dueDate ? new Date(b.dueDate).getTime() : 0
-                return sortDirection === 'closest'
-                    ? dueDateA - dueDateB
-                    : dueDateB - dueDateA
-
-            case 'customer':
-                const nameA = (a.customer || '').toLowerCase()
-                const nameB = (b.customer || '').toLowerCase()
-                return sortDirection === 'A-Z'
-                    ? nameA.localeCompare(nameB)
-                    : nameB.localeCompare(nameA)
-
-            case 'amount':
-                const amountA = a.total || 0
-                const amountB = b.total || 0
-                return sortDirection === 'highest'
-                    ? amountB - amountA
-                    : amountA - amountB
-
-            case 'issueDate':
-                const issueDateA = a.issueDate ? new Date(a.issueDate).getTime() : 0
-                const issueDateB = b.issueDate ? new Date(b.issueDate).getTime() : 0
-                return sortDirection === 'closest'
-                    ? issueDateA - issueDateB
-                    : issueDateB - issueDateA
-
-            default:
-                return 0
-        }
-    })
+    // With server-side pagination, filters and basic sorting are applied in the Supabase query.
+    // Do not apply a second client-side filter/sort pass, otherwise pages can appear empty and
+    // page sizes become inconsistent.
+    const filteredInvoices = invoices
+    const sortedInvoices = invoices
 
     // Pagination logic
     const totalPages = Math.max(1, Math.ceil(totalInvoiceCount / ITEMS_PER_PAGE))
@@ -566,9 +576,10 @@ export default function InvoicesPage() {
     }, [filterStatus, filterCustomerId, filterInvoiceType, sortColumn, sortDirection])
 
     // Group invoices by company for the folder view
-    const invoicesByCompany = filteredInvoices.reduce((acc: any, inv: any) => {
-        if (!acc[inv.customer]) acc[inv.customer] = []
-        acc[inv.customer].push(inv)
+    const invoicesByCompany = sortedInvoices.reduce((acc: any, inv: any) => {
+        const company = inv.customer || 'Unknown'
+        if (!acc[company]) acc[company] = []
+        acc[company].push(inv)
         return acc
     }, {})
 

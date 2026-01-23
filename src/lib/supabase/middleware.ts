@@ -101,6 +101,12 @@ export async function updateSession(request: NextRequest) {
             !user &&
             !isPublicRoute
         ) {
+            const cookieNames = request.cookies.getAll().map((c) => c.name)
+            const authCookieNames = cookieNames.filter((n) => n.startsWith('sb-') && n.includes('auth'))
+            console.log('Auth middleware: no user, redirecting to /login', {
+                pathname,
+                authCookiesPresent: authCookieNames,
+            })
             // no user, potentially respond by redirecting the user to the login page
             const url = request.nextUrl.clone()
             url.pathname = '/login'
