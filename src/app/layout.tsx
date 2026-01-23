@@ -89,6 +89,8 @@ export default function RootLayout({
         <SpeedInsights />
         <Toaster
           position="top-center"
+          expand
+          visibleToasts={6}
           toastOptions={{
             className: 'font-sans',
           }}
