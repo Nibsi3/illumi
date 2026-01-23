@@ -130,7 +130,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
     }
 
     return (
-        <div className="flex flex-col h-full bg-[#09090b] text-white selection:bg-primary/30 relative">
+        <div className="flex flex-col h-full bg-[#0a0a0a] text-white selection:bg-primary/30 relative">
             <ScrollArea className="flex-1 w-full relative z-10 pb-32">
                 <div className="p-8 md:p-12 mb-32 flex flex-col gap-8 max-w-4xl mx-auto">
                     {/* Header Controls for Sheet Mode */}

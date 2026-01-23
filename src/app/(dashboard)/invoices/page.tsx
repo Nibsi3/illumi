@@ -91,6 +91,9 @@ export default function InvoicesPage() {
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1)
 
+    // State needed for UI (restored) - moved up so it can be used in query
+    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
+
     // Cached invoice fetching with React Query (server-side pagination)
     const {
         data: invoicePageData,
@@ -102,6 +105,7 @@ export default function InvoicesPage() {
             currency,
             currentPage,
             filterCustomerId || "all",
+            filterInvoiceType,
         ],
         queryFn: async () => {
             if (!activeWorkspace?.id) return { rows: [], totalCount: 0 }
@@ -118,9 +122,35 @@ export default function InvoicesPage() {
                 dataQuery = dataQuery.eq('customer_id', filterCustomerId)
             }
 
-            const res = await dataQuery
-                .order('created_at', { ascending: false })
-                .range(from, to)
+            // Apply invoice type filter server-side for correct pagination
+            if (filterInvoiceType === 'scheduled') {
+                // Scheduled invoices are identified by having a scheduled_date
+                dataQuery = dataQuery.not('scheduled_date', 'is', null)
+            } else if (filterInvoiceType === 'recurring') {
+                // Recurring invoices are identified by recurring markers (and are not scheduled)
+                dataQuery = dataQuery
+                    .is('scheduled_date', null)
+                    .or('is_recurring.eq.true,parent_invoice_id.not.is.null,recurring_interval.not.is.null')
+            } else if (filterInvoiceType === 'invoices') {
+                // Regular invoices: not scheduled and not recurring
+                dataQuery = dataQuery
+                    .is('scheduled_date', null)
+                    .or('is_recurring.is.null,is_recurring.eq.false')
+                    .is('parent_invoice_id', null)
+                    .is('recurring_interval', null)
+            }
+
+            // Category-specific ordering so each tab is ordered within its own category
+            let orderedQuery = dataQuery
+            if (filterInvoiceType === 'scheduled') {
+                orderedQuery = orderedQuery
+                    .order('scheduled_date', { ascending: true })
+                    .order('created_at', { ascending: false })
+            } else {
+                orderedQuery = orderedQuery.order('created_at', { ascending: false })
+            }
+
+            const res = await orderedQuery.range(from, to)
 
             if (res.error) throw res.error
 
@@ -166,7 +196,6 @@ export default function InvoicesPage() {
     // State needed for UI (restored)
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
-    const [filterInvoiceType, setFilterInvoiceType] = useState<'all' | 'invoices' | 'recurring' | 'scheduled'>('all')
 
     // Mark as Paid dialog state
     const [markPaidDialogOpen, setMarkPaidDialogOpen] = useState(false)
@@ -485,18 +514,8 @@ export default function InvoicesPage() {
 
         const clientMatch = !filterCustomerId || inv.customer_id === filterCustomerId
 
-        const isScheduled = (inv.raw_status || inv.status || '').toLowerCase() === 'scheduled' || Boolean(inv.scheduled_date)
-        const isRecurring = Boolean(inv.is_recurring) || Boolean(inv.parent_invoice_id) || Boolean(inv.recurring_interval)
-        const typeMatch =
-            filterInvoiceType === 'all'
-                ? true
-                : filterInvoiceType === 'scheduled'
-                    ? isScheduled
-                    : filterInvoiceType === 'recurring'
-                        ? isRecurring
-                        : !isScheduled && !isRecurring
-
-        return statusMatch && clientMatch && typeMatch
+        // NOTE: invoice type filtering is applied server-side for correct pagination.
+        return statusMatch && clientMatch
     })
 
     // Sort filtered invoices

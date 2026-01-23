@@ -196,6 +196,9 @@ export function AuthForm() {
                         provider: 'google',
                         options: {
                             redirectTo: `${getURL()}/auth/callback`,
+                            queryParams: {
+                                prompt: 'select_account',
+                            },
                         }
                     })
                 }}>
