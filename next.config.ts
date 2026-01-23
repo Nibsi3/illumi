@@ -5,13 +5,23 @@ const nextConfig: NextConfig = {
   
   // Enable experimental features for better performance
   experimental: {
-    // Optimize package imports for faster builds
+    // Optimize package imports for faster builds and smaller bundles
     optimizePackageImports: [
       '@tabler/icons-react',
       'lucide-react',
       'framer-motion',
       'date-fns',
+      'recharts',
+      '@radix-ui/react-icons',
+      'react-day-picker',
+      'sonner',
     ],
+  },
+
+  // Compiler optimizations
+  compiler: {
+    // Remove console.log in production
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
 
   // Image optimization

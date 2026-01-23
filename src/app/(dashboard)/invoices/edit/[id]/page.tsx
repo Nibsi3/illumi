@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -49,7 +49,8 @@ import {
 import { cn } from "@/lib/utils"
 import { useRouter, useParams } from "next/navigation"
 import { NumberInput } from "@/components/ui/number-input"
-import { PreviewModal } from "../../components/preview-modal"
+// Lazy load PreviewModal - only needed when user clicks Preview
+const PreviewModal = lazy(() => import("../../components/preview-modal").then(m => ({ default: m.PreviewModal })))
 import { allClients, allProducts } from "@/lib/data"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
@@ -825,28 +826,32 @@ export default function EditInvoicePage() {
                 </div>
             </div>
 
-            <PreviewModal
-                isOpen={isPreviewOpen}
-                onClose={() => setIsPreviewOpen(false)}
-                data={{
-                    template,
-                    logo,
-                    tasks,
-                    currency,
-                    taxRate,
-                    dateFormat,
-                    invoiceMode,
-                    clientName,
-                    clientEmail,
-                    clientPhone,
-                    clientAddress,
-                    invoiceNumber,
-                    fromEmail,
-                    issueDate,
-                    dueDate,
-                    note: invoiceNote
-                }}
-            />
+            {isPreviewOpen && (
+                <Suspense fallback={null}>
+                    <PreviewModal
+                        isOpen={isPreviewOpen}
+                        onClose={() => setIsPreviewOpen(false)}
+                        data={{
+                            template,
+                            logo,
+                            tasks,
+                            currency,
+                            taxRate,
+                            dateFormat,
+                            invoiceMode,
+                            clientName,
+                            clientEmail,
+                            clientPhone,
+                            clientAddress,
+                            invoiceNumber,
+                            fromEmail,
+                            issueDate,
+                            dueDate,
+                            note: invoiceNote
+                        }}
+                    />
+                </Suspense>
+            )}
 
             <CreateClientModal isOpen={isClientModalOpen} onClose={() => setIsClientModalOpen(false)} onSuccess={(c: any) => { setCustomers([...customers, c]); setCustomerId(c.id); setClientName(c.name); }} />
             <CreateProductModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} onSuccess={(p: any) => {

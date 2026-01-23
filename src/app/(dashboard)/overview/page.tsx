@@ -18,7 +18,8 @@ import {
     IconLoader2
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import {
     DropdownMenu,
@@ -73,54 +74,50 @@ export default function DashboardPage() {
 
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
-    const [isLoading, setIsLoading] = useState(true)
 
-    useEffect(() => {
-        setIsLoading(true)
-        async function fetchMetrics() {
-            try {
-                const { data: { user } } = await supabase.auth.getUser()
-                if (!user || !activeWorkspace) return
+    // Use React Query for cached data fetching
+    const { data: dashboardData, isLoading } = useQuery({
+        queryKey: ['dashboard-metrics', activeWorkspace?.id],
+        queryFn: async () => {
+            if (!activeWorkspace) return null
 
-                const now = new Date()
-                const currentYear = now.getFullYear()
-                const currentMonth = now.getMonth()
-                const startOfYear = new Date(currentYear, 0, 1).toISOString()
-                const startOfYearDate = new Date(currentYear, 0, 1)
-                const startOfLastYearDate = new Date(currentYear - 1, 0, 1)
+            const now = new Date()
+            const currentYear = now.getFullYear()
+            const currentMonth = now.getMonth()
+            const startOfYearDate = new Date(currentYear, 0, 1)
+            const startOfLastYearDate = new Date(currentYear - 1, 0, 1)
 
-                const [
-                    { data: invoices },
-                    { data: customers },
-                    { data: expenses },
-                    { data: products },
-                ] = await Promise.all([
-                    // Restrict invoice scan to current + last year only
-                    supabase
-                        .from('invoices')
-                        .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
-                        .eq('workspace_id', activeWorkspace.id)
-                        .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10))
-                        .order('issue_date', { ascending: false }),
-                    supabase
-                        .from('customers')
-                        .select('id, name')
-                        .eq('workspace_id', activeWorkspace.id)
-                        .limit(1000),
-                    supabase
-                        .from('expenses')
-                        .select('amount, expense_date')
-                        .eq('workspace_id', activeWorkspace.id)
-                        .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
-                        .order('expense_date', { ascending: false }),
-                    supabase
-                        .from('products')
-                        .select('price, billing_type')
-                        .eq('workspace_id', activeWorkspace.id)
-                        .limit(500),
-                ])
+            const [
+                { data: invoices },
+                { data: customers },
+                { data: expenses },
+                { data: products },
+            ] = await Promise.all([
+                supabase
+                    .from('invoices')
+                    .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10))
+                    .order('issue_date', { ascending: false }),
+                supabase
+                    .from('customers')
+                    .select('id, name')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .limit(1000),
+                supabase
+                    .from('expenses')
+                    .select('amount, expense_date')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
+                    .order('expense_date', { ascending: false }),
+                supabase
+                    .from('products')
+                    .select('price, billing_type')
+                    .eq('workspace_id', activeWorkspace.id)
+                    .limit(500),
+            ])
 
-                const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
+            const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
 
                 // Basic metrics
                 const paidInvoices = invoices?.filter(i => i.status.toLowerCase() === 'paid') || []
@@ -136,10 +133,8 @@ export default function DashboardPage() {
                     }))
                     .sort((a, b) => new Date(b.paidAt).getTime() - new Date(a.paidAt).getTime())
                     .slice(0, 3)
-                setRecentPayments(recent)
 
                 const expensesYTD = (expenses || []).reduce((acc: number, e: any) => acc + (Number(e.amount) || 0), 0)
-                setNetProfitYTD(totalRevenue - expensesYTD)
 
                 const expensesByMonth = new Map<number, number>()
                 ;(expenses || []).forEach((e: any) => {
@@ -150,12 +145,6 @@ export default function DashboardPage() {
                 })
 
                 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-                setMonthlyExpenses(
-                    Array.from({ length: 12 }).map((_, i) => ({
-                        month: monthLabels[i],
-                        total: Math.round(expensesByMonth.get(i) || 0),
-                    }))
-                )
 
                 const pendingCount = invoices
                     ?.filter(i => ['pending', 'draft', 'sent'].includes(i.status.toLowerCase()))
@@ -240,25 +229,6 @@ export default function DashboardPage() {
                     ?.filter(p => p.billing_type === 'recurring')
                     .reduce((acc, curr) => acc + (curr.price || 0), 0) || 0
 
-                // Update metrics state
-                setMetrics({
-                    revenue: totalRevenue,
-                    customers: customers?.length || 0,
-                    products: productCount,
-                    pendingInvoices: pendingCount,
-                    recurring: recurring,
-                    growth: momGrowth
-                })
-
-                setCashFlowMetrics({
-                    outstanding,
-                    overdue,
-                    paidYTD,
-                    vatEstimate: Math.round(vatEstimate),
-                    projectedRevenue: Math.round(projectedRevenue),
-                    topClients: topClients
-                })
-
                 // Calculate monthly revenue for charts using actual invoice dates
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                 const lastYear = currentYear - 1
@@ -289,15 +259,45 @@ export default function DashboardPage() {
                         lastYear: Math.round(lastYearRevenue)
                     }
                 })
-                setMonthlyRevenue(monthlyData)
-            } catch (error) {
-                console.error("Error fetching metrics:", error)
-            } finally {
-                setIsLoading(false)
+            // Return computed data
+            return {
+                recentPayments: recent,
+                netProfitYTD: totalRevenue - expensesYTD,
+                monthlyExpenses: Array.from({ length: 12 }).map((_, i) => ({
+                    month: monthLabels[i],
+                    total: Math.round(expensesByMonth.get(i) || 0),
+                })),
+                metrics: {
+                    revenue: totalRevenue,
+                    customers: customers?.length || 0,
+                    products: productCount,
+                    pendingInvoices: pendingCount,
+                    recurring: recurring,
+                    growth: momGrowth
+                },
+                cashFlowMetrics: {
+                    outstanding,
+                    overdue,
+                    paidYTD,
+                    vatEstimate: Math.round(vatEstimate),
+                    projectedRevenue: Math.round(projectedRevenue),
+                    topClients: topClients
+                },
+                monthlyRevenue: monthlyData
             }
-        }
-        fetchMetrics()
-    }, [supabase, activeWorkspace])
+        },
+        enabled: !!activeWorkspace?.id,
+        staleTime: 3 * 60 * 1000, // Cache for 3 minutes
+        refetchOnMount: false,
+    })
+
+    // Extract data from query result with defaults
+    const computedRecentPayments = dashboardData?.recentPayments || []
+    const computedNetProfitYTD = dashboardData?.netProfitYTD || 0
+    const computedMonthlyExpenses = dashboardData?.monthlyExpenses || []
+    const computedMetrics = dashboardData?.metrics || metrics
+    const computedCashFlowMetrics = dashboardData?.cashFlowMetrics || cashFlowMetrics
+    const computedMonthlyRevenue = dashboardData?.monthlyRevenue || []
 
     if (isLoading) {
         return (

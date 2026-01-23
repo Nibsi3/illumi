@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import {
     IconLayoutDashboard,
     IconPackage,
@@ -17,7 +17,8 @@ import {
     IconChevronDown,
     IconPlus,
 } from "@tabler/icons-react";
-import { NotificationDropdown } from "@/components/notifications/notification-dropdown";
+// Lazy load NotificationDropdown - not critical for initial render
+const NotificationDropdown = lazy(() => import("@/components/notifications/notification-dropdown").then(m => ({ default: m.NotificationDropdown })));
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,10 @@ import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useWorkspace } from "@/lib/workspace-context";
-import { SearchModal } from "@/components/search-modal";
 import { useSubscription } from "@/lib/subscription/hooks";
+
+// Lazy load SearchModal - only needed when user opens search
+const SearchModal = lazy(() => import("@/components/search-modal").then(m => ({ default: m.SearchModal })));
 import { useSettings } from "@/lib/settings-context";
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
@@ -361,7 +364,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                     "Free Plan · Upgrade"
                                 )}
                             </Link>
-                            <NotificationDropdown />
+                            <Suspense fallback={<div className="w-8 h-8" />}>
+                                <NotificationDropdown />
+                            </Suspense>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="outline-none focus:ring-0">
@@ -461,8 +466,12 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 </DialogContent>
             </Dialog>
 
-            {/* Search Modal */}
-            <SearchModal open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+            {/* Search Modal - lazy loaded */}
+            {isSearchOpen && (
+                <Suspense fallback={null}>
+                    <SearchModal open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+                </Suspense>
+            )}
         </div>
     );
 }
