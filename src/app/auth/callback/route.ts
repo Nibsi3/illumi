@@ -33,13 +33,14 @@ export async function GET(request: NextRequest) {
 
     if (code) {
         // Create a response that we can modify with cookies
-        const response = NextResponse.redirect(`${origin}${nextPath}`)
+        const response = NextResponse.redirect(`${origin}${nextPath}`, 302)
 
         // Create Supabase client that can read/write cookies on the response
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
+                cookieEncoding: 'base64url',
                 cookies: {
                     getAll() {
                         return request.cookies.getAll()
@@ -54,6 +55,11 @@ export async function GET(request: NextRequest) {
                             // On localhost over http, secure cookies will not be stored by the browser.
                             if (isLocalHost) {
                                 opts.secure = false
+                                // Chrome rejects SameSite=None cookies unless Secure=true.
+                                // For localhost development, force Lax so cookies persist.
+                                if (!opts.sameSite || opts.sameSite === 'none') {
+                                    opts.sameSite = 'lax'
+                                }
                             }
                             if (opts.maxAge === undefined && !opts.expires) {
                                 opts.maxAge = 60 * 60 * 24 * 7
@@ -62,6 +68,7 @@ export async function GET(request: NextRequest) {
                             // Debug cookie attributes (no values)
                             console.log('Auth cookie set:', {
                                 name,
+                                valueLength: typeof value === 'string' ? value.length : undefined,
                                 path: opts.path,
                                 secure: opts.secure,
                                 sameSite: opts.sameSite,
@@ -70,6 +77,16 @@ export async function GET(request: NextRequest) {
                             })
                             response.cookies.set(name, value, opts)
                         })
+
+                        try {
+                            const setCookieHeader = response.headers.get('set-cookie')
+                            console.log('Auth callback Set-Cookie header present:', Boolean(setCookieHeader))
+                            if (setCookieHeader) {
+                                console.log('Auth callback Set-Cookie header length:', setCookieHeader.length)
+                            }
+                        } catch {
+                            // ignore
+                        }
                     },
                 },
             }
@@ -84,13 +101,13 @@ export async function GET(request: NextRequest) {
 
         const errorUrl = new URL(`${origin}/auth/auth-code-error`)
         errorUrl.searchParams.set('error', error.message)
-        return NextResponse.redirect(errorUrl)
+        return NextResponse.redirect(errorUrl, 302)
     }
 
     console.error('Auth callback missing code param:', request.url)
     const missingCodeUrl = new URL(`${origin}/auth/auth-code-error`)
     missingCodeUrl.searchParams.set('error', 'missing_code')
-    return NextResponse.redirect(missingCodeUrl)
+    return NextResponse.redirect(missingCodeUrl, 302)
 
     // Return the user to an error page with instructions
     return NextResponse.redirect(`${origin}/auth/auth-code-error`)

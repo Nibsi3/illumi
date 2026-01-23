@@ -16,8 +16,8 @@ export default function PostLoginRedirectPage() {
                 // ignore
             }
 
-            // Give the browser a tick to persist cookies set by the callback response.
-            await new Promise((r) => setTimeout(r, 50))
+            // Give the browser time to persist cookies set by the callback response.
+            await new Promise((r) => setTimeout(r, 300))
             window.location.assign(nextPath)
         }
 

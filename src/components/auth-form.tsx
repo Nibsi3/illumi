@@ -191,14 +191,33 @@ export function AuthForm() {
                         </span>
                     </div>
                 </div>
-                <Button variant="outline" className="h-12 w-full text-base" disabled={loading} onClick={() => {
-                    supabase.auth.signInWithOAuth({
-                        provider: 'google',
-                        options: {
-                            redirectTo: `${getURL()}/auth/callback`,
+                <Button
+                    variant="outline"
+                    type="button"
+                    className="h-12 w-full text-base"
+                    disabled={loading}
+                    onClick={async () => {
+                        const { data, error } = await supabase.auth.signInWithOAuth({
+                            provider: 'google',
+                            options: {
+                                redirectTo: `${getURL()}/auth/callback`,
+                                skipBrowserRedirect: true,
+                            }
+                        })
+
+                        if (error) {
+                            toast.error(error.message)
+                            return
                         }
-                    })
-                }}>
+
+                        if (data?.url) {
+                            window.location.assign(data.url)
+                            return
+                        }
+
+                        toast.error('Unable to start Google sign-in')
+                    }}
+                >
                     Google
                 </Button>
             </CardContent>
