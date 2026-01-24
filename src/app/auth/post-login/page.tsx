@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function PostLoginRedirectPage() {
     useEffect(() => {
@@ -16,8 +17,17 @@ export default function PostLoginRedirectPage() {
                 // ignore
             }
 
+            if (nextPath === '/admin' || nextPath.startsWith('/admin/')) {
+                nextPath = '/overview'
+            }
+
             // Give the browser time to persist cookies set by the callback response.
-            await new Promise((r) => setTimeout(r, 300))
+            const supabase = createClient()
+            for (let i = 0; i < 10; i++) {
+                const { data } = await supabase.auth.getSession()
+                if (data?.session) break
+                await new Promise((r) => setTimeout(r, 200))
+            }
             window.location.assign(nextPath)
         }
 

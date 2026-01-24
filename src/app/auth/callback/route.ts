@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
-                cookieEncoding: 'base64url',
+                cookieEncoding: 'raw',
                 cookies: {
                     getAll() {
                         return request.cookies.getAll()
@@ -49,9 +49,8 @@ export async function GET(request: NextRequest) {
                         cookiesToSet.forEach(({ name, value, options }) => {
                             const opts: any = { ...(options || {}) }
                             // Ensure cookies are available to the whole app after login.
-                            if (!opts.path) {
-                                opts.path = '/'
-                            }
+                            // Some runtimes/providers may set a narrower path; force root.
+                            opts.path = '/'
                             // On localhost over http, secure cookies will not be stored by the browser.
                             if (isLocalHost) {
                                 opts.secure = false
