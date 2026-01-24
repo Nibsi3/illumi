@@ -3,8 +3,9 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Suspense } from "react"
 
-export default function AuthCodeError() {
+function AuthCodeErrorContent() {
     const searchParams = useSearchParams()
     const error = searchParams.get('error')
 
@@ -23,5 +24,13 @@ export default function AuthCodeError() {
                 <Link href="/login">Back to Sign In</Link>
             </Button>
         </div>
+    )
+}
+
+export default function AuthCodeError() {
+    return (
+        <Suspense>
+            <AuthCodeErrorContent />
+        </Suspense>
     )
 }
