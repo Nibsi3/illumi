@@ -67,8 +67,8 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
+            const { data: sessionData } = await supabase.auth.getSession();
+            setUser(sessionData?.session?.user || null);
         };
         getUser();
     }, [supabase]);
@@ -329,7 +329,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 <div className="w-[72px] shrink-0" />
 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col min-w-0 bg-background relative">
+                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-background relative overflow-y-auto">
                     {isSwitchingWorkspace && (
                         <div className="absolute inset-0 z-50 flex items-center justify-center">
                             <div className="absolute inset-0 bg-background/60 backdrop-blur-md" />

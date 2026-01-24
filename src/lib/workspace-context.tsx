@@ -19,6 +19,7 @@ interface WorkspaceContextType {
     refreshWorkspaces: () => Promise<void>
     isOwner: boolean
     userId: string | null
+    userEmail: string | null
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType>({
@@ -29,6 +30,7 @@ const WorkspaceContext = createContext<WorkspaceContextType>({
     refreshWorkspaces: async () => { },
     isOwner: false,
     userId: null,
+    userEmail: null,
 })
 
 export function useWorkspace() {
@@ -49,8 +51,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const isOwner = Boolean(activeWorkspace && userId && activeWorkspace.owner_id === userId)
 
     const refreshWorkspaces = useCallback(async (forceRefresh = false) => {
+        let perfEnabled = false
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            perfEnabled = localStorage.getItem('illumi_perf') === '1'
+        } catch {
+            perfEnabled = false
+        }
+
+        if (perfEnabled) console.time('workspace:refreshWorkspaces')
+        try {
+            if (perfEnabled) console.time('workspace:auth.getSession')
+            const { data: sessionData } = await supabase.auth.getSession()
+            if (perfEnabled) console.timeEnd('workspace:auth.getSession')
+
+            const user = sessionData?.session?.user || null
             if (!user) {
                 setIsLoading(false)
                 setUserEmail(null)
@@ -84,8 +98,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             // that can cause invited workspaces not to appear immediately after accepting an invite.
             if (deduped.length === 0) {
                 try {
+                    if (perfEnabled) console.time('workspace:fetch:/api/workspaces')
                     const res = await fetch('/api/workspaces', { credentials: 'include' })
                     const json = await res.json().catch(() => null)
+                    if (perfEnabled) console.timeEnd('workspace:fetch:/api/workspaces')
                     if (res.ok && json?.success && Array.isArray(json?.workspaces)) {
                         deduped = json.workspaces as Workspace[]
                         // Cache the result
@@ -104,18 +120,24 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
             // Fallback to previous client-side behavior if API returns nothing
             if (deduped.length === 0) {
+                if (perfEnabled) console.time('workspace:fallback:supabase.workspaces')
                 const { data: ownedWorkspaces } = await supabase
                     .from('workspaces')
                     .select('*')
                     .eq('owner_id', user.id)
                     .order('created_at', { ascending: true })
 
+                if (perfEnabled) console.timeEnd('workspace:fallback:supabase.workspaces')
+
                 let memberWorkspaceIds: string[] = []
                 try {
+                    if (perfEnabled) console.time('workspace:fallback:supabase.workspace_members')
                     const { data: memberRows } = await supabase
                         .from('workspace_members')
                         .select('workspace_id, status')
                         .eq('email', user.email || '')
+
+                    if (perfEnabled) console.timeEnd('workspace:fallback:supabase.workspace_members')
 
                     memberWorkspaceIds = (memberRows || [])
                         .filter((r: any) => Boolean(r.workspace_id) && (r.status || '').toString().toLowerCase() === 'active')
@@ -160,15 +182,24 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             console.error('Error loading workspaces:', error)
         } finally {
             setIsLoading(false)
+            if (perfEnabled) console.timeEnd('workspace:refreshWorkspaces')
         }
     }, [supabase])
 
     useEffect(() => {
         // Enforce a 7-day max "stay signed in" window.
         const enforceMaxSessionAge = async () => {
+            let perfEnabled = false
             try {
-                const { data: { user }, error: userError } = await supabase.auth.getUser()
-                if (userError || !user) return
+                perfEnabled = localStorage.getItem('illumi_perf') === '1'
+            } catch {
+                perfEnabled = false
+            }
+            try {
+                if (perfEnabled) console.time('workspace:enforceMaxSessionAge')
+                const { data: sessionData } = await supabase.auth.getSession()
+                const user = sessionData?.session?.user || null
+                if (!user) return
 
                 const existing = localStorage.getItem(SIGNED_IN_AT_KEY)
                 const signedInAt = existing ? Number(existing) : NaN
@@ -187,6 +218,8 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 }
             } catch {
                 // ignore
+            } finally {
+                if (perfEnabled) console.timeEnd('workspace:enforceMaxSessionAge')
             }
         }
 
@@ -269,6 +302,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             refreshWorkspaces,
             isOwner,
             userId,
+            userEmail,
         }}>
             {children}
         </WorkspaceContext.Provider>

@@ -1,25 +1,28 @@
 "use client"
 
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
 
 export default function PostLoginRedirectPage() {
-    const router = useRouter()
-
     useEffect(() => {
-        let nextPath = '/overview'
-        try {
-            const stored = localStorage.getItem('illumi_auth_next')
-            if (stored && stored.startsWith('/')) {
-                nextPath = stored
+        const run = async () => {
+            let nextPath = '/overview'
+            try {
+                const stored = localStorage.getItem('illumi_auth_next')
+                if (stored && stored.startsWith('/')) {
+                    nextPath = stored
+                }
+                localStorage.removeItem('illumi_auth_next')
+            } catch {
+                // ignore
             }
-            localStorage.removeItem('illumi_auth_next')
-        } catch {
-            // ignore
+
+            // Give the browser time to persist cookies set by the callback response.
+            await new Promise((r) => setTimeout(r, 300))
+            window.location.assign(nextPath)
         }
 
-        router.replace(nextPath)
-    }, [router])
+        run()
+    }, [])
 
     return null
 }

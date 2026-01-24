@@ -172,6 +172,12 @@ function normalizeEmailList(value: string | string[] | undefined): string[] {
 
 export async function POST(req: Request) {
     try {
+        const cronSecret = process.env.CRON_SECRET
+        const authHeader = req.headers.get("authorization")
+        const isInternal = Boolean(cronSecret && authHeader === `Bearer ${cronSecret}`)
+
+        void isInternal
+
         const resend = getResendClient()
         if (!resend) {
             return NextResponse.json(

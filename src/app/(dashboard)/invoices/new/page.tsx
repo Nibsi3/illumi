@@ -1208,62 +1208,64 @@ export default function NewInvoicePage() {
                                 </div>
 
                                 {/* Meta Details */}
-                                <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
-                                    <div className="flex flex-col gap-2">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Issue Date</span>
-                                        <div className="relative">
-                                            <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
-                                                <PopoverTrigger asChild>
-                                                    <button className={cn(
-                                                        "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                        invoiceMode === "light" ? "text-black" : "text-white"
-                                                    )}>
-                                                        {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
-                                                    </button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
-                                                    <Calendar
-                                                        selected={issueDate ? parseISO(issueDate) : undefined}
-                                                        onSelect={(date) => {
-                                                            if (date) {
-                                                                setIssueDate(date.toISOString().split('T')[0])
-                                                            }
-                                                            setIsIssueDateOpen(false)
-                                                        }}
-                                                        className="border-none"
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
+                                {!canSchedule && (
+                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
+                                        <div className="flex flex-col gap-2">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Issue Date</span>
+                                            <div className="relative">
+                                                <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <button className={cn(
+                                                            "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
+                                                            invoiceMode === "light" ? "text-black" : "text-white"
+                                                        )}>
+                                                            {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
+                                                        </button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                        <Calendar
+                                                            selected={issueDate ? parseISO(issueDate) : undefined}
+                                                            onSelect={(date) => {
+                                                                if (date) {
+                                                                    setIssueDate(date.toISOString().split('T')[0])
+                                                                }
+                                                                setIsIssueDateOpen(false)
+                                                            }}
+                                                            className="border-none"
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Due Date</span>
+                                            <div className="relative">
+                                                <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <button className={cn(
+                                                            "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
+                                                            invoiceMode === "light" ? "text-black" : "text-white"
+                                                        )}>
+                                                            {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
+                                                        </button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                        <Calendar
+                                                            selected={dueDate ? parseISO(dueDate) : undefined}
+                                                            onSelect={(date) => {
+                                                                if (date) {
+                                                                    setDueDate(date.toISOString().split('T')[0])
+                                                                }
+                                                                setIsDueDateOpen(false)
+                                                            }}
+                                                            className="border-none"
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Due Date</span>
-                                        <div className="relative">
-                                            <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
-                                                <PopoverTrigger asChild>
-                                                    <button className={cn(
-                                                        "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                        invoiceMode === "light" ? "text-black" : "text-white"
-                                                    )}>
-                                                        {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
-                                                    </button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
-                                                    <Calendar
-                                                        selected={dueDate ? parseISO(dueDate) : undefined}
-                                                        onSelect={(date) => {
-                                                            if (date) {
-                                                                setDueDate(date.toISOString().split('T')[0])
-                                                            }
-                                                            setIsDueDateOpen(false)
-                                                        }}
-                                                        className="border-none"
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                        </div>
-                                    </div>
-                                </div>
+                                )}
 
                                 {/* Tasks Table (Refined) */}
                                 <div className="mb-12">

@@ -52,15 +52,12 @@ export async function updateSession(request: NextRequest) {
             supabaseUrl,
             supabaseKey,
             {
+                cookieEncoding: 'base64url',
                 cookies: {
                     getAll() {
                         return request.cookies.getAll()
                     },
                     setAll(cookiesToSet) {
-                        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-                        supabaseResponse = NextResponse.next({
-                            request,
-                        })
                         cookiesToSet.forEach(({ name, value, options }) => {
                             const opts: any = { ...(options || {}) }
                             // If Supabase doesn't provide persistence attributes, default to 7 days.
@@ -101,6 +98,12 @@ export async function updateSession(request: NextRequest) {
             !user &&
             !isPublicRoute
         ) {
+            const cookieNames = request.cookies.getAll().map((c) => c.name)
+            const authCookieNames = cookieNames.filter((n) => n.startsWith('sb-') && n.includes('auth'))
+            console.log('Auth middleware: no user, redirecting to /login', {
+                pathname,
+                authCookiesPresent: authCookieNames,
+            })
             // no user, potentially respond by redirecting the user to the login page
             const url = request.nextUrl.clone()
             url.pathname = '/login'

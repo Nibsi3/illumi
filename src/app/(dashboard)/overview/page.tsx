@@ -9,7 +9,7 @@ import {
     IconChevronDown,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import React, { useState, useMemo } from "react"
+import React, { useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import {
@@ -24,13 +24,22 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 import { useSettings } from "@/lib/settings-context"
+import {
+    CartesianGrid,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts"
 
 export default function DashboardPage() {
     const router = useRouter();
     const { currency } = useSettings();
     const [view, setView] = useState<"overview" | "metrics">("overview");
-    const [period, setPeriod] = useState<"Week" | "Month" | "Year">("Week");
-    const [selectedBucketIndex, setSelectedBucketIndex] = useState(0)
+    const [period, setPeriod] = useState<"Day" | "Week" | "Month" | "Year">("Week");
+    const [hoveredBucketIndex, setHoveredBucketIndex] = useState<number | null>(null)
 
     const defaultMetrics = useMemo(() => ({
         revenue: 0,
@@ -59,6 +68,55 @@ export default function DashboardPage() {
         queryFn: async () => {
             if (!activeWorkspace) return null
 
+            let perfEnabled = false
+            try {
+                perfEnabled = localStorage.getItem('illumi_perf') === '1'
+            } catch {
+                perfEnabled = false
+            }
+
+            if (perfEnabled) console.time('dashboard:loadDashboardData')
+
+            try {
+
+            const toMonthlyAmount = (amount: number, interval: string | null, customInterval?: number | null, customUnit?: string | null) => {
+                const cleanAmount = Number(amount) || 0
+                if (!interval) return 0
+
+                // Approximate monthly multipliers
+                const weeksPerMonth = 52 / 12
+                const daysPerMonth = 365.25 / 12
+
+                switch (interval) {
+                    case 'daily':
+                        return cleanAmount * daysPerMonth
+                    case 'weekly':
+                        return cleanAmount * weeksPerMonth
+                    case 'bi-weekly':
+                        return cleanAmount * (weeksPerMonth / 2)
+                    case 'monthly':
+                    case 'monthly-week':
+                    case 'monthly-last':
+                        return cleanAmount
+                    case 'quarterly':
+                        return cleanAmount / 3
+                    case 'semi-annually':
+                        return cleanAmount / 6
+                    case 'yearly':
+                        return cleanAmount / 12
+                    case 'custom': {
+                        const i = Number(customInterval) || 1
+                        const u = customUnit || 'days'
+                        if (u === 'days') return cleanAmount * (daysPerMonth / i)
+                        if (u === 'weeks') return cleanAmount * (weeksPerMonth / i)
+                        if (u === 'months') return cleanAmount * (1 / i)
+                        return cleanAmount
+                    }
+                    default:
+                        return cleanAmount
+                }
+            }
+
             const now = new Date()
             const currentYear = now.getFullYear()
             const currentMonth = now.getMonth()
@@ -67,32 +125,75 @@ export default function DashboardPage() {
 
             const [
                 { data: invoices },
+                { data: invoicesAll },
                 { data: customers },
                 { data: expenses },
                 { data: products },
+                { data: recurringTemplates },
             ] = await Promise.all([
-                supabase
-                    .from('invoices')
-                    .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10))
-                    .order('issue_date', { ascending: false }),
-                supabase
-                    .from('customers')
-                    .select('id, name')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .limit(1000),
-                supabase
-                    .from('expenses')
-                    .select('amount, expense_date')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
-                    .order('expense_date', { ascending: false }),
-                supabase
-                    .from('products')
-                    .select('price, billing_type')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .limit(500),
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:invoices_last_year')
+                    const res = await supabase
+                        .from('invoices')
+                        .select('invoice_number, total, status, issue_date, due_date, paid_at, customer_id, tax_amount')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .gte('issue_date', startOfLastYearDate.toISOString().slice(0, 10))
+                        .order('issue_date', { ascending: false })
+                    if (perfEnabled) console.timeEnd('dashboard:q:invoices_last_year')
+                    return res
+                })(),
+                // Lightweight full invoice dataset for counts/progress (not restricted by issue_date)
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:invoices_all_light')
+                    const res = await supabase
+                        .from('invoices')
+                        .select('total, status, issue_date, paid_at, customer_id')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .order('created_at', { ascending: false })
+                        .limit(5000)
+                    if (perfEnabled) console.timeEnd('dashboard:q:invoices_all_light')
+                    return res
+                })(),
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:customers')
+                    const res = await supabase
+                        .from('customers')
+                        .select('id, name')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .limit(1000)
+                    if (perfEnabled) console.timeEnd('dashboard:q:customers')
+                    return res
+                })(),
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:expenses_ytd')
+                    const res = await supabase
+                        .from('expenses')
+                        .select('amount, expense_date')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .gte('expense_date', startOfYearDate.toISOString().slice(0, 10))
+                    if (perfEnabled) console.timeEnd('dashboard:q:expenses_ytd')
+                    return res
+                })(),
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:products')
+                    const res = await supabase
+                        .from('products')
+                        .select('id')
+                        .eq('workspace_id', activeWorkspace.id)
+                    if (perfEnabled) console.timeEnd('dashboard:q:products')
+                    return res
+                })(),
+                (async () => {
+                    if (perfEnabled) console.time('dashboard:q:recurring_templates')
+                    const res = await supabase
+                        .from('invoices')
+                        .select('total, recurring_interval, recurring_custom_interval, recurring_custom_unit, recurring_end_date')
+                        .eq('workspace_id', activeWorkspace.id)
+                        .eq('is_recurring', true)
+                        .in('status', ['draft', 'sent', 'paid'])
+                    if (perfEnabled) console.timeEnd('dashboard:q:recurring_templates')
+                    return res
+                })(),
             ])
 
             const customerMap = new Map(customers?.map(c => [c.id, c.name]) || [])
@@ -203,9 +304,29 @@ export default function DashboardPage() {
                     .slice(0, 5)
 
                 const productCount = products?.length || 0
-                const recurring = products
-                    ?.filter(p => p.billing_type === 'recurring')
-                    .reduce((acc, curr) => acc + (curr.price || 0), 0) || 0
+
+                const activeRecurringTemplates = (recurringTemplates || []).filter((t: any) => {
+                    if (!t) return false
+                    if (t.recurring_end_date) {
+                        const endDate = new Date(`${t.recurring_end_date}T00:00:00`)
+                        // consider active through end-of-day
+                        endDate.setHours(23, 59, 59, 999)
+                        if (endDate < now) return false
+                    }
+                    return true
+                })
+
+                const recurring = activeRecurringTemplates.reduce((acc: number, t: any) => {
+                    return (
+                        acc +
+                        toMonthlyAmount(
+                            Number(t.total) || 0,
+                            t.recurring_interval,
+                            t.recurring_custom_interval,
+                            t.recurring_custom_unit
+                        )
+                    )
+                }, 0)
 
                 // Calculate monthly revenue for charts using actual invoice dates
                 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -240,6 +361,20 @@ export default function DashboardPage() {
             // Return computed data
             return {
                 recentPayments: recent,
+                paymentEvents: paidInvoices
+                    .filter((i: any) => Boolean(i.paid_at || i.issue_date))
+                    .map((i: any) => ({
+                        amount: Number(i.total) || 0,
+                        paidAt: (i.paid_at || i.issue_date) as string,
+                    })),
+                invoicesRaw: (invoicesAll || invoices || []).map((i: any) => ({
+                    status: (i.status || '').toLowerCase(),
+                    issue_date: i.issue_date as string | null,
+                    due_date: i.due_date as string | null,
+                    paid_at: (i.paid_at || null) as string | null,
+                    total: Number(i.total) || 0,
+                    customer_id: i.customer_id as string | null,
+                })),
                 netProfitYTD: totalRevenue - expensesYTD,
                 monthlyExpenses: Array.from({ length: 12 }).map((_, i) => ({
                     month: monthLabels[i],
@@ -263,6 +398,9 @@ export default function DashboardPage() {
                 },
                 monthlyRevenue: monthlyData
             }
+            } finally {
+                if (perfEnabled) console.timeEnd('dashboard:loadDashboardData')
+            }
         },
         enabled: !!activeWorkspace?.id,
         staleTime: 3 * 60 * 1000, // Cache for 3 minutes
@@ -271,46 +409,184 @@ export default function DashboardPage() {
 
     // Extract data from query result with defaults
     const computedRecentPayments = dashboardData?.recentPayments || []
+    const computedPaymentEvents = dashboardData?.paymentEvents || []
+    const computedInvoicesRaw = dashboardData?.invoicesRaw || []
     const computedNetProfitYTD = dashboardData?.netProfitYTD || 0
     const computedMonthlyExpenses = dashboardData?.monthlyExpenses || []
     const computedMetrics = dashboardData?.metrics || defaultMetrics
     const computedCashFlowMetrics = dashboardData?.cashFlowMetrics || defaultCashFlowMetrics
     const computedMonthlyRevenue = dashboardData?.monthlyRevenue || []
 
+    const invoiceProgress = useMemo(() => {
+        const allInvoices = (computedInvoicesRaw as any[])
+
+        // Global counts (should match what you see on the Invoices/Clients screens)
+        const paidInvoicesAll = allInvoices.filter((inv) => (inv.status || '').toLowerCase() === 'paid')
+        const pendingInvoicesAll = allInvoices.filter((inv) => {
+            const s = (inv.status || '').toLowerCase()
+            return ['pending', 'draft', 'sent', 'viewed'].includes(s)
+        })
+
+        const clientIdsAll = new Set<string>()
+        for (const inv of allInvoices) {
+            if (inv.customer_id) clientIdsAll.add(inv.customer_id)
+        }
+
+        return {
+            pendingCount: pendingInvoicesAll.length,
+            paidCount: paidInvoicesAll.length,
+            clientsCount: clientIdsAll.size,
+        }
+    }, [computedInvoicesRaw])
+
     const incomeTrackerBuckets = useMemo(() => {
-        const currentMonthIndex = new Date().getMonth()
-        const currentMonthRevenue = computedMonthlyRevenue[currentMonthIndex]?.revenue || 0
+        const now = new Date()
+        const normalizeDayKey = (d: Date) => {
+            const x = new Date(d)
+            x.setHours(0, 0, 0, 0)
+            return x.toISOString().slice(0, 10)
+        }
+
+        const normalizeMonthKey = (d: Date) => {
+            const x = new Date(d)
+            x.setDate(1)
+            x.setHours(0, 0, 0, 0)
+            return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}`
+        }
+
+        const normalizeYearKey = (d: Date) => {
+            const x = new Date(d)
+            x.setMonth(0, 1)
+            x.setHours(0, 0, 0, 0)
+            return String(x.getFullYear())
+        }
+
+        const startOfWeekMonday = (d: Date) => {
+            const x = new Date(d)
+            const day = x.getDay() // 0=Sun
+            const diff = (day === 0 ? -6 : 1) - day
+            x.setDate(x.getDate() + diff)
+            x.setHours(0, 0, 0, 0)
+            return x
+        }
+
+        const normalizeWeekKey = (d: Date) => {
+            const s = startOfWeekMonday(d)
+            return normalizeDayKey(s)
+        }
+
+        const events = (computedPaymentEvents as any[])
+            .map((e) => ({
+                amount: Number(e.amount) || 0,
+                date: e.paidAt ? new Date(e.paidAt) : null,
+            }))
+            .filter((e) => e.date && !Number.isNaN(e.date.getTime())) as { amount: number; date: Date }[]
+
+        if (period === 'Day') {
+            const days = Array.from({ length: 7 }).map((_, i) => {
+                const d = new Date(now)
+                d.setDate(now.getDate() - (6 - i))
+                d.setHours(0, 0, 0, 0)
+                return d
+            })
+
+            const byDay = new Map<string, number>()
+            for (const e of events) {
+                byDay.set(normalizeDayKey(e.date), (byDay.get(normalizeDayKey(e.date)) || 0) + e.amount)
+            }
+
+            return days.map((d) => {
+                const k = normalizeDayKey(d)
+                return {
+                    label: d.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' }),
+                    pill: d.toLocaleDateString('en-ZA', { day: '2-digit' }),
+                    value: Math.round(byDay.get(k) || 0),
+                }
+            })
+        }
 
         if (period === 'Week') {
-            const weights = [0.9, 0.8, 0.95, 1.3, 1.05, 0.85, 0.75]
-            const denom = weights.reduce((a, b) => a + b, 0) || 1
-            const base = currentMonthRevenue / denom
-            const values = weights.map(w => Math.round(base * w))
-            const labels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-            return labels.map((label, i) => ({ label, value: values[i] || 0 }))
+            const weekStarts = Array.from({ length: 8 }).map((_, i) => {
+                const d = new Date(now)
+                d.setDate(now.getDate() - (7 * (7 - i)))
+                return startOfWeekMonday(d)
+            })
+
+            const byWeek = new Map<string, number>()
+            for (const e of events) {
+                const k = normalizeWeekKey(e.date)
+                byWeek.set(k, (byWeek.get(k) || 0) + e.amount)
+            }
+
+            return weekStarts.map((w, i) => {
+                const k = normalizeDayKey(w)
+                return {
+                    label: w.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' }),
+                    pill: `W${i + 1}`,
+                    value: Math.round(byWeek.get(k) || 0),
+                }
+            })
         }
 
         if (period === 'Month') {
-            const values = [0.24, 0.26, 0.25, 0.25].map(w => Math.round(currentMonthRevenue * w))
-            const labels = ['W1', 'W2', 'W3', 'W4']
-            return labels.map((label, i) => ({ label, value: values[i] || 0 }))
+            const monthStarts = Array.from({ length: 12 }).map((_, i) => {
+                const d = new Date(now)
+                d.setMonth(now.getMonth() - (11 - i), 1)
+                d.setHours(0, 0, 0, 0)
+                return d
+            })
+
+            const byMonth = new Map<string, number>()
+            for (const e of events) {
+                const k = normalizeMonthKey(e.date)
+                byMonth.set(k, (byMonth.get(k) || 0) + e.amount)
+            }
+
+            return monthStarts.map((m) => {
+                const k = normalizeMonthKey(m)
+                const label = m.toLocaleDateString('en-ZA', { month: 'short' })
+                return {
+                    label,
+                    pill: label,
+                    value: Math.round(byMonth.get(k) || 0),
+                }
+            })
         }
 
-        const months = (computedMonthlyRevenue.length ? computedMonthlyRevenue : []).slice(0, 12)
-        const fallback = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        return Array.from({ length: 12 }).map((_, i) => ({
-            label: months[i]?.month || fallback[i],
-            value: months[i]?.revenue || 0,
-        }))
-    }, [computedMonthlyRevenue, period])
+        const yearStarts = Array.from({ length: 5 }).map((_, i) => {
+            const d = new Date(now)
+            d.setFullYear(now.getFullYear() - (4 - i), 0, 1)
+            d.setHours(0, 0, 0, 0)
+            return d
+        })
 
-    const clampedSelectedBucketIndex = Math.min(
-        Math.max(selectedBucketIndex, 0),
-        Math.max(incomeTrackerBuckets.length - 1, 0)
-    )
+        const byYear = new Map<string, number>()
+        for (const e of events) {
+            const k = normalizeYearKey(e.date)
+            byYear.set(k, (byYear.get(k) || 0) + e.amount)
+        }
 
-    const selectedBucketValue = incomeTrackerBuckets[clampedSelectedBucketIndex]?.value || 0
-    const previousBucketValue = incomeTrackerBuckets[Math.max(clampedSelectedBucketIndex - 1, 0)]?.value || 0
+        return yearStarts.map((y) => {
+            const k = normalizeYearKey(y)
+            return {
+                label: k,
+                pill: k,
+                value: Math.round(byYear.get(k) || 0),
+            }
+        })
+    }, [computedMonthlyRevenue, computedPaymentEvents, period])
+
+    const clampedHoveredBucketIndex = hoveredBucketIndex === null
+        ? null
+        : Math.min(
+              Math.max(hoveredBucketIndex, 0),
+              Math.max(incomeTrackerBuckets.length - 1, 0)
+          )
+
+    const effectiveBucketIndex = clampedHoveredBucketIndex ?? (incomeTrackerBuckets.length - 1)
+
+    const selectedBucketValue = incomeTrackerBuckets[effectiveBucketIndex]?.value || 0
+    const previousBucketValue = incomeTrackerBuckets[Math.max(effectiveBucketIndex - 1, 0)]?.value || 0
     const incomeTrackerChangePct = previousBucketValue > 0
         ? Math.round(((selectedBucketValue - previousBucketValue) / previousBucketValue) * 100)
         : 0
@@ -334,7 +610,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="relative flex flex-col gap-y-3 animate-in fade-in duration-700 font-serif h-[calc(100vh-120px)] overflow-hidden">
+        <div className="relative flex flex-col gap-y-3 animate-in fade-in duration-700 font-serif min-h-[calc(100vh-120px)]">
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
@@ -343,12 +619,13 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center bg-[#0c0c0c] border border-white/10 p-1">
+                    {/* Overview/Metrics Toggle */}
+                    <div className="flex items-center bg-[#0c0c0c] border border-white/10 p-1 rounded-lg">
                         <Button
                             variant="ghost"
                             onClick={() => setView("overview")}
                             className={cn(
-                                "h-7 px-4 rounded-none text-[8px] uppercase font-bold tracking-widest transition-all",
+                                "h-7 px-4 rounded-md text-[9px] uppercase font-bold tracking-widest transition-all",
                                 view === "overview" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
                             )}
                         >
@@ -358,7 +635,7 @@ export default function DashboardPage() {
                             variant="ghost"
                             onClick={() => setView("metrics")}
                             className={cn(
-                                "h-7 px-4 rounded-none text-[8px] uppercase font-bold tracking-widest transition-all",
+                                "h-7 px-4 rounded-md text-[9px] uppercase font-bold tracking-widest transition-all",
                                 view === "metrics" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
                             )}
                         >
@@ -368,20 +645,20 @@ export default function DashboardPage() {
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="flex items-center gap-2 px-3 h-9 bg-[#0c0c0c] border border-white/10 rounded-none text-[9px] uppercase font-bold tracking-widest text-white cursor-pointer hover:bg-white/5 transition-colors">
+                            <div className="flex items-center gap-2 px-3 h-9 bg-[#0c0c0c] border border-white/10 rounded-lg text-[9px] uppercase font-bold tracking-widest text-white cursor-pointer hover:bg-white/5 transition-colors">
                                 <IconCalendarStats className="h-3.5 w-3.5 text-muted-foreground" />
                                 <span>{period}</span>
                                 <IconChevronDown className="h-3 w-3 opacity-50" />
                             </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-[#0b0b0b] border-white/10 rounded-none text-white w-48 p-2 shadow-2xl">
+                        <DropdownMenuContent className="bg-[#0b0b0b] border-white/10 rounded-lg text-white w-48 p-2 shadow-2xl">
                             <DropdownMenuLabel className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground px-2 py-1">Period</DropdownMenuLabel>
-                            {(["Week", "Month", "Year"] as const).map((p) => (
+                            {(["Day", "Week", "Month", "Year"] as const).map((p) => (
                                 <DropdownMenuItem
                                     key={p}
                                     onClick={() => {
                                         setPeriod(p)
-                                        setSelectedBucketIndex(0)
+                                        setHoveredBucketIndex(null)
                                     }}
                                     className="text-xs focus:bg-white/5 px-2 py-2 rounded-none flex items-center justify-between cursor-pointer"
                                 >
@@ -417,94 +694,60 @@ export default function DashboardPage() {
                                 </div>
                             </div>
 
-                            {(() => {
-                                const w = 560
-                                const h = 160
-                                const padX = 18
-                                const padY = 18
-                                const values = incomeTrackerBuckets.map(b => b.value)
-                                const min = Math.min(...values, 0)
-                                const max = Math.max(...values, 1)
-                                const range = Math.max(max - min, 1)
-                                const xStep = incomeTrackerBuckets.length > 1
-                                    ? (w - padX * 2) / (incomeTrackerBuckets.length - 1)
-                                    : 0
-
-                                const points = incomeTrackerBuckets.map((b, i) => {
-                                    const x = padX + i * xStep
-                                    const y = padY + (1 - ((b.value - min) / range)) * (h - padY * 2)
-                                    return { x, y, label: b.label, value: b.value, index: i }
-                                })
-
-                                const d = points
-                                    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
-                                    .join(' ')
-
-                                return (
-                                    <div className="relative h-40 mb-4 px-2">
-                                        <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full" aria-hidden="true">
-                                            <path
-                                                d={d}
-                                                fill="none"
-                                                stroke="rgba(255,255,255,0.65)"
-                                                strokeWidth="2"
-                                                strokeLinejoin="round"
-                                                strokeLinecap="round"
-                                            />
-                                            {points.map((p) => {
-                                                const isSelected = p.index === clampedSelectedBucketIndex
+                            <div className="h-44 mb-4">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart
+                                        data={incomeTrackerBuckets.map((b, i) => ({ ...b, index: i }))}
+                                        margin={{ top: 8, right: 12, bottom: 0, left: 4 }}
+                                        onMouseMove={(e: any) => {
+                                            const idx = e?.activePayload?.[0]?.payload?.index
+                                            if (typeof idx === 'number') setHoveredBucketIndex(idx)
+                                        }}
+                                        onMouseLeave={() => setHoveredBucketIndex(null)}
+                                    >
+                                        <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={true} horizontal={true} />
+                                        <XAxis
+                                            dataKey="label"
+                                            tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 10 }}
+                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                        />
+                                        <YAxis
+                                            tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 10 }}
+                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            width={44}
+                                        />
+                                        <Tooltip
+                                            cursor={{ stroke: 'rgba(255,255,255,0.16)', strokeWidth: 1 }}
+                                            content={({ active, payload, label }: any) => {
+                                                if (!active || !payload?.length) return null
+                                                const v = payload[0]?.value || 0
                                                 return (
-                                                    <circle
-                                                        key={`it-pt-${p.label}-${p.index}`}
-                                                        cx={p.x}
-                                                        cy={p.y}
-                                                        r={isSelected ? 4.5 : 3.5}
-                                                        fill={isSelected ? '#ffffff' : 'rgba(255,255,255,0.25)'}
-                                                    />
+                                                    <div className="bg-black/90 backdrop-blur border border-white/15 rounded-xl px-3 py-2 shadow-2xl">
+                                                        <div className="text-[10px] uppercase tracking-widest text-white/50">{label}</div>
+                                                        <div className="text-base font-semibold text-white leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
+                                                        <div className="text-[10px] text-white/40">Hover to explore</div>
+                                                    </div>
                                                 )
-                                            })}
-                                        </svg>
-
-                                        <div
-                                            className="absolute inset-0 grid"
-                                            style={{ gridTemplateColumns: `repeat(${incomeTrackerBuckets.length}, minmax(0, 1fr))` }}
-                                        >
-                                            {incomeTrackerBuckets.map((b, i) => (
-                                                <button
-                                                    key={`it-hit-${b.label}-${i}`}
-                                                    type="button"
-                                                    onClick={() => setSelectedBucketIndex(i)}
-                                                    className="h-full w-full"
-                                                    title={`${b.label}: ${currency} ${b.value.toLocaleString()}`}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                )
-                            })()}
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="rgba(255,255,255,0.75)"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            activeDot={{ r: 6, fill: '#ffffff', stroke: 'rgba(0,0,0,0.0)' }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
 
                             <div className="flex items-end justify-between">
                                 <div>
                                     <div className="text-3xl font-serif font-bold italic text-white">{incomeTrackerChangePct >= 0 ? '+' : ''}{incomeTrackerChangePct}%</div>
                                     <p className="text-xs text-white/40">Compared to previous {period === 'Year' ? 'month' : period === 'Month' ? 'week' : 'day'}</p>
-                                </div>
-                                <div className="flex gap-3">
-                                    {incomeTrackerBuckets.map((b, i) => {
-                                        const isSelected = i === clampedSelectedBucketIndex
-                                        return (
-                                            <button
-                                                key={`it-pill-${b.label}-${i}`}
-                                                type="button"
-                                                onClick={() => setSelectedBucketIndex(i)}
-                                                className={cn(
-                                                    "w-9 h-9 rounded-full flex items-center justify-center text-xs font-medium transition-all",
-                                                    isSelected ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/15"
-                                                )}
-                                            >
-                                                {b.label}
-                                            </button>
-                                        )
-                                    })}
                                 </div>
                             </div>
                         </Card>
@@ -594,37 +837,21 @@ export default function DashboardPage() {
                         <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl">
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-sm font-medium text-white">Invoice Progress</h3>
-                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs text-white/40 hover:text-white/60 transition-colors">{period}</button>
+                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs text-white/40 hover:text-white/60 transition-colors">View</button>
                             </div>
                             <div className="grid grid-cols-3 gap-4 mb-3">
                                 <button type="button" onClick={() => router.push('/invoices?status=pending')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{computedMetrics.pendingInvoices}</div>
+                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.pendingCount}</div>
                                     <div className="text-[10px] text-white/40">Pending</div>
                                 </button>
                                 <button type="button" onClick={() => router.push('/clients')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{computedMetrics.customers}</div>
+                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.clientsCount}</div>
                                     <div className="text-[10px] text-white/40">Clients</div>
                                 </button>
                                 <button type="button" onClick={() => router.push('/invoices')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{computedRecentPayments.length}</div>
+                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.paidCount}</div>
                                     <div className="text-[10px] text-white/40">Paid</div>
                                 </button>
-                            </div>
-                            <div className="flex items-end gap-0.5 h-8">
-                                {computedMonthlyRevenue.slice(0, 12).map((m, i) => {
-                                    const max = Math.max(...computedMonthlyRevenue.map(x => x.revenue), 1)
-                                    const h = (m.revenue / max) * 100
-                                    const isCurrent = i === new Date().getMonth()
-                                    return (
-                                        <button
-                                            key={`mini-${i}`}
-                                            type="button"
-                                            onClick={() => toast(`${m.month}: ${currency} ${m.revenue.toLocaleString()}`)}
-                                            className={cn("flex-1 rounded-sm transition-colors", isCurrent ? "bg-white" : "bg-white/20 hover:bg-white/30")}
-                                            style={{ height: `${Math.max(h, 10)}%` }}
-                                        />
-                                    )
-                                })}
                             </div>
                         </Card>
                     </div>
@@ -668,132 +895,152 @@ export default function DashboardPage() {
                                 </Button>
                             </div>
 
-                            <div className="flex items-end gap-1 h-24">
-                                {computedMonthlyRevenue.slice(0, 12).map((m, i) => {
-                                    const max = Math.max(...computedMonthlyRevenue.map(x => x.revenue), 1)
-                                    const h = (m.revenue / max) * 100
-                                    const isCurrent = i === new Date().getMonth()
-                                    return (
-                                        <button
-                                            key={`cf-bar-${i}`}
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                toast(`${m.month}: ${currency} ${m.revenue.toLocaleString()}`)
-                                            }}
-                                            className={cn(
-                                                "flex-1 rounded-sm transition-colors",
-                                                isCurrent ? "bg-white" : "bg-white/20 hover:bg-white/30"
-                                            )}
-                                            style={{ height: `${Math.max(h, 8)}%` }}
-                                            title={`${m.month}: ${currency} ${m.revenue.toLocaleString()}`}
+                            <div className="h-28">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart
+                                        data={incomeTrackerBuckets.map((b, i) => ({ ...b, index: i }))}
+                                        margin={{ top: 6, right: 8, bottom: 0, left: 0 }}
+                                        onMouseMove={(e: any) => {
+                                            const idx = e?.activePayload?.[0]?.payload?.index
+                                            if (typeof idx === 'number') setHoveredBucketIndex(idx)
+                                        }}
+                                        onMouseLeave={() => setHoveredBucketIndex(null)}
+                                    >
+                                        <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={true} horizontal={true} />
+                                        <XAxis
+                                            dataKey="label"
+                                            tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
+                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
                                         />
-                                    )
-                                })}
+                                        <YAxis
+                                            tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
+                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            width={36}
+                                        />
+                                        <Tooltip
+                                            cursor={{ stroke: 'rgba(255,255,255,0.16)', strokeWidth: 1 }}
+                                            content={({ active, payload, label }: any) => {
+                                                if (!active || !payload?.length) return null
+                                                const v = payload[0]?.value || 0
+                                                return (
+                                                    <div className="bg-black/90 backdrop-blur border border-white/15 rounded-xl px-3 py-2 shadow-2xl">
+                                                        <div className="text-[10px] uppercase tracking-widest text-white/50">{label}</div>
+                                                        <div className="text-sm font-semibold text-white leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
+                                                    </div>
+                                                )
+                                            }}
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="value"
+                                            stroke="rgba(255,255,255,0.75)"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            activeDot={{ r: 5, fill: '#ffffff', stroke: 'rgba(0,0,0,0.0)' }}
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
                             </div>
                         </Card>
 
-                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 shadow-2xl flex flex-col">
+                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-sm font-medium text-white">Top Clients by Revenue</h3>
-                                <button type="button" onClick={() => router.push('/clients')} className="text-xs text-white/40 hover:text-white/60 transition-colors">See all</button>
+                                <Link href="/clients" className="text-xs text-white/60 hover:text-white transition-colors">
+                                    See all
+                                </Link>
                             </div>
-                            <div className="flex-1 space-y-3 overflow-hidden">
-                                {computedCashFlowMetrics.topClients.length > 0 ? (
+                            <div className="flex-1 flex flex-col gap-3 overflow-hidden">
+                                {computedCashFlowMetrics.topClients.length === 0 ? (
+                                    <div className="flex-1 flex items-center justify-center text-white/30 text-sm">
+                                        No client data yet
+                                    </div>
+                                ) : (
                                     computedCashFlowMetrics.topClients.slice(0, 5).map((client, i) => {
                                         const maxTotal = computedCashFlowMetrics.topClients[0]?.total || 1
                                         const widthPercent = (client.total / maxTotal) * 100
                                         return (
-                                            <button
-                                                key={`client-${i}`}
-                                                type="button"
-                                                onClick={() => router.push('/clients')}
-                                                className="w-full text-left rounded-lg hover:bg-white/5 transition-colors p-2"
-                                            >
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <span className="text-xs text-white truncate max-w-[60%]">{client.name}</span>
-                                                    <span className="text-xs text-white/60">{currency} {client.total.toLocaleString()}</span>
+                                            <div key={`client-${i}`} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
+                                                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                                                    <span className="text-sm font-medium text-white">{client.name.charAt(0)}</span>
                                                 </div>
-                                                <div className="mt-2 h-1 bg-white/10 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-white rounded-full" style={{ width: `${widthPercent}%` }} />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-sm font-medium text-white truncate">{client.name}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                                                            <div className="h-full bg-white rounded-full transition-all" style={{ width: `${widthPercent}%` }} />
+                                                        </div>
+                                                        <span className="text-xs text-white/40">{client.count} inv</span>
+                                                    </div>
                                                 </div>
-                                            </button>
+                                                <span className="text-sm font-medium text-white">{currency} {client.total.toLocaleString()}</span>
+                                            </div>
                                         )
                                     })
-                                ) : (
-                                    <div className="flex-1 flex items-center justify-center text-white/30 text-sm">No client data yet</div>
                                 )}
                             </div>
                         </Card>
                     </div>
-
+                    {/* Bottom Row: 3 Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card
-                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
-                            onClick={() => router.push('/invoices')}
-                            role="button"
-                            tabIndex={0}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-medium text-white">Receivables</h3>
-                                <span className="text-[10px] text-white/40">Outstanding / Overdue</span>
-                            </div>
-                            <div className="space-y-2">
-                                <div>
-                                    <div className="text-[10px] text-white/40">Outstanding</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.outstanding.toLocaleString()}</div>
+                        {/* Outstanding & Overdue Card */}
+                        <Link href="/invoices?status=pending" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-medium text-white">Outstanding</h3>
+                                    <span className="text-xs text-white/40">Receivable</span>
                                 </div>
-                                <div>
-                                    <div className="text-[10px] text-white/40">Overdue</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.overdue.toLocaleString()}</div>
+                                <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                                    {currency} {computedCashFlowMetrics.outstanding.toLocaleString()}
                                 </div>
-                            </div>
-                        </Card>
-
-                        <Card
-                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
-                            onClick={() => router.push('/expenses')}
-                            role="button"
-                            tabIndex={0}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-medium text-white">Costs & Profit</h3>
-                                <span className="text-[10px] text-white/40">Expenses / Net Profit</span>
-                            </div>
-                            <div className="space-y-2">
-                                <div>
-                                    <div className="text-[10px] text-white/40">Expenses (this month)</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">
-                                        {currency} {(computedMonthlyExpenses[new Date().getMonth()]?.total || 0).toLocaleString()}
+                                <p className="text-xs text-white/40 mb-3">Awaiting payment</p>
+                                <div className="flex items-center gap-4 pt-3 border-t border-white/5">
+                                    <div>
+                                        <div className="text-lg font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.overdue.toLocaleString()}</div>
+                                        <div className="text-[10px] text-white/40">Overdue</div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div className="text-[10px] text-white/40">Net Profit (YTD)</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">
-                                        {currency} {Math.round(computedNetProfitYTD).toLocaleString()}
+                            </Card>
+                        </Link>
+
+                        {/* Expenses & Net Profit Card */}
+                        <Link href="/expenses" className="block">
+                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-medium text-white">Expenses</h3>
+                                    <span className="text-xs text-white/40">Monthly</span>
+                                </div>
+                                <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                                    {currency} {(computedMonthlyExpenses[new Date().getMonth()]?.total || 0).toLocaleString()}
+                                </div>
+                                <p className="text-xs text-white/40 mb-3">This month's expenses</p>
+                                <div className="flex items-center gap-4 pt-3 border-t border-white/5">
+                                    <div>
+                                        <div className={cn("text-lg font-serif font-bold italic", computedNetProfitYTD >= 0 ? "text-white" : "text-red-400")}>
+                                            {currency} {Math.round(computedNetProfitYTD).toLocaleString()}
+                                        </div>
+                                        <div className="text-[10px] text-white/40">Net Profit YTD</div>
                                     </div>
                                 </div>
-                            </div>
-                        </Card>
+                            </Card>
+                        </Link>
 
-                        <Card
-                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
-                            onClick={() => router.push('/overview')}
-                            role="button"
-                            tabIndex={0}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-sm font-medium text-white">Tax & Collections</h3>
-                                <span className="text-[10px] text-white/40">Paid YTD / VAT</span>
+                        {/* VAT & Paid YTD Card */}
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-sm font-medium text-white">Paid YTD</h3>
+                                <span className="text-xs text-white/40">Collected</span>
                             </div>
-                            <div className="space-y-2">
+                            <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                                {currency} {computedCashFlowMetrics.paidYTD.toLocaleString()}
+                            </div>
+                            <p className="text-xs text-white/40 mb-3">Revenue collected</p>
+                            <div className="flex items-center gap-4 pt-3 border-t border-white/5">
                                 <div>
-                                    <div className="text-[10px] text-white/40">Paid (YTD)</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.paidYTD.toLocaleString()}</div>
-                                </div>
-                                <div>
-                                    <div className="text-[10px] text-white/40">VAT Estimate (YTD)</div>
-                                    <div className="text-xl font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.vatEstimate.toLocaleString()}</div>
+                                    <div className="text-lg font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.vatEstimate.toLocaleString()}</div>
+                                    <div className="text-[10px] text-white/40">VAT Liability</div>
                                 </div>
                             </div>
                         </Card>

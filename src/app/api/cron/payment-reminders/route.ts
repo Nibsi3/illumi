@@ -61,7 +61,10 @@ export async function GET(req: Request) {
                 // Send payment reminder email
                 await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(cronSecret ? { authorization: `Bearer ${cronSecret}` } : {}),
+                    },
                     body: JSON.stringify({
                         type: 'payment_reminder',
                         to: invoice.customers.email,
@@ -106,7 +109,10 @@ export async function GET(req: Request) {
                 // Send final notice email
                 await fetch(`${process.env.NEXT_PUBLIC_URL}/api/email/send`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(cronSecret ? { authorization: `Bearer ${cronSecret}` } : {}),
+                    },
                     body: JSON.stringify({
                         type: 'final_notice',
                         to: invoice.customers.email,

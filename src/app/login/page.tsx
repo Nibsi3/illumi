@@ -73,20 +73,30 @@ export default function LoginPage() {
         const redirectUrl = `${getURL()}/auth/callback`
         console.log('Initiating Google Sign-In with redirect:', redirectUrl)
 
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: redirectUrl,
                 queryParams: {
                     prompt: 'select_account',
                 },
+                skipBrowserRedirect: true,
             }
         })
 
         if (error) {
             toast.error(error.message)
             setGoogleLoading(false)
+            return
         }
+
+        if (data?.url) {
+            window.location.assign(data.url)
+            return
+        }
+
+        toast.error('Unable to start Google sign-in')
+        setGoogleLoading(false)
     }
 
     const handleEmailSignIn = async (e: React.FormEvent) => {
@@ -239,6 +249,7 @@ export default function LoginPage() {
                         {/* Google Sign In */}
                         <Button
                             variant="outline"
+                            type="button"
                             onClick={handleGoogleSignIn}
                             disabled={googleLoading || loading}
                             className="w-full h-12 border-white/10 bg-white/5 text-[#fafafa] hover:bg-white/10 rounded-lg flex items-center justify-center gap-3"

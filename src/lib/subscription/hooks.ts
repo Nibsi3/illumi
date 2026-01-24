@@ -27,26 +27,116 @@ export function useSubscription() {
     const [isSubscribed, setIsSubscribed] = useState(false)
     
     const supabase = createClient()
-    const { activeWorkspace, isOwner, userId } = useWorkspace()
+    const { activeWorkspace, isOwner, userId, userEmail } = useWorkspace()
 
     useEffect(() => {
         async function fetchSubscription() {
+            let perfEnabled = false
+            try {
+                perfEnabled = localStorage.getItem('illumi_perf') === '1'
+            } catch {
+                perfEnabled = false
+            }
+
+            const markStart = () => (typeof performance !== 'undefined' ? performance.now() : Date.now())
+            const markEnd = (start: number) => (typeof performance !== 'undefined' ? performance.now() : Date.now()) - start
+
+            const CACHE_TTL_MS = 12 * 60 * 60 * 1000 // 12 hours
+            const cacheKey = activeWorkspace?.id ? `illumi_subscription_cache:${activeWorkspace.id}` : null
+            const applyFromCache = () => {
+                if (!cacheKey) return false
+                try {
+                    const raw = localStorage.getItem(cacheKey)
+                    if (!raw) return false
+                    const parsed = JSON.parse(raw)
+                    if (!parsed || typeof parsed !== 'object') return false
+                    if (!parsed.updatedAt || typeof parsed.updatedAt !== 'number') return false
+                    if (Date.now() - parsed.updatedAt > CACHE_TTL_MS) return false
+
+                    // Only apply cache if it was created for the same user (defensive)
+                    if (userId && parsed.userId && parsed.userId !== userId) return false
+
+                    const cachedTier = (parsed.tier as SubscriptionTier) || 'free'
+                    const cachedStatus = (parsed.status as Subscription['status']) || 'trial'
+                    const cachedExpiresAt = (parsed.expires_at as string | null) ?? null
+
+                    setTier(cachedTier)
+                    setIsSubscribed(cachedTier === 'pro' && cachedStatus === 'active')
+
+                    if (cachedExpiresAt) {
+                        const expiresAt = new Date(cachedExpiresAt)
+                        const now = new Date()
+                        const diffTime = expiresAt.getTime() - now.getTime()
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                        setDaysRemaining(Math.max(0, diffDays))
+                    } else {
+                        setDaysRemaining(null)
+                    }
+
+                    if (cachedTier !== 'free') {
+                        setSubscription({
+                            id: parsed.id || '',
+                            workspace_id: activeWorkspace?.id || '',
+                            user_id: parsed.user_id || (userId || ''),
+                            tier: cachedTier,
+                            status: cachedStatus,
+                            started_at: parsed.started_at || '',
+                            expires_at: cachedExpiresAt,
+                        })
+                    }
+
+                    // Important: allow UI to render immediately.
+                    setIsLoading(false)
+                    return true
+                } catch {
+                    return false
+                }
+            }
+
             if (!activeWorkspace) {
                 setIsLoading(false)
                 return
             }
 
+            // Fast path: use cached subscription status to avoid "paid user" flicker on refresh.
+            // Still fetch in background to keep DB as source of truth.
+            applyFromCache()
+
+            const tFetchStart = perfEnabled ? markStart() : 0
             try {
                 // First check if user is in the forced Pro list
-                const { data: { user } } = await supabase.auth.getUser()
+                const tSessionStart = perfEnabled ? markStart() : 0
+                const { data: sessionData } = await supabase.auth.getSession()
+                if (perfEnabled) console.log(`subscription:auth.getSession: ${markEnd(tSessionStart)} ms`)
+                const user = sessionData?.session?.user || null
                 const forcedProEmails = ['cameronfalck03@gmail.com']
                 
-                if (user?.email && forcedProEmails.includes(user.email.toLowerCase())) {
+                const emailForForcedCheck = (userEmail || user?.email || '').toLowerCase()
+                if (emailForForcedCheck && forcedProEmails.includes(emailForForcedCheck)) {
                     // Force Pro subscription for specific users
                     setTier("pro")
                     setIsSubscribed(true)
                     setDaysRemaining(null) // Unlimited
                     setIsLoading(false)
+
+                    // Update cache
+                    if (cacheKey) {
+                        try {
+                            localStorage.setItem(cacheKey, JSON.stringify({
+                                id: 'forced',
+                                workspace_id: activeWorkspace.id,
+                                user_id: user?.id || userId || '',
+                                userId: userId || user?.id || '',
+                                tier: 'pro',
+                                status: 'active',
+                                started_at: new Date().toISOString(),
+                                expires_at: null,
+                                updatedAt: Date.now(),
+                            }))
+                        } catch {
+                            // ignore cache errors
+                        }
+                    }
                     return
                 }
 
@@ -93,11 +183,49 @@ export function useSubscription() {
                     } else {
                         setDaysRemaining(null)
                     }
+
+                    // Cache latest subscription status for fast refresh
+                    if (cacheKey) {
+                        try {
+                            localStorage.setItem(cacheKey, JSON.stringify({
+                                id: data.id,
+                                workspace_id: data.workspace_id,
+                                user_id: data.user_id,
+                                userId: userId || data.user_id,
+                                tier: data.tier,
+                                status: data.status,
+                                started_at: data.started_at,
+                                expires_at: data.expires_at,
+                                updatedAt: Date.now(),
+                            }))
+                        } catch {
+                            // ignore cache errors
+                        }
+                    }
                 } else {
                     // No subscription found, default to free
                     setTier("free")
                     setIsSubscribed(false)
                     setDaysRemaining(null)
+
+                    // Cache free to prevent repeated re-check flicker
+                    if (cacheKey) {
+                        try {
+                            localStorage.setItem(cacheKey, JSON.stringify({
+                                id: null,
+                                workspace_id: activeWorkspace.id,
+                                user_id: user?.id || userId || null,
+                                userId: userId || user?.id || null,
+                                tier: 'free',
+                                status: 'trial',
+                                started_at: null,
+                                expires_at: null,
+                                updatedAt: Date.now(),
+                            }))
+                        } catch {
+                            // ignore cache errors
+                        }
+                    }
                 }
             } catch (error) {
                 const safeError = {
@@ -107,6 +235,7 @@ export function useSubscription() {
                 console.error('Error fetching subscription:', safeError)
             } finally {
                 setIsLoading(false)
+                if (perfEnabled) console.log(`subscription:fetchSubscription: ${markEnd(tFetchStart)} ms`)
             }
         }
 
