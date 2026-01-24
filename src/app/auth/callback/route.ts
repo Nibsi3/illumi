@@ -32,8 +32,18 @@ export async function GET(request: NextRequest) {
     origin = origin.replace(/\/$/, '')
 
     if (code) {
-        // Create a response that we can modify with cookies
-        const response = NextResponse.redirect(`${origin}${nextPath}`, 302)
+        // Return HTML so the browser reliably applies Set-Cookie headers before navigation.
+        // Some environments can behave inconsistently with Set-Cookie on 302 during OAuth flows.
+        const response = new NextResponse(
+            `<!doctype html><html><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Signing in…</title></head><body style="font-family: ui-sans-serif, system-ui; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;"><div>Signing you in…</div><script>setTimeout(function(){ window.location.assign(${JSON.stringify(`${origin}${nextPath}`)}); }, 300);</script></body></html>`,
+            {
+                status: 200,
+                headers: {
+                    'content-type': 'text/html; charset=utf-8',
+                    'cache-control': 'no-store',
+                },
+            }
+        )
 
         // Create Supabase client that can read/write cookies on the response
         const supabase = createServerClient(
