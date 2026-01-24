@@ -78,6 +78,28 @@ export async function GET(request: NextRequest) {
         // Place it first to avoid any potential header-size truncation from large auth cookies.
         response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
 
+        response.headers.append(
+            'set-cookie',
+            serializeCookie('illumi_oauth_dot_test.0', '1', {
+                path: '/',
+                sameSite: 'lax',
+                maxAge: 60 * 10,
+                httpOnly: true,
+                secure: false,
+            })
+        )
+
+        response.headers.append(
+            'set-cookie',
+            serializeCookie('illumi_oauth_size_test', 'a'.repeat(3600), {
+                path: '/',
+                sameSite: 'lax',
+                maxAge: 60 * 10,
+                httpOnly: true,
+                secure: false,
+            })
+        )
+
         // Create Supabase client that can read/write cookies on the response
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
