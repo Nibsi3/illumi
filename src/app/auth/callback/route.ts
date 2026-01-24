@@ -74,6 +74,10 @@ export async function GET(request: NextRequest) {
             }
         )
 
+        // Debug cookie to verify whether Chrome is accepting Set-Cookie from this response at all.
+        // Place it first to avoid any potential header-size truncation from large auth cookies.
+        response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
+
         // Create Supabase client that can read/write cookies on the response
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -122,9 +126,6 @@ export async function GET(request: NextRequest) {
                             // Append one Set-Cookie header per cookie to avoid header coalescing issues.
                             response.headers.append('set-cookie', serializeCookie(name, value, opts))
                         })
-
-                        // Debug cookie to verify whether Chrome is accepting Set-Cookie from this response at all.
-                        response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
 
                         try {
                             const anyHeaders: any = response.headers as any
