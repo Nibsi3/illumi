@@ -56,8 +56,16 @@ export async function GET(request: NextRequest) {
 
     const hasInvalidCookieValueChars = (value: string) => {
         // Disallow characters that can break Set-Cookie parsing.
-        // (Spaces, commas, semicolons, and control chars.)
-        return /[\u0000-\u001F\u007F\s,;]/.test(value)
+        // (Control chars, spaces/tabs, DQUOTE, comma, semicolon, backslash, and non-ASCII.)
+        return /[\u0000-\u001F\u007F\s",;\\\u0080-\uFFFF]/.test(value)
+    }
+
+    const getFirstInvalidCookieChar = (value: string) => {
+        const match = /[\u0000-\u001F\u007F\s",;\\\u0080-\uFFFF]/.exec(value)
+        if (!match) return null
+        const index = match.index
+        const ch = value[index]
+        return { index, char: ch, code: ch ? ch.charCodeAt(0) : undefined }
     }
 
     if (code) {
@@ -134,16 +142,35 @@ export async function GET(request: NextRequest) {
                             }
 
                             // Debug cookie attributes (no values)
+                            const invalidChar = typeof value === 'string' ? getFirstInvalidCookieChar(value) : null
                             console.log('Auth cookie set:', {
                                 name,
                                 valueLength: typeof value === 'string' ? value.length : undefined,
                                 hasInvalidValueChars: typeof value === 'string' ? hasInvalidCookieValueChars(value) : undefined,
+                                invalidChar,
                                 path: opts.path,
                                 secure: opts.secure,
                                 sameSite: opts.sameSite,
                                 domain: opts.domain,
                                 maxAge: opts.maxAge,
                             })
+
+                            // Diagnostic: clone auth-token chunk cookies under different names.
+                            // If clones persist but the original sb-* cookies don't, the rejection is name/attribute related.
+                            // If clones also don't persist, it's likely the cookie value content/format.
+                            if (isLocalHost && typeof value === 'string' && /^sb-.*-auth-token\.(0|1)$/.test(name)) {
+                                const suffix = name.endsWith('.0') ? '0' : '1'
+                                response.headers.append(
+                                    'set-cookie',
+                                    serializeCookie(`illumi_oauth_sb_clone_${suffix}`, value, {
+                                        path: '/',
+                                        sameSite: 'lax',
+                                        maxAge: 60 * 10,
+                                        httpOnly: true,
+                                        secure: false,
+                                    })
+                                )
+                            }
 
                             // Append one Set-Cookie header per cookie to avoid header coalescing issues.
                             response.headers.append('set-cookie', serializeCookie(name, value, opts))
