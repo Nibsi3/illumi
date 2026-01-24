@@ -38,8 +38,10 @@ export async function GET(req: Request) {
 
         // Use user's auth to verify access
         const supabase = await createServerClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
+        const {
+            data: { session },
+        } = await supabase.auth.getSession()
+        if (!session?.user) {
             return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
         }
 
@@ -59,52 +61,34 @@ export async function GET(req: Request) {
         const serviceClient = getServiceClient()
         const providerKeys: Record<string, any> = {}
         
-        if (serviceClient && settings?.connected_providers) {
-            for (const provider of settings.connected_providers) {
-                const { data: testKeys } = await serviceClient
-                    .from('workspace_paygate_keys')
-                    .select('key_name, key_value')
-                    .eq('workspace_id', workspaceId)
-                    .eq('provider', provider)
-                    .eq('mode', 'test')
-                
-                const { data: liveKeys } = await serviceClient
-                    .from('workspace_paygate_keys')
-                    .select('key_name, key_value')
-                    .eq('workspace_id', workspaceId)
-                    .eq('provider', provider)
-                    .eq('mode', 'live')
-                
-                const keys: any = {}
-                for (const k of testKeys || []) {
-                    if (k.key_name === 'merchant_id') keys.testMerchantId = maskKey(k.key_value)
-                    if (k.key_name === 'secret_key') keys.testSecretKey = maskKey(k.key_value)
-                    if (k.key_name === 'merchant_key') keys.testMerchantKey = maskKey(k.key_value)
-                    if (k.key_name === 'passphrase') keys.testPassphrase = maskKey(k.key_value)
-                    if (k.key_name === 'public_key') keys.testPublicKey = maskKey(k.key_value)
-                    if (k.key_name === 'site_code') keys.testSiteCode = maskKey(k.key_value)
-                    if (k.key_name === 'private_key') keys.testPrivateKey = maskKey(k.key_value)
-                    if (k.key_name === 'entity_id') keys.testEntityId = maskKey(k.key_value)
-                    if (k.key_name === 'access_token') keys.testAccessToken = maskKey(k.key_value)
-                    if (k.key_name === 'publishable_key') keys.testPublishableKey = maskKey(k.key_value)
-                    if (k.key_name === 'secret_key') keys.testSecretKey = maskKey(k.key_value)
-                }
-                for (const k of liveKeys || []) {
-                    if (k.key_name === 'merchant_id') keys.liveMerchantId = maskKey(k.key_value)
-                    if (k.key_name === 'secret_key') keys.liveSecretKey = maskKey(k.key_value)
-                    if (k.key_name === 'merchant_key') keys.liveMerchantKey = maskKey(k.key_value)
-                    if (k.key_name === 'passphrase') keys.livePassphrase = maskKey(k.key_value)
-                    if (k.key_name === 'public_key') keys.livePublicKey = maskKey(k.key_value)
-                    if (k.key_name === 'site_code') keys.liveSiteCode = maskKey(k.key_value)
-                    if (k.key_name === 'private_key') keys.livePrivateKey = maskKey(k.key_value)
-                    if (k.key_name === 'entity_id') keys.liveEntityId = maskKey(k.key_value)
-                    if (k.key_name === 'access_token') keys.liveAccessToken = maskKey(k.key_value)
-                    if (k.key_name === 'publishable_key') keys.livePublishableKey = maskKey(k.key_value)
-                    if (k.key_name === 'secret_key') keys.liveSecretKey = maskKey(k.key_value)
-                }
-                if (Object.keys(keys).length > 0) {
-                    providerKeys[provider] = keys
-                }
+        if (serviceClient && settings?.connected_providers?.length) {
+            const providers = settings.connected_providers
+            const { data: allKeys } = await serviceClient
+                .from('workspace_paygate_keys')
+                .select('provider, mode, key_name, key_value')
+                .eq('workspace_id', workspaceId)
+                .in('provider', providers)
+                .in('mode', ['test', 'live'])
+
+            for (const row of allKeys || []) {
+                const provider = (row as any).provider as string
+                const mode = (row as any).mode as 'test' | 'live'
+                const keyName = (row as any).key_name as string
+                const keyValue = (row as any).key_value as string
+
+                const keys = (providerKeys[provider] ||= {})
+                const prefix = mode === 'test' ? 'test' : 'live'
+
+                if (keyName === 'merchant_id') keys[`${prefix}MerchantId`] = maskKey(keyValue)
+                if (keyName === 'secret_key') keys[`${prefix}SecretKey`] = maskKey(keyValue)
+                if (keyName === 'merchant_key') keys[`${prefix}MerchantKey`] = maskKey(keyValue)
+                if (keyName === 'passphrase') keys[`${prefix}Passphrase`] = maskKey(keyValue)
+                if (keyName === 'public_key') keys[`${prefix}PublicKey`] = maskKey(keyValue)
+                if (keyName === 'site_code') keys[`${prefix}SiteCode`] = maskKey(keyValue)
+                if (keyName === 'private_key') keys[`${prefix}PrivateKey`] = maskKey(keyValue)
+                if (keyName === 'entity_id') keys[`${prefix}EntityId`] = maskKey(keyValue)
+                if (keyName === 'access_token') keys[`${prefix}AccessToken`] = maskKey(keyValue)
+                if (keyName === 'publishable_key') keys[`${prefix}PublishableKey`] = maskKey(keyValue)
             }
         }
 

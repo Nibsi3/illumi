@@ -575,7 +575,19 @@ export default function PayGatePage() {
         })
     }
 
-    if (isLoading || isLoadingSettings) return null;
+    if (isLoading || isLoadingSettings) {
+        return (
+            <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
+                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6" />
+                    <h2 className="text-2xl font-bold text-white mb-2">Loading…</h2>
+                    <p className="text-neutral-500 max-w-md">
+                        Preparing PayGate settings.
+                    </p>
+                </div>
+            </div>
+        )
+    }
 
     // Show upgrade prompt for free users
     if (!isPro) {
