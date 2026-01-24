@@ -76,8 +76,10 @@ export async function updateSession(request: NextRequest) {
         // issues with users being randomly logged out.
 
         const {
-            data: { user },
-        } = await supabase.auth.getUser()
+            data: { session },
+        } = await supabase.auth.getSession()
+
+        const user = session?.user || null
 
         if (isAdminRoute) {
             if (!user) {
@@ -94,14 +96,13 @@ export async function updateSession(request: NextRequest) {
             }
         }
 
-        if (
-            !user &&
-            !isPublicRoute
-        ) {
+        if (!user && !isPublicRoute) {
             const cookieNames = request.cookies.getAll().map((c) => c.name)
             const authCookieNames = cookieNames.filter((n) => n.startsWith('sb-') && n.includes('auth'))
+            const cookieHeaderLen = request.headers.get('cookie')?.length
             console.log('Auth middleware: no user, redirecting to /login', {
                 pathname,
+                cookieHeaderLen,
                 authCookiesPresent: authCookieNames,
             })
             // no user, potentially respond by redirecting the user to the login page

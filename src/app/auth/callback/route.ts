@@ -54,9 +54,13 @@ export async function GET(request: NextRequest) {
                             // On localhost over http, secure cookies will not be stored by the browser.
                             if (isLocalHost) {
                                 opts.secure = false
+                                // Ensure we don't set a Domain attribute on localhost.
+                                // Browsers can reject cookies with an incompatible Domain.
+                                delete opts.domain
                                 // Chrome rejects SameSite=None cookies unless Secure=true.
                                 // For localhost development, force Lax so cookies persist.
-                                if (!opts.sameSite || opts.sameSite === 'none') {
+                                const sameSite = (opts.sameSite ?? '').toString().toLowerCase()
+                                if (!sameSite || sameSite === 'none') {
                                     opts.sameSite = 'lax'
                                 }
                             }
