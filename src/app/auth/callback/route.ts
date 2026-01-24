@@ -33,10 +33,17 @@ export async function GET(request: NextRequest) {
 
     const serializeCookie = (name: string, value: string, options: any) => {
         const parts: string[] = [`${name}=${value}`]
+        const maxAgeNum = options?.maxAge !== undefined ? Number(options.maxAge) : undefined
         if (options?.path) parts.push(`Path=${options.path}`)
         if (options?.domain) parts.push(`Domain=${options.domain}`)
-        if (options?.maxAge !== undefined) parts.push(`Max-Age=${Math.floor(Number(options.maxAge) || 0)}`)
-        if (options?.expires) parts.push(`Expires=${new Date(options.expires).toUTCString()}`)
+        if (maxAgeNum !== undefined) {
+            parts.push(`Max-Age=${Math.floor(isFinite(maxAgeNum) ? maxAgeNum : 0)}`)
+            // Include Expires for better compatibility (some clients behave inconsistently with Max-Age only).
+            const expires = maxAgeNum <= 0 ? new Date(0) : new Date(Date.now() + maxAgeNum * 1000)
+            parts.push(`Expires=${expires.toUTCString()}`)
+        } else if (options?.expires) {
+            parts.push(`Expires=${new Date(options.expires).toUTCString()}`)
+        }
         if (options?.httpOnly) parts.push('HttpOnly')
         if (options?.secure) parts.push('Secure')
         if (options?.sameSite) {
