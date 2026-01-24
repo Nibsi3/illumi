@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "set NEXT_DISABLE_TURBOPACK=1&& next dev -p 3001",
-    "build": "next build",
+    "build": "cross-env NEXT_DISABLE_TURBOPACK=1 next build",
     "postbuild": "node scripts/postbuild-standalone.mjs",
     "start": "node .next/standalone/server.js",
     "lint": "eslint"
@@ -70,6 +70,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
