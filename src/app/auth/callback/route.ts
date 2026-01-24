@@ -82,6 +82,9 @@ export async function GET(request: NextRequest) {
             }
         )
 
+        let didSetAll = false
+        let setAllCookieCount = 0
+
         // Debug cookie to verify whether Chrome is accepting Set-Cookie from this response at all.
         // Place it first to avoid any potential header-size truncation from large auth cookies.
         response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
@@ -119,8 +122,10 @@ export async function GET(request: NextRequest) {
                         return request.cookies.getAll()
                     },
                     setAll(cookiesToSet) {
+                        didSetAll = true
+                        setAllCookieCount = Array.isArray(cookiesToSet) ? cookiesToSet.length : 0
                         console.log('Auth callback setAll called:', {
-                            cookieCount: Array.isArray(cookiesToSet) ? cookiesToSet.length : 0,
+                            cookieCount: setAllCookieCount,
                         })
                         cookiesToSet.forEach(({ name, value, options }) => {
                             const opts: any = { ...(options || {}) }
@@ -208,6 +213,19 @@ export async function GET(request: NextRequest) {
                     message: (e as any)?.message,
                 })
             }
+
+            // In some environments, Supabase invokes our cookie writer slightly after the exchange resolves.
+            // Wait briefly so all Set-Cookie headers are appended before we return the response.
+            if (!didSetAll) {
+                for (let i = 0; i < 10 && !didSetAll; i++) {
+                    await new Promise((r) => setTimeout(r, 10))
+                }
+            }
+
+            console.log('Auth callback didSetAll before return:', {
+                didSetAll,
+                setAllCookieCount,
+            })
 
             try {
                 const anyHeaders: any = response.headers as any
