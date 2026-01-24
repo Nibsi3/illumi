@@ -119,6 +119,9 @@ export async function GET(request: NextRequest) {
                         return request.cookies.getAll()
                     },
                     setAll(cookiesToSet) {
+                        console.log('Auth callback setAll called:', {
+                            cookieCount: Array.isArray(cookiesToSet) ? cookiesToSet.length : 0,
+                        })
                         cookiesToSet.forEach(({ name, value, options }) => {
                             const opts: any = { ...(options || {}) }
                             // Ensure cookies are available to the whole app after login.
@@ -188,9 +191,32 @@ export async function GET(request: NextRequest) {
             }
         )
 
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        const { data: exchangeData, error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
-            console.log('Auth code exchange succeeded')
+            const exchangeUserId = (exchangeData as any)?.session?.user?.id
+            console.log('Auth code exchange succeeded', { exchangeUserId: exchangeUserId || null })
+
+            try {
+                const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+                console.log('Auth callback getSession after exchange:', {
+                    hasSession: Boolean(sessionData?.session),
+                    userId: sessionData?.session?.user?.id || null,
+                    sessionError: sessionError ? (sessionError as any)?.message : null,
+                })
+            } catch (e) {
+                console.log('Auth callback getSession after exchange threw', {
+                    message: (e as any)?.message,
+                })
+            }
+
+            try {
+                const anyHeaders: any = response.headers as any
+                const setCookies: string[] = typeof anyHeaders.getSetCookie === 'function' ? anyHeaders.getSetCookie() : []
+                console.log('Auth callback final Set-Cookie header count:', Array.isArray(setCookies) ? setCookies.length : 0)
+            } catch {
+                // ignore
+            }
+
             return response
         }
         console.error('Auth code exchange error:', error)
