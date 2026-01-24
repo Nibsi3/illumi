@@ -17,7 +17,6 @@ const footerLinks = {
     ],
     resources: [
         { name: "SME Resources", href: "/resources" },
-        { name: "Sitemap", href: "/site-map" },
         { name: "Documentation", href: "/docs" },
         { name: "Integrations", href: "/integrations" },
         { name: "Support", href: "/contact" },

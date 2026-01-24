@@ -2,6 +2,7 @@ import Link from "next/link"
 import { Metadata } from "next"
 import fs from "fs"
 import path from "path"
+import { notFound } from 'next/navigation'
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -90,53 +91,6 @@ function discoverPublicRoutes(): string[] {
     return Array.from(new Set(results)).sort((a, b) => a.localeCompare(b))
 }
 
-export default function HtmlSitemapPage() {
-    const routes = discoverPublicRoutes()
-
-    const sections: Array<{ title: string; filter: (p: string) => boolean }> = [
-        { title: "Main", filter: (p) => ["/", "/pricing", "/contact", "/story"].includes(p) },
-        { title: "Features", filter: (p) => p.startsWith("/features") },
-        { title: "Resources", filter: (p) => p === "/resources" || p.startsWith("/resources/") },
-        { title: "Documentation", filter: (p) => p === "/docs" || p.startsWith("/docs/") },
-        { title: "Integrations", filter: (p) => p === "/integrations" || p.startsWith("/integrations/") },
-        { title: "Legal", filter: (p) => ["/privacy", "/terms", "/terms-and-conditions"].includes(p) },
-        { title: "Other", filter: (p) => true },
-    ]
-
-    const used = new Set<string>()
-
-    return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
-            <div className="mx-auto max-w-5xl px-6 pt-32 pb-16">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Sitemap</h1>
-                <p className="mt-3 text-white/60 max-w-2xl">
-                    A complete list of Illumi’s public pages to help you navigate and help search engines discover the site.
-                </p>
-
-                <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-10">
-                    {sections.map((section) => {
-                        const items = routes.filter((p) => !used.has(p)).filter(section.filter)
-                        items.forEach((p) => used.add(p))
-
-                        if (items.length === 0) return null
-
-                        return (
-                            <div key={section.title} className="rounded-xl border border-white/10 bg-white/5 p-6">
-                                <h2 className="text-sm uppercase tracking-widest font-bold text-white/70">{section.title}</h2>
-                                <ul className="mt-4 space-y-2">
-                                    {items.map((p) => (
-                                        <li key={p}>
-                                            <Link href={p} className="text-white/80 hover:text-white underline-offset-4 hover:underline">
-                                                {p}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-        </div>
-    )
+export default function SiteMapPage() {
+    notFound()
 }

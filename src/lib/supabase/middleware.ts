@@ -22,7 +22,6 @@ export async function updateSession(request: NextRequest) {
         '/privacy',
         '/terms',
         '/terms-and-conditions',
-        '/site-map',
         '/integrations',
         '/story',
         '/features',

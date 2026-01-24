@@ -16,8 +16,6 @@ export default function robots(): MetadataRoute.Robots {
           '/features/',
           '/resources',
           '/resources/',
-          '/site-map',
-          '/site-map/',
           '/docs',
           '/docs/',
           '/integrations',

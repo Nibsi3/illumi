@@ -19,6 +19,8 @@ const shouldExcludeFromSitemap = (segments: string[]) => {
   const first = withoutGroups[0]
   if (!first) return false
 
+  if (first === 'site-map') return true
+
   return (
     first === 'api' ||
     first === 'admin' ||
