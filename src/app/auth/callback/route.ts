@@ -54,20 +54,6 @@ export async function GET(request: NextRequest) {
         return parts.join('; ')
     }
 
-    const hasInvalidCookieValueChars = (value: string) => {
-        // Disallow characters that can break Set-Cookie parsing.
-        // (Control chars, spaces/tabs, DQUOTE, comma, semicolon, backslash, and non-ASCII.)
-        return /[\u0000-\u001F\u007F\s",;\\\u0080-\uFFFF]/.test(value)
-    }
-
-    const getFirstInvalidCookieChar = (value: string) => {
-        const match = /[\u0000-\u001F\u007F\s",;\\\u0080-\uFFFF]/.exec(value)
-        if (!match) return null
-        const index = match.index
-        const ch = value[index]
-        return { index, char: ch, code: ch ? ch.charCodeAt(0) : undefined }
-    }
-
     if (code) {
         // Return HTML so the browser reliably applies Set-Cookie headers before navigation.
         // Some environments can behave inconsistently with Set-Cookie on 302 during OAuth flows.
@@ -85,32 +71,6 @@ export async function GET(request: NextRequest) {
         let didSetAll = false
         let setAllCookieCount = 0
 
-        // Debug cookie to verify whether Chrome is accepting Set-Cookie from this response at all.
-        // Place it first to avoid any potential header-size truncation from large auth cookies.
-        response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
-
-        response.headers.append(
-            'set-cookie',
-            serializeCookie('illumi_oauth_dot_test.0', '1', {
-                path: '/',
-                sameSite: 'lax',
-                maxAge: 60 * 10,
-                httpOnly: true,
-                secure: false,
-            })
-        )
-
-        response.headers.append(
-            'set-cookie',
-            serializeCookie('illumi_oauth_size_test', 'a'.repeat(3600), {
-                path: '/',
-                sameSite: 'lax',
-                maxAge: 60 * 10,
-                httpOnly: true,
-                secure: false,
-            })
-        )
-
         // Create Supabase client that can read/write cookies on the response
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -124,9 +84,6 @@ export async function GET(request: NextRequest) {
                     setAll(cookiesToSet) {
                         didSetAll = true
                         setAllCookieCount = Array.isArray(cookiesToSet) ? cookiesToSet.length : 0
-                        console.log('Auth callback setAll called:', {
-                            cookieCount: setAllCookieCount,
-                        })
                         cookiesToSet.forEach(({ name, value, options }) => {
                             const opts: any = { ...(options || {}) }
                             // Ensure cookies are available to the whole app after login.
@@ -149,48 +106,9 @@ export async function GET(request: NextRequest) {
                                 opts.maxAge = 60 * 60 * 24 * 7
                             }
 
-                            // Debug cookie attributes (no values)
-                            const invalidChar = typeof value === 'string' ? getFirstInvalidCookieChar(value) : null
-                            console.log('Auth cookie set:', {
-                                name,
-                                valueLength: typeof value === 'string' ? value.length : undefined,
-                                hasInvalidValueChars: typeof value === 'string' ? hasInvalidCookieValueChars(value) : undefined,
-                                invalidChar,
-                                path: opts.path,
-                                secure: opts.secure,
-                                sameSite: opts.sameSite,
-                                domain: opts.domain,
-                                maxAge: opts.maxAge,
-                            })
-
-                            // Diagnostic: clone auth-token chunk cookies under different names.
-                            // If clones persist but the original sb-* cookies don't, the rejection is name/attribute related.
-                            // If clones also don't persist, it's likely the cookie value content/format.
-                            if (isLocalHost && typeof value === 'string' && /^sb-.*-auth-token\.(0|1)$/.test(name)) {
-                                const suffix = name.endsWith('.0') ? '0' : '1'
-                                response.headers.append(
-                                    'set-cookie',
-                                    serializeCookie(`illumi_oauth_sb_clone_${suffix}`, value, {
-                                        path: '/',
-                                        sameSite: 'lax',
-                                        maxAge: 60 * 10,
-                                        httpOnly: true,
-                                        secure: false,
-                                    })
-                                )
-                            }
-
                             // Append one Set-Cookie header per cookie to avoid header coalescing issues.
                             response.headers.append('set-cookie', serializeCookie(name, value, opts))
                         })
-
-                        try {
-                            const anyHeaders: any = response.headers as any
-                            const setCookies: string[] = typeof anyHeaders.getSetCookie === 'function' ? anyHeaders.getSetCookie() : []
-                            console.log('Auth callback Set-Cookie header count:', Array.isArray(setCookies) ? setCookies.length : 0)
-                        } catch {
-                            // ignore
-                        }
                     },
                 },
             }
@@ -198,41 +116,12 @@ export async function GET(request: NextRequest) {
 
         const { data: exchangeData, error } = await supabase.auth.exchangeCodeForSession(code)
         if (!error) {
-            const exchangeUserId = (exchangeData as any)?.session?.user?.id
-            console.log('Auth code exchange succeeded', { exchangeUserId: exchangeUserId || null })
-
-            try {
-                const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-                console.log('Auth callback getSession after exchange:', {
-                    hasSession: Boolean(sessionData?.session),
-                    userId: sessionData?.session?.user?.id || null,
-                    sessionError: sessionError ? (sessionError as any)?.message : null,
-                })
-            } catch (e) {
-                console.log('Auth callback getSession after exchange threw', {
-                    message: (e as any)?.message,
-                })
-            }
-
             // In some environments, Supabase invokes our cookie writer slightly after the exchange resolves.
             // Wait briefly so all Set-Cookie headers are appended before we return the response.
             if (!didSetAll) {
                 for (let i = 0; i < 10 && !didSetAll; i++) {
                     await new Promise((r) => setTimeout(r, 10))
                 }
-            }
-
-            console.log('Auth callback didSetAll before return:', {
-                didSetAll,
-                setAllCookieCount,
-            })
-
-            try {
-                const anyHeaders: any = response.headers as any
-                const setCookies: string[] = typeof anyHeaders.getSetCookie === 'function' ? anyHeaders.getSetCookie() : []
-                console.log('Auth callback final Set-Cookie header count:', Array.isArray(setCookies) ? setCookies.length : 0)
-            } catch {
-                // ignore
             }
 
             return response
