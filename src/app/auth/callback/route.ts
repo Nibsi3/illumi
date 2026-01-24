@@ -31,6 +31,22 @@ export async function GET(request: NextRequest) {
 
     origin = origin.replace(/\/$/, '')
 
+    const serializeCookie = (name: string, value: string, options: any) => {
+        const parts: string[] = [`${name}=${value}`]
+        if (options?.path) parts.push(`Path=${options.path}`)
+        if (options?.domain) parts.push(`Domain=${options.domain}`)
+        if (options?.maxAge !== undefined) parts.push(`Max-Age=${Math.floor(Number(options.maxAge) || 0)}`)
+        if (options?.expires) parts.push(`Expires=${new Date(options.expires).toUTCString()}`)
+        if (options?.httpOnly) parts.push('HttpOnly')
+        if (options?.secure) parts.push('Secure')
+        if (options?.sameSite) {
+            const s = String(options.sameSite)
+            const normalized = s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()
+            parts.push(`SameSite=${normalized}`)
+        }
+        return parts.join('; ')
+    }
+
     if (code) {
         // Return HTML so the browser reliably applies Set-Cookie headers before navigation.
         // Some environments can behave inconsistently with Set-Cookie on 302 during OAuth flows.
@@ -50,7 +66,7 @@ export async function GET(request: NextRequest) {
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
-                cookieEncoding: 'raw',
+                cookieEncoding: 'base64url',
                 cookies: {
                     getAll() {
                         return request.cookies.getAll()
@@ -88,15 +104,15 @@ export async function GET(request: NextRequest) {
                                 domain: opts.domain,
                                 maxAge: opts.maxAge,
                             })
-                            response.cookies.set(name, value, opts)
+
+                            // Append one Set-Cookie header per cookie to avoid header coalescing issues.
+                            response.headers.append('set-cookie', serializeCookie(name, value, opts))
                         })
 
                         try {
-                            const setCookieHeader = response.headers.get('set-cookie')
-                            console.log('Auth callback Set-Cookie header present:', Boolean(setCookieHeader))
-                            if (setCookieHeader) {
-                                console.log('Auth callback Set-Cookie header length:', setCookieHeader.length)
-                            }
+                            const anyHeaders: any = response.headers as any
+                            const setCookies: string[] = typeof anyHeaders.getSetCookie === 'function' ? anyHeaders.getSetCookie() : []
+                            console.log('Auth callback Set-Cookie header count:', Array.isArray(setCookies) ? setCookies.length : 0)
                         } catch {
                             // ignore
                         }

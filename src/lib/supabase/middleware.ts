@@ -52,7 +52,7 @@ export async function updateSession(request: NextRequest) {
             supabaseUrl,
             supabaseKey,
             {
-                cookieEncoding: 'raw',
+                cookieEncoding: 'base64url',
                 cookies: {
                     getAll() {
                         return request.cookies.getAll()
