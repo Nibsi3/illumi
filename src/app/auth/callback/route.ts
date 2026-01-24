@@ -54,6 +54,12 @@ export async function GET(request: NextRequest) {
         return parts.join('; ')
     }
 
+    const hasInvalidCookieValueChars = (value: string) => {
+        // Disallow characters that can break Set-Cookie parsing.
+        // (Spaces, commas, semicolons, and control chars.)
+        return /[\u0000-\u001F\u007F\s,;]/.test(value)
+    }
+
     if (code) {
         // Return HTML so the browser reliably applies Set-Cookie headers before navigation.
         // Some environments can behave inconsistently with Set-Cookie on 302 during OAuth flows.
@@ -105,6 +111,7 @@ export async function GET(request: NextRequest) {
                             console.log('Auth cookie set:', {
                                 name,
                                 valueLength: typeof value === 'string' ? value.length : undefined,
+                                hasInvalidValueChars: typeof value === 'string' ? hasInvalidCookieValueChars(value) : undefined,
                                 path: opts.path,
                                 secure: opts.secure,
                                 sameSite: opts.sameSite,
@@ -115,6 +122,9 @@ export async function GET(request: NextRequest) {
                             // Append one Set-Cookie header per cookie to avoid header coalescing issues.
                             response.headers.append('set-cookie', serializeCookie(name, value, opts))
                         })
+
+                        // Debug cookie to verify whether Chrome is accepting Set-Cookie from this response at all.
+                        response.headers.append('set-cookie', 'illumi_oauth_debug=1; Path=/; SameSite=Lax')
 
                         try {
                             const anyHeaders: any = response.headers as any
