@@ -40,9 +40,9 @@ export async function GET(request: NextRequest) {
             parts.push(`Max-Age=${Math.floor(isFinite(maxAgeNum) ? maxAgeNum : 0)}`)
             // Include Expires for better compatibility (some clients behave inconsistently with Max-Age only).
             const expires = maxAgeNum <= 0 ? new Date(0) : new Date(Date.now() + maxAgeNum * 1000)
-            parts.push(`Expires=${expires.toUTCString()}`)
+            parts.push(`Expires=${expires.toUTCString().replace(/,/g, '')}`)
         } else if (options?.expires) {
-            parts.push(`Expires=${new Date(options.expires).toUTCString()}`)
+            parts.push(`Expires=${new Date(options.expires).toUTCString().replace(/,/g, '')}`)
         }
         if (options?.httpOnly) parts.push('HttpOnly')
         if (options?.secure) parts.push('Secure')
