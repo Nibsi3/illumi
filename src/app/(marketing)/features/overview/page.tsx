@@ -33,7 +33,7 @@ export default function OverviewFeaturePage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             asChild
-                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Open your dashboard
@@ -79,13 +79,15 @@ export default function OverviewFeaturePage() {
                                     <path
                                         d="M0,150 Q100,120 200,140 T400,100 T600,130 T800,80"
                                         fill="none"
-                                        stroke="rgba(255,255,255,0.3)"
+                                        stroke="var(--primary)"
+                                        strokeOpacity="0.35"
                                         strokeWidth="2"
                                     />
                                     <path
                                         d="M0,180 Q100,160 200,170 T400,150 T600,165 T800,140"
                                         fill="none"
-                                        stroke="rgba(255,255,255,0.15)"
+                                        stroke="var(--muted-foreground)"
+                                        strokeOpacity="0.25"
                                         strokeWidth="2"
                                     />
                                 </svg>
@@ -169,7 +171,7 @@ export default function OverviewFeaturePage() {
                             ].map((month, i) => (
                                 <div key={i} className="flex flex-col items-center gap-2">
                                     <div
-                                        className="w-8 md:w-12 bg-linear-to-t from-white/20 to-white/40 rounded-t"
+                                        className="w-8 md:w-12 bg-linear-to-t from-primary/20 to-primary/40 dark:from-white/20 dark:to-white/40 rounded-t"
                                         style={{ height: `${month.value * 2}px` }}
                                     />
                                     <span className="text-xs text-muted-foreground">{month.label}</span>

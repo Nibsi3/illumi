@@ -80,7 +80,7 @@ export default function PayGateFeaturePage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             asChild
-                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Enable PayGate
@@ -140,7 +140,7 @@ export default function PayGateFeaturePage() {
                                     </div>
                                 </div>
                                 <div className="border-t border-border pt-6">
-                                    <Button className="w-full bg-primary text-primary-foreground hover:bg-white/90 rounded-xl h-14 text-lg font-medium">
+                                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-14 text-lg font-medium">
                                         <IconCreditCard className="mr-2 h-5 w-5" />
                                         Pay Now
                                     </Button>
@@ -258,7 +258,7 @@ export default function PayGateFeaturePage() {
                                 <div className="text-muted-foreground mb-6">/month</div>
                                 <Button
                                     asChild
-                                    className="w-full bg-primary text-primary-foreground hover:bg-white/90 rounded-xl h-12"
+                                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-12"
                                 >
                                     <Link href="/login">Upgrade to Pro</Link>
                                 </Button>

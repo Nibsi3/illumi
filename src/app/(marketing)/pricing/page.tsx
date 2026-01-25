@@ -104,7 +104,7 @@ export default function PricingPage() {
                         Start free, upgrade when you need PayGate integration and automated payments.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button asChild className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12">
+                        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
                             <Link href="/login">Get Started for Free</Link>
                         </Button>
                         <Button asChild variant="outline" className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted">

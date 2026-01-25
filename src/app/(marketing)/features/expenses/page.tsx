@@ -72,7 +72,7 @@ export default function ExpensesFeaturePage() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             asChild
-                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Start Tracking Free

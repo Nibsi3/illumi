@@ -120,7 +120,7 @@ export default function VATCalculatorPage() {
 
                             <Button
                                 onClick={handleCalculate}
-                                className="w-full bg-primary text-primary-foreground hover:bg-white/90 h-11"
+                                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11"
                             >
                                 Calculate VAT
                             </Button>
@@ -280,7 +280,7 @@ export default function VATCalculatorPage() {
                     <p className="text-muted-foreground mb-4">Automate VAT calculations with professional invoices</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

@@ -32,7 +32,7 @@ export default function StoryPage() {
                         A simpler way to invoice, track expenses, and get paid—built specifically for South African small businesses.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button asChild className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12">
+                        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
                             <Link href="/login">
                                 Get Started
                                 <IconArrowRight className="ml-2 h-4 w-4" />
@@ -118,7 +118,7 @@ export default function StoryPage() {
                         </Button>
                         <Button
                             asChild
-                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Start Free

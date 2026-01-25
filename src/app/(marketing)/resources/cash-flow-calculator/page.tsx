@@ -182,7 +182,7 @@ export default function CashFlowCalculatorPage() {
 
                             <Button
                                 onClick={handleCalculate}
-                                className="w-full bg-primary text-primary-foreground hover:bg-white/90 h-11"
+                                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11"
                             >
                                 Calculate Health Score
                             </Button>

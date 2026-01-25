@@ -49,7 +49,7 @@ export function MarketingHeader() {
                         alt="Illumi Logo"
                         width={24}
                         height={24}
-                        className="w-6 h-6"
+                        className={theme === 'dark' ? 'w-6 h-6' : 'w-6 h-6 scale-[0.8] origin-center'}
                     />
                 </Link>
 
