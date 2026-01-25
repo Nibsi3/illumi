@@ -721,66 +721,62 @@ export default function InvoicesPage() {
 
                 {/* Status Cards */}
                 <div className="md:grid md:grid-cols-4 gap-4">
-                    <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
-                        <div className="flex gap-3 w-max">
-                    {[
-                        {
-                            label: "Open",
-                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
-                                invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).reduce((acc, curr) => acc + (curr.total || 0), 0)
-                            ),
-                            count: `${invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).length} invoices`,
-                            status: "unpaid"
-                        },
-                        {
-                            label: "Overdue",
-                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
-                                invoices.filter(i => i.status.toLowerCase() === 'overdue').reduce((acc, curr) => acc + (curr.total || 0), 0)
-                            ),
-                            count: invoices.filter(i => i.status.toLowerCase() === 'overdue').length > 0
-                                ? `${invoices.filter(i => i.status.toLowerCase() === 'overdue').length} invoices`
-                                : "No invoices",
-                            status: "overdue"
-                        },
-                        {
-                            label: "Paid",
-                            value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
-                                invoices.filter(i => i.status.toLowerCase() === 'paid').reduce((acc, curr) => acc + (curr.total || 0), 0)
-                            ),
-                            count: invoices.filter(i => i.status.toLowerCase() === 'paid').length > 0
-                                ? `${invoices.filter(i => i.status.toLowerCase() === 'paid').length} invoices`
-                                : "No invoices",
-                            status: "paid"
-                        },
-                    ].map((card) => (
-                        <Card
-                            key={card.label}
-                            onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
-                            className={cn(
-                                "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none w-[240px]",
-                                filterStatus === card.status && "bg-white/5 border-white/20"
-                            )}
-                        >
+                    <div className="md:hidden grid grid-cols-2 gap-3">
+                        {[
+                            {
+                                label: "Open",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: `${invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).length} invoices`,
+                                status: "unpaid"
+                            },
+                            {
+                                label: "Overdue",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => i.status.toLowerCase() === 'overdue').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: invoices.filter(i => i.status.toLowerCase() === 'overdue').length > 0
+                                    ? `${invoices.filter(i => i.status.toLowerCase() === 'overdue').length} invoices`
+                                    : "No invoices",
+                                status: "overdue"
+                            },
+                            {
+                                label: "Paid",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => i.status.toLowerCase() === 'paid').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: invoices.filter(i => i.status.toLowerCase() === 'paid').length > 0
+                                    ? `${invoices.filter(i => i.status.toLowerCase() === 'paid').length} invoices`
+                                    : "No invoices",
+                                status: "paid"
+                            },
+                        ].map((card) => (
+                            <Card
+                                key={card.label}
+                                onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
+                                className={cn(
+                                    "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none",
+                                    filterStatus === card.status && "bg-white/5 border-white/20"
+                                )}
+                            >
+                                <CardContent className="p-4">
+                                    <h3 className="text-lg font-serif text-white mb-2 italic">{card.value}</h3>
+                                    <p className="text-xs font-medium text-white">{card.label}</p>
+                                    <p className="text-[10px] text-neutral-500">{card.count}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+
+                        <Card className="bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none">
                             <CardContent className="p-4">
-                                <h3 className="text-2xl font-serif text-white mb-3 italic">{card.value}</h3>
-                                <p className="text-sm font-medium text-white">{card.label}</p>
-                                <p className="text-xs text-neutral-500">{card.count}</p>
+                                <div>
+                                    <h3 className="text-lg font-serif text-white mb-2 italic">{Object.keys(invoicesByCompany).length}</h3>
+                                    <p className="text-xs font-medium text-white">Clients</p>
+                                    <p className="text-[10px] text-neutral-500">Active</p>
+                                </div>
                             </CardContent>
                         </Card>
-                    ))}
-
-                    <Card className="md:hidden bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none w-[220px]">
-                        <CardContent className="p-4">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h3 className="text-2xl font-serif text-white mb-3 italic">{Object.keys(invoicesByCompany).length}</h3>
-                                    <p className="text-sm font-medium text-white">Clients</p>
-                                    <p className="text-xs text-neutral-500">Active</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                        </div>
                     </div>
 
                     <div className="hidden md:contents">
@@ -860,7 +856,7 @@ export default function InvoicesPage() {
                             />
                         </div>
 
-                        <div className="flex items-center border border-white/10 p-1 overflow-x-auto no-scrollbar">
+                        <div className="flex flex-wrap items-center border border-white/10 p-1">
                             <Button
                                 variant="ghost"
                                 size="sm"

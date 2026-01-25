@@ -336,7 +336,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 <div className="hidden md:block w-[72px] shrink-0" />
 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-background relative overflow-y-auto">
+                <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-background relative overflow-y-auto overflow-x-hidden">
                     {isSwitchingWorkspace && (
                         <div className="absolute inset-0 z-50 flex items-center justify-center">
                             <div className="absolute inset-0 bg-background/60 backdrop-blur-md" />
@@ -435,11 +435,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
                     {/* Dashboard content */}
                     <main className={cn(
-                        "flex-1 w-full",
+                        "flex-1 w-full overflow-x-hidden",
                         pathname === '/invoices/new' ? "overflow-hidden" : "overflow-y-auto no-scrollbar"
                     )}>
                         <div className={cn(
-                            "h-full",
+                            "h-full w-full max-w-full",
                             pathname === '/invoices/new' ? "p-0" : "p-4 sm:p-6 lg:p-10"
                         )}>
                             {children}
