@@ -700,8 +700,8 @@ export default function NewInvoicePage() {
             {/* MAIN CONTENT WRAPPER */}
             <div className="flex-1 flex flex-col relative h-full bg-background">
                 {/* STATIC TOP ACTION BAR */}
-                <div className="h-20 px-8 flex justify-end items-center border-b border-white/5 bg-background z-20 shrink-0">
-                    <div className="flex items-center gap-3">
+                <div className="h-20 px-4 sm:px-6 md:px-8 flex justify-end items-center border-b border-white/5 bg-background z-20 shrink-0">
+                    <div className="flex items-center gap-3 overflow-x-auto no-scrollbar max-w-full">
                         <Button
                             variant="ghost"
                             className="h-9 text-xs font-medium text-neutral-400 hover:text-white hover:bg-white/5"
@@ -1011,14 +1011,14 @@ export default function NewInvoicePage() {
 
 
                 {/* SCROLLABLE EDITOR AREA */}
-                <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
-                    <div className="max-w-5xl mx-auto py-12 px-12">
+                <div className="flex-1 overflow-y-auto pb-28 sm:pb-40 no-scrollbar">
+                    <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-8 md:px-12">
 
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
                             invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#09090b] border border-white/5 text-white",
-                            template === "Classic" && "p-12",
-                            template === "Minimal" && "p-20 border-none shadow-none",
+                            template === "Classic" && "p-6 sm:p-12",
+                            template === "Minimal" && "p-8 sm:p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
                         )}>
 
@@ -1026,7 +1026,7 @@ export default function NewInvoicePage() {
                                 <div className="h-2 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 w-full" />
                             )}
 
-                            <div className={cn(template === "Modern" && "p-12")}>
+                            <div className={cn(template === "Modern" && "p-6 sm:p-12")}>
                                 {/* Header: Logo & Title */}
                                 <div className="flex flex-col gap-8 mb-16">
                                     <div className="flex items-center justify-between">

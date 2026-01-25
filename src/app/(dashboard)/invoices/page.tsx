@@ -594,9 +594,49 @@ export default function InvoicesPage() {
 
     return (
         <>
-        <div className="flex gap-6 pb-32">
+        <div className="flex flex-col md:flex-row gap-6 pb-24 md:pb-32">
+            {/* Mobile client folders scroller */}
+            <div className="md:hidden">
+                <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-sm font-semibold text-white tracking-tight">Clients</h2>
+                    <span className="text-xs text-neutral-500">{clientFolders.length} folders</span>
+                </div>
+                <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 w-max">
+                        <button
+                            onClick={() => setFilterCustomerId(null)}
+                            className={cn(
+                                "flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all whitespace-nowrap",
+                                !filterCustomerId
+                                    ? "bg-white/10 text-white"
+                                    : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                            )}
+                        >
+                            <FolderOpen className="h-4 w-4 shrink-0" />
+                            <span className="text-sm font-medium">All</span>
+                            <span className="text-xs text-neutral-500">{totalInvoiceCount}</span>
+                        </button>
+                        {clientFolders.map((folder) => (
+                            <button
+                                key={folder.id}
+                                onClick={() => setFilterCustomerId(filterCustomerId === folder.id ? null : folder.id)}
+                                className={cn(
+                                    "flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all whitespace-nowrap",
+                                    filterCustomerId === folder.id
+                                        ? "bg-white/10 text-white"
+                                        : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                )}
+                            >
+                                <Folder className="h-4 w-4 shrink-0" />
+                                <span className="text-sm font-medium">{folder.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* Client Folder Sidebar */}
-            <div className="w-64 shrink-0">
+            <div className="hidden md:block w-64 shrink-0">
                 <div className="sticky top-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-sm font-semibold text-white tracking-tight">Clients</h2>
@@ -642,10 +682,10 @@ export default function InvoicesPage() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col gap-y-10">
+            <div className="flex-1 flex flex-col gap-y-6 md:gap-y-10">
 
                 {/* Header Section */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-4xl font-serif text-white tracking-tight italic">Invoices</h1>
                         <p className="text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
@@ -746,9 +786,9 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Filter & Actions Bar */}
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                        <div className="relative w-full max-w-sm group">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+                        <div className="relative w-full sm:max-w-sm group">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
                             <Input
                                 placeholder="Search or filter"
@@ -756,7 +796,7 @@ export default function InvoicesPage() {
                             />
                         </div>
 
-                        <div className="flex items-center border border-white/10 p-1">
+                        <div className="flex items-center border border-white/10 p-1 overflow-x-auto no-scrollbar">
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -913,7 +953,7 @@ export default function InvoicesPage() {
                                                 </td>
                                             )}
                                             {visibleColumns.includes("dueDate") && (
-                                                <td className="px-5 py-4 border-r border-white/10 text-[#878787]">{invoice.dueDate}</td>
+                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-white/10 text-[#878787]">{invoice.dueDate}</td>
                                             )}
                                             {visibleColumns.includes("customer") && (
                                                 <td className="px-5 py-4 border-r border-white/10 text-[#fafafa] font-medium">{invoice.customer}</td>
@@ -922,7 +962,7 @@ export default function InvoicesPage() {
                                                 <td className="px-5 py-4 border-r border-white/10 text-white font-bold">{invoice.amount}</td>
                                             )}
                                             {visibleColumns.includes("issueDate") && (
-                                                <td className="px-5 py-4 border-r border-white/10 text-neutral-400">{invoice.issueDate}</td>
+                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-white/10 text-neutral-400">{invoice.issueDate}</td>
                                             )}
                                             <td className="px-5 py-4 text-center">
                                                 <DropdownMenu>
