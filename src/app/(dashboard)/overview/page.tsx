@@ -596,13 +596,13 @@ export default function DashboardPage() {
             <div className="relative flex flex-col gap-y-5 animate-in fade-in duration-700 font-serif">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2 px-4 md:px-0">
                     <div className="flex flex-col gap-y-1">
-                        <div className="h-10 w-64 bg-white/5 animate-pulse rounded" />
-                        <div className="h-4 w-48 bg-white/5 animate-pulse rounded mt-2" />
+                        <div className="h-10 w-64 bg-muted animate-pulse rounded" />
+                        <div className="h-4 w-48 bg-muted animate-pulse rounded mt-2" />
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 md:px-0">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="h-32 bg-[#0c0c0c] border border-white/10 animate-pulse rounded-lg" />
+                        <div key={i} className="h-32 bg-card border border-border animate-pulse rounded-lg" />
                     ))}
                 </div>
             </div>
@@ -614,19 +614,19 @@ export default function DashboardPage() {
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
-                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">Morning <span className="text-white/40 not-italic">Cameron,</span></h1>
-                    <p className="text-white/40 text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
+                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">Morning <span className="text-muted-foreground not-italic">Cameron,</span></h1>
+                    <p className="text-muted-foreground text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                     {/* Overview/Metrics Toggle */}
-                    <div className="flex items-center bg-[#0c0c0c] border border-white/10 p-1 rounded-lg">
+                    <div className="flex items-center bg-card border border-border p-1 rounded-lg">
                         <Button
                             variant="ghost"
                             onClick={() => setView("overview")}
                             className={cn(
                                 "h-8 px-4 rounded-md text-[10px] uppercase font-bold tracking-widest transition-all",
-                                view === "overview" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
+                                view === "overview" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             Overview
@@ -636,7 +636,7 @@ export default function DashboardPage() {
                             onClick={() => setView("metrics")}
                             className={cn(
                                 "h-8 px-4 rounded-md text-[10px] uppercase font-bold tracking-widest transition-all",
-                                view === "metrics" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
+                                view === "metrics" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             Metrics
@@ -645,13 +645,13 @@ export default function DashboardPage() {
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <div className="flex items-center gap-2 px-3 h-9 bg-[#0c0c0c] border border-white/10 rounded-lg text-[9px] uppercase font-bold tracking-widest text-white cursor-pointer hover:bg-white/5 transition-colors">
+                            <div className="flex items-center gap-2 px-3 h-9 bg-card border border-border rounded-lg text-[9px] uppercase font-bold tracking-widest text-foreground cursor-pointer hover:bg-accent transition-colors">
                                 <IconCalendarStats className="h-3.5 w-3.5 text-muted-foreground" />
                                 <span>{period}</span>
                                 <IconChevronDown className="h-3 w-3 opacity-50" />
                             </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-[#0b0b0b] border-white/10 rounded-lg text-white w-48 p-2 shadow-2xl">
+                        <DropdownMenuContent className="bg-popover border-border rounded-lg text-popover-foreground w-48 p-2 shadow-2xl">
                             <DropdownMenuLabel className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground px-2 py-1">Period</DropdownMenuLabel>
                             {(["Day", "Week", "Month", "Year"] as const).map((p) => (
                                 <DropdownMenuItem
@@ -660,10 +660,10 @@ export default function DashboardPage() {
                                         setPeriod(p)
                                         setHoveredBucketIndex(null)
                                     }}
-                                    className="text-xs focus:bg-white/5 px-2 py-2 rounded-none flex items-center justify-between cursor-pointer"
+                                    className="text-xs focus:bg-accent px-2 py-2 rounded-none flex items-center justify-between cursor-pointer"
                                 >
                                     <span>{p}</span>
-                                    {period === p && <div className="h-1 w-1 bg-white rounded-full" />}
+                                    {period === p && <div className="h-1 w-1 bg-foreground rounded-full" />}
                                 </DropdownMenuItem>
                             ))}
                         </DropdownMenuContent>

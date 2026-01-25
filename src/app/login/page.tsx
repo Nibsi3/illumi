@@ -192,7 +192,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen font-sans">
             {/* Left side - Testimonials */}
-            <div className="hidden lg:flex lg:w-1/2 bg-black flex-col items-center justify-center p-12 relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-1/2 bg-card flex-col items-center justify-center p-12 relative overflow-hidden">
                 {/* Logo top left */}
                 <div className="absolute top-12 left-12">
                     <Link href="/" aria-label="Go to Illumi home">
@@ -208,22 +208,22 @@ export default function LoginPage() {
 
                 {/* Large Background Quote */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
-                    <span className="text-[600px] leading-none text-white font-serif select-none">“</span>
+                    <span className="text-[600px] leading-none text-foreground font-serif select-none">“</span>
                 </div>
 
                 {/* Centered Testimonial */}
                 <div className="relative z-10 max-w-lg text-center">
-                    <p className="text-2xl text-white/90 leading-relaxed mb-8 font-serif italic">
+                    <p className="text-2xl text-foreground/90 leading-relaxed mb-8 font-serif italic">
                         "{testimonial.quote}"
                     </p>
-                    <div className="text-sm text-[#878787]">
-                        <span className="text-[#fafafa] font-medium">{testimonial.author}</span> • {testimonial.role}
+                    <div className="text-sm text-muted-foreground">
+                        <span className="text-foreground font-medium">{testimonial.author}</span> • {testimonial.role}
                     </div>
                 </div>
             </div>
 
             {/* Right side - Login form */}
-            <div className="w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col items-center justify-center p-8 relative">
+            <div className="w-full lg:w-1/2 bg-background flex flex-col items-center justify-center p-8 relative">
                 <div className="absolute top-6 left-6 lg:hidden">
                     <Link href="/" aria-label="Go to Illumi home">
                         <Image
@@ -237,22 +237,22 @@ export default function LoginPage() {
                 </div>
                 <div className="w-full max-w-[350px]">
                     <div className="text-center mb-8">
-                        <h1 className="text-2xl font-medium text-[#fafafa] mb-2">Welcome to Illumi</h1>
-                        <p className="text-sm text-[#878787]">Sign in or create an account</p>
+                        <h1 className="text-2xl font-medium text-foreground mb-2">Welcome to Illumi</h1>
+                        <p className="text-sm text-muted-foreground">Sign in or create an account</p>
                     </div>
 
                     <div className="flex items-center gap-2 mb-6">
                         <button
                             type="button"
                             onClick={() => setMode("sign_in")}
-                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_in" ? "bg-white text-black border-white" : "bg-transparent text-white/70 border-white/10 hover:bg-white/5"}`}
+                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_in" ? "bg-primary text-primary-foreground border-primary" : "bg-transparent text-muted-foreground border-border hover:bg-accent"}`}
                         >
                             Sign in
                         </button>
                         <button
                             type="button"
                             onClick={() => setMode("sign_up")}
-                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_up" ? "bg-white text-black border-white" : "bg-transparent text-white/70 border-white/10 hover:bg-white/5"}`}
+                            className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-colors ${mode === "sign_up" ? "bg-primary text-primary-foreground border-primary" : "bg-transparent text-muted-foreground border-border hover:bg-accent"}`}
                         >
                             Sign up
                         </button>
@@ -265,7 +265,7 @@ export default function LoginPage() {
                             type="button"
                             onClick={handleGoogleSignIn}
                             disabled={googleLoading || loading}
-                            className="w-full h-12 border-white/10 bg-white/5 text-[#fafafa] hover:bg-white/10 rounded-lg flex items-center justify-center gap-3"
+                            className="w-full h-12 border-border bg-muted text-foreground hover:bg-accent rounded-lg flex items-center justify-center gap-3"
                         >
                             {googleLoading ? (
                                 <IconLoader2 className="h-5 w-5 animate-spin" />
@@ -277,17 +277,17 @@ export default function LoginPage() {
 
                         <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-white/10" />
+                                <div className="w-full border-t border-border" />
                             </div>
                             <div className="relative flex justify-center text-xs">
-                                <span className="bg-[#0a0a0a] px-4 text-[#878787]">or</span>
+                                <span className="bg-background px-4 text-muted-foreground">or</span>
                             </div>
                         </div>
 
                         {mode === "verify" ? (
                             <form onSubmit={handleVerifyOtp} className="space-y-4">
-                                <div className="text-sm text-white/60">
-                                    We sent a verification code to <span className="text-white">{email}</span>.
+                                <div className="text-sm text-muted-foreground">
+                                    We sent a verification code to <span className="text-foreground">{email}</span>.
                                 </div>
                                 <Input
                                     type="text"
@@ -296,12 +296,12 @@ export default function LoginPage() {
                                     value={verificationCode}
                                     onChange={(e) => setVerificationCode(e.target.value)}
                                     required
-                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                    className="h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg"
                                 />
                                 <Button
                                     type="submit"
                                     disabled={loading || googleLoading}
-                                    className="w-full h-12 bg-white text-black hover:bg-neutral-200 rounded-lg"
+                                    className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg"
                                 >
                                     {loading ? (
                                         <IconLoader2 className="h-5 w-5 animate-spin mr-2" />
@@ -310,7 +310,7 @@ export default function LoginPage() {
                                 </Button>
                                 <button
                                     type="button"
-                                    className="w-full text-xs text-white/50 hover:text-white transition-colors"
+                                    className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
                                     onClick={async () => {
                                         if (!email) return
                                         const normalizedEmail = email.toLowerCase().trim()
@@ -333,7 +333,7 @@ export default function LoginPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                    className="h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg"
                                 />
                                 <Input
                                     type="password"
@@ -341,14 +341,14 @@ export default function LoginPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
-                                    className="h-12 bg-white/5 border-white/10 text-[#fafafa] placeholder:text-[#878787] rounded-lg"
+                                    className="h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg"
                                 />
                                 <Button
                                     type="submit"
                                     disabled={loading || googleLoading}
                                     className={mode === "sign_up"
-                                        ? "w-full h-12 bg-white text-black hover:bg-neutral-200 rounded-lg"
-                                        : "w-full h-12 bg-white/5 hover:bg-white/10 text-[#fafafa] rounded-lg border border-white/10"}
+                                        ? "w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg"
+                                        : "w-full h-12 bg-muted hover:bg-accent text-foreground rounded-lg border border-border"}
                                 >
                                     {loading ? (
                                         <IconLoader2 className="h-5 w-5 animate-spin mr-2" />
@@ -361,13 +361,13 @@ export default function LoginPage() {
                 </div>
 
                 {/* Footer */}
-                <p className="mt-12 text-xs text-[#878787] text-center max-w-[300px]">
+                <p className="mt-12 text-xs text-muted-foreground text-center max-w-[300px]">
                     By signing in you agree to our{" "}
-                    <Link href="/terms" className="underline underline-offset-2 hover:text-[#fafafa]">
+                    <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
                         Terms of service
                     </Link>
                     {" "}& {" "}
-                    <Link href="/privacy" className="underline underline-offset-2 hover:text-[#fafafa]">
+                    <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
                         Privacy policy
                     </Link>
                 </p>

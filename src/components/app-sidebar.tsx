@@ -17,6 +17,8 @@ import {
     IconUsersGroup,
     IconChevronDown,
     IconPlus,
+    IconSun,
+    IconMoon,
 } from "@tabler/icons-react";
 // Lazy load NotificationDropdown - not critical for initial render
 const NotificationDropdown = lazy(() => import("@/components/notifications/notification-dropdown").then(m => ({ default: m.NotificationDropdown })));
@@ -43,6 +45,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useWorkspace } from "@/lib/workspace-context";
 import { useSubscription } from "@/lib/subscription/hooks";
+import { useTheme } from "@/lib/theme-context";
 
 // Lazy load SearchModal - only needed when user opens search
 const SearchModal = lazy(() => import("@/components/search-modal").then(m => ({ default: m.SearchModal })));
@@ -63,6 +66,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces, isOwner } = useWorkspace();
     const { isSubscribed, daysRemaining, isPro, isLoading: subscriptionLoading } = useSubscription();
     const { logo } = useSettings();
+    const { theme, toggleTheme } = useTheme();
 
     const supabase = createClient();
     const router = useRouter();
@@ -368,6 +372,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </div>
 
                         <div className="flex items-center gap-4">
+                            <button
+                                type="button"
+                                onClick={toggleTheme}
+                                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                                className="hidden sm:inline-flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                            >
+                                {theme === 'dark' ? <IconSun className="h-4 w-4" /> : <IconMoon className="h-4 w-4" />}
+                            </button>
                             <Link href="/settings/billing" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
                                 {subscriptionLoading ? (
                                     "Loading..."

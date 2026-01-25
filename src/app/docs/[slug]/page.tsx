@@ -530,33 +530,33 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
     if (!doc) notFound()
 
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             <main className="relative z-10 flex">
-                <aside className="hidden lg:block w-80 border-r border-white/10 bg-[#0a0a0a] sticky top-0 h-screen overflow-y-auto">
+                <aside className="hidden lg:block w-80 border-r border-border bg-card sticky top-0 h-screen overflow-y-auto">
                     <DocsSidebar />
                 </aside>
 
                 <div className="flex-1 px-6 lg:px-12 pt-32 md:pt-40 pb-20">
                     <div className="max-w-5xl mx-auto">
                         <div className="mb-8">
-                            <Link href="/docs" className="text-sm text-white/60 hover:text-white transition-colors">
+                            <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                                 Back to Documentation
                             </Link>
                         </div>
 
                         <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">{doc.title}</h1>
-                        <p className="text-white/50 text-lg mb-10">{doc.description}</p>
+                        <p className="text-muted-foreground text-lg mb-10">{doc.description}</p>
 
                 {doc.summary && (
-                    <div className="mb-10 rounded-2xl border border-white/10 bg-white/5 p-6">
+                    <div className="mb-10 rounded-2xl border border-border bg-card p-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <div>
-                                <div className="text-xs font-bold uppercase tracking-widest text-white/50">Overview</div>
-                                <div className="text-white/80 mt-2">{doc.summary}</div>
+                                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Overview</div>
+                                <div className="text-foreground/80 mt-2">{doc.summary}</div>
                             </div>
                             {doc.readingTime && (
-                                <div className="text-xs font-bold uppercase tracking-widest text-white/40">
+                                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                     {doc.readingTime} read
                                 </div>
                             )}
@@ -572,7 +572,7 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                             {section.body && (
                                 <div className="space-y-3">
                                     {section.body.map((p, idx) => (
-                                        <p key={idx} className="text-white/70 leading-relaxed">
+                                        <p key={idx} className="text-muted-foreground leading-relaxed">
                                             {p}
                                         </p>
                                     ))}
@@ -582,14 +582,14 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                             {section.steps && (
                                 <div className="grid grid-cols-1 gap-3">
                                     {section.steps.map((s, idx) => (
-                                        <div key={idx} className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-5">
+                                        <div key={idx} className="rounded-2xl border border-border bg-card p-5">
                                             <div className="flex items-start justify-between gap-4">
                                                 <div>
-                                                    <div className="text-sm font-semibold text-white">{idx + 1}. {s.title}</div>
-                                                    {s.detail && <div className="text-sm text-white/50 mt-1 leading-relaxed">{s.detail}</div>}
+                                                    <div className="text-sm font-semibold text-foreground">{idx + 1}. {s.title}</div>
+                                                    {s.detail && <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.detail}</div>}
                                                 </div>
                                                 {s.href && (
-                                                    <Button asChild variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 text-white h-9 px-4">
+                                                    <Button asChild variant="outline" className="border-border bg-background hover:bg-accent text-foreground h-9 px-4">
                                                         <Link href={s.href}>Open</Link>
                                                     </Button>
                                                 )}
@@ -609,11 +609,11 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                                         <Link
                                             key={idx}
                                             href={l.href}
-                                            className="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/8 hover:border-white/20 transition-colors p-5"
+                                            className="rounded-2xl border border-border bg-card hover:bg-accent transition-colors p-5"
                                         >
-                                            <div className="text-sm font-semibold text-white">{l.title}</div>
-                                            {l.description && <div className="text-sm text-white/50 mt-1 leading-relaxed">{l.description}</div>}
-                                            <div className="mt-3 text-xs font-bold uppercase tracking-widest text-white/40">Read</div>
+                                            <div className="text-sm font-semibold text-foreground">{l.title}</div>
+                                            {l.description && <div className="text-sm text-muted-foreground mt-1 leading-relaxed">{l.description}</div>}
+                                            <div className="mt-3 text-xs font-bold uppercase tracking-widest text-muted-foreground">Read</div>
                                         </Link>
                                     ))}
                                 </div>
@@ -623,30 +623,30 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                 </div>
 
                 {doc.next && doc.next.length > 0 && (
-                    <div className="mt-12 pt-10 border-t border-white/10">
-                        <div className="text-sm font-bold uppercase tracking-widest text-white/50 mb-4">Next up</div>
+                    <div className="mt-12 pt-10 border-t border-border">
+                        <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Next up</div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {doc.next.map((n, i) => (
                                 <Link
                                     key={i}
                                     href={n.href}
-                                    className="rounded-2xl border border-white/10 bg-[#0a0a0a] hover:bg-white/5 hover:border-white/20 transition-colors p-6"
+                                    className="rounded-2xl border border-border bg-card hover:bg-accent transition-colors p-6"
                                 >
-                                    <div className="text-lg font-semibold text-white">{n.title}</div>
-                                    {n.description && <div className="text-sm text-white/50 mt-2 leading-relaxed">{n.description}</div>}
-                                    <div className="mt-4 text-xs font-bold uppercase tracking-widest text-white/40">Continue</div>
+                                    <div className="text-lg font-semibold text-foreground">{n.title}</div>
+                                    {n.description && <div className="text-sm text-muted-foreground mt-2 leading-relaxed">{n.description}</div>}
+                                    <div className="mt-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">Continue</div>
                                 </Link>
                             ))}
                         </div>
                     </div>
                 )}
 
-                        <div className="mt-12 pt-10 border-t border-white/10 flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
+                        <div className="mt-12 pt-10 border-t border-border flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center">
                             <div>
-                                <div className="text-sm font-medium text-white">Need help?</div>
-                                <div className="text-sm text-white/50">Contact us and we’ll get you sorted.</div>
+                                <div className="text-sm font-medium text-foreground">Need help?</div>
+                                <div className="text-sm text-muted-foreground">Contact us and we’ll get you sorted.</div>
                             </div>
-                            <Button asChild className="bg-white text-black hover:bg-neutral-200 rounded-xl h-11 px-6">
+                            <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-11 px-6">
                                 <Link href="/contact">Contact Support</Link>
                             </Button>
                         </div>
