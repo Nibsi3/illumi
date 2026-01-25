@@ -601,7 +601,7 @@ export default function InvoicesPage() {
                     <h2 className="text-sm font-semibold text-white tracking-tight">Clients</h2>
                     <span className="text-xs text-neutral-500">{clientFolders.length} folders</span>
                 </div>
-                <div className="-mx-4 px-4 overflow-x-auto no-scrollbar">
+                <div className="w-full max-w-full overflow-x-auto no-scrollbar">
                     <div className="flex items-center gap-2 w-max">
                         <button
                             onClick={() => setFilterCustomerId(null)}
@@ -846,7 +846,7 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Filter & Actions Bar */}
-                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 md:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                         <div className="relative w-full sm:max-w-sm group">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />

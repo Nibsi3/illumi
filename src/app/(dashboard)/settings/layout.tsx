@@ -46,13 +46,14 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     return (
         <div className="w-full pb-32">
             {/* Horizontal Tabs Navigation */}
-            <div className="flex items-center gap-1 border-b border-white/5 mb-8 no-scrollbar">
+            <div className="w-full max-w-full overflow-x-auto no-scrollbar">
+                <div className="flex flex-nowrap items-center gap-1 border-b border-white/5 mb-8">
                 {settingsNavItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px",
+                            "px-4 py-3 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap",
                             pathname === item.href || (item.href === "/settings" && pathname === "/settings")
                                 ? "text-white border-white"
                                 : "text-neutral-500 border-transparent hover:text-white hover:border-white/20"
@@ -61,6 +62,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                         {item.title}
                     </Link>
                 ))}
+                </div>
             </div>
 
             {/* Settings Content */}
