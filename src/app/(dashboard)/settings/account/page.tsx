@@ -35,8 +35,8 @@ export default function AccountPage() {
     return (
         <div className="max-w-4xl mx-auto pb-32">
             <div className="mb-8">
-                <h1 className="text-4xl font-serif font-medium mb-1">Account</h1>
-                <p className="text-muted-foreground">Manage your personal account settings and profile information.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Account</h1>
+                <p className="hidden sm:block text-muted-foreground">Manage your personal account settings and profile information.</p>
             </div>
 
             {/* Profile Picture */}
@@ -48,7 +48,7 @@ export default function AccountPage() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
                     <Avatar className="h-24 w-24 border-2 border-white/10">
                         <AvatarImage src={logo || undefined} />
                         <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-white text-xl font-bold">
@@ -84,7 +84,7 @@ export default function AccountPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Name</Label>
                         <Input
@@ -109,7 +109,7 @@ export default function AccountPage() {
 
             {/* Footer Actions */}
             <div className="flex justify-end pt-10 border-t border-white/5 mt-12">
-                <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
+                <Button className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
                     Save changes
                 </Button>
             </div>

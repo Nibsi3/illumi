@@ -8,8 +8,8 @@ export default function BankConnectionsPage() {
     return (
         <div className="max-w-4xl mx-auto pb-32">
             <div className="mb-8">
-                <h1 className="text-4xl font-serif font-medium mb-1">Bank Connections</h1>
-                <p className="text-muted-foreground">Connect your bank accounts to automatically import transactions.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Bank Connections</h1>
+                <p className="hidden sm:block text-muted-foreground">Connect your bank accounts to automatically import transactions.</p>
             </div>
 
             {/* Connected Banks */}
@@ -36,7 +36,7 @@ export default function BankConnectionsPage() {
             </div>
 
             {/* Add Bank Button */}
-            <Button className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg">
+            <Button className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg">
                 <Plus className="h-4 w-4 mr-2" />
                 Connect Bank Account
             </Button>

@@ -154,7 +154,7 @@ export default function GeneralSettings() {
     }
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-12 pb-24 md:pb-0">
             {/* Logo Section */}
             <div className="space-y-6">
                 <div className="flex flex-col gap-1">
@@ -207,7 +207,7 @@ export default function GeneralSettings() {
                     </p>
                 </div>
 
-                <div className="flex items-start sm:items-center justify-between gap-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex flex-col gap-1">
                         <h4 className="text-sm font-medium text-white">Hide Illumi branding</h4>
                         <p className="text-xs text-neutral-500 max-w-xl">
@@ -236,7 +236,7 @@ export default function GeneralSettings() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Name</Label>
                         <Input
@@ -248,7 +248,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Bank Name</Label>
                         <Input
@@ -269,7 +269,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Account Number</Label>
                         <Input
@@ -290,7 +290,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Country</Label>
                         <Select value={country} onValueChange={setCountry}>
@@ -327,7 +327,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
                         <Input
@@ -348,7 +348,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
                         <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">
@@ -358,7 +358,7 @@ export default function GeneralSettings() {
                 </div>
 
                 <div className="pt-8 border-t border-white/5">
-                    <div className="flex items-center justify-between gap-6">
+                    <div className="flex items-start sm:items-center justify-between gap-6">
                         <div className="flex flex-col gap-1">
                             <h4 className="text-sm font-medium text-white">Send yourself a copy</h4>
                             <p className="text-xs text-neutral-500 max-w-xl">
@@ -374,10 +374,18 @@ export default function GeneralSettings() {
             </div>
 
             {/* Footer Actions */}
-            <div className="flex justify-end pt-10 border-t border-white/5">
+            <div className="hidden md:flex justify-end pt-10 border-t border-white/5">
                 <Button onClick={handleSave} className="bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
                     Save everything
                 </Button>
+            </div>
+
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-background/95 backdrop-blur p-3">
+                <div className="max-w-4xl mx-auto">
+                    <Button onClick={handleSave} className="w-full bg-white text-black hover:bg-neutral-200 h-11 font-semibold rounded-lg">
+                        Save everything
+                    </Button>
+                </div>
             </div>
 
             {/* Danger Zone - Delete Account */}
