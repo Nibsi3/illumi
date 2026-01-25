@@ -23,7 +23,7 @@ const NotificationDropdown = lazy(() => import("@/components/notifications/notif
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -347,7 +347,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         </div>
                     )}
                     {/* Header (Stayed relatively similar but polished) */}
-                    <header className="h-16 flex items-center justify-between px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50">
+                    <header className="h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50">
                         <div className="flex items-center gap-6 flex-1">
                             <button
                                 type="button"
@@ -440,7 +440,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     )}>
                         <div className={cn(
                             "h-full",
-                            pathname === '/invoices/new' ? "p-0" : "p-6 md:p-10"
+                            pathname === '/invoices/new' ? "p-0" : "p-4 sm:p-6 lg:p-10"
                         )}>
                             {children}
                         </div>
@@ -450,6 +450,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
             <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
                 <SheetContent side="left" className="w-full max-w-none sm:max-w-none p-6 overflow-y-auto">
+                    <SheetTitle className="sr-only">Navigation</SheetTitle>
+                    <SheetDescription className="sr-only">
+                        Dashboard navigation menu
+                    </SheetDescription>
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <Link href="/overview" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3">
