@@ -614,18 +614,18 @@ export default function DashboardPage() {
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
-                    <h1 className="text-3xl font-serif font-medium tracking-tight italic">Morning <span className="text-white/40 not-italic">Cameron,</span></h1>
+                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">Morning <span className="text-white/40 not-italic">Cameron,</span></h1>
                     <p className="text-white/40 text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
                     {/* Overview/Metrics Toggle */}
                     <div className="flex items-center bg-[#0c0c0c] border border-white/10 p-1 rounded-lg">
                         <Button
                             variant="ghost"
                             onClick={() => setView("overview")}
                             className={cn(
-                                "h-7 px-4 rounded-md text-[9px] uppercase font-bold tracking-widest transition-all",
+                                "h-8 px-4 rounded-md text-[10px] uppercase font-bold tracking-widest transition-all",
                                 view === "overview" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
                             )}
                         >
@@ -635,7 +635,7 @@ export default function DashboardPage() {
                             variant="ghost"
                             onClick={() => setView("metrics")}
                             className={cn(
-                                "h-7 px-4 rounded-md text-[9px] uppercase font-bold tracking-widest transition-all",
+                                "h-8 px-4 rounded-md text-[10px] uppercase font-bold tracking-widest transition-all",
                                 view === "metrics" ? "bg-white text-black" : "text-muted-foreground hover:text-white"
                             )}
                         >
@@ -674,23 +674,23 @@ export default function DashboardPage() {
             {view === "overview" ? (
                 <div className="flex-1 flex flex-col gap-4">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
-                        <Card className="lg:col-span-7 bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 shadow-2xl hover:bg-white/2 transition-colors">
+                        <Card className="lg:col-span-7 bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <IconReceipt className="h-5 w-5 text-white/60" />
-                                        <h2 className="text-2xl font-serif italic text-white">Income Tracker</h2>
+                                        <h2 className="text-2xl sm:text-3xl font-serif italic text-white">Revenue</h2>
                                     </div>
-                                    <p className="text-xs text-white/40 max-w-[320px]">
+                                    <p className="text-xs sm:text-sm text-white/40 max-w-[320px]">
                                         Track changes in income over time and access detailed data on each invoice and payments received
                                     </p>
                                 </div>
-                                <div className="text-xs text-white/40">{period}</div>
+                                <div className="text-xs sm:text-sm text-white/40">{period}</div>
                             </div>
 
                             <div className="relative flex items-center justify-center h-7 mb-4">
                                 <div className="absolute bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 shadow-lg">
-                                    <span className="text-sm font-medium text-white">{currency} {Math.round(selectedBucketValue).toLocaleString()}</span>
+                                    <span className="text-sm sm:text-base font-medium text-white">{currency} {Math.round(selectedBucketValue).toLocaleString()}</span>
                                 </div>
                             </div>
 
@@ -752,10 +752,10 @@ export default function DashboardPage() {
                             </div>
                         </Card>
 
-                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 shadow-2xl flex flex-col">
+                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl flex flex-col">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-white">Your Recent Payments</h3>
-                                <Link href="/invoices" className="text-xs text-white/40 hover:text-white/60 transition-colors">
+                                <h3 className="text-sm sm:text-base font-medium text-white">Recent Payments</h3>
+                                <Link href="/invoices" className="text-xs sm:text-sm text-white/60 hover:text-white transition-colors">
                                     See all
                                 </Link>
                             </div>
@@ -789,10 +789,10 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl hover:bg-white/2 transition-colors">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-white">Top Clients</h3>
-                                <button type="button" onClick={() => router.push('/clients')} className="text-xs text-white/40 hover:text-white/60 transition-colors">See all</button>
+                                <h3 className="text-sm sm:text-base font-medium text-white">Top Clients</h3>
+                                <button type="button" onClick={() => router.push('/clients')} className="text-xs sm:text-sm text-white/40 hover:text-white/60 transition-colors">See all</button>
                             </div>
                             <div className="space-y-2">
                                 {computedCashFlowMetrics.topClients.slice(0, 3).map((client, i) => (
@@ -806,10 +806,10 @@ export default function DashboardPage() {
                                             {client.name?.charAt(0) || 'C'}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-xs font-medium text-white truncate">{client.name}</div>
+                                            <div className="text-xs sm:text-sm font-medium text-white truncate">{client.name}</div>
                                             <div className="text-[10px] text-white/40">{client.count} invoices</div>
                                         </div>
-                                        <span className="text-xs text-white/60">{currency} {client.total.toLocaleString()}</span>
+                                        <span className="text-xs sm:text-sm text-white/60">{currency} {client.total.toLocaleString()}</span>
                                     </button>
                                 ))}
                                 {computedCashFlowMetrics.topClients.length === 0 && (
@@ -819,37 +819,37 @@ export default function DashboardPage() {
                         </Card>
 
                         <Card
-                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
+                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
                             onClick={() => router.push('/recurring')}
                             role="button"
                             tabIndex={0}
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-white">Monthly Revenue</h3>
+                                <h3 className="text-sm sm:text-base font-medium text-white">Monthly Revenue</h3>
                                 <span className="text-[10px] text-white/40">MRR</span>
                             </div>
-                            <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                            <div className="text-2xl sm:text-3xl font-serif font-bold italic text-white mb-1">
                                 {currency} {computedMetrics.recurring.toLocaleString()}
                             </div>
-                            <p className="text-xs text-white/40">Recurring revenue (monthly equivalent)</p>
+                            <p className="text-xs sm:text-sm text-white/40">Recurring revenue (monthly equivalent)</p>
                         </Card>
 
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-2xl">
+                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-white">Invoice Progress</h3>
-                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs text-white/40 hover:text-white/60 transition-colors">View</button>
+                                <h3 className="text-sm sm:text-base font-medium text-white">Invoice Progress</h3>
+                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs sm:text-sm text-white/40 hover:text-white/60 transition-colors">View</button>
                             </div>
                             <div className="grid grid-cols-3 gap-4 mb-3">
                                 <button type="button" onClick={() => router.push('/invoices?status=pending')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.pendingCount}</div>
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.pendingCount}</div>
                                     <div className="text-[10px] text-white/40">Pending</div>
                                 </button>
                                 <button type="button" onClick={() => router.push('/clients')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.clientsCount}</div>
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.clientsCount}</div>
                                     <div className="text-[10px] text-white/40">Clients</div>
                                 </button>
                                 <button type="button" onClick={() => router.push('/invoices')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl font-serif font-bold italic text-white">{invoiceProgress.paidCount}</div>
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.paidCount}</div>
                                     <div className="text-[10px] text-white/40">Paid</div>
                                 </button>
                             </div>
