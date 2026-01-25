@@ -220,7 +220,7 @@ export default function PayInvoicePage() {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-white/5">
                     <div>
-                        <h1 className="text-5xl font-serif text-white italic tracking-tight mb-3">Invoice Payment</h1>
+                        <h1 className="text-3xl sm:text-5xl font-serif text-white italic tracking-tight mb-3">Invoice Payment</h1>
                         <div className="flex items-center gap-3 text-neutral-500 group cursor-default">
                             <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-colors">
                                 <DollarSign className="h-4 w-4" />
@@ -507,16 +507,18 @@ export default function PayInvoicePage() {
                 </div>
 
                 {/* Aesthetic Footer */}
-                <div className="text-center pt-24 border-t border-white/5 opacity-40">
-                    <a
-                        href="https://illumi.co.za"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-medium uppercase tracking-[0.3em] text-white/50 hover:text-white transition-all duration-500 group"
-                    >
-                        POWERED BY <span className="font-bold group-hover:text-white transition-colors">ILLUMI</span>
-                    </a>
-                </div>
+                {!invoice.hide_illumi_branding && (
+                    <div className="text-center pt-24 border-t border-white/5 opacity-40">
+                        <a
+                            href="https://illumi.co.za"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] font-medium uppercase tracking-[0.3em] text-white/50 hover:text-white transition-all duration-500 group"
+                        >
+                            POWERED BY <span className="font-bold group-hover:text-white transition-colors">ILLUMI</span>
+                        </a>
+                    </div>
+                )}
             </div>
         </div>
     )

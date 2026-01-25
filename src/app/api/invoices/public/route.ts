@@ -54,6 +54,25 @@ export async function GET(request: NextRequest) {
             )
         }
 
+        let allowHideIllumiBranding = false
+        try {
+            if (data.workspace_id) {
+                const nowIso = new Date().toISOString()
+                const { data: sub, error: subError } = await service
+                    .from('subscriptions')
+                    .select('tier, status, expires_at')
+                    .eq('workspace_id', data.workspace_id)
+                    .maybeSingle()
+
+                if (!subError && sub && sub.tier === 'pro' && sub.status === 'active') {
+                    const expiresAt = sub.expires_at ? new Date(sub.expires_at).toISOString() : null
+                    allowHideIllumiBranding = !expiresAt || expiresAt > nowIso
+                }
+            }
+        } catch {
+            allowHideIllumiBranding = false
+        }
+
         // Return only the fields needed for the payment page
         // Do NOT expose sensitive workspace/user data
         const safeInvoice = {
@@ -71,6 +90,7 @@ export async function GET(request: NextRequest) {
             template: data.template,
             invoice_mode: data.invoice_mode,
             logo_url: data.logo_url,
+            hide_illumi_branding: Boolean(data.hide_illumi_branding && allowHideIllumiBranding),
             payment_provider: data.payment_provider,
             vat_rate: data.vat_rate,
             vat_amount: data.vat_amount,

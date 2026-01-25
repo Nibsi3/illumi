@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { use, useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useSettings } from "@/lib/settings-context"
+import { useSubscription } from "@/lib/subscription/hooks"
 
 interface InvoiceItem {
     id: string
@@ -30,6 +31,7 @@ interface Invoice {
     terms: string
     currency: string
     logo_url?: string | null
+    hide_illumi_branding?: boolean | null
     invoice_mode?: "light" | "dark" | null
     customer: {
         name: string
@@ -44,6 +46,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     const router = useRouter()
     const supabase = createClient()
     const { currency } = useSettings()
+    const { isPro } = useSubscription()
     
     const [invoice, setInvoice] = useState<Invoice | null>(null)
     const [loading, setLoading] = useState(true)
@@ -127,18 +130,18 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10">
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10 px-3 sm:px-4">
                         <Share2 className="mr-2 h-4 w-4" />
-                        Share
+                        <span className="hidden sm:inline">Share</span>
                     </Button>
-                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10" onClick={() => window.print()}>
+                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10 px-3 sm:px-4" onClick={() => window.print()}>
                         <Printer className="mr-2 h-4 w-4" />
-                        Print
+                        <span className="hidden sm:inline">Print</span>
                     </Button>
-                    <Button className="h-10 bg-white text-black hover:bg-neutral-200 font-semibold px-6">
+                    <Button className="h-10 bg-white text-black hover:bg-neutral-200 font-semibold px-3 sm:px-6">
                         <Download className="mr-2 h-4 w-4" />
-                        Download PDF
+                        <span className="hidden sm:inline">Download PDF</span>
                     </Button>
                 </div>
             </header>
@@ -150,7 +153,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     const logoContainerClass = logoBg === 'light' ? 'bg-[#0c0c0c] border-white/10' : 'bg-[#0c0c0c] border-white/10'
                     const logoTextClass = logoBg === 'light' ? 'text-white' : 'text-white'
                     return (
-                <div className="bg-white text-black rounded-lg shadow-2xl p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
+                <div className="bg-white text-black rounded-lg shadow-2xl p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
                     {/* Header: Logo & Title */}
                     <div className="flex justify-between items-start mb-20">
                         <div className={"w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden border " + logoContainerClass}>
@@ -271,9 +274,11 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         </div>
                     </div>
 
-                    <div className="mt-40 text-center">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.illumi.co.za</p>
-                    </div>
+                    {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && (
+                        <div className="mt-24 sm:mt-40 text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.illumi.co.za</p>
+                        </div>
+                    )}
                 </div>
                     )
                 })()}

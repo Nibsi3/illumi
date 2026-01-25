@@ -54,7 +54,7 @@ const columnsList = [
 export default function InvoicesPage() {
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
-    const { currency, activePaymentProvider, fromEmail, companyName, companyWebsite, sendInvoiceCopyToSelf } = useSettings()
+    const { currency, activePaymentProvider, fromEmail, companyName, companyWebsite, sendInvoiceCopyToSelf, hideIllumiBranding } = useSettings()
     const { isPro } = useSubscription()
 
     const moneyFormatter = useMemo(() => {
@@ -404,6 +404,7 @@ export default function InvoicesPage() {
                     supportEmail: ((invoice.from_email as string) || fromEmail || undefined),
                     companyWebsite: companyWebsite,
                     allowCustomBranding: Boolean(isPro),
+                    hideIllumiBranding: Boolean(isPro && (invoice.hide_illumi_branding ?? hideIllumiBranding)),
                     customerName: invoice.customer,
                     invoiceNumber: invoice.displayId,
                     amount: invoice.amount,

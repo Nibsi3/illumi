@@ -27,6 +27,7 @@ interface EmailPayload {
     supportEmail?: string
     companyWebsite?: string
     allowCustomBranding?: boolean
+    hideIllumiBranding?: boolean
     subject?: string
     // For invite emails
     inviterName?: string
@@ -287,6 +288,7 @@ export async function POST(req: Request) {
                 const invoiceSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
                 const invoiceCompanyWebsite = (payload.companyWebsite || "").trim()
                 const invoiceAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const invoiceHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const invoicePoweredByName = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyName : "Illumi"
                 const invoicePoweredByUrl = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyWebsite : "https://illumi.co.za"
                 emailSubject = payload.subject || `Invoice ${payload.invoiceNumber || ""} from ${invoiceCompanyName}`
@@ -320,9 +322,11 @@ export async function POST(req: Request) {
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             Questions? Send an email to ${invoiceSupportEmail}
                         </p>
+                        ${invoiceHideIllumiBranding ? '' : `
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
                             <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${invoicePoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${invoicePoweredByName}</strong></a></p>
                         </div>
+                        `}
                     </div>
                 `
                 break
@@ -332,6 +336,7 @@ export async function POST(req: Request) {
                 const reminderSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
                 const reminderCompanyWebsite = (payload.companyWebsite || "").trim()
                 const reminderAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const reminderHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const reminderPoweredByName = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyName : "Illumi"
                 const reminderPoweredByUrl = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyWebsite : "https://illumi.co.za"
                 emailSubject = `Reminder: Invoice ${payload.invoiceNumber || ""} from ${reminderCompanyName} - Payment Due Soon`
@@ -366,9 +371,11 @@ export async function POST(req: Request) {
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             Questions? Send an email to ${reminderSupportEmail}
                         </p>
+                        ${reminderHideIllumiBranding ? '' : `
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
                             <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${reminderPoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${reminderPoweredByName}</strong></a></p>
                         </div>
+                        `}
                     </div>
                 `
                 break
@@ -378,6 +385,7 @@ export async function POST(req: Request) {
                 const finalSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
                 const finalCompanyWebsite = (payload.companyWebsite || "").trim()
                 const finalAllowCustomBranding = Boolean(payload.allowCustomBranding)
+                const finalHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const finalPoweredByName = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyName : "Illumi"
                 const finalPoweredByUrl = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyWebsite : "https://illumi.co.za"
                 emailSubject = `FINAL NOTICE: Invoice ${payload.invoiceNumber || ""} from ${finalCompanyName} - Payment Due Today`
@@ -413,9 +421,11 @@ export async function POST(req: Request) {
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             Questions? Send an email to ${finalSupportEmail}
                         </p>
+                        ${finalHideIllumiBranding ? '' : `
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
                             <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${finalPoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${finalPoweredByName}</strong></a></p>
                         </div>
+                        `}
                     </div>
                 `
                 break

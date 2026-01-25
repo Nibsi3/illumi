@@ -14,6 +14,8 @@ interface SettingsContextType {
     setFromEmail: (email: string) => void
     sendInvoiceCopyToSelf: boolean
     setSendInvoiceCopyToSelf: (enabled: boolean) => void
+    hideIllumiBranding: boolean
+    setHideIllumiBranding: (enabled: boolean) => void
     logo: string | null
     setLogo: (logo: string | null) => void
     companyName: string
@@ -69,6 +71,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
     const [fromEmail, setFromEmail] = useState("hello@illumi.co.za")
     const [sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf] = useState(false)
+    const [hideIllumiBranding, setHideIllumiBranding] = useState(false)
     const [logo, setLogo] = useState<string | null>(null)
     const [companyName, setCompanyName] = useState("Illumi Professional")
     const [companyWebsite, setCompanyWebsite] = useState("")
@@ -113,6 +116,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.dateFormat) setDateFormat(parsed.dateFormat)
                     if (parsed.fromEmail) setFromEmail(parsed.fromEmail)
                     if (parsed.sendInvoiceCopyToSelf !== undefined) setSendInvoiceCopyToSelf(Boolean(parsed.sendInvoiceCopyToSelf))
+                    if (parsed.hideIllumiBranding !== undefined) setHideIllumiBranding(Boolean(parsed.hideIllumiBranding))
                     if (parsed.logo) setLogo(parsed.logo)
                     if (parsed.companyName) setCompanyName(parsed.companyName)
                     if (parsed.companyWebsite !== undefined) setCompanyWebsite(parsed.companyWebsite)
@@ -161,6 +165,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             dateFormat,
             fromEmail,
             sendInvoiceCopyToSelf,
+            hideIllumiBranding,
             logo,
             companyName,
             companyWebsite,
@@ -170,7 +175,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             connectedProviders,
         }
         localStorage.setItem(storageKey, JSON.stringify(settings))
-    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, logo, companyName, companyWebsite, companyAddress, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
+    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
 
     useEffect(() => {
         if (!isBillingLoaded) return
@@ -184,6 +189,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             dateFormat, setDateFormat,
             fromEmail, setFromEmail,
             sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf,
+            hideIllumiBranding, setHideIllumiBranding,
             logo, setLogo,
             companyName, setCompanyName,
             companyWebsite, setCompanyWebsite,

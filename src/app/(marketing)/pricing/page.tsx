@@ -17,6 +17,7 @@ const freeFeatures = [
     "Product catalog",
     "Email invoice sending",
     "PDF Exports",
+    "Custom business logo",
     "Expense tracking",
     "Net profit calculator",
     "CSV exports",
@@ -24,7 +25,7 @@ const freeFeatures = [
 
 const proFeatures = [
     "Everything in Free, plus:",
-    "Custom business logo",
+    "Remove Illumi branding",
     "PayGate integration",
     "Client payment portal",
     "Recurring invoices",

@@ -404,6 +404,7 @@ export default function NewInvoicePage() {
                 payment_provider: activePaymentProvider || null,
                 from_email: fromEmail,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
+                hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
 
             // 1. Create Invoice with fallback for missing columns
@@ -603,6 +604,7 @@ export default function NewInvoicePage() {
                                 supportEmail: fromEmail,
                                 companyWebsite: settings.companyWebsite,
                                 allowCustomBranding: Boolean(isPro),
+                                hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                                 invoiceNumber: invoiceNumber,
                                 customerName: clientName,
                                 amount: `${currency} ${total.toLocaleString()}`,
@@ -1470,6 +1472,7 @@ export default function NewInvoicePage() {
                             taxRate,
                             dateFormat,
                             invoiceMode,
+                            hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             clientName,
                             clientEmail,
                             clientPhone,

@@ -19,6 +19,7 @@ interface PreviewModalProps {
         taxRate: number
         dateFormat: string
         invoiceMode: "light" | "dark"
+        hideIllumiBranding?: boolean
         clientName: string
         clientEmail: string
         clientPhone: string
@@ -60,7 +61,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     return (
         <div className="fixed inset-0 z-[100] flex flex-col bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
             {/* Header */}
-            <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black/50 sticky top-0 z-10">
+            <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 sm:px-6 bg-black/50 sticky top-0 z-10">
                 <div className="flex items-center gap-6">
                     <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors">
                         <X className="h-5 w-5" />
@@ -71,10 +72,10 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                     <Button
                         variant="outline"
-                        className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter"
+                        className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter px-3 sm:px-4"
                         onClick={() => {
                             const url = `${window.location.origin}/pay/${data.invoiceNumber}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`
                             navigator.clipboard.writeText(url)
@@ -82,28 +83,28 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         }}
                     >
                         <Share2 className="mr-2 h-4 w-4" />
-                        Share
+                        <span className="hidden sm:inline">Share</span>
                     </Button>
                     <Button
                         variant="outline"
-                        className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter"
+                        className="h-9 border-white/10 bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-tighter px-3 sm:px-4"
                         onClick={() => window.print()}
                     >
                         <Printer className="mr-2 h-4 w-4" />
-                        Print
+                        <span className="hidden sm:inline">Print</span>
                     </Button>
                     <Button
-                        className="h-9 bg-white text-black hover:bg-neutral-200 text-xs font-black uppercase tracking-tighter px-6"
+                        className="h-9 bg-white text-black hover:bg-neutral-200 text-xs font-black uppercase tracking-tighter px-3 sm:px-6"
                         onClick={() => window.print()}
                     >
                         <Download className="mr-2 h-4 w-4" />
-                        Download PDF
+                        <span className="hidden sm:inline">Download PDF</span>
                     </Button>
                 </div>
             </header >
 
             {/* Scrollable Content */}
-            < div className="flex-1 overflow-y-auto p-12 scrollbar-hide" >
+            < div className="flex-1 overflow-y-auto p-4 sm:p-12 scrollbar-hide" >
                 <div className={cn(
                     "mx-auto shadow-2xl min-h-[1000px] printable-area transition-all duration-500",
                     isLight ? "bg-white text-black border border-neutral-200" : "bg-[#0a0a0a] text-white border border-white/5",
@@ -270,6 +271,15 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                 </div>
                             </div>
                         </div>
+
+                        {!data.hideIllumiBranding && (
+                            <div className="mt-32 text-center">
+                                <p className={cn(
+                                    "text-[10px] font-bold uppercase tracking-[0.4em]",
+                                    isLight ? "text-neutral-400" : "text-white/30"
+                                )}>www.illumi.co.za</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div >

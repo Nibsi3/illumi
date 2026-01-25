@@ -254,6 +254,7 @@ export default function EditInvoicePage() {
                 logo_bg: null,
                 from_email: fromEmail,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
+                hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
 
             // Update Invoice
@@ -264,6 +265,15 @@ export default function EditInvoicePage() {
 
             if (invoiceError && invoiceError.message?.includes('notes')) {
                 const { notes, ...fallbackData } = invoiceData as any
+                const { error: retryError } = await supabase
+                    .from('invoices')
+                    .update(fallbackData)
+                    .eq('id', invoiceId)
+                invoiceError = retryError
+            }
+
+            if (invoiceError && (invoiceError as any).code === 'PGRST204') {
+                const { hide_illumi_branding, ...fallbackData } = invoiceData as any
                 const { error: retryError } = await supabase
                     .from('invoices')
                     .update(fallbackData)
@@ -307,6 +317,7 @@ export default function EditInvoicePage() {
                             supportEmail: fromEmail,
                             companyWebsite: settings.companyWebsite,
                             allowCustomBranding: Boolean(isPro),
+                            hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             invoiceNumber: invoiceNumber,
                             customerName: clientName,
                             amount: `${currency} ${total.toLocaleString()}`,
@@ -839,6 +850,7 @@ export default function EditInvoicePage() {
                             taxRate,
                             dateFormat,
                             invoiceMode,
+                            hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             clientName,
                             clientEmail,
                             clientPhone,

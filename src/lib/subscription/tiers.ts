@@ -11,7 +11,7 @@
  * 
  * Pro (R350/month):
  * - Everything in Starter
- * - Custom business logo
+ * - Remove Illumi branding
  * - PayGate integration
  * - Client payment portal
  * - Recurring invoices
@@ -30,6 +30,7 @@ export interface TierLimits {
     features: {
         // Pro-only features
         customLogo: boolean
+        removeIllumiBranding: boolean
         payGateIntegration: boolean
         clientPortal: boolean
         recurringInvoices: boolean
@@ -52,7 +53,8 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
         maxUsers: 1, // Owner only, no team members
         features: {
             // Pro-only features - all disabled for free
-            customLogo: false,
+            customLogo: true,
+            removeIllumiBranding: false,
             payGateIntegration: false,
             clientPortal: false,
             recurringInvoices: false,
@@ -74,6 +76,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
         features: {
             // All Pro features enabled
             customLogo: true,
+            removeIllumiBranding: true,
             payGateIntegration: true,
             clientPortal: true,
             recurringInvoices: true,

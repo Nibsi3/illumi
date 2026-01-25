@@ -9,14 +9,7 @@ import { Switch } from "@/components/ui/switch"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 import {
-    Plus,
     Upload,
-    Check,
-    Building2,
-    Globe,
-    Mail,
-    Phone,
-    Lock,
     Trash2,
     AlertTriangle
 } from "lucide-react"
@@ -36,11 +29,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-import { motion, AnimatePresence } from "framer-motion"
 import { useSettings } from "@/lib/settings-context"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 
 export default function GeneralSettings() {
     const { isPro } = useSubscription()
@@ -48,6 +39,7 @@ export default function GeneralSettings() {
     const { activeWorkspace } = useWorkspace()
     const {
         logo, setLogo,
+        hideIllumiBranding, setHideIllumiBranding,
         companyName, setCompanyName,
         companyWebsite, setCompanyWebsite,
         fromEmail, setFromEmail,
@@ -62,12 +54,6 @@ export default function GeneralSettings() {
     const [isDeleting, setIsDeleting] = useState(false)
 
     const handleLogoUpload = () => {
-        // Check for Pro subscription
-        if (!isPro) {
-            toast.error("Pro Feature", { description: "Custom business logo is only available on the Pro plan." })
-            return
-        }
-        
         const input = document.createElement('input')
         input.type = 'file'
         input.accept = 'image/*'
@@ -93,14 +79,26 @@ export default function GeneralSettings() {
             const workspaceId = activeWorkspace?.id
 
             if (user && workspaceId) {
-                await supabase
+                let { error: updateError } = await supabase
                     .from('invoices')
                     .update({
                         send_copy_to_self: Boolean(sendInvoiceCopyToSelf),
+                        hide_illumi_branding: Boolean(isPro && hideIllumiBranding),
                     } as any)
                     .eq('workspace_id', workspaceId)
                     .eq('user_id', user.id)
                     .or('status.eq.scheduled,is_recurring.eq.true')
+
+                if (updateError && (updateError as any).code === 'PGRST204') {
+                    await supabase
+                        .from('invoices')
+                        .update({
+                            send_copy_to_self: Boolean(sendInvoiceCopyToSelf),
+                        } as any)
+                        .eq('workspace_id', workspaceId)
+                        .eq('user_id', user.id)
+                        .or('status.eq.scheduled,is_recurring.eq.true')
+                }
 
                 // Only set from_email on templates that don't already have a per-invoice override.
                 await supabase
@@ -127,27 +125,19 @@ export default function GeneralSettings() {
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                         <h3 className="text-lg font-medium text-white">Default Logo</h3>
-                        {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
                     </div>
                     <p className="text-sm text-neutral-500 max-w-xl">
-                        {isPro 
-                            ? "This logo will be displayed on all your invoices and client communications by default."
-                            : "Upgrade to Pro to add your custom business logo to invoices and client communications."}
+                        This logo will be displayed on all your invoices and client communications by default.
                     </p>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
                     <div
                         onClick={handleLogoUpload}
-                        className={`w-32 h-32 rounded-2xl border-2 border-dashed border-white/5 bg-black hover:border-white/20 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden ${!isPro ? 'opacity-50' : ''}`}
+                        className="w-32 h-32 rounded-2xl border-2 border-dashed border-white/5 bg-black hover:border-white/20 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden"
                     >
-                        {logo && isPro ? (
+                        {logo ? (
                             <img src={logo} alt="Logo" className="w-full h-full object-contain p-4" />
-                        ) : !isPro ? (
-                            <>
-                                <Lock className="h-6 w-6 text-neutral-600 mb-2" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-600">Pro Only</span>
-                            </>
                         ) : (
                             <>
                                 <Upload className="h-6 w-6 text-neutral-600 group-hover:text-neutral-400 group-hover:scale-110 transition-all mb-2" />
@@ -156,33 +146,49 @@ export default function GeneralSettings() {
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
-                        {isPro ? (
-                            <Button
-                                variant="outline"
-                                className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
-                                onClick={() => {
-                                    if (isPro) return handleLogoUpload()
-                                    router.push('/settings/billing')
-                                }}
-                            >
-                                Replace Logo
-                            </Button>
-                        ) : (
-                            <HoverBorderGradient
-                                as="button"
-                                onClick={() => router.push('/settings/billing')}
-                                containerClassName="w-fit"
-                                className="bg-white text-black font-bold h-9 px-4 flex items-center justify-center"
-                            >
-                                Upgrade to Pro
-                            </HoverBorderGradient>
-                        )}
-                        {isPro && (
-                            <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
-                                Remove
-                            </Button>
-                        )}
+                        <Button
+                            variant="outline"
+                            className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
+                            onClick={handleLogoUpload}
+                        >
+                            Replace Logo
+                        </Button>
+                        <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
+                            Remove
+                        </Button>
                     </div>
+                </div>
+            </div>
+
+            {/* Branding Section */}
+            <div className="space-y-8 pt-10 border-t border-white/5">
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-medium text-white">Invoice Branding</h3>
+                        {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
+                    </div>
+                    <p className="text-sm text-neutral-500 max-w-xl">
+                        Remove “Powered by Illumi” from the bottom of invoices.
+                    </p>
+                </div>
+
+                <div className="flex items-start sm:items-center justify-between gap-6">
+                    <div className="flex flex-col gap-1">
+                        <h4 className="text-sm font-medium text-white">Hide Illumi branding</h4>
+                        <p className="text-xs text-neutral-500 max-w-xl">
+                            Pro feature. Free invoices will always include Illumi branding.
+                        </p>
+                    </div>
+                    <Switch
+                        checked={Boolean(hideIllumiBranding) && Boolean(isPro)}
+                        onCheckedChange={(checked) => {
+                            if (!isPro) {
+                                router.push('/settings/billing')
+                                return
+                            }
+                            setHideIllumiBranding(Boolean(checked))
+                        }}
+                    />
                 </div>
             </div>
 
@@ -195,7 +201,7 @@ export default function GeneralSettings() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Name</Label>
                         <Input
@@ -207,7 +213,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Country</Label>
                         <Select value={country} onValueChange={setCountry}>
@@ -244,7 +250,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
                         <Input
@@ -269,7 +275,7 @@ export default function GeneralSettings() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                         <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
                         <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">

@@ -593,7 +593,7 @@ export default async function LandingPage() {
                 <div className="mx-auto max-w-3xl px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-medium text-white mb-4">Frequently Asked Questions</h2>
-                        <p className="text-[#878787]">Everything you need to know about Illumi invoicing software.</p>
+                        <p className="text-sm text-neutral-300">Add your business logo for free, or upgrade to Pro for PayGate, recurring invoices, and to remove Illumi branding.</p>
                     </div>
 
                     <div className="space-y-4">
