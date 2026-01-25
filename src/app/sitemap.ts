@@ -6,7 +6,10 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'
+const baseUrl =
+  process.env.NEXT_PUBLIC_URL ||
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  'https://www.illumi.co.za'
 
 const isRouteGroup = (segment: string) => segment.startsWith('(') && segment.endsWith(')')
 
@@ -21,17 +24,30 @@ const shouldExcludeFromSitemap = (segments: string[]) => {
 
   if (first === 'site-map') return true
 
-  return (
-    first === 'api' ||
-    first === 'auth' ||
-    first === 'pay' ||
-    first === 'view' ||
-    first === 'login' ||
-    first === 'invite' ||
-    first === 'dashboard' ||
-    first === 'invoices' ||
-    first === 'settings'
-  )
+  const excludedFirstSegments = new Set([
+    'api',
+    'auth',
+    'pay',
+    'view',
+    'login',
+    'invite',
+    'admin',
+    'dashboard',
+    'apps',
+    'overview',
+    'clients',
+    'expenses',
+    'inbox',
+    'invoices',
+    'notifications',
+    'products',
+    'recurring',
+    'transactions',
+    'upgrade',
+    'settings',
+  ])
+
+  return excludedFirstSegments.has(first)
 }
 
 const toRoutePathFromAppPageFile = (appDir: string, filePath: string) => {

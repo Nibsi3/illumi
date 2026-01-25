@@ -29,7 +29,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "https://illumi.co.za"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://www.illumi.co.za"
+  ),
   title: "Illumi | Professional Invoicing for South African Businesses",
   description: "Create professional invoices in ZAR, track expenses, and get paid online. Built for South African freelancers and small businesses — VAT optional.",
   keywords: [
