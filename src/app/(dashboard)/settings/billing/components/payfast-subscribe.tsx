@@ -10,7 +10,11 @@ import { toast } from "sonner"
 // PayFast Production Credentials
 const PAYFAST_MERCHANT_ID = process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID || ""
 const PAYFAST_MERCHANT_KEY = process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_KEY || ""
-const PAYFAST_URL = "https://www.payfast.co.za/eng/process"
+const PAYFAST_URL =
+    process.env.NEXT_PUBLIC_PAYFAST_PROCESS_URL ||
+    (process.env.NODE_ENV === 'production'
+        ? "https://www.payfast.co.za/eng/process"
+        : "https://sandbox.payfast.co.za/eng/process")
 
 // Base URL for callbacks
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://illumi.co.za"
@@ -48,6 +52,8 @@ export function PayFastSubscribeButton() {
     }, [supabase])
     
     const merchantConfigured = Boolean(PAYFAST_MERCHANT_ID && PAYFAST_MERCHANT_KEY)
+    const isSandbox = PAYFAST_URL.includes('sandbox.payfast.co.za')
+    const isPublicBaseUrl = BASE_URL.startsWith('https://') && !BASE_URL.includes('localhost') && !BASE_URL.includes('127.0.0.1')
 
     const workspaceId = useMemo(() => {
         return (
@@ -91,6 +97,13 @@ export function PayFastSubscribeButton() {
         if (!merchantConfigured) {
             toast.error("PayFast is not configured", {
                 description: "Add NEXT_PUBLIC_PAYFAST_MERCHANT_ID and NEXT_PUBLIC_PAYFAST_MERCHANT_KEY to your environment variables.",
+            })
+            return
+        }
+
+        if (!isSandbox && !isPublicBaseUrl) {
+            toast.error("PayFast cannot be started from localhost", {
+                description: "Use an HTTPS public URL for NEXT_PUBLIC_URL (e.g. https://illumi.co.za) or use a tunnel (ngrok) for local testing.",
             })
             return
         }
@@ -206,6 +219,13 @@ export function PayFastSubscribeButton() {
                         e.preventDefault()
                         toast.error("PayFast is not configured", {
                             description: "Add NEXT_PUBLIC_PAYFAST_MERCHANT_ID and NEXT_PUBLIC_PAYFAST_MERCHANT_KEY to your environment variables.",
+                        })
+                    }
+
+                    if (!isSandbox && !isPublicBaseUrl) {
+                        e.preventDefault()
+                        toast.error("PayFast cannot be started from localhost", {
+                            description: "Use an HTTPS public URL for NEXT_PUBLIC_URL (e.g. https://illumi.co.za) or use a tunnel (ngrok) for local testing.",
                         })
                     }
                 }}
