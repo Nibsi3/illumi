@@ -886,7 +886,58 @@ export default function InvoicesPage() {
 
                 {/* Main Content Area */}
                 <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
-                        <div className="overflow-x-auto">
+                        {/* Mobile list */}
+                        <div className="md:hidden divide-y divide-white/10">
+                            {paginatedInvoices.map((invoice: any) => (
+                                <div key={invoice.id} className="p-4">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <div className="text-sm font-bold text-white truncate">#{invoice.displayId}</div>
+                                            <div className="mt-1 text-xs text-neutral-400 truncate">{invoice.customer}</div>
+                                        </div>
+                                        <div className="flex flex-col items-end gap-2">
+                                            <div className="text-sm font-bold text-white">{invoice.amount}</div>
+                                            <StatusDot
+                                                variant={
+                                                    invoice.status === 'Paid' ? 'success' :
+                                                        invoice.status === 'Overdue' ? 'error' :
+                                                            invoice.status === 'Draft' ? 'neutral' :
+                                                                'warning'
+                                                }
+                                            >
+                                                {invoice.status}
+                                            </StatusDot>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-500">
+                                        <div className="flex items-center gap-3">
+                                            {invoice.dueDate ? <span>Due: {invoice.dueDate}</span> : <span />}
+                                            {invoice.issueDate ? <span>Issued: {invoice.issueDate}</span> : null}
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex items-center gap-2">
+                                        <Link
+                                            href={`/invoices/edit/${invoice.id}`}
+                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <Link
+                                            href={`/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`}
+                                            target="_blank"
+                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+                                        >
+                                            View
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Desktop table */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full border-collapse text-left text-[13px]">
                                 <thead>
                                     <tr className="bg-white/2 border-b border-white/10">

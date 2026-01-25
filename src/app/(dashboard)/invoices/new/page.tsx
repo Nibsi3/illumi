@@ -150,6 +150,16 @@ export default function NewInvoicePage() {
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
     const illumiLogoSrc = invoiceMode === 'light' ? '/midday-logo.png' : '/logo.png'
 
+    const scrollToSection = (id: string) => {
+        try {
+            const el = document.getElementById(id)
+            if (!el) return
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        } catch {
+            // ignore
+        }
+    }
+
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
     const [recurringInterval, setRecurringInterval] = useState("monthly")
@@ -1014,6 +1024,21 @@ export default function NewInvoicePage() {
                 <div className="flex-1 overflow-y-auto pb-28 sm:pb-40 no-scrollbar">
                     <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-8 md:px-12">
 
+                        {/* Mobile section tabs */}
+                        <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-white/5">
+                            <div className="grid grid-cols-3 gap-2">
+                                <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-details')}>
+                                    Details
+                                </Button>
+                                <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-items')}>
+                                    Items
+                                </Button>
+                                <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-summary')}>
+                                    Summary
+                                </Button>
+                            </div>
+                        </div>
+
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
                             invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#09090b] border border-white/5 text-white",
@@ -1216,6 +1241,7 @@ export default function NewInvoicePage() {
                                 </div>
 
                                 {/* Meta Details */}
+                                <div id="invoice-details" />
                                 {!canSchedule && (
                                     <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
                                         <div className="flex flex-col gap-2">
@@ -1276,6 +1302,7 @@ export default function NewInvoicePage() {
                                 )}
 
                                 {/* Tasks Table (Refined) */}
+                                <div id="invoice-items" />
                                 <div className="mb-12">
                                     <table className="w-full border-collapse">
                                         <thead>
@@ -1357,7 +1384,7 @@ export default function NewInvoicePage() {
                                                     <td className="py-4 text-right pl-2">
                                                         <button
                                                             onClick={() => removeTask(task.id)}
-                                                            className="text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all outline-none"
+                                                            className="text-neutral-400 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all outline-none"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
@@ -1379,6 +1406,7 @@ export default function NewInvoicePage() {
 
                                 {/* Summary & Totals */}
                                 {/* Summary & Totals */}
+                                <div id="invoice-summary" />
                                 <div className="grid grid-cols-12 gap-8 mt-20 pt-12 border-t border-white/5">
                                     <div className="col-span-8 flex flex-col gap-6">
                                         <div className="flex flex-col gap-4">
@@ -1490,6 +1518,29 @@ export default function NewInvoicePage() {
                     </div>
                 </div>
 
+            </div>
+
+            {/* Mobile sticky actions */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-background/95 backdrop-blur p-3">
+                <div className="max-w-5xl mx-auto flex items-center gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 flex-1"
+                        onClick={() => setIsPreviewOpen(true)}
+                    >
+                        <Eye className="h-4 w-4 mr-2" /> Preview
+                    </Button>
+
+                    <Button
+                        type="button"
+                        className="h-11 flex-1 bg-white text-black hover:bg-neutral-200"
+                        disabled={isSaving}
+                        onClick={() => handleCreate(canSchedule ? 'schedule' : 'send')}
+                    >
+                        {isSaving ? 'Saving...' : (canSchedule ? 'Schedule' : 'Send')}
+                    </Button>
+                </div>
             </div>
 
             {isPreviewOpen && (
