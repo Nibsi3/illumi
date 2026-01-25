@@ -34,24 +34,24 @@ const transactions = [
 
 export default function TransactionsPage() {
     return (
-        <div className="flex flex-col gap-y-8">
-            <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-y-8 font-sans pb-20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-serif">Transactions</h1>
-                    <p className="text-muted-foreground">Keep track of your spending and income across all accounts.</p>
+                    <h1 className="text-2xl sm:text-4xl font-serif italic">Transactions</h1>
+                    <p className="hidden sm:block text-muted-foreground">Keep track of your spending and income across all accounts.</p>
                 </div>
-                <Button variant="outline">
+                <Button variant="outline" className="w-full sm:w-auto">
                     <Download className="mr-2 h-4 w-4" />
                     Export
                 </Button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-border py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input placeholder="Search transactions..." className="pl-10" />
                 </div>
-                <Button variant="outline">
+                <Button variant="outline" className="w-full sm:w-auto">
                     <Filter className="mr-2 h-4 w-4" />
                     Filter
                 </Button>
@@ -59,7 +59,34 @@ export default function TransactionsPage() {
 
             <Card className="overflow-hidden border-none shadow-none bg-transparent">
                 <CardContent className="p-0">
-                    <div className="relative overflow-x-auto">
+                    {/* Mobile list */}
+                    <div className="md:hidden divide-y divide-border rounded-xl border border-border bg-background">
+                        {transactions.map((tx) => (
+                            <div key={tx.id} className="p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <div className="text-sm font-semibold truncate">{tx.description}</div>
+                                        <div className="mt-1 text-xs text-muted-foreground">{tx.date} · {tx.category}</div>
+                                    </div>
+                                    <div className={tx.amount.startsWith('+') ? 'text-green-600' : 'text-foreground'}>
+                                        <div className="text-sm font-bold flex items-center gap-1">
+                                            {tx.amount.startsWith('+') ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownLeft className="h-3 w-3" />}
+                                            {tx.amount}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-3">
+                                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${tx.status === 'Completed' ? 'bg-secondary text-secondary-foreground' : 'bg-muted text-muted-foreground'
+                                        }`}>
+                                        {tx.status}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop table */}
+                    <div className="hidden md:block relative overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead className="border-y bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
                                 <tr>
