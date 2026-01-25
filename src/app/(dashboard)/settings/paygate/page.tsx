@@ -592,10 +592,10 @@ export default function PayGatePage() {
     // Show upgrade prompt for free users
     if (!isPro) {
         return (
-            <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
-                <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6">
-                        <IconLock className="h-10 w-10 text-neutral-500" />
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="max-w-2xl text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
+                        <IconLock className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-2">Pro Feature</h2>
                     <p className="text-neutral-500 max-w-md mb-8">
@@ -606,7 +606,7 @@ export default function PayGatePage() {
                         as="button"
                         onClick={() => window.location.href = '/settings/billing'}
                         containerClassName=""
-                        className="bg-white text-black font-bold h-12 px-8"
+                        className="bg-white text-black font-bold h-12 px-8 w-full sm:w-auto"
                     >
                         Upgrade to Pro — R350/mo
                     </HoverBorderGradient>
@@ -619,11 +619,11 @@ export default function PayGatePage() {
         <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-white tracking-tight">PayGate Settings</h2>
-                    <p className="text-sm text-neutral-500">Configure your payment gateways to receive payments from clients.</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">PayGate Settings</h2>
+                    <p className="hidden sm:block text-sm text-neutral-500">Configure your payment gateways to receive payments from clients.</p>
                 </div>
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+                <div className="flex items-center gap-6 w-full md:w-auto">
+                    <div className="w-full md:w-auto flex items-center justify-between gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
                         <Label htmlFor="test-mode" className="text-xs font-bold uppercase tracking-wider text-neutral-400">Test Mode</Label>
                         <Switch
                             id="test-mode"

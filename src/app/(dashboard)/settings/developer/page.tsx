@@ -131,7 +131,7 @@ export default function DeveloperDocsPage() {
                 <main className="flex-1 min-w-0 overflow-y-auto bg-black no-scrollbar">
                     {/* Top Header */}
                     <header className="sticky top-0 z-30 bg-black/50 backdrop-blur-3xl border-b border-white/5">
-                        <div className="max-w-5xl mx-auto px-10 h-16 flex items-center justify-between">
+                        <div className="max-w-5xl mx-auto px-4 sm:px-10 h-16 flex items-center justify-between">
                             <div className="w-full max-w-md relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20 group-focus-within:text-white transition-colors" />
                                 <input
@@ -154,7 +154,7 @@ export default function DeveloperDocsPage() {
                         </div>
                     </header>
 
-                    <div className="max-w-4xl mx-auto px-10 py-16 lg:py-24">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-10 py-12 sm:py-16 lg:py-24">
                         {/* Breadcrumbs */}
                         <nav className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-12 space-x-2">
                             <a href="#" className="hover:text-white transition-colors">Home</a>
@@ -166,8 +166,8 @@ export default function DeveloperDocsPage() {
 
                         {/* Page Title & Intro */}
                         <div className="mb-16">
-                            <h1 className="text-5xl font-serif italic font-bold tracking-tight text-white mb-6">Overview</h1>
-                            <p className="text-xl text-white/40 font-light leading-relaxed max-w-3xl">
+                            <h1 className="text-3xl sm:text-5xl font-serif italic font-bold tracking-tight text-white mb-6">Overview</h1>
+                            <p className="text-base sm:text-xl text-white/40 font-light leading-relaxed max-w-3xl">
                                 Learn the basics of our platform and get started quickly. Our API is designed to be intuitive, secure, and scalable for applications of any size.
                             </p>
                         </div>

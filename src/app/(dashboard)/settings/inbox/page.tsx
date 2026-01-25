@@ -23,7 +23,12 @@ import { toast } from "sonner"
 
 export default function InboxSettings() {
     return (
-        <div className="space-y-12">
+        <div className="space-y-12 pb-32">
+            <div>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1 text-white">Inbox</h1>
+                <p className="hidden sm:block text-muted-foreground">Manage email connections and inbox automation.</p>
+            </div>
+
             {/* Email Connections Section */}
             <div className="space-y-6 pt-10 border-t border-white/5">
                 <div className="flex flex-col gap-1">
@@ -33,7 +38,7 @@ export default function InboxSettings() {
                     </p>
                 </div>
 
-                <div className="bg-black/50 border border-white/5 rounded-xl p-4 flex items-center justify-between group">
+                <div className="bg-black/50 border border-white/5 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 group">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center">
                             <img src="https://www.google.com/favicon.ico" className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" alt="Gmail" />

@@ -126,8 +126,8 @@ export default function SupportSettingsPage() {
         <div className="pb-32 animate-in fade-in duration-500">
             {/* Header */}
             <div className="mb-12">
-                <h1 className="text-4xl font-serif font-medium mb-1">Support</h1>
-                <p className="text-muted-foreground">Get help from our team or browse our documentation.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Support</h1>
+                <p className="hidden sm:block text-muted-foreground">Get help from our team or browse our documentation.</p>
             </div>
 
             {isSubmitted ? (
@@ -150,7 +150,7 @@ export default function SupportSettingsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                     {/* Main Form */}
                     <div className="lg:col-span-8 flex">
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-8 w-full flex flex-col">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 sm:p-6 lg:p-8 w-full flex flex-col">
                             <form onSubmit={handleSubmit} className="space-y-8 flex-1">
                             {/* Category Selection */}
                             <div className="space-y-4">
@@ -194,7 +194,7 @@ export default function SupportSettingsPage() {
                             {/* Priority */}
                             <div className="space-y-3">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Priority</Label>
-                                <div className="flex gap-2">
+                                <div className="flex flex-wrap gap-2">
                                     {priorities.map((p) => (
                                         <button
                                             key={p.value}
@@ -232,14 +232,14 @@ export default function SupportSettingsPage() {
                             </div>
 
                             {/* Submit */}
-                            <div className="flex items-center justify-between pt-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
                                 <p className="text-xs text-neutral-600">
                                     Submitting as <span className="text-neutral-400">{userEmail || 'you'}</span>
                                 </p>
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting || !category || !subject || !description}
-                                    className="bg-white text-black hover:bg-neutral-200 font-semibold px-8 h-11"
+                                    className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 font-semibold px-8 h-11"
                                 >
                                     {isSubmitting ? (
                                         <>

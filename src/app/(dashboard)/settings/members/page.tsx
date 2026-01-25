@@ -247,16 +247,16 @@ export default function MembersPage() {
 
     return (
         <div className="pb-32">
-            <div className="flex items-center justify-between mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
                 <div>
-                    <h1 className="text-4xl font-serif font-medium mb-1">Members</h1>
-                    <p className="text-muted-foreground">Manage team members and their access to your workspace.</p>
+                    <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Members</h1>
+                    <p className="hidden sm:block text-muted-foreground">Manage team members and their access to your workspace.</p>
                 </div>
                 {isOwner ? (
                     !reachedLimit ? (
                         <Button
                             onClick={() => setShowInviteForm(!showInviteForm)}
-                            className="bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg"
+                            className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg"
                         >
                             <UserPlus className="h-4 w-4 mr-2" />
                             Invite member
@@ -264,7 +264,7 @@ export default function MembersPage() {
                     ) : (
                         <Link href="/settings/billing">
                             <Button
-                                className="bg-white text-white hover:bg-white/90 h-11 px-6 font-semibold rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                                className="w-full sm:w-auto bg-white text-white hover:bg-white/90 h-11 px-6 font-semibold rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.2)]"
                             >
                                 <Sparkles className="h-4 w-4 mr-2" />
                                 Upgrade to Invite
@@ -315,7 +315,7 @@ export default function MembersPage() {
                 <div className="mb-8 p-8 border border-white/5 rounded-2xl bg-[#09090b] shadow-2xl">
                     <div className="flex flex-col gap-4">
                         <label className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Invite via Email</label>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                             <Input
                                 type="email"
                                 placeholder="colleague@company.com"
@@ -325,7 +325,7 @@ export default function MembersPage() {
                             />
                             <Button
                                 onClick={handleInvite}
-                                className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-xs"
+                                className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-xs"
                             >
                                 Send Invite
                             </Button>
@@ -335,7 +335,7 @@ export default function MembersPage() {
                                     setShowInviteForm(false)
                                     setInviteEmail("")
                                 }}
-                                className="h-12 px-6 text-neutral-500 hover:text-white transition-colors font-bold uppercase tracking-tighter text-xs"
+                                className="w-full sm:w-auto h-12 px-6 text-neutral-500 hover:text-white transition-colors font-bold uppercase tracking-tighter text-xs"
                             >
                                 Cancel
                             </Button>

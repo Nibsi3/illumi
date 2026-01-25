@@ -143,13 +143,13 @@ function BillingContent() {
     return (
         <div className="pb-32">
             <div className="mb-12">
-                <h1 className="text-4xl font-serif font-medium mb-1">Billing</h1>
-                <p className="text-muted-foreground">Manage your subscription, payment methods, and billing history.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Billing</h1>
+                <p className="hidden sm:block text-muted-foreground">Manage your subscription, payment methods, and billing history.</p>
             </div>
 
             {/* Current Plan Card (High Contrast) */}
-            <div className="mb-12 p-8 border border-white/5 rounded-2xl bg-[#09090b] relative overflow-hidden group">
-                <div className="flex items-center justify-between relative z-10">
+            <div className="mb-12 p-4 sm:p-8 border border-white/5 rounded-2xl bg-[#09090b] relative overflow-hidden group">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">
@@ -191,7 +191,7 @@ function BillingContent() {
                         </div>
                     </div>
                     {isPro ? (
-                        <div className="flex flex-col items-end gap-3">
+                        <div className="flex flex-col items-start sm:items-end gap-3">
                             <div className="flex items-center justify-center gap-2 bg-white/10 border border-white/20 h-10 px-6 rounded-none">
                                 <IconCircleCheckFilled size={16} className="text-white" />
                                 <span className="text-white text-xs font-bold uppercase tracking-widest">Subscribed</span>
@@ -199,13 +199,13 @@ function BillingContent() {
                             <Button
                                 onClick={() => setIsManagePlanOpen(true)}
                                 variant="outline"
-                                className="border-white/10 hover:bg-white/5 h-10 px-6 font-bold uppercase tracking-tighter text-xs"
+                                className="border-white/10 hover:bg-white/5 h-10 px-6 font-bold uppercase tracking-tighter text-xs w-full sm:w-auto"
                             >
                                 Manage Plan
                             </Button>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-end gap-3">
+                        <div className="flex flex-col items-start sm:items-end gap-3">
                             <PayFastSubscribeButton />
                             <p className="text-[10px] text-neutral-500 uppercase tracking-widest">Secure monthly billing via PayFast</p>
                         </div>
@@ -213,7 +213,7 @@ function BillingContent() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
                 {/* Payment Methods */}
                 <div className="space-y-6 flex flex-col">
                     <div className="flex items-center justify-between">
@@ -430,7 +430,7 @@ function BillingContent() {
                 <h2 className="text-2xl font-bold text-white mb-2">Compare Plans</h2>
                 <p className="text-neutral-500 mb-8">Choose the plan that works best for your business</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Starter Plan */}
                     <div className={cn(
                         "p-6 rounded-2xl border transition-all",

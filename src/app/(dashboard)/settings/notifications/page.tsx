@@ -71,8 +71,8 @@ export default function NotificationsSettingsPage() {
     return (
         <div className="pb-32">
             <div className="mb-8">
-                <h1 className="text-4xl font-serif font-medium mb-1">Notifications</h1>
-                <p className="text-muted-foreground">Manage your personal notification settings for this team.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Notifications</h1>
+                <p className="hidden sm:block text-muted-foreground">Manage your personal notification settings for this team.</p>
             </div>
 
             {/* Invoices Section */}
@@ -92,12 +92,12 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("invoices") && (
                     <div className="px-6 pb-6 space-y-4">
                         {invoiceSettings.map((setting) => (
-                            <div key={setting.id} className="flex items-start justify-between py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
                                 <div className="flex-1">
                                     <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
                                     <p className="text-xs text-neutral-500">{setting.description}</p>
                                 </div>
-                                <div className="flex items-center gap-6 ml-8">
+                                <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
                                         onClick={() => toggleSetting(invoiceSettings, setInvoiceSettings, setting.id, "inApp")}
                                         className={cn(
@@ -109,7 +109,7 @@ export default function NotificationsSettingsPage() {
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500 w-16">In-app</span>
+                                    <span className="text-xs text-neutral-500">In-app</span>
                                     {setting.email !== undefined && (
                                         <>
                                             <button
@@ -123,7 +123,7 @@ export default function NotificationsSettingsPage() {
                                             >
                                                 {setting.email && <Check className="h-3 w-3 text-black" />}
                                             </button>
-                                            <span className="text-xs text-neutral-500 w-16">Email</span>
+                                            <span className="text-xs text-neutral-500">Email</span>
                                         </>
                                     )}
                                 </div>
@@ -150,12 +150,12 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("payments") && (
                     <div className="px-6 pb-6 space-y-4">
                         {paymentSettings.map((setting) => (
-                            <div key={setting.id} className="flex items-start justify-between py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
                                 <div className="flex-1">
                                     <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
                                     <p className="text-xs text-neutral-500">{setting.description}</p>
                                 </div>
-                                <div className="flex items-center gap-6 ml-8">
+                                <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
                                         onClick={() => toggleSetting(paymentSettings, setPaymentSettings, setting.id, "inApp")}
                                         className={cn(
@@ -167,7 +167,7 @@ export default function NotificationsSettingsPage() {
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500 w-16">In-app</span>
+                                    <span className="text-xs text-neutral-500">In-app</span>
                                     {setting.email !== undefined && (
                                         <>
                                             <button
@@ -181,7 +181,7 @@ export default function NotificationsSettingsPage() {
                                             >
                                                 {setting.email && <Check className="h-3 w-3 text-black" />}
                                             </button>
-                                            <span className="text-xs text-neutral-500 w-16">Email</span>
+                                            <span className="text-xs text-neutral-500">Email</span>
                                         </>
                                     )}
                                 </div>
@@ -208,12 +208,12 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("inbox") && (
                     <div className="px-6 pb-6 space-y-4">
                         {inboxSettings.map((setting) => (
-                            <div key={setting.id} className="flex items-start justify-between py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
                                 <div className="flex-1">
                                     <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
                                     <p className="text-xs text-neutral-500">{setting.description}</p>
                                 </div>
-                                <div className="flex items-center gap-6 ml-8">
+                                <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
                                         onClick={() => toggleSetting(inboxSettings, setInboxSettings, setting.id, "inApp")}
                                         className={cn(
@@ -225,7 +225,7 @@ export default function NotificationsSettingsPage() {
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500 w-16">In-app</span>
+                                    <span className="text-xs text-neutral-500">In-app</span>
                                 </div>
                             </div>
                         ))}
