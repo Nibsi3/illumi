@@ -100,10 +100,10 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="h-full bg-background text-foreground font-sans flex overflow-hidden">
+    <div className="h-full bg-background text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
       {/* Main Form Area */}
-      <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
-        <div className="max-w-4xl mx-auto pt-16 px-12">
+      <div className="flex-1 overflow-y-auto pb-32 lg:pb-40 no-scrollbar">
+        <div className="max-w-4xl mx-auto pt-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-12">
           {/* Back Link */}
           <Link href="/products" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
             <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -112,19 +112,19 @@ export default function NewProductPage() {
 
           <div className="flex items-center justify-between mb-20">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-[#09090b] border border-white/5 flex items-center justify-center shadow-2xl">
+              <div className="hidden sm:flex w-16 h-16 rounded-2xl bg-[#09090b] border border-white/5 items-center justify-center shadow-2xl">
                 <Package className="h-8 w-8 text-neutral-400" />
               </div>
               <div>
-                <h1 className="text-5xl font-serif text-white mb-2 italic">New Product</h1>
-                <p className="text-neutral-500 font-mono text-sm tracking-widest">Add a new item or service to your catalog</p>
+                <h1 className="text-3xl sm:text-5xl font-serif text-white mb-2 italic">New Product</h1>
+                <p className="text-neutral-500 font-mono text-xs sm:text-sm tracking-widest">Add a new item or service to your catalog</p>
               </div>
             </div>
           </div>
 
           <div className="space-y-12">
             {/* Basic Info */}
-            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Basic Information</h2>
               <div className="grid gap-8">
                 <div className="space-y-3">
@@ -138,7 +138,7 @@ export default function NewProductPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-3">
                     <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Price (ZAR)</Label>
                     <div className="relative">
@@ -165,7 +165,7 @@ export default function NewProductPage() {
             </div>
 
             {/* Description Section */}
-            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
               <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Public Description</h2>
               <textarea
                 placeholder="Describe this product for your clients..."
@@ -179,8 +179,29 @@ export default function NewProductPage() {
         </div>
       </div>
 
+      <div className="lg:hidden sticky bottom-0 z-30 bg-background/95 backdrop-blur border-t border-white/10 p-4">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            className="h-12 flex-1 border-white/10 bg-white/5 hover:bg-white/10"
+            onClick={() => router.back()}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="h-12 flex-1 bg-white text-black hover:bg-neutral-200"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {isLoading ? "Saving..." : "Save"}
+          </Button>
+        </div>
+      </div>
+
       {/* Right Side Action Bar (Centrally Sticky) */}
-      <div className="w-80 border-l border-white/10 bg-[#050505] flex flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
+      <div className="hidden lg:flex w-80 border-l border-white/10 bg-[#050505] flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
         {/* Status at Top */}
         <div className="p-8 shrink-0">
           <div className="flex flex-col">

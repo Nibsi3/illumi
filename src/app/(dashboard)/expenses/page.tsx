@@ -434,7 +434,7 @@ export default function ExpensesPage() {
 
     return (
         <div className="flex flex-col gap-y-10 font-sans pb-20">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-6">
                 <div>
                     <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Expenses</h1>
                     <p className="hidden sm:block text-neutral-500 mt-1">Track business expenses, recurring costs, and profitability.</p>
@@ -442,7 +442,7 @@ export default function ExpensesPage() {
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <Button
                         variant="outline"
-                        className="border-white/10 bg-white/5 hover:bg-white/10 w-full sm:w-auto"
+                        className="border-white/10 bg-white/5 hover:bg-white/10 w-full md:w-auto"
                         onClick={exportCSV}
                     >
                         <Download className="h-4 w-4 mr-2" /> Export CSV
@@ -450,18 +450,18 @@ export default function ExpensesPage() {
                 </div>
             </div>
 
-            <div className="sm:grid sm:grid-cols-3 gap-6">
-                <div className="sm:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
+            <div className="xl:grid xl:grid-cols-3 gap-6">
+                <div className="xl:hidden w-full max-w-full overflow-x-auto no-scrollbar">
                     <div className="flex gap-3 w-max">
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[260px]">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Total expenses (this month)</p>
                             <p className="text-xl font-semibold text-white mt-2">{formatMoney(totals.totalThisMonth)}</p>
                         </div>
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[260px]">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Once-off (this month)</p>
                             <p className="text-xl font-semibold text-white mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
                         </div>
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[260px]">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
                             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Net profit (this month)</p>
                             <p className={cn("text-xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-white" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
                             <p className="text-[10px] text-neutral-500 mt-2">Paid income − expenses (this month).</p>
@@ -469,32 +469,32 @@ export default function ExpensesPage() {
                     </div>
                 </div>
 
-                <div className="hidden sm:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Total expenses (this month)</p>
                     <p className="text-2xl font-semibold text-white mt-2">{formatMoney(totals.totalThisMonth)}</p>
                 </div>
-                <div className="hidden sm:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Once-off (this month)</p>
                     <p className="text-2xl font-semibold text-white mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
                 </div>
-                <div className="hidden sm:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
+                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Net profit (this month)</p>
                     <p className={cn("text-2xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-white" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
                     <p className="text-[10px] text-neutral-500 mt-2">Paid income − expenses (this month).</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-stretch">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-10 items-stretch">
                 <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
                         <div>
-                            <h2 className="text-xl font-medium text-white">Add Expense</h2>
+                            <h2 className="text-lg sm:text-xl font-medium text-white">Add Expense</h2>
                             <p className="text-sm text-neutral-500">Add once-off or recurring expenses.</p>
                         </div>
                         <Button
                             onClick={handleAddExpense}
                             disabled={isSaving}
-                            className="bg-white text-black hover:bg-neutral-200 h-10 px-5 font-semibold"
+                            className="bg-white text-black hover:bg-neutral-200 h-10 px-5 font-semibold w-full sm:w-auto"
                         >
                             {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                             Add
@@ -512,7 +512,7 @@ export default function ExpensesPage() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Amount</Label>
                                 <Input
@@ -538,7 +538,7 @@ export default function ExpensesPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Date</Label>
                                 <Input
@@ -587,7 +587,7 @@ export default function ExpensesPage() {
                 </div>
 
                 <div className="flex flex-col gap-6 h-full">
-                    <div className="md:static md:bg-[#09090b] md:border md:border-white/5 md:rounded-2xl md:p-6 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0">
+                    <div className="xl:static xl:bg-[#09090b] xl:border xl:border-white/5 xl:rounded-2xl xl:p-6 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 xl:py-0">
                         <div className="flex items-center gap-3">
                             <div className="relative flex-1">
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
@@ -688,7 +688,7 @@ export default function ExpensesPage() {
                                 ) : (
                                     <>
                                         {/* Mobile list */}
-                                        <div className="md:hidden divide-y divide-white/10">
+                                        <div className="xl:hidden divide-y divide-white/10">
                                             {filteredExpenses.map((e) => (
                                                 <div key={e.id} className="p-4">
                                                     <div className="flex items-start justify-between gap-3">
@@ -727,7 +727,7 @@ export default function ExpensesPage() {
                                         </div>
 
                                         {/* Desktop table */}
-                                        <div className="hidden md:block">
+                                        <div className="hidden xl:block">
                                             <table className="w-full text-left text-sm">
                                                 <thead className="border-b border-white/5 text-xs uppercase tracking-wider text-neutral-500">
                                                     <tr>

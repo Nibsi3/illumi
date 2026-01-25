@@ -110,10 +110,10 @@ export default function NewClientPage() {
     }
 
     return (
-        <div className="h-full bg-background text-foreground font-sans flex overflow-hidden">
+        <div className="h-full bg-background text-foreground font-sans flex flex-col lg:flex-row overflow-hidden">
             {/* Main Form Area */}
-            <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
-                <div className="max-w-4xl mx-auto pt-16 px-12">
+            <div className="flex-1 overflow-y-auto pb-32 lg:pb-40 no-scrollbar">
+                <div className="max-w-4xl mx-auto pt-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-12">
                     {/* Back Link */}
                     <Link href="/clients" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
                         <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -122,14 +122,14 @@ export default function NewClientPage() {
 
                     <div className="flex items-center justify-between mb-20">
                         <div>
-                            <h1 className="text-5xl font-serif text-white mb-2 italic">New Client</h1>
-                            <p className="text-neutral-500 font-mono text-sm tracking-widest">Add a new client to your workspace</p>
+                            <h1 className="text-3xl sm:text-5xl font-serif text-white mb-2 italic">New Client</h1>
+                            <p className="text-neutral-500 font-mono text-xs sm:text-sm tracking-widest">Add a new client to your workspace</p>
                         </div>
                     </div>
 
                     <div className="space-y-12">
                         {/* General Section */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
                             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">General Information</h2>
                             <div className="grid gap-8">
                                 <div className="space-y-3">
@@ -143,7 +143,7 @@ export default function NewClientPage() {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Email Address</Label>
                                         <Input
@@ -166,7 +166,7 @@ export default function NewClientPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Phone Number</Label>
                                         <Input placeholder="+27 12 345 6789" className="bg-transparent border-white/10 h-12 focus-visible:ring-white/20" value={phone} onChange={(e) => setPhone(e.target.value)} />
@@ -191,7 +191,7 @@ export default function NewClientPage() {
                         </div>
 
                         {/* Location Section */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
                             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Address & Localization</h2>
                             <div className="grid gap-8">
                                 <div className="space-y-3">
@@ -205,7 +205,7 @@ export default function NewClientPage() {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                     <div className="space-y-3">
                                         <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Country</Label>
                                         <Select value={country} onValueChange={setCountry}>
@@ -228,7 +228,7 @@ export default function NewClientPage() {
                         </div>
 
                         {/* Notes Section */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-12 shadow-2xl">
+                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
                             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Private Notes</h2>
                             <textarea placeholder="Add any private details about this client..." className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none" value={notes} onChange={(e) => setNotes(e.target.value)} />
                         </div>
@@ -236,8 +236,29 @@ export default function NewClientPage() {
                 </div>
             </div>
 
+            <div className="lg:hidden sticky bottom-0 z-30 bg-background/95 backdrop-blur border-t border-white/10 p-4">
+                <div className="flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        className="h-12 flex-1 border-white/10 bg-white/5 hover:bg-white/10 px-6 font-bold"
+                        onClick={() => router.push("/clients")}
+                        disabled={isLoading}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        className="h-12 flex-1 bg-white text-black hover:bg-neutral-200 shadow-2xl px-8 font-bold"
+                        onClick={handleCreate}
+                        disabled={isLoading}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {isLoading ? "Saving..." : "Create"}
+                    </Button>
+                </div>
+            </div>
+
             {/* Right Side Action Bar (Centrally Sticky) */}
-            <div className="w-80 border-l border-white/10 bg-[#050505] flex flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
+            <div className="hidden lg:flex w-80 border-l border-white/10 bg-[#050505] flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
                 {/* Status at Top */}
                 <div className="p-8 shrink-0">
                     <div className="flex flex-col">
