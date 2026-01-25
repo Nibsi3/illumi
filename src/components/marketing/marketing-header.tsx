@@ -85,8 +85,8 @@ export function MarketingHeader() {
                         <IconMenu2 className="h-4 w-4" />
                     </summary>
 
-                    <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] bg-black/90 backdrop-blur-xl rounded-lg border border-white/10 overflow-hidden">
-                        <div className="px-4 py-3 space-y-3">
+                    <div className="absolute right-0 z-50 mt-2 w-[calc(100vw-2rem)] max-w-sm bg-black/90 backdrop-blur-xl rounded-lg border border-white/10 overflow-hidden">
+                        <div className="max-h-[calc(100vh-6rem)] overflow-auto px-4 py-3 space-y-3">
                             <div className="text-xs uppercase tracking-wider text-white/40 mb-2">Features</div>
                             {featureDropdownItems.map((item) => (
                                 <Link
