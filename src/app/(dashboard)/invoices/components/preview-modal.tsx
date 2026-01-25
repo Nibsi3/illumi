@@ -37,6 +37,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     const { activePaymentProvider } = useSettings()
 
     const isLight = data.invoiceMode === "light"
+    const illumiLogoSrc = isLight ? '/midday-logo.png' : '/logo.png'
 
     const formatDate = (dateString: string) => {
         if (!dateString) return "--/--/----"
@@ -249,6 +250,19 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         {data.note?.trim() || ""}
                                     </p>
                                 </div>
+
+                                {!data.hideIllumiBranding && (
+                                    <div className="pt-6">
+                                        <img
+                                            src={illumiLogoSrc}
+                                            alt="Illumi"
+                                            className={cn(
+                                                "h-5 w-5 object-contain",
+                                                isLight ? "opacity-40" : "opacity-60"
+                                            )}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-4">
@@ -272,14 +286,6 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             </div>
                         </div>
 
-                        {!data.hideIllumiBranding && (
-                            <div className="mt-32 text-center">
-                                <p className={cn(
-                                    "text-[10px] font-bold uppercase tracking-[0.4em]",
-                                    isLight ? "text-neutral-400" : "text-white/30"
-                                )}>www.illumi.co.za</p>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div >

@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useSettings } from "@/lib/settings-context"
 
 export default function AccountPage() {
-    const [profileImage, setProfileImage] = useState<string | null>("https://lh3.googleusercontent.com/a/default-user=s96-c")
+    const { logo, setLogo } = useSettings()
     const [name, setName] = useState("Cameron Falck")
     const [email, setEmail] = useState("cameronfalck03@gmail.com")
 
@@ -19,8 +20,13 @@ export default function AccountPage() {
         input.onchange = (e: any) => {
             const file = e.target.files[0]
             if (file) {
-                const url = URL.createObjectURL(file)
-                setProfileImage(url)
+                const reader = new FileReader()
+                reader.onload = (event) => {
+                    if (event.target?.result) {
+                        setLogo(event.target.result as string)
+                    }
+                }
+                reader.readAsDataURL(file)
             }
         }
         input.click()
@@ -44,7 +50,7 @@ export default function AccountPage() {
 
                 <div className="flex items-center gap-8">
                     <Avatar className="h-24 w-24 border-2 border-white/10">
-                        <AvatarImage src={profileImage || undefined} />
+                        <AvatarImage src={logo || undefined} />
                         <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-white text-xl font-bold">
                             CF
                         </AvatarFallback>
@@ -61,7 +67,7 @@ export default function AccountPage() {
                         <Button
                             variant="ghost"
                             className="h-9 text-neutral-500 hover:text-red-500"
-                            onClick={() => setProfileImage(null)}
+                            onClick={() => setLogo(null)}
                         >
                             Remove
                         </Button>

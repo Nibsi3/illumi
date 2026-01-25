@@ -15,26 +15,34 @@ const PAYFAST_URL = "https://www.payfast.co.za/eng/process"
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://illumi.co.za"
 
 export function PayFastSubscribeButton() {
-    const { activeWorkspace, userId } = useWorkspace()
+    const { activeWorkspace } = useWorkspace()
     const [userEmail, setUserEmail] = useState<string>("")
     const [userName, setUserName] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
+    const [resolvedUserId, setResolvedUserId] = useState<string>("")
     
     const supabase = createClient()
     
     useEffect(() => {
         async function fetchUserDetails() {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (user) {
-                setUserEmail(user.email || "")
-                setUserName(user.user_metadata?.full_name || user.email?.split("@")[0] || "")
+            try {
+                const { data: sessionData } = await supabase.auth.getSession()
+                const user = sessionData?.session?.user || null
+                if (user) {
+                    setResolvedUserId(user.id)
+                    setUserEmail(user.email || "")
+                    setUserName(user.user_metadata?.full_name || user.email?.split("@")[0] || "")
+                }
+            } finally {
+                setIsLoading(false)
             }
-            setIsLoading(false)
         }
         fetchUserDetails()
     }, [supabase])
     
-    if (isLoading || !activeWorkspace || !userId) {
+    const workspaceId = activeWorkspace?.id || (typeof window !== 'undefined' ? (localStorage.getItem('activeWorkspaceId') || '') : '')
+
+    if (isLoading) {
         return (
             <Button
                 disabled
@@ -42,6 +50,17 @@ export function PayFastSubscribeButton() {
             >
                 <IconLoader2 size={18} className="mr-2 animate-spin" />
                 Loading...
+            </Button>
+        )
+    }
+
+    if (!workspaceId || !resolvedUserId) {
+        return (
+            <Button
+                disabled
+                className="bg-white/50 text-black h-12 px-8 font-black uppercase tracking-tighter text-sm"
+            >
+                Subscribe Now — R350/mo
             </Button>
         )
     }
@@ -68,14 +87,14 @@ export function PayFastSubscribeButton() {
             <input type="hidden" name="email_address" value={userEmail} />
             
             {/* Transaction Details */}
-            <input type="hidden" name="m_payment_id" value={`SUB-${activeWorkspace.id}-${Date.now()}`} />
+            <input type="hidden" name="m_payment_id" value={`SUB-${workspaceId}-${Date.now()}`} />
             <input type="hidden" name="amount" value="350.00" />
             <input type="hidden" name="item_name" value="Illumi Pro Plan" />
             <input type="hidden" name="item_description" value="Monthly subscription to Illumi Pro Plan" />
             
             {/* Custom fields for tracking */}
-            <input type="hidden" name="custom_str1" value={activeWorkspace.id} />
-            <input type="hidden" name="custom_str2" value={userId} />
+            <input type="hidden" name="custom_str1" value={workspaceId} />
+            <input type="hidden" name="custom_str2" value={resolvedUserId} />
             
             {/* Subscription Details for Recurring Billing */}
             <input type="hidden" name="subscription_type" value="1" />

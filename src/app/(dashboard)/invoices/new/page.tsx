@@ -148,6 +148,7 @@ export default function NewInvoicePage() {
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
+    const illumiLogoSrc = invoiceMode === 'light' ? '/midday-logo.png' : '/logo.png'
 
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
@@ -1383,6 +1384,19 @@ export default function NewInvoicePage() {
                                                 onChange={(e) => setInvoiceNote(e.target.value)}
                                                 className="invoice-font-notes w-full bg-transparent border-none p-0 h-24 text-neutral-400 placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
                                             />
+
+                                            {!(Boolean(isPro) && Boolean(settings.hideIllumiBranding)) && (
+                                                <div>
+                                                    <img
+                                                        src={illumiLogoSrc}
+                                                        alt="Illumi"
+                                                        className={cn(
+                                                            "h-5 w-5 object-contain",
+                                                            invoiceMode === 'light' ? 'opacity-40' : 'opacity-60'
+                                                        )}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Payment Info</span>

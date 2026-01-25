@@ -200,6 +200,7 @@ export default function PayInvoicePage() {
     const template = invoice.template || "Classic"
     const mode = invoice.invoice_mode || "dark"
     const logoBg = (mode || "dark") as "light" | "dark"
+    const illumiLogoSrc = mode === 'light' ? '/midday-logo.png' : '/logo.png'
 
     const urlProvider = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('provider') : null
     const invoiceProvider = invoice.payment_provider
@@ -414,6 +415,19 @@ export default function PayInvoicePage() {
                                                 {invoice.notes?.trim() || ""}
                                             </p>
                                         </div>
+
+                                        {!invoice.hide_illumi_branding && (
+                                            <div className="pt-6">
+                                                <img
+                                                    src={illumiLogoSrc}
+                                                    alt="Illumi"
+                                                    className={cn(
+                                                        "h-5 w-5 object-contain",
+                                                        mode === 'light' ? 'opacity-40' : 'opacity-60'
+                                                    )}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="space-y-2">
@@ -506,19 +520,6 @@ export default function PayInvoicePage() {
                     </div>
                 </div>
 
-                {/* Aesthetic Footer */}
-                {!invoice.hide_illumi_branding && (
-                    <div className="text-center pt-24 border-t border-white/5 opacity-40">
-                        <a
-                            href="https://illumi.co.za"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] font-medium uppercase tracking-[0.3em] text-white/50 hover:text-white transition-all duration-500 group"
-                        >
-                            POWERED BY <span className="font-bold group-hover:text-white transition-colors">ILLUMI</span>
-                        </a>
-                    </div>
-                )}
             </div>
         </div>
     )

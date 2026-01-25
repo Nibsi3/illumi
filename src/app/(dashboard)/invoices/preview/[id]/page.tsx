@@ -47,6 +47,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     const supabase = createClient()
     const { currency } = useSettings()
     const { isPro } = useSubscription()
+    const illumiLogoSrc = '/midday-logo.png'
     
     const [invoice, setInvoice] = useState<Invoice | null>(null)
     const [loading, setLoading] = useState(true)
@@ -245,6 +246,12 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 </p>
                             </div>
                             )}
+
+                            {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && (
+                                <div>
+                                    <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain opacity-40" />
+                                </div>
+                            )}
                             <div className="flex flex-col gap-2">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Payment Details</span>
                                 <p className="text-[11px] text-neutral-500 leading-relaxed font-mono">
@@ -274,11 +281,6 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         </div>
                     </div>
 
-                    {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && (
-                        <div className="mt-24 sm:mt-40 text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-300">www.illumi.co.za</p>
-                        </div>
-                    )}
                 </div>
                     )
                 })()}

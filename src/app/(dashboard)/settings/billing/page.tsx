@@ -165,7 +165,7 @@ function BillingContent() {
                         <p className="text-sm text-neutral-400 max-w-md">
                             {isPro
                                 ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
-                                : "Upgrade to Pro for R350/mo to unlock recurring invoices, custom branding, and the client portal."}
+                                : "Upgrade to Pro for R350/mo to unlock recurring invoices, PayGate, and remove Illumi branding."}
                         </p>
 
                         <div className="mt-8 flex items-center gap-4">
@@ -468,6 +468,10 @@ function BillingContent() {
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
                                 <IconCheck className="w-4 h-4 text-white" />
+                                Custom business logo
+                            </li>
+                            <li className="flex items-center gap-2 text-sm text-neutral-300">
+                                <IconCheck className="w-4 h-4 text-white" />
                                 Basic reporting
                             </li>
                         </ul>
@@ -500,7 +504,7 @@ function BillingContent() {
                         <ul className="space-y-3 mb-6">
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
                                 <IconCheck className="w-4 h-4 text-white" />
-                                Custom business logo
+                                Remove Illumi branding
                             </li>
                             <li className="flex items-center gap-2 text-sm text-neutral-300">
                                 <IconCheck className="w-4 h-4 text-white" />

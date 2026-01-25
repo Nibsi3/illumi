@@ -106,6 +106,7 @@ export default function EditInvoicePage() {
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
     const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
+    const illumiLogoSrc = invoiceMode === 'light' ? '/midday-logo.png' : '/logo.png'
 
     // Recurring State
     const [isRecurringEnabled, setIsRecurringEnabled] = useState(false)
@@ -808,6 +809,19 @@ export default function EditInvoicePage() {
                                                     className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-neutral-600 text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
+
+                                            {!(Boolean(isPro) && Boolean(settings.hideIllumiBranding)) && (
+                                                <div className="pt-4">
+                                                    <img
+                                                        src={illumiLogoSrc}
+                                                        alt="Illumi"
+                                                        className={cn(
+                                                            "h-5 w-5 object-contain",
+                                                            invoiceMode === 'light' ? 'opacity-40' : 'opacity-60'
+                                                        )}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center text-sm">
