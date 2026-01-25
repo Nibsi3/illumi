@@ -148,21 +148,21 @@ function BillingContent() {
             </div>
 
             {/* Current Plan Card (High Contrast) */}
-            <div className="mb-12 p-4 sm:p-8 border border-white/5 rounded-2xl bg-[#09090b] relative overflow-hidden group">
+            <div className="mb-12 p-4 sm:p-8 border border-border rounded-2xl bg-card relative overflow-hidden group">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative z-10">
                     <div>
                         <div className="flex items-center gap-3 mb-2">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white bg-white/10 px-3 py-1 rounded-full">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground bg-accent px-3 py-1 rounded-full">
                                 {isPro ? "Pro Plan" : "Free Plan"}
                             </span>
                             {daysRemaining !== null && (
-                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">{daysRemaining} days remaining</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{daysRemaining} days remaining</span>
                             )}
                         </div>
-                        <p className="text-3xl font-serif italic text-white mb-2">
+                        <p className="text-3xl font-serif italic text-foreground mb-2">
                             {isPro ? "Illumi Professional" : "Ready for Pro?"}
                         </p>
-                        <p className="text-sm text-neutral-400 max-w-md">
+                        <p className="text-sm text-muted-foreground max-w-md">
                             {isPro
                                 ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
                                 : "Upgrade to Pro for R350/mo to unlock recurring invoices, PayGate, and remove Illumi branding."}
@@ -183,7 +183,7 @@ function BillingContent() {
                                         }
                                     }}
                                     variant="ghost"
-                                    className="h-9 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-red-500 hover:bg-red-500/5 px-4"
+                                    className="h-9 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-red-500 hover:bg-red-500/5 px-4"
                                 >
                                     Cancel Plan
                                 </Button>
@@ -192,14 +192,14 @@ function BillingContent() {
                     </div>
                     {isPro ? (
                         <div className="flex flex-col items-start sm:items-end gap-3">
-                            <div className="flex items-center justify-center gap-2 bg-white/10 border border-white/20 h-10 px-6 rounded-none">
-                                <IconCircleCheckFilled size={16} className="text-white" />
-                                <span className="text-white text-xs font-bold uppercase tracking-widest">Subscribed</span>
+                            <div className="flex items-center justify-center gap-2 bg-accent border border-border h-10 px-6 rounded-none">
+                                <IconCircleCheckFilled size={16} className="text-foreground" />
+                                <span className="text-foreground text-xs font-bold uppercase tracking-widest">Subscribed</span>
                             </div>
                             <Button
                                 onClick={() => setIsManagePlanOpen(true)}
                                 variant="outline"
-                                className="border-white/10 hover:bg-white/5 h-10 px-6 font-bold uppercase tracking-tighter text-xs w-full sm:w-auto"
+                                className="border-border hover:bg-muted h-10 px-6 font-bold uppercase tracking-tighter text-xs w-full sm:w-auto"
                             >
                                 Manage Plan
                             </Button>
@@ -207,7 +207,7 @@ function BillingContent() {
                     ) : (
                         <div className="flex flex-col items-start sm:items-end gap-3">
                             <PayFastSubscribeButton />
-                            <p className="text-[10px] text-neutral-500 uppercase tracking-widest">Secure monthly billing via PayFast</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Secure monthly billing via PayFast</p>
                         </div>
                     )}
                 </div>
@@ -217,11 +217,11 @@ function BillingContent() {
                 {/* Payment Methods */}
                 <div className="space-y-6 flex flex-col">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold uppercase tracking-widest text-white">Payment Methods</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Payment Methods</h3>
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[10px] font-bold uppercase tracking-widest text-[#878787] hover:text-white px-0"
+                            className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground px-0"
                             onClick={() => setIsAddCardOpen(true)}
                         >
                             <IconPlus size={14} className="mr-1" />
@@ -229,46 +229,46 @@ function BillingContent() {
                         </Button>
                     </div>
 
-                    <div className="border border-white/5 rounded-xl bg-[#09090b] flex-1">
+                    <div className="border border-border rounded-xl bg-card flex-1">
                         {billingMethods.length === 0 && (
                             <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
-                                <p className="text-sm text-neutral-500">No payment methods added.</p>
+                                <p className="text-sm text-muted-foreground">No payment methods added.</p>
                             </div>
                         )}
                         {billingMethods.map((card) => (
                             <div
                                 key={card.id}
                                 className={cn(
-                                    "p-4 border-t border-white/5 transition-all flex items-center justify-between group first:border-t-0",
-                                    card.isDefault ? "bg-white/5" : "hover:bg-white/2"
+                                    "p-4 border-t border-border transition-all flex items-center justify-between group first:border-t-0",
+                                    card.isDefault ? "bg-muted" : "hover:bg-muted/50"
                                 )}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-8 rounded bg-black border border-white/10 flex items-center justify-center">
-                                        <IconCreditCard size={18} className="text-neutral-500" />
+                                    <div className="w-12 h-8 rounded bg-background border border-border flex items-center justify-center">
+                                        <IconCreditCard size={18} className="text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <div className="flex items-center gap-2 text-sm font-bold text-white">
+                                        <div className="flex items-center gap-2 text-sm font-bold text-foreground">
                                             <span>{card.brand} •••• {card.last4}</span>
                                             {card.isDefault && (
-                                                <span className="text-[8px] font-bold uppercase tracking-widest text-white border border-white/20 px-1.5 py-0.5 rounded">Active</span>
+                                                <span className="text-[8px] font-bold uppercase tracking-widest text-foreground border border-border px-1.5 py-0.5 rounded">Active</span>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-neutral-500">Expires {card.expMonth}/{card.expYear}</p>
+                                        <p className="text-[10px] text-muted-foreground">Expires {card.expMonth}/{card.expYear}</p>
                                     </div>
                                 </div>
 
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white group-hover:opacity-100 opacity-0 transition-opacity">
+                                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground group-hover:opacity-100 opacity-0 transition-opacity">
                                             <IconDots size={16} />
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="bg-[#09090b] border-white/10 text-white p-2 rounded-xl">
+                                    <DropdownMenuContent align="end" className="bg-card border-border text-foreground p-2 rounded-xl">
                                         {!card.isDefault && (
                                             <DropdownMenuItem
                                                 onClick={() => setDefaultCard(card.id)}
-                                                className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer text-xs font-bold"
+                                                className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer text-xs font-bold"
                                             >
                                                 Make Default
                                             </DropdownMenuItem>
@@ -299,24 +299,24 @@ function BillingContent() {
                 {/* Billing History / Details */}
                 <div className="space-y-6 flex flex-col">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold uppercase tracking-widest text-white">Billing History</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Billing History</h3>
                         <div className="h-6" />
                     </div>
-                    <div className="border border-white/5 rounded-xl bg-[#09090b] divide-y divide-white/5 flex-1">
+                    <div className="border border-border rounded-xl bg-card divide-y divide-border flex-1">
                         {isLoadingHistory ? (
                             <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
-                                <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">Loading...</p>
+                                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">Loading...</p>
                             </div>
                         ) : billingHistory.length > 0 ? (
                             <>
                                 {billingHistory.map((item) => (
                                     <div 
                                         key={item.id}
-                                        className="p-4 flex items-center justify-between group hover:bg-white/5 transition-colors cursor-pointer"
+                                        className="p-4 flex items-center justify-between group hover:bg-muted transition-colors cursor-pointer"
                                     >
                                         <div>
-                                            <p className="text-xs font-bold text-white">{item.description}</p>
-                                            <p className="text-[10px] text-neutral-500 uppercase tracking-tighter">
+                                            <p className="text-xs font-bold text-foreground">{item.description}</p>
+                                            <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
                                                 {item.date ? format(new Date(item.date), 'MMM dd, yyyy') : 'N/A'} • {currency} {item.amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                                             </p>
                                         </div>
@@ -325,13 +325,13 @@ function BillingContent() {
                                 ))}
                                 {billingHistory.length < 10 && (
                                     <div className="p-4 text-center">
-                                        <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">End of history</p>
+                                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">End of history</p>
                                     </div>
                                 )}
                             </>
                         ) : (
                             <div className="p-8 text-center min-h-[96px] flex items-center justify-center">
-                                <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-[0.2em]">No billing history yet</p>
+                                <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">No billing history yet</p>
                             </div>
                         )}
                     </div>
@@ -346,30 +346,30 @@ function BillingContent() {
 
             {/* Manage Plan Modal */}
             <Dialog open={isManagePlanOpen} onOpenChange={setIsManagePlanOpen}>
-                <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[500px]">
+                <DialogContent className="bg-card border-border text-foreground sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-xl">
-                            <IconSparkles className="w-5 h-5 text-white" />
+                            <IconSparkles className="w-5 h-5 text-foreground" />
                             Manage Subscription
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6 pt-4">
                         {/* Current Plan Status */}
-                        <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div className="p-4 rounded-xl bg-muted border border-border">
                             <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-bold text-white">Current Plan</span>
+                                <span className="text-sm font-bold text-foreground">Current Plan</span>
                                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Active</span>
                             </div>
-                            <p className="text-2xl font-bold text-white mb-1">Pro Plan</p>
-                            <p className="text-sm text-neutral-400">R350/month • Renews automatically</p>
+                            <p className="text-2xl font-bold text-foreground mb-1">Pro Plan</p>
+                            <p className="text-sm text-muted-foreground">R350/month • Renews automatically</p>
                         </div>
 
                         {/* Billing Info */}
                         <div className="space-y-3">
-                            <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500">Billing Details</h4>
-                            <div className="flex items-center justify-between py-2 border-b border-white/5">
-                                <span className="text-sm text-neutral-400">Next billing date</span>
-                                <span className="text-sm font-medium text-white">
+                            <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Billing Details</h4>
+                            <div className="flex items-center justify-between py-2 border-b border-border">
+                                <span className="text-sm text-muted-foreground">Next billing date</span>
+                                <span className="text-sm font-medium text-foreground">
                                     {subscription?.expires_at 
                                         ? format(new Date(subscription.expires_at), 'MMM dd, yyyy')
                                         : daysRemaining !== null 
@@ -377,15 +377,15 @@ function BillingContent() {
                                             : 'Active (no expiry)'}
                                 </span>
                             </div>
-                            <div className="flex items-center justify-between py-2 border-b border-white/5">
-                                <span className="text-sm text-neutral-400">Payment method</span>
-                                <span className="text-sm font-medium text-white">
+                            <div className="flex items-center justify-between py-2 border-b border-border">
+                                <span className="text-sm text-muted-foreground">Payment method</span>
+                                <span className="text-sm font-medium text-foreground">
                                     {billingMethods.find(c => c.isDefault)?.brand || 'None'} •••• {billingMethods.find(c => c.isDefault)?.last4 || '----'}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between py-2">
-                                <span className="text-sm text-neutral-400">Amount</span>
-                                <span className="text-sm font-medium text-white">R350.00/mo</span>
+                                <span className="text-sm text-muted-foreground">Amount</span>
+                                <span className="text-sm font-medium text-foreground">R350.00/mo</span>
                             </div>
                         </div>
 
@@ -397,7 +397,7 @@ function BillingContent() {
                                     setIsAddCardOpen(true)
                                 }}
                                 variant="outline"
-                                className="w-full border-white/10 hover:bg-white/5 h-11"
+                                className="w-full border-border hover:bg-muted h-11"
                             >
                                 <IconCreditCard className="w-4 h-4 mr-2" />
                                 Update Payment Method
@@ -426,58 +426,58 @@ function BillingContent() {
             </Dialog>
 
             {/* Pricing Comparison Section */}
-            <div className="mt-12 pt-12 border-t border-white/5">
-                <h2 className="text-2xl font-bold text-white mb-2">Compare Plans</h2>
-                <p className="text-neutral-500 mb-8">Choose the plan that works best for your business</p>
+            <div className="mt-12 pt-12 border-t border-border">
+                <h2 className="text-2xl font-bold text-foreground mb-2">Compare Plans</h2>
+                <p className="text-muted-foreground mb-8">Choose the plan that works best for your business</p>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Starter Plan */}
                     <div className={cn(
                         "p-6 rounded-2xl border transition-all",
-                        !isPro ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b]"
+                        !isPro ? "border-border bg-muted" : "border-border bg-card"
                     )}>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-white">Starter</h3>
+                            <h3 className="text-lg font-bold text-foreground">Starter</h3>
                             {!isPro && (
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/10 px-2 py-1 rounded">Current</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground bg-accent px-2 py-1 rounded">Current</span>
                             )}
                         </div>
-                        <p className="text-3xl font-bold text-white mb-1">Free</p>
-                        <p className="text-sm text-neutral-500 mb-6">Forever</p>
+                        <p className="text-3xl font-bold text-foreground mb-1">Free</p>
+                        <p className="text-sm text-muted-foreground mb-6">Forever</p>
                         
                         <ul className="space-y-3 mb-6">
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Unlimited invoices
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Client database
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Product catalog
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Email sending & shareable links
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 PDF Exports
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Custom business logo
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Basic reporting
                             </li>
                         </ul>
                         
                         {!isPro && (
-                            <Button disabled className="w-full bg-white/10 text-white cursor-default">
+                            <Button disabled className="w-full bg-accent text-foreground cursor-default">
                                 Current Plan
                             </Button>
                         )}
@@ -486,44 +486,44 @@ function BillingContent() {
                     {/* Pro Plan */}
                     <div className={cn(
                         "p-6 rounded-2xl border transition-all relative overflow-hidden",
-                        isPro ? "border-white/20 bg-white/5" : "border-white/5 bg-[#09090b]"
+                        isPro ? "border-border bg-muted" : "border-border bg-card"
                     )}>
-                        <div className="absolute top-0 right-0 bg-white text-black text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">
+                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">
                             Popular
                         </div>
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-bold text-white">Pro</h3>
+                            <h3 className="text-lg font-bold text-foreground">Pro</h3>
                             {isPro && (
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-white/10 px-2 py-1 rounded">Current</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground bg-accent px-2 py-1 rounded">Current</span>
                             )}
                         </div>
-                        <p className="text-3xl font-bold text-white mb-1">R350</p>
-                        <p className="text-sm text-neutral-500 mb-6">per month</p>
+                        <p className="text-3xl font-bold text-foreground mb-1">R350</p>
+                        <p className="text-sm text-muted-foreground mb-6">per month</p>
                         
-                        <p className="text-xs text-neutral-400 mb-4">Everything in Starter, plus:</p>
+                        <p className="text-xs text-muted-foreground mb-4">Everything in Starter, plus:</p>
                         <ul className="space-y-3 mb-6">
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Remove Illumi branding
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 PayGate integration
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Client payment portal
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Recurring invoices
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Automated status updates
                             </li>
-                            <li className="flex items-center gap-2 text-sm text-neutral-300">
-                                <IconCheck className="w-4 h-4 text-white" />
+                            <li className="flex items-center gap-2 text-sm text-foreground">
+                                <IconCheck className="w-4 h-4 text-foreground" />
                                 Priority support
                             </li>
                         </ul>
@@ -532,7 +532,7 @@ function BillingContent() {
                             <Button 
                                 onClick={() => setIsManagePlanOpen(true)}
                                 variant="outline" 
-                                className="w-full border-white/10 hover:bg-white/5"
+                                className="w-full border-border hover:bg-muted"
                             >
                                 Manage Plan
                             </Button>
@@ -553,3 +553,4 @@ export default function BillingPage() {
         </Suspense>
     )
 }
+

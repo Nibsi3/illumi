@@ -148,20 +148,20 @@ export default function ClientsPage() {
         <div className="flex flex-col gap-y-10 font-sans pb-20">
             {/* Header Section */}
             <div>
-                <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Clients</h1>
-                <p className="hidden sm:block text-neutral-500 mt-1">Manage your clients and the invoices you send to them.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif text-foreground tracking-tight italic">Clients</h1>
+                <p className="hidden sm:block text-muted-foreground mt-1">Manage your clients and the invoices you send to them.</p>
             </div>
 
             {/* Filter & Actions Bar */}
-            <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-border py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1 sm:max-w-md">
                     <div className="relative flex-1 group">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
+                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                         <Input
                             placeholder="Search or filter"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-11 bg-transparent border-white/5 focus-visible:ring-offset-0 focus-visible:ring-white/10 rounded-none transition-all"
+                            className="pl-10 h-11 bg-transparent border-border focus-visible:ring-offset-0 focus-visible:ring-white/10 rounded-none transition-all"
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-50 pointer-events-none">
                             <ChevronDown className="h-4 w-4" />
@@ -172,12 +172,12 @@ export default function ClientsPage() {
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="hidden md:inline-flex h-11 border-white/5 bg-transparent hover:bg-white/5 transition-colors rounded-none">
+                            <Button variant="outline" className="hidden md:inline-flex h-11 border-border bg-transparent hover:bg-muted transition-colors rounded-none">
                                 <Filter className="mr-2 h-4 w-4" />
                                 Columns
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 bg-black border-white/10 rounded-none">
+                        <DropdownMenuContent align="end" className="w-56 bg-background border-border rounded-none">
                             {customerColumns.map(col => (
                                 <DropdownMenuCheckboxItem
                                     key={col.id}
@@ -187,7 +187,7 @@ export default function ClientsPage() {
                                             checked ? [...prev, col.id] : prev.filter(c => c !== col.id)
                                         )
                                     }}
-                                    className="focus:bg-white/5 focus:text-white rounded-none"
+                                    className="focus:bg-muted focus:text-foreground rounded-none"
                                 >
                                     {col.label}
                                 </DropdownMenuCheckboxItem>
@@ -196,7 +196,7 @@ export default function ClientsPage() {
                     </DropdownMenu>
 
                     <Link href="/clients/new">
-                        <Button className="h-11 w-full sm:w-auto bg-white text-black hover:bg-neutral-200 transition-colors font-semibold rounded-none">
+                        <Button className="h-11 w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-semibold rounded-none">
                             <Plus className="mr-2 h-4 w-4" />
                             Create Client
                         </Button>
@@ -207,22 +207,22 @@ export default function ClientsPage() {
             {/* Loading State */}
             {isLoading && (
                 <div className="flex items-center justify-center py-20">
-                    <Loader2 className="h-8 w-8 animate-spin text-white/40" />
+                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
             )}
 
             {/* Empty State */}
             {!isLoading && customers.length === 0 && (
-                <div className="border border-white/10 bg-black p-16 text-center">
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-6">
-                        <Building2 className="h-8 w-8 text-white/40" />
+                <div className="border border-border bg-background p-16 text-center">
+                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+                        <Building2 className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">No clients yet</h3>
-                    <p className="text-neutral-500 mb-6 max-w-md mx-auto">
+                    <h3 className="text-xl font-bold text-foreground mb-2">No clients yet</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                         Start by adding your first client. You'll be able to send invoices and track payments.
                     </p>
                     <Link href="/clients/new">
-                        <Button className="bg-white text-black hover:bg-neutral-200 font-semibold">
+                        <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
                             <Plus className="mr-2 h-4 w-4" />
                             Create Your First Client
                         </Button>
@@ -232,32 +232,32 @@ export default function ClientsPage() {
 
             {/* Customers Table */}
             {!isLoading && customers.length > 0 && (
-                <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+                <div className="border border-border bg-background overflow-hidden shadow-2xl">
                     {/* Mobile list */}
-                    <div className="md:hidden divide-y divide-white/10">
+                    <div className="md:hidden divide-y divide-border">
                         {filteredCustomers.map((customer) => (
                             <div key={customer.id} className="p-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787] shrink-0">
+                                            <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] font-black text-muted-foreground shrink-0">
                                                 {customer.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="text-sm font-bold text-white truncate">{customer.name}</div>
-                                                <div className="text-xs text-neutral-500 truncate">{customer.email}</div>
+                                                <div className="text-sm font-bold text-foreground truncate">{customer.name}</div>
+                                                <div className="text-xs text-muted-foreground truncate">{customer.email}</div>
                                             </div>
                                         </div>
                                     </div>
                                     <span className={cn(
                                         "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border shrink-0",
-                                        customer.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-white/5 text-neutral-400 border-white/10'
+                                        customer.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-muted text-muted-foreground border-border'
                                     )}>
                                         {customer.status}
                                     </span>
                                 </div>
 
-                                <div className="mt-3 text-xs text-neutral-500">
+                                <div className="mt-3 text-xs text-muted-foreground">
                                     <div className="flex items-center justify-between">
                                         <span>{customer.country || 'South Africa'}</span>
                                         <span className="truncate max-w-[55%] text-right">{customer.industry || '-'}</span>
@@ -268,7 +268,7 @@ export default function ClientsPage() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                        className="h-10 flex-1 border-border bg-muted hover:bg-accent rounded-lg"
                                         onClick={() => openHistory(customer)}
                                     >
                                         History
@@ -276,7 +276,7 @@ export default function ClientsPage() {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                        className="h-10 flex-1 border-border bg-muted hover:bg-accent rounded-lg"
                                         onClick={() => toggleCustomerStatus(customer)}
                                     >
                                         {customer.status === 'active' ? 'Deactivate' : 'Activate'}
@@ -290,12 +290,12 @@ export default function ClientsPage() {
                     <div className="hidden md:block overflow-x-auto">
                         <table className="w-full border-collapse text-left text-[13px]">
                             <thead>
-                                <tr className="bg-white/2 border-b border-white/10">
-                                    <th className="px-5 py-3 w-10 border-r border-white/10">
+                                <tr className="bg-muted/50 border-b border-border">
+                                    <th className="px-5 py-3 w-10 border-r border-border">
                                         <div
                                             className={cn(
-                                                "w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors",
-                                                selectedIds.length > 0 && selectedIds.length === filteredCustomers.length && "bg-white text-black"
+                                                "w-4 h-4 rounded-sm border border-border flex items-center justify-center cursor-pointer hover:border-border transition-colors",
+                                                selectedIds.length > 0 && selectedIds.length === filteredCustomers.length && "bg-primary text-primary-foreground"
                                             )}
                                             onClick={() => {
                                                 if (selectedIds.length === filteredCustomers.length) {
@@ -310,22 +310,22 @@ export default function ClientsPage() {
                                             {selectedIds.length > 0 && selectedIds.length === filteredCustomers.length && <Check className="h-3 w-3" />}
                                         </div>
                                     </th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Name</th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Email</th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Status</th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Country</th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Industry</th>
-                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Name</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Email</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Status</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Country</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Industry</th>
+                                    <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground text-center w-20">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredCustomers.map((customer) => (
-                                    <tr key={customer.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
-                                        <td className="px-5 py-4 border-r border-white/10">
+                                    <tr key={customer.id} className="hover:bg-muted/50 transition-colors border-b border-border group last:border-0">
+                                        <td className="px-5 py-4 border-r border-border">
                                             <div
                                                 className={cn(
-                                                    "w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40",
-                                                    selectedIds.includes(customer.id) && "bg-white text-black"
+                                                    "w-4 h-4 rounded-sm border border-border transition-all flex items-center justify-center cursor-pointer group-hover:border-border",
+                                                    selectedIds.includes(customer.id) && "bg-primary text-primary-foreground"
                                                 )}
                                                 onClick={() => {
                                                     setSelectedIds(prev => prev.includes(customer.id) ? prev.filter(id => id !== customer.id) : [...prev, customer.id])
@@ -336,52 +336,52 @@ export default function ClientsPage() {
                                                 {selectedIds.includes(customer.id) && <Check className="h-3 w-3" />}
                                             </div>
                                         </td>
-                                        <td className="px-5 py-4 border-r border-white/10">
+                                        <td className="px-5 py-4 border-r border-border">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787]">
+                                                <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] font-black text-muted-foreground">
                                                     {customer.name.charAt(0).toUpperCase()}
                                                 </div>
-                                                <span className="font-bold text-[#fafafa] tracking-tight">{customer.name}</span>
+                                                <span className="font-bold text-foreground tracking-tight">{customer.name}</span>
                                             </div>
                                         </td>
-                                        <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        <td className="px-5 py-4 border-r border-border text-muted-foreground">
                                             {customer.email}
                                         </td>
-                                        <td className="px-5 py-4 border-r border-white/10">
+                                        <td className="px-5 py-4 border-r border-border">
                                             <span className={cn(
                                                 "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border",
-                                                customer.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-white/5 text-neutral-400 border-white/10'
+                                                customer.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-muted text-muted-foreground border-border'
                                             )}>
                                                 {customer.status}
                                             </span>
                                         </td>
-                                        <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        <td className="px-5 py-4 border-r border-border text-muted-foreground">
                                             {customer.country || 'South Africa'}
                                         </td>
-                                        <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                        <td className="px-5 py-4 border-r border-border text-muted-foreground">
                                             {customer.industry || '-'}
                                         </td>
                                         <td className="px-5 py-4 text-center">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
+                                                <DropdownMenuContent align="end" className="w-48 bg-background border-border rounded-xl shadow-2xl p-1">
                                                     <DropdownMenuItem
-                                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                        className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                         onClick={() => openHistory(customer)}
                                                     >
                                                         View History
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
-                                                        className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                        className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                         onClick={() => toggleCustomerStatus(customer)}
                                                     >
                                                         {customer.status === 'active' ? 'Mark Inactive' : 'Mark Active'}
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                    <DropdownMenuSeparator className="bg-accent mx-1" />
                                                     <DropdownMenuItem
                                                         onClick={() => handleDeleteCustomer(customer.id)}
                                                         className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
@@ -400,23 +400,23 @@ export default function ClientsPage() {
             )}
 
             <Dialog open={Boolean(historyCustomer)} onOpenChange={(open) => { if (!open) setHistoryCustomer(null) }}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-2xl">
+                <DialogContent className="bg-card border-border max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle className="text-white">History — {historyCustomer?.name}</DialogTitle>
+                        <DialogTitle className="text-foreground">History — {historyCustomer?.name}</DialogTitle>
                     </DialogHeader>
 
                     <div className="mt-2">
                         {isHistoryLoading ? (
-                            <div className="text-sm text-neutral-400 flex items-center gap-2">
+                            <div className="text-sm text-muted-foreground flex items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                             </div>
                         ) : historyInvoices.length === 0 ? (
-                            <div className="text-sm text-neutral-400">No invoices found for this customer.</div>
+                            <div className="text-sm text-muted-foreground">No invoices found for this customer.</div>
                         ) : (
-                            <div className="border border-white/10 rounded-xl overflow-hidden">
+                            <div className="border border-border rounded-xl overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left text-sm">
-                                        <thead className="border-b border-white/10 text-[10px] uppercase tracking-widest text-neutral-500">
+                                        <thead className="border-b border-border text-[10px] uppercase tracking-widest text-muted-foreground">
                                             <tr>
                                                 <th className="px-4 py-3">Invoice</th>
                                                 <th className="px-4 py-3">Status</th>
@@ -424,13 +424,13 @@ export default function ClientsPage() {
                                                 <th className="px-4 py-3">Issued</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-white/10">
+                                        <tbody className="divide-y divide-border">
                                             {historyInvoices.map((inv: any) => (
-                                                <tr key={inv.invoice_number} className="hover:bg-white/5">
-                                                    <td className="px-4 py-3 text-white">{inv.invoice_number || '-'}</td>
-                                                    <td className="px-4 py-3 text-neutral-400">{inv.status}</td>
-                                                    <td className="px-4 py-3 text-right text-white">{Number(inv.total || 0).toLocaleString()}</td>
-                                                    <td className="px-4 py-3 text-neutral-400">{inv.issue_date || '-'}</td>
+                                                <tr key={inv.invoice_number} className="hover:bg-muted">
+                                                    <td className="px-4 py-3 text-foreground">{inv.invoice_number || '-'}</td>
+                                                    <td className="px-4 py-3 text-muted-foreground">{inv.status}</td>
+                                                    <td className="px-4 py-3 text-right text-foreground">{Number(inv.total || 0).toLocaleString()}</td>
+                                                    <td className="px-4 py-3 text-muted-foreground">{inv.issue_date || '-'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
@@ -444,4 +444,5 @@ export default function ClientsPage() {
         </div>
     )
 }
+
 

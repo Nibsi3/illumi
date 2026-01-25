@@ -159,9 +159,9 @@ export default function GeneralSettings() {
             <div className="space-y-6">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-medium text-white">Default Logo</h3>
+                        <h3 className="text-lg font-medium text-foreground">Default Logo</h3>
                     </div>
-                    <p className="text-sm text-neutral-500 max-w-xl">
+                    <p className="text-sm text-muted-foreground max-w-xl">
                         This logo will be displayed on all your invoices and client communications by default.
                     </p>
                 </div>
@@ -169,26 +169,26 @@ export default function GeneralSettings() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
                     <div
                         onClick={handleLogoUpload}
-                        className="w-32 h-32 rounded-2xl border-2 border-dashed border-white/5 bg-black hover:border-white/20 transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden"
+                        className="w-32 h-32 rounded-2xl border-2 border-dashed border-border bg-background hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden"
                     >
                         {logo ? (
                             <img src={logo} alt="Logo" className="w-full h-full object-contain p-4" />
                         ) : (
                             <>
-                                <Upload className="h-6 w-6 text-neutral-600 group-hover:text-neutral-400 group-hover:scale-110 transition-all mb-2" />
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-600 group-hover:text-neutral-400">Upload</span>
+                                <Upload className="h-6 w-6 text-muted-foreground group-hover:text-muted-foreground group-hover:scale-110 transition-all mb-2" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground group-hover:text-muted-foreground">Upload</span>
                             </>
                         )}
                     </div>
                     <div className="flex flex-col gap-2">
                         <Button
                             variant="outline"
-                            className="h-9 border-white/10 bg-white/5 hover:bg-white/10"
+                            className="h-9 border-border bg-muted hover:bg-accent"
                             onClick={handleLogoUpload}
                         >
                             Replace Logo
                         </Button>
-                        <Button variant="ghost" className="h-9 text-neutral-500 hover:text-red-500" onClick={() => setLogo(null)}>
+                        <Button variant="ghost" className="h-9 text-muted-foreground hover:text-red-500" onClick={() => setLogo(null)}>
                             Remove
                         </Button>
                     </div>
@@ -196,21 +196,21 @@ export default function GeneralSettings() {
             </div>
 
             {/* Branding Section */}
-            <div className="space-y-8 pt-10 border-t border-white/5">
+            <div className="space-y-8 pt-10 border-t border-border">
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-medium text-white">Invoice Branding</h3>
+                        <h3 className="text-lg font-medium text-foreground">Invoice Branding</h3>
                         {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
                     </div>
-                    <p className="text-sm text-neutral-500 max-w-xl">
+                    <p className="text-sm text-muted-foreground max-w-xl">
                         Remove “Powered by Illumi” from the bottom of invoices.
                     </p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex flex-col gap-1">
-                        <h4 className="text-sm font-medium text-white">Hide Illumi branding</h4>
-                        <p className="text-xs text-neutral-500 max-w-xl">
+                        <h4 className="text-sm font-medium text-foreground">Hide Illumi branding</h4>
+                        <p className="text-xs text-muted-foreground max-w-xl">
                             Pro feature. Free invoices will always include Illumi branding.
                         </p>
                     </div>
@@ -228,76 +228,76 @@ export default function GeneralSettings() {
             </div>
 
             {/* Profile Section */}
-            <div className="space-y-8 pt-10 border-t border-white/5">
+            <div className="space-y-8 pt-10 border-t border-border">
                 <div className="flex flex-col gap-1">
-                    <h3 className="text-lg font-medium text-white">Organization Profile</h3>
-                    <p className="text-sm text-neutral-500 max-w-xl">
+                    <h3 className="text-lg font-medium text-foreground">Organization Profile</h3>
+                    <p className="text-sm text-muted-foreground max-w-xl">
                         Update your company details used for invoicing and billing.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Name</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Company Name</Label>
                         <Input
                             value={companyName}
                             onChange={(e) => setCompanyName(e.target.value)}
                             placeholder="My Professional Co."
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Bank Name</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Bank Name</Label>
                         <Input
                             value={bankName}
                             onChange={(e) => setBankName(e.target.value)}
                             placeholder="FNB"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Account Name</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Account Name</Label>
                         <Input
                             value={accountName}
                             onChange={(e) => setAccountName(e.target.value)}
                             placeholder="My Company (Pty) Ltd"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Account Number</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Account Number</Label>
                         <Input
                             value={accountNumber}
                             onChange={(e) => setAccountNumber(e.target.value)}
                             placeholder="123456789"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Branch Code</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Branch Code</Label>
                         <Input
                             value={branchCode}
                             onChange={(e) => setBranchCode(e.target.value)}
                             placeholder="250655"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Country</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Country</Label>
                         <Select value={country} onValueChange={setCountry}>
-                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                            <SelectTrigger className="bg-background border-border h-11 focus:ring-white/10">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                            <SelectContent className="bg-card border-border text-foreground">
                                 <SelectItem value="South Africa">South Africa</SelectItem>
                                 <SelectItem value="Nigeria">Nigeria</SelectItem>
                                 <SelectItem value="Egypt">Egypt</SelectItem>
@@ -310,15 +310,15 @@ export default function GeneralSettings() {
                                 <SelectItem value="Angola">Angola</SelectItem>
                             </SelectContent>
                         </Select>
-                        <p className="text-[10px] text-neutral-500">Current VAT Rate: {taxRate}%</p>
+                        <p className="text-[10px] text-muted-foreground">Current VAT Rate: {taxRate}%</p>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Date Format</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Date Format</Label>
                         <Select value={dateFormat} onValueChange={setDateFormat}>
-                            <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                            <SelectTrigger className="bg-background border-border h-11 focus:ring-white/10">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                            <SelectContent className="bg-card border-border text-foreground">
                                 <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
                                 <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
                                 <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
@@ -329,39 +329,39 @@ export default function GeneralSettings() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Support Email</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Support Email</Label>
                         <Input
                             value={fromEmail}
                             onChange={(e) => setFromEmail(e.target.value)}
                             placeholder="support@myco.com"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Website</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Company Website</Label>
                         <Input
                             value={companyWebsite}
                             onChange={(e) => setCompanyWebsite(e.target.value)}
                             placeholder="https://yourcompany.com"
-                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                            className="bg-background border-border h-11 focus-visible:ring-white/10"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Default Currency</Label>
-                        <div className="h-11 flex items-center px-3 bg-[#09090b] border border-white/5 rounded-md text-sm text-neutral-400">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Default Currency</Label>
+                        <div className="h-11 flex items-center px-3 bg-card border border-border rounded-md text-sm text-muted-foreground">
                             {currency} (Auto-set)
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-white/5">
+                <div className="pt-8 border-t border-border">
                     <div className="flex items-start sm:items-center justify-between gap-6">
                         <div className="flex flex-col gap-1">
-                            <h4 className="text-sm font-medium text-white">Send yourself a copy</h4>
-                            <p className="text-xs text-neutral-500 max-w-xl">
+                            <h4 className="text-sm font-medium text-foreground">Send yourself a copy</h4>
+                            <p className="text-xs text-muted-foreground max-w-xl">
                                 When an invoice email is sent to a client, also send a copy to your support email.
                             </p>
                         </div>
@@ -374,15 +374,15 @@ export default function GeneralSettings() {
             </div>
 
             {/* Footer Actions */}
-            <div className="hidden md:flex justify-end pt-10 border-t border-white/5">
-                <Button onClick={handleSave} className="bg-white text-black hover:bg-neutral-200 h-11 px-8 font-semibold rounded-lg">
+            <div className="hidden md:flex justify-end pt-10 border-t border-border">
+                <Button onClick={handleSave} className="bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 font-semibold rounded-lg">
                     Save everything
                 </Button>
             </div>
 
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-background/95 backdrop-blur p-3">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur p-3">
                 <div className="max-w-4xl mx-auto">
-                    <Button onClick={handleSave} className="w-full bg-white text-black hover:bg-neutral-200 h-11 font-semibold rounded-lg">
+                    <Button onClick={handleSave} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-11 font-semibold rounded-lg">
                         Save everything
                     </Button>
                 </div>
@@ -392,7 +392,7 @@ export default function GeneralSettings() {
             <div className="space-y-6 pt-12 mt-12 border-t border-red-500/20">
                 <div className="flex flex-col gap-1">
                     <h3 className="text-lg font-medium text-red-500">Danger Zone</h3>
-                    <p className="text-sm text-neutral-500 max-w-xl">
+                    <p className="text-sm text-muted-foreground max-w-xl">
                         Permanently delete your account and all associated data. This action cannot be undone.
                     </p>
                 </div>
@@ -408,13 +408,13 @@ export default function GeneralSettings() {
 
             {/* Delete Account Confirmation Dialog */}
             <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-md">
+                <DialogContent className="bg-card border-border max-w-md">
                     <DialogHeader>
                         <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
                             <AlertTriangle className="h-6 w-6 text-red-500" />
                         </div>
-                        <DialogTitle className="text-center text-xl text-white">Delete Account?</DialogTitle>
-                        <DialogDescription className="text-center text-neutral-400 pt-2">
+                        <DialogTitle className="text-center text-xl text-foreground">Delete Account?</DialogTitle>
+                        <DialogDescription className="text-center text-muted-foreground pt-2">
                             This action is <span className="text-red-400 font-semibold">permanent</span> and cannot be undone. 
                             All your data, including invoices, clients, products, and settings will be permanently deleted.
                         </DialogDescription>
@@ -428,7 +428,7 @@ export default function GeneralSettings() {
                         <Button
                             variant="outline"
                             onClick={() => setIsDeleteDialogOpen(false)}
-                            className="flex-1 border-white/10 hover:bg-white/5"
+                            className="flex-1 border-border hover:bg-muted"
                         >
                             Cancel
                         </Button>
@@ -443,7 +443,7 @@ export default function GeneralSettings() {
                                 setIsDeleteDialogOpen(false)
                             }}
                             disabled={isDeleting}
-                            className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-foreground"
                         >
                             {isDeleting ? "Deleting..." : "Yes, Delete My Account"}
                         </Button>
@@ -453,3 +453,4 @@ export default function GeneralSettings() {
         </div>
     )
 }
+

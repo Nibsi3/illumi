@@ -194,7 +194,7 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
         : null
 
     return (
-        <div className="bg-black text-white">
+        <div className="bg-background text-foreground">
             {faqSchema && (
                 <Script
                     id={`faq-${p.slug}`}
@@ -203,34 +203,34 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
                 />
             )}
 
-            <section className="relative overflow-hidden border-b border-white/5">
-                <div className="absolute inset-0 bg-linear-to-b from-white/5 via-black to-black" />
+            <section className="relative overflow-hidden border-b border-border">
+                <div className="absolute inset-0 bg-linear-to-b from-white/5 via-white dark:via-black to-white dark:to-black" />
                 <div className="relative mx-auto max-w-6xl px-6 py-16">
                     <div className="mb-6">
-                        <Link href="/integrations" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors">
+                        <Link href="/integrations" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors">
                             Back to integrations <IconArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </div>
 
                     <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40 mb-5">
+                        <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-5">
                             <IconPlugConnected className="h-4 w-4" />
                             {p.name} integration
                         </div>
                         <h1 className="text-3xl md:text-5xl font-bold tracking-tight">{p.headline}</h1>
-                        <p className="mt-4 text-white/60 text-lg leading-relaxed">{p.description}</p>
+                        <p className="mt-4 text-muted-foreground text-lg leading-relaxed">{p.description}</p>
 
                         <div className="mt-8 flex flex-col sm:flex-row gap-3">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
                             >
                                 Connect {p.short}
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                             <Link
                                 href="/features/paygate"
-                                className="inline-flex items-center justify-center border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center border border-border text-foreground hover:text-foreground hover:bg-muted h-11 px-6 text-sm font-semibold"
                             >
                                 How PayGate works
                             </Link>
@@ -239,10 +239,10 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
 
                     <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {p.bullets.map((b) => (
-                            <div key={b} className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-5">
+                            <div key={b} className="rounded-2xl border border-border bg-card p-5">
                                 <div className="flex items-start gap-3">
-                                    <IconCheck className="h-5 w-5 text-white/60 mt-0.5" />
-                                    <div className="text-sm text-white/70 leading-relaxed">{b}</div>
+                                    <IconCheck className="h-5 w-5 text-muted-foreground mt-0.5" />
+                                    <div className="text-sm text-muted-foreground leading-relaxed">{b}</div>
                                 </div>
                             </div>
                         ))}
@@ -253,30 +253,30 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
             <section className="py-16">
                 <div className="mx-auto max-w-6xl px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                        <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] p-8">
-                            <h2 className="text-xl font-semibold text-white">Why this integration matters</h2>
-                            <p className="mt-3 text-white/60 leading-relaxed">
+                        <div className="rounded-3xl border border-border bg-card p-8">
+                            <h2 className="text-xl font-semibold text-foreground">Why this integration matters</h2>
+                            <p className="mt-3 text-muted-foreground leading-relaxed">
                                 Many South African businesses already have a preferred payment gateway. With Illumi, you keep using what you know — and simply add a pay link to invoices.
                             </p>
-                            <div className="mt-6 flex items-center gap-3 text-sm text-white/60">
+                            <div className="mt-6 flex items-center gap-3 text-sm text-muted-foreground">
                                 <IconShieldCheck className="h-4 w-4" />
                                 Payments are handled by your connected provider.
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-white/10 bg-[#0a0a0a] p-8">
-                            <h2 className="text-xl font-semibold text-white">How it works</h2>
-                            <ol className="mt-4 space-y-3 text-sm text-white/70">
+                        <div className="rounded-3xl border border-border bg-card p-8">
+                            <h2 className="text-xl font-semibold text-foreground">How it works</h2>
+                            <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
                                 <li className="flex gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">1</div>
+                                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-xs font-bold">1</div>
                                     <div>Connect {p.short} in Settings &gt; PayGate.</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">2</div>
+                                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-xs font-bold">2</div>
                                     <div>Send invoices by email (or share a link).</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">3</div>
+                                    <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-xs font-bold">3</div>
                                     <div>Clients pay online and invoice status updates automatically (provider dependent).</div>
                                 </li>
                             </ol>
@@ -285,33 +285,33 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
 
                     {p.faq.length > 0 && (
                         <section className="mt-12">
-                            <h2 className="text-xl font-semibold text-white">FAQ</h2>
+                            <h2 className="text-xl font-semibold text-foreground">FAQ</h2>
                             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {p.faq.map((f) => (
-                                    <div key={f.q} className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                                        <div className="text-white font-medium">{f.q}</div>
-                                        <div className="mt-2 text-sm text-white/60 leading-relaxed">{f.a}</div>
+                                    <div key={f.q} className="rounded-2xl border border-border bg-card p-6">
+                                        <div className="text-foreground font-medium">{f.q}</div>
+                                        <div className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.a}</div>
                                     </div>
                                 ))}
                             </div>
                         </section>
                     )}
 
-                    <div className="mt-12 rounded-3xl border border-white/10 bg-[#0a0a0a] p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div className="mt-12 rounded-3xl border border-border bg-card p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                         <div>
-                            <div className="text-lg font-semibold text-white">Ready to connect {p.short}?</div>
-                            <div className="mt-1 text-sm text-white/60">Enable PayGate, send invoices by email, and get paid online.</div>
+                            <div className="text-lg font-semibold text-foreground">Ready to connect {p.short}?</div>
+                            <div className="mt-1 text-sm text-muted-foreground">Enable PayGate, send invoices by email, and get paid online.</div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3">
                             <Link
                                 href="/login"
-                                className="inline-flex items-center justify-center bg-white text-black hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-neutral-200 h-11 px-6 text-sm font-semibold"
                             >
                                 Get started
                             </Link>
                             <Link
                                 href="/pricing"
-                                className="inline-flex items-center justify-center border border-white/15 text-white/80 hover:text-white hover:bg-white/5 h-11 px-6 text-sm font-semibold"
+                                className="inline-flex items-center justify-center border border-border text-foreground hover:text-foreground hover:bg-muted h-11 px-6 text-sm font-semibold"
                             >
                                 View pricing
                             </Link>

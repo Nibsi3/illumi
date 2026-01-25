@@ -135,13 +135,13 @@ export default function SupportSettingsPage() {
                     <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="h-10 w-10 text-emerald-500" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-3">Request Submitted</h2>
-                    <p className="text-neutral-400 mb-8 max-w-md mx-auto">
+                    <h2 className="text-2xl font-bold text-foreground mb-3">Request Submitted</h2>
+                    <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                         We've received your support request and will respond within 24 hours. Check your email for updates.
                     </p>
                     <Button
                         onClick={() => setIsSubmitted(false)}
-                        className="bg-white text-black hover:bg-neutral-200 font-semibold px-8"
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8"
                     >
                         Submit Another Request
                     </Button>
@@ -150,11 +150,11 @@ export default function SupportSettingsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                     {/* Main Form */}
                     <div className="lg:col-span-8 flex">
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 sm:p-6 lg:p-8 w-full flex flex-col">
+                        <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 lg:p-8 w-full flex flex-col">
                             <form onSubmit={handleSubmit} className="space-y-8 flex-1">
                             {/* Category Selection */}
                             <div className="space-y-4">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">What can we help you with?</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">What can we help you with?</Label>
                                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                                     {categories.map((cat) => {
                                         const Icon = cat.icon
@@ -167,12 +167,12 @@ export default function SupportSettingsPage() {
                                                 className={cn(
                                                     "flex flex-col items-center gap-2 p-4 rounded-xl border transition-all",
                                                     isSelected
-                                                        ? "bg-white/10 border-white/20"
-                                                        : "bg-[#09090b] border-white/5 hover:border-white/10 hover:bg-white/5"
+                                                        ? "bg-accent border-border"
+                                                        : "bg-card border-border hover:border-border hover:bg-muted"
                                                 )}
                                             >
-                                                <Icon className={cn("h-5 w-5", isSelected ? "text-white" : "text-neutral-500")} />
-                                                <span className={cn("text-xs font-medium", isSelected ? "text-white" : "text-neutral-400")}>{cat.label}</span>
+                                                <Icon className={cn("h-5 w-5", isSelected ? "text-foreground" : "text-muted-foreground")} />
+                                                <span className={cn("text-xs font-medium", isSelected ? "text-foreground" : "text-muted-foreground")}>{cat.label}</span>
                                             </button>
                                         )
                                     })}
@@ -181,19 +181,19 @@ export default function SupportSettingsPage() {
 
                             {/* Subject */}
                             <div className="space-y-3">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Subject</Label>
                                 <Input
                                     value={subject}
                                     onChange={(e) => setSubject(e.target.value)}
                                     placeholder="Brief description of your issue"
-                                    className="bg-[#09090b] border-white/5 h-12 text-white placeholder:text-neutral-600 focus-visible:ring-white/10"
+                                    className="bg-card border-border h-12 text-foreground placeholder:text-muted-foreground focus-visible:ring-white/10"
                                     required
                                 />
                             </div>
 
                             {/* Priority */}
                             <div className="space-y-3">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Priority</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Priority</Label>
                                 <div className="flex flex-wrap gap-2">
                                     {priorities.map((p) => (
                                         <button
@@ -206,14 +206,14 @@ export default function SupportSettingsPage() {
                                             className={cn(
                                                 "flex items-center gap-2 px-4 py-2 rounded-lg border transition-all",
                                                 priority === p.value
-                                                    ? "bg-white/10 border-white/20"
-                                                    : "bg-[#09090b] border-white/5 hover:border-white/10"
+                                                    ? "bg-accent border-border"
+                                                    : "bg-card border-border hover:border-border"
                                             )}
                                         >
                                             {priorityTouched && priority === p.value && (
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                             )}
-                                            <span className={cn("text-sm font-medium", priority === p.value ? "text-white" : "text-neutral-400")}>{p.label}</span>
+                                            <span className={cn("text-sm font-medium", priority === p.value ? "text-foreground" : "text-muted-foreground")}>{p.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -221,25 +221,25 @@ export default function SupportSettingsPage() {
 
                             {/* Description */}
                             <div className="space-y-3">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Description</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Description</Label>
                                 <Textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Please provide as much detail as possible about your issue..."
-                                    className="bg-[#09090b] border-white/5 text-white placeholder:text-neutral-600 min-h-[180px] resize-none focus-visible:ring-white/10"
+                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground min-h-[180px] resize-none focus-visible:ring-white/10"
                                     required
                                 />
                             </div>
 
                             {/* Submit */}
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4">
-                                <p className="text-xs text-neutral-600">
-                                    Submitting as <span className="text-neutral-400">{userEmail || 'you'}</span>
+                                <p className="text-xs text-muted-foreground">
+                                    Submitting as <span className="text-muted-foreground">{userEmail || 'you'}</span>
                                 </p>
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting || !category || !subject || !description}
-                                    className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 font-semibold px-8 h-11"
+                                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 h-11"
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -262,41 +262,41 @@ export default function SupportSettingsPage() {
                     <div className="lg:col-span-4 flex">
                         <div className="w-full flex flex-col gap-6">
                         {/* Quick Links */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 flex-1">
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Quick Links</h3>
+                        <div className="bg-card border border-border rounded-2xl p-6 flex-1">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Quick Links</h3>
                             <div className="space-y-3">
                                 <Link
                                     href="https://illumi.co.za/docs"
                                     target="_blank"
-                                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-muted hover:bg-accent transition-colors group"
                                 >
-                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                                        <BookOpen className="h-5 w-5 text-neutral-400 group-hover:text-white transition-colors" />
+                                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                                        <BookOpen className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-white">Documentation</p>
-                                        <p className="text-xs text-neutral-500">Browse guides & tutorials</p>
+                                        <p className="text-sm font-medium text-foreground">Documentation</p>
+                                        <p className="text-xs text-muted-foreground">Browse guides & tutorials</p>
                                     </div>
-                                    <ExternalLink className="h-4 w-4 text-neutral-600 ml-auto" />
+                                    <ExternalLink className="h-4 w-4 text-muted-foreground ml-auto" />
                                 </Link>
                                 <a
                                     href="mailto:support@illumi.co.za"
-                                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-muted hover:bg-accent transition-colors group"
                                 >
-                                    <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                                        <Mail className="h-5 w-5 text-neutral-400 group-hover:text-white transition-colors" />
+                                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                                        <Mail className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-white">Email Us</p>
-                                        <p className="text-xs text-neutral-500">support@illumi.co.za</p>
+                                        <p className="text-sm font-medium text-foreground">Email Us</p>
+                                        <p className="text-xs text-muted-foreground">support@illumi.co.za</p>
                                     </div>
                                 </a>
                             </div>
                         </div>
 
                         {/* Response Times */}
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 flex-1">
-                            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Response Times</h3>
+                        <div className="bg-card border border-border rounded-2xl p-6 flex-1">
+                            <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Response Times</h3>
                             <div className="space-y-3">
                                 {priorities.map((p) => (
                                     <div key={p.value} className="flex items-center justify-between">
@@ -304,9 +304,9 @@ export default function SupportSettingsPage() {
                                             {priorityTouched && priority === p.value && (
                                                 <div className="w-2 h-2 rounded-full bg-emerald-500" />
                                             )}
-                                            <span className="text-sm text-neutral-400">{p.label}</span>
+                                            <span className="text-sm text-muted-foreground">{p.label}</span>
                                         </div>
-                                        <span className="text-sm font-medium text-white">
+                                        <span className="text-sm font-medium text-foreground">
                                             {p.value === 'low' && '48 hours'}
                                             {p.value === 'medium' && '24 hours'}
                                             {p.value === 'high' && '12 hours'}
@@ -323,3 +323,4 @@ export default function SupportSettingsPage() {
         </div>
     )
 }
+

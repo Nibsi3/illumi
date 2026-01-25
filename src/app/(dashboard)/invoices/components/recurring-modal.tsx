@@ -54,25 +54,25 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[425px] bg-[#09090b] border-white/10 text-white">
+            <DialogContent className="sm:max-w-[425px] bg-card border-border text-foreground">
                 <DialogHeader>
                     <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center border border-violet-500/20 mb-4">
                         <Repeat className="h-6 w-6 text-violet-500" />
                     </div>
                     <DialogTitle className="text-xl font-bold">Recurring Settings</DialogTitle>
-                    <DialogDescription className="text-neutral-400">
+                    <DialogDescription className="text-muted-foreground">
                         Configure how often this invoice should be generated.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className="grid gap-6 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="interval" className="text-xs font-bold uppercase tracking-widest text-neutral-500">Frequency</Label>
+                        <Label htmlFor="interval" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Frequency</Label>
                         <Select value={interval} onValueChange={(v: any) => setInterval(v)}>
-                            <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                            <SelectTrigger className="bg-muted border-border h-11">
                                 <SelectValue placeholder="Select frequency" />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                            <SelectContent className="bg-card border-border text-foreground">
                                 <SelectItem value="daily">Daily</SelectItem>
                                 <SelectItem value="weekly">Weekly</SelectItem>
                                 <SelectItem value="monthly">Monthly</SelectItem>
@@ -82,12 +82,12 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                     </div>
 
                     <div className="grid gap-2">
-                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Ends</Label>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Ends</Label>
                         <Select value={endType} onValueChange={(v: any) => setEndType(v)}>
-                            <SelectTrigger className="bg-white/5 border-white/10 h-11">
+                            <SelectTrigger className="bg-muted border-border h-11">
                                 <SelectValue placeholder="Select end type" />
                             </SelectTrigger>
-                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                            <SelectContent className="bg-card border-border text-foreground">
                                 <SelectItem value="never">Never</SelectItem>
                                 <SelectItem value="on">On Date</SelectItem>
                                 <SelectItem value="after">After X Times</SelectItem>
@@ -97,13 +97,13 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
 
                     {endType === "on" && (
                         <div className="grid gap-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">End Date</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">End Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant={"outline"}
                                         className={cn(
-                                            "h-11 justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10 hover:text-white",
+                                            "h-11 justify-start text-left font-normal bg-muted border-border hover:bg-accent hover:text-foreground",
                                             !endDate && "text-muted-foreground"
                                         )}
                                     >
@@ -111,7 +111,7 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                                         {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
                                     <Calendar
                                         selected={endDate}
                                         onSelect={setEndDate}
@@ -123,13 +123,13 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
 
                     {endType === "after" && (
                         <div className="grid gap-2">
-                            <Label htmlFor="count" className="text-xs font-bold uppercase tracking-widest text-neutral-500">Number of Invoices</Label>
+                            <Label htmlFor="count" className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Number of Invoices</Label>
                             <Input
                                 id="count"
                                 type="number"
                                 value={endCount}
                                 onChange={(e) => setEndCount(parseInt(e.target.value))}
-                                className="bg-white/5 border-white/10 h-11"
+                                className="bg-muted border-border h-11"
                             />
                         </div>
                     )}
@@ -137,10 +137,10 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
                 </div>
 
                 <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="ghost" onClick={onClose} className="text-neutral-400 hover:text-white hover:bg-white/5">
+                    <Button variant="ghost" onClick={onClose} className="text-muted-foreground hover:text-foreground hover:bg-muted">
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} className="bg-white text-black hover:bg-neutral-200">
+                    <Button onClick={handleSave} className="bg-primary text-primary-foreground hover:bg-primary/90">
                         Send Recurring Emails
                     </Button>
                 </DialogFooter>
@@ -148,3 +148,4 @@ export function RecurringModal({ isOpen, onClose, onSave, initialSettings }: Rec
         </Dialog>
     )
 }
+

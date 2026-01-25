@@ -58,35 +58,35 @@ const sharingOptions = [
 ]
 
 const invoiceStatuses = [
-    { status: "Paid", count: 24, amount: "R 125,000", color: "text-white", bg: "bg-white/5" },
-    { status: "Pending", count: 5, amount: "R 18,500", color: "text-white/80", bg: "bg-white/3" },
-    { status: "Overdue", count: 2, amount: "R 4,200", color: "text-white/70", bg: "bg-white/2" },
+    { status: "Paid", count: 24, amount: "R 125,000", color: "text-foreground", bg: "bg-muted" },
+    { status: "Pending", count: 5, amount: "R 18,500", color: "text-foreground", bg: "bg-muted/50" },
+    { status: "Overdue", count: 2, amount: "R 4,200", color: "text-muted-foreground", bg: "bg-muted/50" },
 ]
 
 export default function InvoicingFeaturePage() {
     return (
-        <div className="bg-black grainy-gradient">
+        <div className="bg-background grainy-gradient">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-black" />
-                    <div className="absolute inset-0 bg-black/60" />
+                    <div className="h-full w-full bg-background" />
+                    <div className="absolute inset-0 bg-white dark:bg-black/60" />
                 </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6">
-                        <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Free Invoice Generator</span>
+                    <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-6">
+                        <span className="px-3 py-1 rounded-full bg-accent text-muted-foreground">Free Invoice Generator</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                         Send Invoices via<br />
-                        <span className="text-white/50">Email in Seconds</span>
+                        <span className="text-muted-foreground">Email in Seconds</span>
                     </h1>
-                    <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
                         Create professional invoices and send them via Email or shareable link. Track payments, manage overdue invoices, and get paid faster.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             asChild
-                            className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Create Free Invoice
@@ -96,12 +96,12 @@ export default function InvoicingFeaturePage() {
                         <Button
                             asChild
                             variant="outline"
-                            className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5"
+                            className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted"
                         >
                             <Link href="/pricing">View Pricing</Link>
                         </Button>
                     </div>
-                    <p className="text-sm text-white/40 mt-4">Free forever • Unlimited invoices • No credit card</p>
+                    <p className="text-sm text-muted-foreground mt-4">Free forever • Unlimited invoices • No credit card</p>
                 </div>
             </section>
 
@@ -110,42 +110,42 @@ export default function InvoicingFeaturePage() {
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         {invoiceStatuses.map((status, i) => (
-                            <div key={i} className={`p-6 rounded-2xl border border-white/10 ${status.bg}`}>
+                            <div key={i} className={`p-6 rounded-2xl border border-border ${status.bg}`}>
                                 <div className={`text-sm font-medium ${status.color} mb-2`}>{status.status}</div>
-                                <div className="text-3xl font-serif font-bold text-white mb-1">{status.amount}</div>
-                                <div className="text-sm text-white/50">{status.count} invoices</div>
+                                <div className="text-3xl font-serif font-bold text-foreground mb-1">{status.amount}</div>
+                                <div className="text-sm text-muted-foreground">{status.count} invoices</div>
                             </div>
                         ))}
                     </div>
 
                     {/* Invoice Preview */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="border border-white/10 rounded-3xl bg-black/50 overflow-hidden">
-                            <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                                <div className="text-sm font-medium text-white">Invoice Preview</div>
-                                <div className="text-xs text-white/50">INV-2024-042</div>
+                        <div className="border border-border rounded-3xl bg-card dark:bg-black/50 overflow-hidden">
+                            <div className="p-6 border-b border-border flex items-center justify-between">
+                                <div className="text-sm font-medium text-foreground">Invoice Preview</div>
+                                <div className="text-xs text-muted-foreground">INV-2024-042</div>
                             </div>
                             <div className="p-8">
                                 <div className="flex justify-between mb-8">
                                     <div>
-                                        <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Bill to</div>
-                                        <div className="text-sm text-white">Acme Corp</div>
-                                        <div className="text-xs text-white/50">accounts@acme.co.za</div>
+                                        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Bill to</div>
+                                        <div className="text-sm text-foreground">Acme Corp</div>
+                                        <div className="text-xs text-muted-foreground">accounts@acme.co.za</div>
                                     </div>
                                     <div className="text-right">
-                                        <div className="text-xs text-white/50 uppercase tracking-wider mb-1">Amount Due</div>
-                                        <div className="text-3xl font-serif font-bold text-white">R 4,500.00</div>
+                                        <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Amount Due</div>
+                                        <div className="text-3xl font-serif font-bold text-foreground">R 4,500.00</div>
                                     </div>
                                 </div>
-                                <div className="border-t border-white/10 pt-4 mb-6">
+                                <div className="border-t border-border pt-4 mb-6">
                                     <table className="w-full text-sm">
                                         <thead>
-                                            <tr className="text-white/50 text-xs uppercase tracking-wider">
+                                            <tr className="text-muted-foreground text-xs uppercase tracking-wider">
                                                 <th className="text-left pb-2">Description</th>
                                                 <th className="text-right pb-2">Amount</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="text-white">
+                                        <tbody className="text-foreground">
                                             <tr>
                                                 <td className="py-2">Web Design Services</td>
                                                 <td className="text-right">R 3,500.00</td>
@@ -157,10 +157,10 @@ export default function InvoicingFeaturePage() {
                                         </tbody>
                                     </table>
                                 </div>
-                                <div className="flex justify-end pt-4 border-t border-white/10">
+                                <div className="flex justify-end pt-4 border-t border-border">
                                     <div className="text-right">
-                                        <div className="text-xs text-white/50 mb-1">Total (incl. VAT)</div>
-                                        <div className="text-xl font-bold text-white">R 4,500.00</div>
+                                        <div className="text-xs text-muted-foreground mb-1">Total (incl. VAT)</div>
+                                        <div className="text-xl font-bold text-foreground">R 4,500.00</div>
                                     </div>
                                 </div>
                             </div>
@@ -168,30 +168,30 @@ export default function InvoicingFeaturePage() {
 
                         {/* Sharing Options */}
                         <div className="space-y-6">
-                            <div className="border border-white/10 rounded-2xl p-6 bg-white/2">
-                                <h3 className="text-lg font-medium text-white mb-4">Share Invoice</h3>
+                            <div className="border border-border rounded-2xl p-6 bg-muted/50">
+                                <h3 className="text-lg font-medium text-foreground mb-4">Share Invoice</h3>
                                 <div className="space-y-3">
                                     {sharingOptions.map((option, i) => (
-                                        <button key={i} className="w-full flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors text-left">
-                                            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                                                <option.icon className="h-5 w-5 text-white/70" />
+                                        <button key={i} className="w-full flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border hover:border-border transition-colors text-left">
+                                            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                                                <option.icon className="h-5 w-5 text-muted-foreground" />
                                             </div>
                                             <div>
-                                                <div className="text-sm font-medium text-white">{option.name}</div>
-                                                <div className="text-xs text-white/50">{option.description}</div>
+                                                <div className="text-sm font-medium text-foreground">{option.name}</div>
+                                                <div className="text-xs text-muted-foreground">{option.description}</div>
                                             </div>
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                            <div className="border border-white/10 rounded-2xl p-6 bg-white/2">
-                                <h3 className="text-lg font-medium text-white mb-2">Quick Actions</h3>
-                                <p className="text-sm text-white/50 mb-4">Manage invoice status with one click</p>
+                            <div className="border border-border rounded-2xl p-6 bg-muted/50">
+                                <h3 className="text-lg font-medium text-foreground mb-2">Quick Actions</h3>
+                                <p className="text-sm text-muted-foreground mb-4">Manage invoice status with one click</p>
                                 <div className="flex gap-3">
-                                    <button className="flex-1 px-4 py-2 rounded-lg bg-white/10 text-white text-sm font-medium hover:bg-white/15 transition-colors">
+                                    <button className="flex-1 px-4 py-2 rounded-lg bg-accent text-foreground text-sm font-medium hover:bg-white/15 transition-colors">
                                         Mark as Paid
                                     </button>
-                                    <button className="flex-1 px-4 py-2 rounded-lg bg-white/5 text-white/70 text-sm font-medium hover:bg-white/10 transition-colors">
+                                    <button className="flex-1 px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-medium hover:bg-accent transition-colors">
                                         Duplicate
                                     </button>
                                 </div>
@@ -202,21 +202,21 @@ export default function InvoicingFeaturePage() {
             </section>
 
             {/* Features Grid */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-bold text-white mb-4">Everything you need for invoicing</h2>
-                        <p className="text-white/50 max-w-xl mx-auto">
+                        <h2 className="text-3xl font-bold text-foreground mb-4">Everything you need for invoicing</h2>
+                        <p className="text-muted-foreground max-w-xl mx-auto">
                             Professional invoicing tools built for South African freelancers and small businesses.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {features.map((feature, i) => (
-                            <div key={i} className="p-8 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
-                                <feature.icon className="h-10 w-10 text-white/70 mb-6" />
-                                <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-                                <p className="text-white/50 text-sm">{feature.description}</p>
+                            <div key={i} className="p-8 rounded-2xl bg-muted/50 border border-border hover:border-border transition-colors">
+                                <feature.icon className="h-10 w-10 text-muted-foreground mb-6" />
+                                <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                                <p className="text-muted-foreground text-sm">{feature.description}</p>
                             </div>
                         ))}
                     </div>
@@ -224,12 +224,12 @@ export default function InvoicingFeaturePage() {
             </section>
 
             {/* Folder Organization */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <h2 className="text-3xl font-bold text-white mb-6">Organized by client, automatically</h2>
-                            <p className="text-white/50 mb-8">
+                            <h2 className="text-3xl font-bold text-foreground mb-6">Organized by client, automatically</h2>
+                            <p className="text-muted-foreground mb-8">
                                 Every invoice is automatically filed under the right client. No more searching through folders or spreadsheets. Click on any client to see all their invoices instantly.
                             </p>
                             <ul className="space-y-4">
@@ -239,15 +239,15 @@ export default function InvoicingFeaturePage() {
                                     "Filter by paid, pending, or overdue",
                                     "Quick search across all invoices",
                                 ].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-white/70">
-                                        <IconCheck className="h-5 w-5 text-white/50 shrink-0" />
+                                    <li key={i} className="flex items-center gap-3 text-muted-foreground">
+                                        <IconCheck className="h-5 w-5 text-muted-foreground shrink-0" />
                                         {item}
                                     </li>
                                 ))}
                             </ul>
                         </div>
-                        <div className="border border-white/10 rounded-2xl p-6 bg-black/50">
-                            <div className="text-sm font-medium text-white mb-4">Client Folders</div>
+                        <div className="border border-border rounded-2xl p-6 bg-card dark:bg-black/50">
+                            <div className="text-sm font-medium text-foreground mb-4">Client Folders</div>
                             <div className="space-y-3">
                                 {[
                                     { name: "Acme Corp", invoices: 12, pending: 1 },
@@ -255,16 +255,16 @@ export default function InvoicingFeaturePage() {
                                     { name: "Design Studio", invoices: 5, pending: 0 },
                                     { name: "Local Shop", invoices: 3, pending: 1 },
                                 ].map((client, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
-                                        <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                                            <IconFolder className="h-5 w-5 text-white/50" />
+                                    <div key={i} className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border hover:border-border transition-colors cursor-pointer">
+                                        <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+                                            <IconFolder className="h-5 w-5 text-muted-foreground" />
                                         </div>
                                         <div className="flex-1">
-                                            <div className="text-sm font-medium text-white">{client.name}</div>
-                                            <div className="text-xs text-white/50">{client.invoices} invoices</div>
+                                            <div className="text-sm font-medium text-foreground">{client.name}</div>
+                                            <div className="text-xs text-muted-foreground">{client.invoices} invoices</div>
                                         </div>
                                         {client.pending > 0 && (
-                                            <div className="px-2 py-1 rounded-full bg-white/10 text-white/70 text-xs">
+                                            <div className="px-2 py-1 rounded-full bg-accent text-muted-foreground text-xs">
                                                 {client.pending} pending
                                             </div>
                                         )}

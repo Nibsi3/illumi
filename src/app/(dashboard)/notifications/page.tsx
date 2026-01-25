@@ -121,14 +121,14 @@ export default function NotificationsPage() {
 
             {/* Tabs */}
             <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-1 border-b border-white/5">
+                <div className="flex items-center gap-1 border-b border-border">
                     <button
                         onClick={() => setActiveTab("inbox")}
                         className={cn(
                             "px-4 py-2 text-sm font-medium transition-colors border-b-2",
                             activeTab === "inbox"
-                                ? "text-white border-white"
-                                : "text-neutral-500 border-transparent hover:text-white"
+                                ? "text-foreground border-border"
+                                : "text-muted-foreground border-transparent hover:text-foreground"
                         )}
                     >
                         Inbox ({notifications.filter(n => !n.read).length})
@@ -138,8 +138,8 @@ export default function NotificationsPage() {
                         className={cn(
                             "px-4 py-2 text-sm font-medium transition-colors border-b-2",
                             activeTab === "archive"
-                                ? "text-white border-white"
-                                : "text-neutral-500 border-transparent hover:text-white"
+                                ? "text-foreground border-border"
+                                : "text-muted-foreground border-transparent hover:text-foreground"
                         )}
                     >
                         Archive
@@ -150,13 +150,13 @@ export default function NotificationsPage() {
                         <Button
                             variant="ghost"
                             onClick={archiveAll}
-                            className="text-xs text-neutral-500 hover:text-white"
+                            className="text-xs text-muted-foreground hover:text-foreground"
                         >
                             Archive all
                         </Button>
                     )}
                     <Link href="/settings/notifications">
-                        <Button variant="ghost" size="icon" className="text-neutral-500 hover:text-white">
+                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                             <Settings className="h-4 w-4" />
                         </Button>
                     </Link>
@@ -166,24 +166,24 @@ export default function NotificationsPage() {
             {/* Notifications List */}
             <div className="space-y-2">
                 {loading ? (
-                    <div className="text-center py-12 text-neutral-500">
+                    <div className="text-center py-12 text-muted-foreground">
                         <p>Loading notifications...</p>
                     </div>
                 ) : filteredNotifications.length === 0 ? (
-                    <div className="text-center py-12 text-neutral-500">
+                    <div className="text-center py-12 text-muted-foreground">
                         <p>No notifications in {activeTab}</p>
                     </div>
                 ) : (
                     filteredNotifications.map((notification) => {
                         const Icon = typeIcons[notification.type] || IconBell
-                        const colorClass = typeColors[notification.type] || "text-white bg-white/10"
+                        const colorClass = typeColors[notification.type] || "text-foreground bg-accent"
 
                         return (
                             <div
                                 key={notification.id}
                                 className={cn(
-                                    "p-4 rounded-lg border border-white/5 bg-[#09090b] hover:bg-white/5 transition-colors flex items-start gap-4 group",
-                                    !notification.read && "bg-white/2"
+                                    "p-4 rounded-lg border border-border bg-card hover:bg-muted transition-colors flex items-start gap-4 group",
+                                    !notification.read && "bg-muted/50"
                                 )}
                                 onClick={() => {
                                     if (!notification.invoice_id) return
@@ -196,11 +196,11 @@ export default function NotificationsPage() {
                                 <div className="flex-1">
                                     <div className="flex items-start justify-between mb-1">
                                         <div>
-                                            <h3 className="text-sm font-medium text-white mb-1">
+                                            <h3 className="text-sm font-medium text-foreground mb-1">
                                                 {notification.title}
                                             </h3>
                                             {notification.message && (
-                                                <p className="text-xs text-neutral-400 mb-2">
+                                                <p className="text-xs text-muted-foreground mb-2">
                                                     {notification.message}
                                                 </p>
                                             )}
@@ -212,10 +212,10 @@ export default function NotificationsPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4 mt-2">
-                                        <span className="text-[10px] text-neutral-500 uppercase tracking-wider">
+                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
                                             {notification.type.replace('_', ' ')}
                                         </span>
-                                        <span className="text-xs text-neutral-500">
+                                        <span className="text-xs text-muted-foreground">
                                             {formatTime(notification.created_at)}
                                         </span>
                                     </div>
@@ -227,7 +227,7 @@ export default function NotificationsPage() {
                                         e.stopPropagation()
                                         deleteNotification(notification.id)
                                     }}
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-500 hover:text-red-500"
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -239,3 +239,4 @@ export default function NotificationsPage() {
         </div>
     )
 }
+

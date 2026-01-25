@@ -14,21 +14,21 @@ export default function BankConnectionsPage() {
 
             {/* Connected Banks */}
             <div className="space-y-4 mb-8">
-                <div className="p-4 border border-white/5 rounded-xl bg-[#09090b] flex items-center justify-between group">
+                <div className="p-4 border border-border rounded-xl bg-card flex items-center justify-between group">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center">
-                            <IconBrandGoogle className="h-5 w-5 text-white" />
+                        <div className="w-10 h-10 rounded-lg bg-muted border border-border flex items-center justify-center">
+                            <IconBrandGoogle className="h-5 w-5 text-foreground" />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-white">FNB Bank Account</p>
-                            <p className="text-xs text-neutral-500">Last synced 2 hours ago</p>
+                            <p className="text-sm font-medium text-foreground">FNB Bank Account</p>
+                            <p className="text-xs text-muted-foreground">Last synced 2 hours ago</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-neutral-500 hover:text-white hover:bg-white/5">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
                             <RefreshCcw className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-neutral-500 hover:text-red-500 hover:bg-red-500/10">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-red-500 hover:bg-red-500/10">
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -36,11 +36,12 @@ export default function BankConnectionsPage() {
             </div>
 
             {/* Add Bank Button */}
-            <Button className="w-full sm:w-auto bg-white text-black hover:bg-neutral-200 h-11 px-6 font-semibold rounded-lg">
+            <Button className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-6 font-semibold rounded-lg">
                 <Plus className="h-4 w-4 mr-2" />
                 Connect Bank Account
             </Button>
         </div>
     )
 }
+
 

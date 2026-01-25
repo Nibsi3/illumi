@@ -405,7 +405,7 @@ export default function EditInvoicePage() {
     }
 
     if (isLoading) {
-        return <div className="h-full bg-black flex items-center justify-center text-white">Loading Invoice...</div>
+        return <div className="h-full bg-background flex items-center justify-center text-foreground">Loading Invoice...</div>
     }
 
     return (
@@ -415,25 +415,25 @@ export default function EditInvoicePage() {
             {/* NOTE: I'm omitting the full JSX for brevity in this thought but I'll write the full file */}
 
             <div className="flex-1 flex flex-col relative h-full bg-background">
-                <div className="h-20 px-8 flex justify-between items-center border-b border-white/5 bg-background z-20 shrink-0">
+                <div className="h-20 px-8 flex justify-between items-center border-b border-border bg-background z-20 shrink-0">
                     <div className="flex items-center gap-4">
-                        <Link href="/invoices" className="text-neutral-500 hover:text-white transition-colors">
+                        <Link href="/invoices" className="text-muted-foreground hover:text-foreground transition-colors">
                             <ChevronLeft className="h-5 w-5" />
                         </Link>
-                        <h1 className="text-sm font-bold uppercase tracking-widest text-white">Edit Invoice</h1>
+                        <h1 className="text-sm font-bold uppercase tracking-widest text-foreground">Edit Invoice</h1>
                     </div>
                     <div className="flex items-center gap-3">
                         <Button
                             variant="ghost"
-                            className="h-9 text-xs font-medium text-neutral-400 hover:text-white hover:bg-white/5"
+                            className="h-9 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
                             onClick={() => setIsPreviewOpen(true)}
                         >
                             <Eye className="h-4 w-4 mr-2" /> Preview
                         </Button>
 
-                        <div className="flex items-center h-9 bg-white text-black rounded-lg overflow-hidden transition-all hover:bg-neutral-200">
+                        <div className="flex items-center h-9 bg-primary text-primary-foreground rounded-lg overflow-hidden transition-all hover:bg-primary/90">
                             <Button
-                                className="h-full px-4 rounded-none bg-transparent hover:bg-transparent text-black text-xs font-bold border-r border-black/10"
+                                className="h-full px-4 rounded-none bg-transparent hover:bg-transparent text-black text-xs font-bold border-r border-foreground/10"
                                 onClick={() => handleCreate('create')}
                             >
                                 <span className="translate-y-px">Save Changes</span>
@@ -444,18 +444,18 @@ export default function EditInvoicePage() {
                                         <ChevronDown className="h-3 w-3" />
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56 bg-[#09090b] border-white/10 text-white p-2">
-                                    <DropdownMenuItem onClick={() => handleCreate('send')} className="focus:bg-white/5 cursor-pointer h-9 px-2 text-xs rounded-md">
-                                        <Send className="h-4 w-4 mr-2 text-neutral-400" />
+                                <DropdownMenuContent align="end" className="w-56 bg-card border-border text-foreground p-2">
+                                    <DropdownMenuItem onClick={() => handleCreate('send')} className="focus:bg-muted cursor-pointer h-9 px-2 text-xs rounded-md">
+                                        <Send className="h-4 w-4 mr-2 text-muted-foreground" />
                                         <span>Update & Send</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleCreate('schedule')} className="focus:bg-white/5 cursor-pointer h-9 px-2 text-xs rounded-md">
-                                        <Clock className="h-4 w-4 mr-2 text-neutral-400" />
+                                    <DropdownMenuItem onClick={() => handleCreate('schedule')} className="focus:bg-muted cursor-pointer h-9 px-2 text-xs rounded-md">
+                                        <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
                                         <span>Schedule...</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuSeparator className="bg-white/5" />
-                                    <DropdownMenuItem onClick={() => handleCreate('recurring')} className="focus:bg-white/5 cursor-pointer h-9 px-2 text-xs rounded-md">
-                                        <Repeat className="h-4 w-4 mr-2 text-neutral-400" />
+                                    <DropdownMenuSeparator className="bg-muted" />
+                                    <DropdownMenuItem onClick={() => handleCreate('recurring')} className="focus:bg-muted cursor-pointer h-9 px-2 text-xs rounded-md">
+                                        <Repeat className="h-4 w-4 mr-2 text-muted-foreground" />
                                         <span>Recurring...</span>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -471,7 +471,7 @@ export default function EditInvoicePage() {
 
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
-                            invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#09090b] border border-white/5 text-white",
+                            invoiceMode === "light" ? "bg-primary text-primary-foreground border border-neutral-200" : "bg-card border border-border text-foreground",
                             template === "Classic" && "p-12",
                             template === "Minimal" && "p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
@@ -488,19 +488,19 @@ export default function EditInvoicePage() {
                                             <div className="flex items-center gap-2">
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-500 hover:bg-neutral-200" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-muted-foreground hover:bg-primary/90" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
                                                             <Settings2 className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent side="bottom" align="start" className="w-80 bg-[#09090b] border-white/10 p-4 shadow-2xl">
+                                                    <PopoverContent side="bottom" align="start" className="w-80 bg-card border-border p-4 shadow-2xl">
                                                         <div className="space-y-6">
-                                                            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Invoice Settings</h3>
+                                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">Invoice Settings</h3>
                                                             <div className="space-y-4">
                                                                 <div className="space-y-2">
-                                                                    <div className="flex items-center gap-2 text-neutral-400"><CalendarDays className="h-4 w-4" /><span className="text-xs">Date Format</span></div>
+                                                                    <div className="flex items-center gap-2 text-muted-foreground"><CalendarDays className="h-4 w-4" /><span className="text-xs">Date Format</span></div>
                                                                     <Select value={dateFormat} onValueChange={setDateFormat}>
-                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                        <SelectTrigger className="h-9 bg-muted border-border text-xs text-foreground"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-card border-border text-foreground">
                                                                             <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
                                                                             <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
                                                                             <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
@@ -508,10 +508,10 @@ export default function EditInvoicePage() {
                                                                     </Select>
                                                                 </div>
                                                                 <div className="space-y-2">
-                                                                    <div className="flex items-center gap-2 text-neutral-400"><Banknote className="h-4 w-4" /><span className="text-xs">Currency</span></div>
+                                                                    <div className="flex items-center gap-2 text-muted-foreground"><Banknote className="h-4 w-4" /><span className="text-xs">Currency</span></div>
                                                                     <Select value={currency} onValueChange={setCurrency}>
-                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                        <SelectTrigger className="h-9 bg-muted border-border text-xs text-foreground"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-card border-border text-foreground">
                                                                             <SelectItem value="ZAR">ZAR (R)</SelectItem>
                                                                             <SelectItem value="USD">USD ($)</SelectItem>
                                                                             <SelectItem value="EUR">EUR (€)</SelectItem>
@@ -520,10 +520,10 @@ export default function EditInvoicePage() {
                                                                     </Select>
                                                                 </div>
                                                                 <div className="space-y-2">
-                                                                    <div className="flex items-center gap-2 text-neutral-400"><Percent className="h-4 w-4" /><span className="text-xs">Tax Rate</span></div>
+                                                                    <div className="flex items-center gap-2 text-muted-foreground"><Percent className="h-4 w-4" /><span className="text-xs">Tax Rate</span></div>
                                                                     <Select value={taxRate.toString()} onValueChange={(v) => setTaxRate(parseFloat(v))}>
-                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                        <SelectTrigger className="h-9 bg-muted border-border text-xs text-foreground"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-card border-border text-foreground">
                                                                             <SelectItem value="0">0%</SelectItem>
                                                                             <SelectItem value="15">15% (VAT)</SelectItem>
                                                                             <SelectItem value="20">20%</SelectItem>
@@ -537,16 +537,16 @@ export default function EditInvoicePage() {
 
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-neutral-400 hover:bg-neutral-100" : "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", invoiceMode === "light" ? "text-muted-foreground hover:bg-neutral-100" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
                                                             <LayoutTemplate className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent side="bottom" align="start" className="w-64 bg-[#09090b] border-white/10 p-4 shadow-2xl">
+                                                    <PopoverContent side="bottom" align="start" className="w-64 bg-card border-border p-4 shadow-2xl">
                                                         <div className="space-y-4">
-                                                            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Template</h3>
+                                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">Template</h3>
                                                             <Select value={template} onValueChange={(v: any) => setTemplate(v)}>
-                                                                <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                <SelectTrigger className="h-9 bg-muted border-border text-xs text-foreground"><SelectValue /></SelectTrigger>
+                                                                <SelectContent className="bg-card border-border text-foreground">
                                                                     <SelectItem value="Classic">Classic Serif</SelectItem>
                                                                     <SelectItem value="Minimal">Minimal Canvas</SelectItem>
                                                                     <SelectItem value="Modern">Modern Grid</SelectItem>
@@ -557,16 +557,16 @@ export default function EditInvoicePage() {
                                                 </Popover>
                                             </div>
 
-                                            <div className={cn("h-px w-8", invoiceMode === "light" ? "bg-black/10" : "bg-white/20")} />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#878787]">Editing Invoice</span>
+                                            <div className={cn("h-px w-8", invoiceMode === "light" ? "bg-black/10" : "bg-muted/500")} />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Editing Invoice</span>
                                         </div>
-                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-[#0a0a0a] border-white/5">
+                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-card border-border">
                                             <button
                                                 type="button"
                                                 onClick={() => setInvoiceMode("light")}
                                                 className={cn(
                                                     "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
-                                                    invoiceMode === "light" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
+                                                    invoiceMode === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                                 )}
                                             >
                                                 Light
@@ -576,7 +576,7 @@ export default function EditInvoicePage() {
                                                 onClick={() => setInvoiceMode("dark")}
                                                 className={cn(
                                                     "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
-                                                    invoiceMode === "dark" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
+                                                    invoiceMode === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                                 )}
                                             >
                                                 Dark
@@ -589,16 +589,16 @@ export default function EditInvoicePage() {
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
                                                 invoiceMode === "light"
-                                                    ? "bg-[#0c0c0c] border-neutral-200 hover:border-neutral-300"
-                                                    : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
+                                                    ? "bg-card border-neutral-200 hover:border-neutral-300"
+                                                    : "bg-card border-border hover:bg-white/8 hover:border-border"
                                             )}
                                         >
                                             {logo ? (
                                                 <img src={logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                             ) : (
                                                 <>
-                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", invoiceMode === "light" ? "text-neutral-400" : "text-white")} />
-                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-400" : "text-white")}>Logo</span>
+                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", invoiceMode === "light" ? "text-muted-foreground" : "text-foreground")} />
+                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-muted-foreground" : "text-foreground")}>Logo</span>
                                                 </>
                                             )}
                                             <input
@@ -616,50 +616,50 @@ export default function EditInvoicePage() {
                                         )}>
                                             <h2 className={cn(
                                                 "text-5xl font-serif mb-2 italic",
-                                                invoiceMode === "light" ? "text-black" : "text-white",
+                                                invoiceMode === "light" ? "text-black" : "text-foreground",
                                                 template === "Classic" && "italic",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-700" : "text-[#878787]")}>{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
                                     <div className={cn(
                                         "grid grid-cols-2 gap-20 mb-16",
-                                        template === "Modern" && "bg-white/5 p-8 rounded-xl"
+                                        template === "Modern" && "bg-muted p-8 rounded-xl"
                                     )}>
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">From</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
                                             <div className="space-y-3">
                                                 <Input
                                                     defaultValue="Illumi Professional"
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                                 <textarea
                                                     defaultValue={"123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"}
                                                     placeholder="Address"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-4 text-right">
                                             <div className="flex justify-end items-center gap-2 mb-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-500 hover:text-white hover:bg-white/5")}
+                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-muted-foreground hover:text-black hover:bg-neutral-100" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
                                                     onClick={() => setIsClientModalOpen(true)}
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
@@ -671,7 +671,7 @@ export default function EditInvoicePage() {
                                                     list="client-suggestions"
                                                     spellCheck={false}
                                                     value={clientName}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                     onChange={(e) => {
                                                         const val = e.target.value;
                                                         setClientName(val)
@@ -689,7 +689,7 @@ export default function EditInvoicePage() {
                                                 </datalist>
 
                                                 {(clientEmail || clientAddress) && (
-                                                    <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-neutral-500">
+                                                    <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-muted-foreground">
                                                         {clientEmail && <span>{clientEmail}</span>}
                                                         {clientPhone && <span>{clientPhone}</span>}
                                                         {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
@@ -699,16 +699,16 @@ export default function EditInvoicePage() {
                                         </div>
                                     </div>
 
-                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
+                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Issue Date</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Issue Date</span>
                                             <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
                                                 <PopoverTrigger asChild>
-                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                         {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                <PopoverContent className="w-auto p-0 bg-card border-border rounded-xl" align="start">
                                                     <Calendar
                                                         selected={issueDate ? parseISO(issueDate) : undefined}
                                                         onSelect={(date) => {
@@ -720,14 +720,14 @@ export default function EditInvoicePage() {
                                             </Popover>
                                         </div>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Due Date</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Due Date</span>
                                             <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
                                                 <PopoverTrigger asChild>
-                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                         {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                     </button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                <PopoverContent className="w-auto p-0 bg-card border-border rounded-xl" align="start">
                                                     <Calendar
                                                         selected={dueDate ? parseISO(dueDate) : undefined}
                                                         onSelect={(date) => {
@@ -743,7 +743,7 @@ export default function EditInvoicePage() {
                                     <div className="mb-12">
                                         <table className="w-full border-collapse">
                                             <thead>
-                                                <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-[#878787]", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
+                                                <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-muted-foreground", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
                                                     <th className="py-4 text-left">Description</th>
                                                     <th className="py-4 text-right w-32">Price</th>
                                                     <th className="py-4 text-right w-24">Qty</th>
@@ -751,12 +751,12 @@ export default function EditInvoicePage() {
                                                     <th className="w-8"></th>
                                                 </tr>
                                             </thead>
-                                            <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-white/5")}>
+                                            <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-border")}>
                                                 {tasks.map((task) => (
                                                     <tr key={task.id} className="group">
                                                         <td className="py-4">
                                                             <Input
-                                                                className={cn("bg-transparent border-none p-0 h-auto text-sm font-medium focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                                className={cn("bg-transparent border-none p-0 h-auto text-sm font-medium focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                                 value={task.description}
                                                                 onChange={(e) => {
                                                                     const newTasks = [...tasks]
@@ -788,30 +788,30 @@ export default function EditInvoicePage() {
                                                                 }}
                                                             />
                                                         </td>
-                                                        <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                        <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                             {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                         </td>
                                                         <td className="py-4 text-right">
-                                                            <button onClick={() => removeTask(task.id)} className="text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
+                                                            <button onClick={() => removeTask(task.id)} className="text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
                                                         </td>
                                                     </tr>
                                                 ))}
                                             </tbody>
                                         </table>
-                                        <Button variant="ghost" className="mt-8 border border-dashed border-white/5 w-full h-12 rounded-xl" onClick={addTask}>
+                                        <Button variant="ghost" className="mt-8 border border-dashed border-border w-full h-12 rounded-xl" onClick={addTask}>
                                             <Plus className="h-4 w-4 mr-2" /> Add line item
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t border-white/5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t border-border">
                                         <div className="space-y-6">
                                             <div className="space-y-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Note</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Note</span>
                                                 <textarea
                                                     placeholder="Add a note (visible to client)"
                                                     value={invoiceNote}
                                                     onChange={(e) => setInvoiceNote(e.target.value)}
-                                                    className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-neutral-600 text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-muted-foreground text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                             </div>
 
@@ -830,20 +830,20 @@ export default function EditInvoicePage() {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-[10px] uppercase font-bold tracking-widest text-[#878787]">Subtotal</span>
-                                                <span className={cn("font-mono", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Subtotal</span>
+                                                <span className={cn("font-mono", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                     {calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-[10px] uppercase font-bold tracking-widest text-[#878787]">Tax ({taxRate}%)</span>
-                                                <span className="text-neutral-400 font-mono">
+                                                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Tax ({taxRate}%)</span>
+                                                <span className="text-muted-foreground font-mono">
                                                     {(calculateSubtotal() * (taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>
-                                            <div className={cn("pt-6 border-t flex justify-between items-end", invoiceMode === "light" ? "border-black/10" : "border-white/10")}>
-                                                <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#878787] mb-2">Total Amount</span>
-                                                <span className={cn("text-5xl font-serif italic font-bold tracking-tighter", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                            <div className={cn("pt-6 border-t flex justify-between items-end", invoiceMode === "light" ? "border-foreground/10" : "border-border")}>
+                                                <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground mb-2">Total Amount</span>
+                                                <span className={cn("text-5xl font-serif italic font-bold tracking-tighter", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                     {(calculateSubtotal() * (1 + taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>

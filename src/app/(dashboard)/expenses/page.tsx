@@ -436,13 +436,13 @@ export default function ExpensesPage() {
         <div className="flex flex-col gap-y-10 font-sans pb-20">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Expenses</h1>
-                    <p className="hidden sm:block text-neutral-500 mt-1">Track business expenses, recurring costs, and profitability.</p>
+                    <h1 className="text-2xl sm:text-4xl font-serif text-foreground tracking-tight italic">Expenses</h1>
+                    <p className="hidden sm:block text-muted-foreground mt-1">Track business expenses, recurring costs, and profitability.</p>
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <Button
                         variant="outline"
-                        className="border-white/10 bg-white/5 hover:bg-white/10 w-full md:w-auto"
+                        className="border-border bg-muted hover:bg-accent w-full md:w-auto"
                         onClick={exportCSV}
                     >
                         <Download className="h-4 w-4 mr-2" /> Export CSV
@@ -453,48 +453,48 @@ export default function ExpensesPage() {
             <div className="xl:grid xl:grid-cols-3 gap-6">
                 <div className="xl:hidden w-full max-w-full overflow-x-auto no-scrollbar">
                     <div className="flex gap-3 w-max">
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Total expenses (this month)</p>
-                            <p className="text-xl font-semibold text-white mt-2">{formatMoney(totals.totalThisMonth)}</p>
+                        <div className="bg-card border border-border rounded-2xl p-4 w-[240px]">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Total expenses (this month)</p>
+                            <p className="text-xl font-semibold text-foreground mt-2">{formatMoney(totals.totalThisMonth)}</p>
                         </div>
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Once-off (this month)</p>
-                            <p className="text-xl font-semibold text-white mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
+                        <div className="bg-card border border-border rounded-2xl p-4 w-[240px]">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Once-off (this month)</p>
+                            <p className="text-xl font-semibold text-foreground mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
                         </div>
-                        <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 w-[240px]">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Net profit (this month)</p>
-                            <p className={cn("text-xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-white" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
-                            <p className="text-[10px] text-neutral-500 mt-2">Paid income − expenses (this month).</p>
+                        <div className="bg-card border border-border rounded-2xl p-4 w-[240px]">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Net profit (this month)</p>
+                            <p className={cn("text-xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-foreground" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
+                            <p className="text-[10px] text-muted-foreground mt-2">Paid income − expenses (this month).</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Total expenses (this month)</p>
-                    <p className="text-2xl font-semibold text-white mt-2">{formatMoney(totals.totalThisMonth)}</p>
+                <div className="hidden xl:block bg-card border border-border rounded-2xl p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Total expenses (this month)</p>
+                    <p className="text-2xl font-semibold text-foreground mt-2">{formatMoney(totals.totalThisMonth)}</p>
                 </div>
-                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Once-off (this month)</p>
-                    <p className="text-2xl font-semibold text-white mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
+                <div className="hidden xl:block bg-card border border-border rounded-2xl p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Once-off (this month)</p>
+                    <p className="text-2xl font-semibold text-foreground mt-2">{formatMoney(totals.totalOnceOffThisMonth)}</p>
                 </div>
-                <div className="hidden xl:block bg-[#09090b] border border-white/5 rounded-2xl p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">Net profit (this month)</p>
-                    <p className={cn("text-2xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-white" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
-                    <p className="text-[10px] text-neutral-500 mt-2">Paid income − expenses (this month).</p>
+                <div className="hidden xl:block bg-card border border-border rounded-2xl p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Net profit (this month)</p>
+                    <p className={cn("text-2xl font-semibold mt-2", netProfitThisMonth >= 0 ? "text-foreground" : "text-red-400")}>{formatMoney(netProfitThisMonth)}</p>
+                    <p className="text-[10px] text-muted-foreground mt-2">Paid income − expenses (this month).</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-10 items-stretch">
-                <div className="bg-[#09090b] border border-white/5 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
+                <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-8">
                         <div>
-                            <h2 className="text-lg sm:text-xl font-medium text-white">Add Expense</h2>
-                            <p className="text-sm text-neutral-500">Add once-off or recurring expenses.</p>
+                            <h2 className="text-lg sm:text-xl font-medium text-foreground">Add Expense</h2>
+                            <p className="text-sm text-muted-foreground">Add once-off or recurring expenses.</p>
                         </div>
                         <Button
                             onClick={handleAddExpense}
                             disabled={isSaving}
-                            className="bg-white text-black hover:bg-neutral-200 h-10 px-5 font-semibold w-full sm:w-auto"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-5 font-semibold w-full sm:w-auto"
                         >
                             {isSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                             Add
@@ -503,33 +503,33 @@ export default function ExpensesPage() {
 
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Title</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Title</Label>
                             <Input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 placeholder="e.g. Office rent"
-                                className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                                className="bg-background border-border h-11 focus-visible:ring-white/10"
                             />
                         </div>
 
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Amount</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Amount</Label>
                                 <Input
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value)}
                                     placeholder="0.00"
                                     inputMode="decimal"
-                                    className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                                    className="bg-background border-border h-11 focus-visible:ring-white/10"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Category</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Category</Label>
                                 <Select value={category} onValueChange={setCategory}>
-                                    <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                                    <SelectTrigger className="bg-background border-border h-11 focus:ring-white/10">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                    <SelectContent className="bg-card border-border text-foreground">
                                         {CATEGORIES.map(c => (
                                             <SelectItem key={c} value={c}>{c}</SelectItem>
                                         ))}
@@ -540,21 +540,21 @@ export default function ExpensesPage() {
 
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Date</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Date</Label>
                                 <Input
                                     type="date"
                                     value={expenseDate}
                                     onChange={(e) => setExpenseDate(e.target.value)}
-                                    className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                                    className="bg-background border-border h-11 focus-visible:ring-white/10"
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Recurring</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Recurring</Label>
                                 <Select value={recurring} onValueChange={(v: any) => setRecurring(v)}>
-                                    <SelectTrigger className="bg-black border-white/5 h-11 focus:ring-white/10">
+                                    <SelectTrigger className="bg-background border-border h-11 focus:ring-white/10">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                    <SelectContent className="bg-card border-border text-foreground">
                                         <SelectItem value="once">Once</SelectItem>
                                         <SelectItem value="monthly">Monthly</SelectItem>
                                         <SelectItem value="yearly">Yearly</SelectItem>
@@ -565,66 +565,66 @@ export default function ExpensesPage() {
 
                         {recurring !== "once" && (
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">End date (optional)</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">End date (optional)</Label>
                                 <Input
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                                    className="bg-background border-border h-11 focus-visible:ring-white/10"
                                 />
                             </div>
                         )}
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Notes (optional)</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Notes (optional)</Label>
                             <textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
-                                className="w-full bg-black border border-white/5 rounded-md p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/10 h-24 resize-none"
+                                className="w-full bg-background border border-border rounded-md p-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-white/10 h-24 resize-none"
                             />
                         </div>
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-6 h-full">
-                    <div className="xl:static xl:bg-[#09090b] xl:border xl:border-white/5 xl:rounded-2xl xl:p-6 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 xl:py-0">
+                    <div className="xl:static xl:bg-card xl:border xl:border-border xl:rounded-2xl xl:p-6 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-border py-3 xl:py-0">
                         <div className="flex items-center gap-3">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
+                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     placeholder="Search expenses..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-10 bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                                    className="pl-10 bg-background border-border h-11 focus-visible:ring-white/10"
                                 />
                             </div>
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 h-11">
+                                    <Button variant="outline" className="border-border bg-muted hover:bg-accent h-11">
                                         <Filter className="h-4 w-4 mr-2" /> Filters
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="bg-[#09090b] border-white/10 text-white w-80" align="end">
+                                <DropdownMenuContent className="bg-card border-border text-foreground w-80" align="end">
                                     <div className="p-3 space-y-4">
                                         <div className="grid grid-cols-2 gap-3">
                                             <div className="space-y-2">
-                                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Start</Label>
-                                                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-black border-white/10 h-10" />
+                                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Start</Label>
+                                                <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="bg-background border-border h-10" />
                                             </div>
                                             <div className="space-y-2">
-                                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">End</Label>
-                                                <Input type="date" value={endDateFilter} onChange={(e) => setEndDateFilter(e.target.value)} className="bg-black border-white/10 h-10" />
+                                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">End</Label>
+                                                <Input type="date" value={endDateFilter} onChange={(e) => setEndDateFilter(e.target.value)} className="bg-background border-border h-10" />
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Recurring</Label>
+                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Recurring</Label>
                                             <Select value={filterRecurring} onValueChange={(v: any) => setFilterRecurring(v)}>
-                                                <SelectTrigger className="bg-black border-white/10 h-10">
+                                                <SelectTrigger className="bg-background border-border h-10">
                                                     <SelectValue />
                                                 </SelectTrigger>
-                                                <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                <SelectContent className="bg-card border-border text-foreground">
                                                     <SelectItem value="all">All</SelectItem>
                                                     <SelectItem value="once">Once</SelectItem>
                                                     <SelectItem value="monthly">Monthly</SelectItem>
@@ -634,7 +634,7 @@ export default function ExpensesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Categories</Label>
+                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Categories</Label>
                                             <div className="space-y-1">
                                                 {CATEGORIES.map(c => (
                                                     <DropdownMenuCheckboxItem
@@ -643,7 +643,7 @@ export default function ExpensesPage() {
                                                         onCheckedChange={(checked) => {
                                                             setSelectedCategories(prev => checked ? [...prev, c] : prev.filter(x => x !== c))
                                                         }}
-                                                        className="focus:bg-white/5"
+                                                        className="focus:bg-muted"
                                                     >
                                                         {c}
                                                     </DropdownMenuCheckboxItem>
@@ -651,11 +651,11 @@ export default function ExpensesPage() {
                                             </div>
                                         </div>
 
-                                        <DropdownMenuSeparator className="bg-white/10" />
+                                        <DropdownMenuSeparator className="bg-accent" />
 
                                         <Button
                                             variant="ghost"
-                                            className="w-full justify-start text-neutral-300 hover:text-white hover:bg-white/5"
+                                            className="w-full justify-start text-foreground hover:text-foreground hover:bg-muted"
                                             onClick={() => {
                                                 setStartDate(startOfMonthISO(new Date()))
                                                 setEndDateFilter(endOfMonthISO(new Date()))
@@ -673,39 +673,39 @@ export default function ExpensesPage() {
 
                     <Card className="overflow-hidden border-none shadow-none bg-transparent flex-1">
                         <CardContent className="p-0">
-                            <div className="relative overflow-x-auto bg-[#09090b] border border-white/5 rounded-2xl">
-                                <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+                            <div className="relative overflow-x-auto bg-card border border-border rounded-2xl">
+                                <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                                     <div>
-                                        <h3 className="text-white font-medium">Expenses</h3>
-                                        <p className="text-xs text-neutral-500">{filteredExpenses.length} items</p>
+                                        <h3 className="text-foreground font-medium">Expenses</h3>
+                                        <p className="text-xs text-muted-foreground">{filteredExpenses.length} items</p>
                                     </div>
                                 </div>
 
                                 {isLoading ? (
-                                    <div className="p-10 text-neutral-400 flex items-center gap-2">
+                                    <div className="p-10 text-muted-foreground flex items-center gap-2">
                                         <Loader2 className="h-4 w-4 animate-spin" /> Loading...
                                     </div>
                                 ) : (
                                     <>
                                         {/* Mobile list */}
-                                        <div className="xl:hidden divide-y divide-white/10">
+                                        <div className="xl:hidden divide-y divide-border">
                                             {filteredExpenses.map((e) => (
                                                 <div key={e.id} className="p-4">
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="min-w-0">
-                                                            <div className="text-sm font-bold text-white truncate">{e.title}</div>
-                                                            <div className="mt-1 text-xs text-neutral-500">
+                                                            <div className="text-sm font-bold text-foreground truncate">{e.title}</div>
+                                                            <div className="mt-1 text-xs text-muted-foreground">
                                                                 {(e as any).occurrence_date || (e as any).expense_date} · {e.category || "Other"} · {e.recurring}
                                                             </div>
                                                         </div>
-                                                        <div className="text-sm font-bold text-white shrink-0">{formatMoney(Number(e.amount || 0))}</div>
+                                                        <div className="text-sm font-bold text-foreground shrink-0">{formatMoney(Number(e.amount || 0))}</div>
                                                     </div>
 
                                                     <div className="mt-3 flex items-center gap-2">
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                                            className="h-10 flex-1 border-border bg-muted hover:bg-accent rounded-lg"
                                                             onClick={() => openEdit(expenses.find(x => x.id === (e as any).original_id) || (e as any))}
                                                         >
                                                             <Pencil className="h-4 w-4 mr-2" /> Edit
@@ -713,7 +713,7 @@ export default function ExpensesPage() {
                                                         <Button
                                                             type="button"
                                                             variant="outline"
-                                                            className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                                            className="h-10 flex-1 border-border bg-muted hover:bg-accent rounded-lg"
                                                             onClick={() => handleDelete((e as any).original_id || e.id)}
                                                         >
                                                             <Trash2 className="h-4 w-4 mr-2" /> Delete
@@ -722,14 +722,14 @@ export default function ExpensesPage() {
                                                 </div>
                                             ))}
                                             {!filteredExpenses.length && (
-                                                <div className="p-6 text-sm text-neutral-500">No expenses found.</div>
+                                                <div className="p-6 text-sm text-muted-foreground">No expenses found.</div>
                                             )}
                                         </div>
 
                                         {/* Desktop table */}
                                         <div className="hidden xl:block">
                                             <table className="w-full text-left text-sm">
-                                                <thead className="border-b border-white/5 text-xs uppercase tracking-wider text-neutral-500">
+                                                <thead className="border-b border-border text-xs uppercase tracking-wider text-muted-foreground">
                                                     <tr>
                                                         <th className="px-6 py-4 font-medium">Date</th>
                                                         <th className="px-6 py-4 font-medium">Title</th>
@@ -739,31 +739,31 @@ export default function ExpensesPage() {
                                                         <th className="px-6 py-4 font-medium text-right">Actions</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-white/5">
+                                                <tbody className="divide-y divide-border">
                                                     {filteredExpenses.map((e) => (
-                                                        <tr key={e.id} className="hover:bg-white/2 transition-colors">
-                                                            <td className="px-6 py-4 text-neutral-400">{(e as any).occurrence_date || (e as any).expense_date}</td>
-                                                            <td className="px-6 py-4 font-medium text-white">{e.title}</td>
-                                                            <td className="px-6 py-4 text-neutral-400">{e.category || "Other"}</td>
-                                                            <td className="px-6 py-4 text-neutral-400">{e.recurring}</td>
-                                                            <td className="px-6 py-4 text-right font-semibold text-white">{formatMoney(Number(e.amount || 0))}</td>
+                                                        <tr key={e.id} className="hover:bg-muted/50 transition-colors">
+                                                            <td className="px-6 py-4 text-muted-foreground">{(e as any).occurrence_date || (e as any).expense_date}</td>
+                                                            <td className="px-6 py-4 font-medium text-foreground">{e.title}</td>
+                                                            <td className="px-6 py-4 text-muted-foreground">{e.category || "Other"}</td>
+                                                            <td className="px-6 py-4 text-muted-foreground">{e.recurring}</td>
+                                                            <td className="px-6 py-4 text-right font-semibold text-foreground">{formatMoney(Number(e.amount || 0))}</td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <div className="inline-flex items-center gap-2">
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-8 w-8 p-0 hover:bg-white/5"
+                                                                        className="h-8 w-8 p-0 hover:bg-muted"
                                                                         onClick={() => openEdit(expenses.find(x => x.id === (e as any).original_id) || (e as any))}
                                                                     >
-                                                                        <Pencil className="h-4 w-4 text-neutral-400" />
+                                                                        <Pencil className="h-4 w-4 text-muted-foreground" />
                                                                     </Button>
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        className="h-8 w-8 p-0 hover:bg-white/5"
+                                                                        className="h-8 w-8 p-0 hover:bg-muted"
                                                                         onClick={() => handleDelete((e as any).original_id || e.id)}
                                                                     >
-                                                                        <Trash2 className="h-4 w-4 text-neutral-400" />
+                                                                        <Trash2 className="h-4 w-4 text-muted-foreground" />
                                                                     </Button>
                                                                 </div>
                                                             </td>
@@ -771,7 +771,7 @@ export default function ExpensesPage() {
                                                     ))}
                                                     {!filteredExpenses.length && (
                                                         <tr>
-                                                            <td className="px-6 py-10 text-neutral-500" colSpan={6}>No expenses found.</td>
+                                                            <td className="px-6 py-10 text-muted-foreground" colSpan={6}>No expenses found.</td>
                                                         </tr>
                                                     )}
                                                 </tbody>
@@ -786,42 +786,42 @@ export default function ExpensesPage() {
             </div>
 
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <DialogContent className="bg-[#0a0a0a] border-white/10 max-w-lg">
+                <DialogContent className="bg-card border-border max-w-lg">
                     <DialogHeader>
-                        <DialogTitle className="text-white">Edit Expense</DialogTitle>
+                        <DialogTitle className="text-foreground">Edit Expense</DialogTitle>
                     </DialogHeader>
 
                     {editing && (
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Title</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Title</Label>
                                 <Input
                                     value={editing.title}
                                     onChange={(e) => setEditing({ ...editing, title: e.target.value })}
-                                    className="bg-black border-white/10 h-11"
+                                    className="bg-background border-border h-11"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Amount</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Amount</Label>
                                     <Input
                                         value={String(editing.amount)}
                                         onChange={(e) => setEditing({ ...editing, amount: Number(e.target.value) })}
                                         inputMode="decimal"
-                                        className="bg-black border-white/10 h-11"
+                                        className="bg-background border-border h-11"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Category</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Category</Label>
                                     <Select
                                         value={editing.category || "Other"}
                                         onValueChange={(v) => setEditing({ ...editing, category: v })}
                                     >
-                                        <SelectTrigger className="bg-black border-white/10 h-11">
+                                        <SelectTrigger className="bg-background border-border h-11">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                        <SelectContent className="bg-card border-border text-foreground">
                                             {CATEGORIES.map(c => (
                                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                                             ))}
@@ -832,24 +832,24 @@ export default function ExpensesPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Date</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Date</Label>
                                     <Input
                                         type="date"
                                         value={editing.expense_date}
                                         onChange={(e) => setEditing({ ...editing, expense_date: e.target.value })}
-                                        className="bg-black border-white/10 h-11"
+                                        className="bg-background border-border h-11"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Recurring</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Recurring</Label>
                                     <Select
                                         value={editing.recurring}
                                         onValueChange={(v: any) => setEditing({ ...editing, recurring: v })}
                                     >
-                                        <SelectTrigger className="bg-black border-white/10 h-11">
+                                        <SelectTrigger className="bg-background border-border h-11">
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                        <SelectContent className="bg-card border-border text-foreground">
                                             <SelectItem value="once">Once</SelectItem>
                                             <SelectItem value="monthly">Monthly</SelectItem>
                                             <SelectItem value="yearly">Yearly</SelectItem>
@@ -860,22 +860,22 @@ export default function ExpensesPage() {
 
                             {editing.recurring !== "once" && (
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">End date (optional)</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">End date (optional)</Label>
                                     <Input
                                         type="date"
                                         value={editing.end_date || ""}
                                         onChange={(e) => setEditing({ ...editing, end_date: e.target.value })}
-                                        className="bg-black border-white/10 h-11"
+                                        className="bg-background border-border h-11"
                                     />
                                 </div>
                             )}
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Notes</Label>
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Notes</Label>
                                 <textarea
                                     value={editing.notes || ""}
                                     onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-                                    className="w-full bg-black border border-white/10 rounded-md p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/10 h-24 resize-none"
+                                    className="w-full bg-background border border-border rounded-md p-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-white/10 h-24 resize-none"
                                 />
                             </div>
                         </div>
@@ -884,13 +884,13 @@ export default function ExpensesPage() {
                     <DialogFooter>
                         <Button
                             variant="outline"
-                            className="border-white/10 bg-white/5 hover:bg-white/10"
+                            className="border-border bg-muted hover:bg-accent"
                             onClick={() => setIsEditOpen(false)}
                         >
                             Cancel
                         </Button>
                         <Button
-                            className="bg-white text-black hover:bg-neutral-200"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                             onClick={saveEdit}
                         >
                             Save
@@ -901,3 +901,4 @@ export default function ExpensesPage() {
         </div>
     )
 }
+

@@ -39,7 +39,7 @@ export default function DocsPage() {
                     </div>
                     <div className="max-w-3xl mx-auto text-center relative z-10">
                         <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">How can we help you?</h1>
-                        <p className="text-lg text-neutral-400 mb-8 max-w-xl mx-auto">
+                        <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
                             Search our knowledge base for guides on invoicing, payments, and managing your team.
                         </p>
                         <div className="relative max-w-lg mx-auto group">
@@ -66,9 +66,9 @@ export default function DocsPage() {
                     <div className="mb-12 rounded-3xl border border-border bg-card p-8 md:p-10">
                         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                             <div className="max-w-2xl">
-                                <div className="text-sm font-bold uppercase tracking-widest text-neutral-500">Recommended path</div>
+                                <div className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Recommended path</div>
                                 <h2 className="text-2xl md:text-3xl font-bold text-foreground mt-3">Get set up in 30 minutes</h2>
-                                <p className="text-neutral-400 mt-3 leading-relaxed">
+                                <p className="text-muted-foreground mt-3 leading-relaxed">
                                     Follow the guided setup path from workspace → clients → invoices → PayGate → vault. Each page includes steps, links, and UI previews.
                                 </p>
                             </div>
@@ -113,7 +113,7 @@ export default function DocsPage() {
                         </div>
                     </div>
 
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-8">Browse by Category</h2>
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-8">Browse by Category</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <CategoryCard
                             icon={BookOpen}
@@ -217,7 +217,7 @@ export default function DocsPage() {
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-foreground/5 blur-[80px]"></div>
                                     <div className="relative z-10 text-center md:text-left">
                                         <h2 className="text-3xl font-bold mb-4">Still need help?</h2>
-                                        <p className="text-neutral-400 max-w-md text-lg">
+                                        <p className="text-muted-foreground max-w-md text-lg">
                                             Our support team is available Monday to Friday to assist you with any complex issues.
                                         </p>
                                     </div>
@@ -247,7 +247,7 @@ function CategoryCard({ icon: Icon, title, description, href }: { icon: any, tit
                 <Icon className="w-6 h-6 text-foreground" />
             </div>
             <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
-            <p className="text-sm text-neutral-500 leading-relaxed mb-4">
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 {description}
             </p>
             <div className="flex items-center text-xs font-bold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">

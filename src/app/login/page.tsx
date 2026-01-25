@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { getURL } from "@/lib/utils"
 import { trackEvent } from "@/lib/analytics/client"
+import { useTheme } from "@/lib/theme-context"
 
 const testimonials = [
     {
@@ -46,6 +47,7 @@ export default function LoginPage() {
     const [googleLoading, setGoogleLoading] = useState(false)
     const supabase = createClient()
     const [nextPath, setNextPath] = useState('/overview')
+    const { theme } = useTheme()
 
     useEffect(() => {
         if (typeof window === 'undefined') return
@@ -197,7 +199,7 @@ export default function LoginPage() {
                 <div className="absolute top-12 left-12">
                     <Link href="/" aria-label="Go to Illumi home">
                         <Image
-                            src="/logo.png"
+                            src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'}
                             alt="Illumi Logo"
                             width={32}
                             height={32}
@@ -227,7 +229,7 @@ export default function LoginPage() {
                 <div className="absolute top-6 left-6 lg:hidden">
                     <Link href="/" aria-label="Go to Illumi home">
                         <Image
-                            src="/logo.png"
+                            src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'}
                             alt="Illumi Logo"
                             width={32}
                             height={32}

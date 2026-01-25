@@ -11,29 +11,29 @@ export const metadata: Metadata = {
 
 export default function OverviewFeaturePage() {
     return (
-        <div className="bg-black grainy-gradient">
+        <div className="bg-background grainy-gradient">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-black" />
-                    <div className="absolute inset-0 bg-black/60" />
+                    <div className="h-full w-full bg-background" />
+                    <div className="absolute inset-0 bg-white dark:bg-black/60" />
                 </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6 justify-center">
-                        <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Financial Overview</span>
+                    <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-6 justify-center">
+                        <span className="px-3 py-1 rounded-full bg-accent text-muted-foreground">Financial Overview</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                         See your numbers,<br />
-                        <span className="text-white/50">at a glance</span>
+                        <span className="text-muted-foreground">at a glance</span>
                     </h1>
-                    <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
                         Track your business income and expenses at a glance.
                         Get a comprehensive view of your financial health with real-time data.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button
                             asChild
-                            className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12"
+                            className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
                                 Open your dashboard
@@ -43,7 +43,7 @@ export default function OverviewFeaturePage() {
                         <Button
                             asChild
                             variant="outline"
-                            className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5"
+                            className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted"
                         >
                             <Link href="/pricing">View Pricing</Link>
                         </Button>
@@ -54,27 +54,27 @@ export default function OverviewFeaturePage() {
             {/* Dashboard Mockup */}
             <section className="py-16">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="relative border border-white/10 rounded-3xl bg-black/50 overflow-hidden">
-                        <div className="absolute inset-0 bg-linear-to-t from-black via-transparent to-transparent z-10" />
+                    <div className="relative border border-border rounded-3xl bg-card dark:bg-black/50 overflow-hidden">
+                        <div className="absolute inset-0 bg-linear-to-t from-white dark:from-black via-transparent to-transparent z-10" />
 
                         <div className="p-8">
                             {/* Top bar mock */}
-                            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+                            <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-white/10" />
-                                    <div className="text-sm text-white/50">Dashboard</div>
+                                    <div className="w-8 h-8 rounded-full bg-accent" />
+                                    <div className="text-sm text-muted-foreground">Dashboard</div>
                                 </div>
-                                <div className="text-sm text-white/50">Jan 2024 - Dec 2024</div>
+                                <div className="text-sm text-muted-foreground">Jan 2024 - Dec 2024</div>
                             </div>
 
                             {/* Balance display */}
                             <div className="mb-8">
-                                <div className="text-xs uppercase tracking-wider text-white/50 mb-2">Balance</div>
-                                <div className="text-5xl font-serif font-bold text-white">R 19,546.58</div>
+                                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Balance</div>
+                                <div className="text-5xl font-serif font-bold text-foreground">R 19,546.58</div>
                             </div>
 
                             {/* Chart placeholder */}
-                            <div className="h-48 border-b border-white/10 mb-8 flex items-end">
+                            <div className="h-48 border-b border-border mb-8 flex items-end">
                                 <svg className="w-full h-full" viewBox="0 0 800 200" preserveAspectRatio="none">
                                     <path
                                         d="M0,150 Q100,120 200,140 T400,100 T600,130 T800,80"
@@ -94,19 +94,19 @@ export default function OverviewFeaturePage() {
                             {/* Stats grid */}
                             <div className="grid grid-cols-3 gap-8">
                                 <div>
-                                    <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Income</div>
-                                    <div className="text-2xl font-serif font-bold text-white">R 245,000</div>
-                                    <div className="text-sm text-white/70">+18.2%</div>
+                                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Income</div>
+                                    <div className="text-2xl font-serif font-bold text-foreground">R 245,000</div>
+                                    <div className="text-sm text-muted-foreground">+18.2%</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Expenses</div>
-                                    <div className="text-2xl font-serif font-bold text-white">R 128,400</div>
-                                    <div className="text-sm text-white/70">+5.1%</div>
+                                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Expenses</div>
+                                    <div className="text-2xl font-serif font-bold text-foreground">R 128,400</div>
+                                    <div className="text-sm text-muted-foreground">+5.1%</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs uppercase tracking-wider text-white/50 mb-1">Spending</div>
-                                    <div className="text-2xl font-serif font-bold text-white">R 42,600</div>
-                                    <div className="text-sm text-white/50">This month</div>
+                                    <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Spending</div>
+                                    <div className="text-2xl font-serif font-bold text-foreground">R 42,600</div>
+                                    <div className="text-sm text-muted-foreground">This month</div>
                                 </div>
                             </div>
                         </div>
@@ -115,27 +115,27 @@ export default function OverviewFeaturePage() {
             </section>
 
             {/* Feature Cards */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
-                            <IconTrendingUp className="h-10 w-10 text-white/70 mb-6" />
-                            <h3 className="text-xl font-bold text-white mb-3">Track income</h3>
-                            <p className="text-white/50">
+                        <div className="p-8 rounded-2xl bg-muted/50 border border-border">
+                            <IconTrendingUp className="h-10 w-10 text-muted-foreground mb-6" />
+                            <h3 className="text-xl font-bold text-foreground mb-3">Track income</h3>
+                            <p className="text-muted-foreground">
                                 Monitor all revenue streams in real-time. See where your money is coming from.
                             </p>
                         </div>
-                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
-                            <IconWallet className="h-10 w-10 text-white/70 mb-6" />
-                            <h3 className="text-xl font-bold text-white mb-3">Manage expenses</h3>
-                            <p className="text-white/50">
+                        <div className="p-8 rounded-2xl bg-muted/50 border border-border">
+                            <IconWallet className="h-10 w-10 text-muted-foreground mb-6" />
+                            <h3 className="text-xl font-bold text-foreground mb-3">Manage expenses</h3>
+                            <p className="text-muted-foreground">
                                 Keep track of every expense. Categorize and analyze your spending patterns.
                             </p>
                         </div>
-                        <div className="p-8 rounded-2xl bg-white/2 border border-white/5">
-                            <IconChartBar className="h-10 w-10 text-white/70 mb-6" />
-                            <h3 className="text-xl font-bold text-white mb-3">Spending analysis</h3>
-                            <p className="text-white/50">
+                        <div className="p-8 rounded-2xl bg-muted/50 border border-border">
+                            <IconChartBar className="h-10 w-10 text-muted-foreground mb-6" />
+                            <h3 className="text-xl font-bold text-foreground mb-3">Spending analysis</h3>
+                            <p className="text-muted-foreground">
                                 Get detailed insights into your spending with beautiful visualizations.
                             </p>
                         </div>
@@ -144,14 +144,14 @@ export default function OverviewFeaturePage() {
             </section>
 
             {/* Chart Section */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-white mb-4">From revenue to spending</h2>
-                        <p className="text-white/50">See the complete picture of your business finances.</p>
+                        <h2 className="text-3xl font-bold text-foreground mb-4">From revenue to spending</h2>
+                        <p className="text-muted-foreground">See the complete picture of your business finances.</p>
                     </div>
 
-                    <div className="border border-white/10 rounded-3xl bg-black/50 p-8">
+                    <div className="border border-border rounded-3xl bg-card dark:bg-black/50 p-8">
                         <div className="flex items-end justify-center gap-4 h-64">
                             {[
                                 { label: "Jan", value: 60 },
@@ -172,7 +172,7 @@ export default function OverviewFeaturePage() {
                                         className="w-8 md:w-12 bg-linear-to-t from-white/20 to-white/40 rounded-t"
                                         style={{ height: `${month.value * 2}px` }}
                                     />
-                                    <span className="text-xs text-white/50">{month.label}</span>
+                                    <span className="text-xs text-muted-foreground">{month.label}</span>
                                 </div>
                             ))}
                         </div>

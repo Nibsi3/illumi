@@ -156,10 +156,10 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-card border-border text-foreground sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <IconCreditCard className="w-5 h-5 text-neutral-400" />
+                        <IconCreditCard className="w-5 h-5 text-muted-foreground" />
                         Add Payment Method
                     </DialogTitle>
                 </DialogHeader>
@@ -170,7 +170,7 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                             name="cc-name"
                             autoComplete="cc-name"
                             placeholder="John Doe"
-                            className="bg-white/5 border-white/10"
+                            className="bg-muted border-border"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -184,13 +184,13 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                                 autoComplete="cc-number"
                                 inputMode="numeric"
                                 placeholder="0000 0000 0000 0000"
-                                className="bg-white/5 border-white/10 pl-10"
+                                className="bg-muted border-border pl-10"
                                 value={number}
                                 onChange={(e) => setNumber(formatCardNumber(e.target.value))}
                                 maxLength={19}
                                 required
                             />
-                            <IconCreditCard className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
+                            <IconCreditCard className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
@@ -201,7 +201,7 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                                 autoComplete="cc-exp"
                                 inputMode="numeric"
                                 placeholder="MM/YY"
-                                className="bg-white/5 border-white/10"
+                                className="bg-muted border-border"
                                 value={expiry}
                                 onChange={(e) => setExpiry(formatExpiry(e.target.value))}
                                 maxLength={5}
@@ -216,13 +216,13 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                                     autoComplete="cc-csc"
                                     inputMode="numeric"
                                     placeholder="123"
-                                    className="bg-white/5 border-white/10 pl-10"
+                                    className="bg-muted border-border pl-10"
                                     value={cvc}
                                     onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
                                     maxLength={4}
                                     required
                                 />
-                                <IconLock className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500" />
+                                <IconLock className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                             </div>
                         </div>
                     </div>
@@ -230,7 +230,7 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
                     <div className="pt-4">
                         <Button
                             type="submit"
-                            className="w-full bg-white text-black hover:bg-neutral-200"
+                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? "Adding Card..." : "Add Card"}
@@ -241,3 +241,4 @@ export function AddCardModal({ isOpen, onClose, onSave }: AddCardModalProps) {
         </Dialog>
     )
 }
+

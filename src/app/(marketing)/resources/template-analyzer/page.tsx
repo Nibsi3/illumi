@@ -75,11 +75,11 @@ export default function TemplateAnalyzerPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-5xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
@@ -87,14 +87,14 @@ export default function TemplateAnalyzerPage() {
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                     Invoice Template Performance Analyzer
                 </h1>
-                <p className="text-white/60 text-lg mb-10 max-w-3xl">
+                <p className="text-muted-foreground text-lg mb-10 max-w-3xl">
                     Check if your invoice template meets SARS requirements and best practices. 
                     Get suggestions to improve payment speed and compliance.
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Checklist */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         <h2 className="text-xl font-semibold mb-6">Analyze Your Template</h2>
                         
                         <div className="space-y-4 mb-6">
@@ -105,10 +105,10 @@ export default function TemplateAnalyzerPage() {
                                         id={item.key}
                                         checked={checklist[item.key]}
                                         onChange={() => handleCheckboxChange(item.key)}
-                                        className="mt-1 w-5 h-5 rounded border-white/20 bg-white/5 text-green-500 focus:ring-green-500 focus:ring-offset-0"
+                                        className="mt-1 w-5 h-5 rounded border-border bg-muted text-green-500 focus:ring-green-500 focus:ring-offset-0"
                                     />
                                     <label htmlFor={item.key} className="flex-1 cursor-pointer">
-                                        <span className="text-white/80">{item.label}</span>
+                                        <span className="text-foreground">{item.label}</span>
                                         {item.required && (
                                             <span className="ml-2 text-xs text-red-400">*Required</span>
                                         )}
@@ -119,41 +119,41 @@ export default function TemplateAnalyzerPage() {
 
                         <Button
                             onClick={handleAnalyze}
-                            className="w-full bg-white text-black hover:bg-white/90 h-11"
+                            className="w-full bg-primary text-primary-foreground hover:bg-white/90 h-11"
                         >
                             Analyze Template
                         </Button>
                     </div>
 
                     {/* Results */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         {!showResults ? (
                             <div className="flex items-center justify-center h-full text-center">
                                 <div>
-                                    <IconFileInvoice className="h-12 w-12 text-white/20 mx-auto mb-4" />
-                                    <p className="text-white/40">Check the items that apply to your template</p>
+                                    <IconFileInvoice className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                    <p className="text-muted-foreground">Check the items that apply to your template</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="text-center pb-6 border-b border-white/10">
-                                    <div className="text-sm font-bold uppercase tracking-wider text-white/40 mb-2">
+                                <div className="text-center pb-6 border-b border-border">
+                                    <div className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">
                                         Template Score
                                     </div>
                                     <div className={`text-6xl font-bold ${getScoreColor(results!.score)}`}>
                                         {results!.score}%
                                     </div>
-                                    <div className="text-lg text-white/60 mt-2">
+                                    <div className="text-lg text-muted-foreground mt-2">
                                         {getScoreLabel(results!.score)}
                                     </div>
-                                    <div className="text-sm text-white/40 mt-2">
+                                    <div className="text-sm text-muted-foreground mt-2">
                                         {results!.checked} of {results!.total} items checked
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div>
-                                        <h3 className="text-sm font-semibold mb-3 text-white">What You're Doing Right</h3>
+                                        <h3 className="text-sm font-semibold mb-3 text-foreground">What You're Doing Right</h3>
                                         <div className="space-y-2">
                                             {checklistItems
                                                 .filter(item => checklist[item.key])
@@ -161,17 +161,17 @@ export default function TemplateAnalyzerPage() {
                                                 .map(item => (
                                                     <div key={item.key} className="flex items-start gap-2 text-sm">
                                                         <IconCheck className="h-4 w-4 text-green-400 shrink-0 mt-0.5" />
-                                                        <span className="text-white/70">{item.label}</span>
+                                                        <span className="text-muted-foreground">{item.label}</span>
                                                     </div>
                                                 ))}
                                             {checklistItems.filter(item => checklist[item.key]).length === 0 && (
-                                                <p className="text-sm text-white/40">No items checked yet</p>
+                                                <p className="text-sm text-muted-foreground">No items checked yet</p>
                                             )}
                                         </div>
                                     </div>
 
                                     <div>
-                                        <h3 className="text-sm font-semibold mb-3 text-white">What to Add</h3>
+                                        <h3 className="text-sm font-semibold mb-3 text-foreground">What to Add</h3>
                                         <div className="space-y-2">
                                             {checklistItems
                                                 .filter(item => !checklist[item.key])
@@ -179,7 +179,7 @@ export default function TemplateAnalyzerPage() {
                                                 .map(item => (
                                                     <div key={item.key} className="flex items-start gap-2 text-sm">
                                                         <IconX className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
-                                                        <span className="text-white/70">{item.label}</span>
+                                                        <span className="text-muted-foreground">{item.label}</span>
                                                     </div>
                                                 ))}
                                             {checklistItems.filter(item => !checklist[item.key]).length === 0 && (
@@ -190,9 +190,9 @@ export default function TemplateAnalyzerPage() {
                                 </div>
 
                                 {results!.score < 100 && (
-                                    <div className="pt-4 border-t border-white/10">
+                                    <div className="pt-4 border-t border-border">
                                         <h3 className="text-sm font-semibold mb-3">Impact of Missing Items</h3>
-                                        <ul className="space-y-2 text-sm text-white/60">
+                                        <ul className="space-y-2 text-sm text-muted-foreground">
                                             {!checklist.hasVATAmount && (
                                                 <li>• Missing VAT = SARS non-compliance, potential penalties</li>
                                             )}
@@ -214,12 +214,12 @@ export default function TemplateAnalyzerPage() {
                 </div>
 
                 {/* SARS Requirements */}
-                <div className="mt-12 rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="mt-12 rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">SARS Tax Invoice Requirements</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 className="font-semibold mb-3 text-white">Mandatory Elements</h3>
-                            <ul className="space-y-2 text-sm text-white/70">
+                            <h3 className="font-semibold mb-3 text-foreground">Mandatory Elements</h3>
+                            <ul className="space-y-2 text-sm text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <span className="text-red-400 shrink-0">*</span>
                                     <span>Words "Tax Invoice" or "VAT Invoice"</span>
@@ -256,8 +256,8 @@ export default function TemplateAnalyzerPage() {
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-3 text-white">Best Practices (Optional)</h3>
-                            <ul className="space-y-2 text-sm text-white/70">
+                            <h3 className="font-semibold mb-3 text-foreground">Best Practices (Optional)</h3>
+                            <ul className="space-y-2 text-sm text-muted-foreground">
                                 <li className="flex items-start gap-2">
                                     <span className="text-green-400 shrink-0">✓</span>
                                     <span>Payment terms (e.g., Net 30)</span>
@@ -296,29 +296,29 @@ export default function TemplateAnalyzerPage() {
                 </div>
 
                 {/* Template Improvements */}
-                <div className="mt-8 rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="mt-8 rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">How Template Quality Affects Payment</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">-40%</div>
-                            <h3 className="font-semibold mb-2 text-white">Payment Time</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Payment Time</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Professional templates with "Pay Now" buttons get paid 40% faster (18 vs 30 days).
                             </p>
                         </div>
 
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">-89%</div>
-                            <h3 className="font-semibold mb-2 text-white">Error Rate</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Error Rate</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Automated templates reduce errors from 18% to 2%, preventing payment delays.
                             </p>
                         </div>
 
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">+73%</div>
-                            <h3 className="font-semibold mb-2 text-white">Client Trust</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Client Trust</h3>
+                            <p className="text-sm text-muted-foreground">
                                 73% of clients say professional invoices increase their trust in the business.
                             </p>
                         </div>
@@ -327,10 +327,10 @@ export default function TemplateAnalyzerPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Use professional invoice templates automatically with Illumi</p>
+                    <p className="text-muted-foreground mb-4">Use professional invoice templates automatically with Illumi</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

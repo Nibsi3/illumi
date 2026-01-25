@@ -236,7 +236,7 @@ export default function LandingPage() {
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full sm:w-auto"
-                                        className="bg-white text-black font-sans font-medium px-8 h-12 flex items-center justify-center"
+                                        className="bg-primary text-primary-foreground font-sans font-medium px-8 h-12 flex items-center justify-center"
                                     >
                                         Get Started for Free
                                     </HoverBorderGradient>

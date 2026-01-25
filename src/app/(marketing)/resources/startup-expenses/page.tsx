@@ -34,23 +34,23 @@ const expenseCategories = [
 
 export default function StartupExpensesPage() {
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-6xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
 
                 <div className="mb-12">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/70 text-sm mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-muted-foreground text-sm mb-4">
                         2024 Data
                     </div>
                     <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
                         Top 50 Most Common Expenses for SA Startups
                     </h1>
-                    <p className="text-white/60 text-lg max-w-3xl">
+                    <p className="text-muted-foreground text-lg max-w-3xl">
                         Real expense data from over 2,500 South African startups and SMEs. Use this breakdown to budget 
                         accurately and compare your spending against industry averages.
                     </p>
@@ -58,27 +58,27 @@ export default function StartupExpensesPage() {
 
                 {/* Summary Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Average Monthly Expenses</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Average Monthly Expenses</div>
                         <div className="text-3xl font-bold">R 150,000</div>
-                        <div className="text-xs text-white/40 mt-1">For businesses under 3 years</div>
+                        <div className="text-xs text-muted-foreground mt-1">For businesses under 3 years</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Largest Expense Category</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Largest Expense Category</div>
                         <div className="text-3xl font-bold">28.5%</div>
-                        <div className="text-xs text-white/40 mt-1">Salaries & wages</div>
+                        <div className="text-xs text-muted-foreground mt-1">Salaries & wages</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Fixed vs Variable</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Fixed vs Variable</div>
                         <div className="text-3xl font-bold">62/38</div>
-                        <div className="text-xs text-white/40 mt-1">% split on average</div>
+                        <div className="text-xs text-muted-foreground mt-1">% split on average</div>
                     </div>
                 </div>
 
                 {/* Expense Breakdown */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Expense Breakdown by Category</h2>
                     
                     <div className="space-y-4">
@@ -87,14 +87,14 @@ export default function StartupExpensesPage() {
                                 <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-3 h-3 rounded-full ${expense.color}`} />
-                                        <span className="text-white font-medium">{expense.category}</span>
+                                        <span className="text-foreground font-medium">{expense.category}</span>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-white/60 text-sm">{expense.avgMonthly}</span>
-                                        <span className="text-white font-semibold min-w-[60px] text-right">{expense.percentage}%</span>
+                                        <span className="text-muted-foreground text-sm">{expense.avgMonthly}</span>
+                                        <span className="text-foreground font-semibold min-w-[60px] text-right">{expense.percentage}%</span>
                                     </div>
                                 </div>
-                                <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden">
+                                <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                                     <div 
                                         className={`h-full ${expense.color}`}
                                         style={{ width: `${expense.percentage}%` }}
@@ -107,7 +107,7 @@ export default function StartupExpensesPage() {
 
                 {/* Detailed Breakdown */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         <h3 className="text-xl font-semibold mb-4">Top 10 Specific Expenses</h3>
                         <div className="space-y-3">
                             {[
@@ -122,44 +122,44 @@ export default function StartupExpensesPage() {
                                 { item: "Vehicle costs", amount: "R 3,500" },
                                 { item: "Office supplies", amount: "R 2,800" },
                             ].map((item, idx) => (
-                                <div key={item.item} className="flex items-center justify-between py-2 border-b border-white/5">
+                                <div key={item.item} className="flex items-center justify-between py-2 border-b border-border">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-white/40 text-sm font-mono">{(idx + 1).toString().padStart(2, '0')}</span>
-                                        <span className="text-white/80">{item.item}</span>
+                                        <span className="text-muted-foreground text-sm font-mono">{(idx + 1).toString().padStart(2, '0')}</span>
+                                        <span className="text-foreground">{item.item}</span>
                                     </div>
-                                    <span className="text-white font-semibold">{item.amount}</span>
+                                    <span className="text-foreground font-semibold">{item.amount}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         <h3 className="text-xl font-semibold mb-4">Industry Variations</h3>
                         <div className="space-y-4">
                             <div>
-                                <div className="text-sm text-white/60 mb-2">Tech Startups</div>
-                                <div className="text-white/80 text-sm leading-relaxed">
+                                <div className="text-sm text-muted-foreground mb-2">Tech Startups</div>
+                                <div className="text-foreground text-sm leading-relaxed">
                                     Spend 35% more on software/subscriptions and 20% less on rent (remote-first). 
                                     Average monthly: R 165,000.
                                 </div>
                             </div>
                             <div>
-                                <div className="text-sm text-white/60 mb-2">Retail & E-commerce</div>
-                                <div className="text-white/80 text-sm leading-relaxed">
+                                <div className="text-sm text-muted-foreground mb-2">Retail & E-commerce</div>
+                                <div className="text-foreground text-sm leading-relaxed">
                                     Inventory costs add 18% to expenses. Marketing spend is 45% higher than average. 
                                     Average monthly: R 185,000.
                                 </div>
                             </div>
                             <div>
-                                <div className="text-sm text-white/60 mb-2">Professional Services</div>
-                                <div className="text-white/80 text-sm leading-relaxed">
+                                <div className="text-sm text-muted-foreground mb-2">Professional Services</div>
+                                <div className="text-foreground text-sm leading-relaxed">
                                     Salaries make up 42% of expenses (vs 28.5% average). Lower equipment costs. 
                                     Average monthly: R 142,000.
                                 </div>
                             </div>
                             <div>
-                                <div className="text-sm text-white/60 mb-2">Creative Agencies</div>
-                                <div className="text-white/80 text-sm leading-relaxed">
+                                <div className="text-sm text-muted-foreground mb-2">Creative Agencies</div>
+                                <div className="text-foreground text-sm leading-relaxed">
                                     Freelancer costs (35%) replace full salaries. Software subscriptions 2x average. 
                                     Average monthly: R 128,000.
                                 </div>
@@ -169,29 +169,29 @@ export default function StartupExpensesPage() {
                 </div>
 
                 {/* Cost Reduction Tips */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Where SA Startups Cut Costs</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">-22%</div>
-                            <h3 className="font-semibold mb-2 text-white">Remote Work</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Remote Work</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Startups going remote-first save 22% on rent and utilities, averaging R 5,000/month in savings.
                             </p>
                         </div>
 
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">-18%</div>
-                            <h3 className="font-semibold mb-2 text-white">Software Consolidation</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Software Consolidation</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Using integrated platforms instead of multiple tools saves R 2,300/month on average.
                             </p>
                         </div>
 
                         <div>
                             <div className="text-3xl font-bold text-green-400 mb-2">-15%</div>
-                            <h3 className="font-semibold mb-2 text-white">Freelancers vs Full-time</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">Freelancers vs Full-time</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Strategic use of freelancers for specialized work reduces salary costs by 15%.
                             </p>
                         </div>
@@ -199,15 +199,15 @@ export default function StartupExpensesPage() {
                 </div>
 
                 {/* Benchmarking Tool */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-4">Compare Your Expenses</h2>
-                    <p className="text-white/60 mb-6">
+                    <p className="text-muted-foreground mb-6">
                         Track your expenses in Illumi and automatically compare against these benchmarks. 
                         See where you're overspending and identify cost-saving opportunities.
                     </p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Start Tracking Expenses
                     </Link>

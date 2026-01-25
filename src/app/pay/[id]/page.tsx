@@ -164,10 +164,10 @@ export default function PayInvoicePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+            <div className="min-h-screen bg-card flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-8 w-8 text-white animate-spin opacity-50" />
-                    <p className="text-neutral-500 text-sm tracking-widest uppercase font-bold text-[10px]">Verifying Invoice...</p>
+                    <Loader2 className="h-8 w-8 text-foreground animate-spin opacity-50" />
+                    <p className="text-muted-foreground text-sm tracking-widest uppercase font-bold text-[10px]">Verifying Invoice...</p>
                 </div>
             </div>
         )
@@ -175,19 +175,19 @@ export default function PayInvoicePage() {
 
     if (error || !invoice) {
         return (
-            <div className="min-h-screen bg-[#09090b] flex items-center justify-center p-4">
-                <Card className="max-w-md w-full bg-[#121212] border-white/10 text-white rounded-none">
+            <div className="min-h-screen bg-card flex items-center justify-center p-4">
+                <Card className="max-w-md w-full bg-card border-border text-foreground rounded-none">
                     <CardHeader className="text-center">
                         <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4 border border-red-500/20">
                             <AlertCircle className="h-6 w-6 text-red-500" />
                         </div>
                         <CardTitle className="font-serif italic text-2xl">Missing Invoice</CardTitle>
-                        <CardDescription className="text-neutral-500 mt-2">
+                        <CardDescription className="text-muted-foreground mt-2">
                             {error || "We couldn't find the invoice you're looking for. It may have been deleted or the link is expired."}
                         </CardDescription>
                     </CardHeader>
                     <CardFooter>
-                        <Button variant="outline" className="w-full border-white/10 text-white hover:bg-white/5 rounded-none font-bold text-[10px] uppercase tracking-widest" onClick={() => window.location.reload()}>
+                        <Button variant="outline" className="w-full border-border text-foreground hover:bg-muted rounded-none font-bold text-[10px] uppercase tracking-widest" onClick={() => window.location.reload()}>
                             Retry Connection
                         </Button>
                     </CardFooter>
@@ -216,14 +216,14 @@ export default function PayInvoicePage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#060606] py-16 px-4 sm:px-6 lg:px-8 font-sans selection:bg-white selection:text-black">
+        <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8 font-sans selection:bg-white selection:text-black">
             <div className="max-w-6xl mx-auto space-y-12">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-white/5">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-border">
                     <div>
-                        <h1 className="text-3xl sm:text-5xl font-serif text-white italic tracking-tight mb-3">Invoice Payment</h1>
-                        <div className="flex items-center gap-3 text-neutral-500 group cursor-default">
-                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-white/20 transition-colors">
+                        <h1 className="text-3xl sm:text-5xl font-serif text-foreground italic tracking-tight mb-3">Invoice Payment</h1>
+                        <div className="flex items-center gap-3 text-muted-foreground group cursor-default">
+                            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center border border-border group-hover:border-border transition-colors">
                                 <DollarSign className="h-4 w-4" />
                             </div>
                             <span className="font-mono tracking-wider text-sm">{invoice.invoice_number}</span>
@@ -235,7 +235,7 @@ export default function PayInvoicePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 border-white/5 bg-white/5 text-white hover:bg-white/10 rounded-lg text-xs gap-2"
+                                className="h-8 border-border bg-muted text-foreground hover:bg-accent rounded-lg text-xs gap-2"
                                 onClick={() => window.print()}
                             >
                                 <Download className="h-3.5 w-3.5" />
@@ -244,7 +244,7 @@ export default function PayInvoicePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-9 border-white/5 bg-white/5 text-white hover:bg-white/10 rounded-lg text-xs gap-2"
+                                className="h-9 border-border bg-muted text-foreground hover:bg-accent rounded-lg text-xs gap-2"
                                 onClick={() => {
                                     navigator.clipboard.writeText(window.location.href)
                                     toast.success("Link copied to clipboard")
@@ -255,7 +255,7 @@ export default function PayInvoicePage() {
                             </Button>
                         </div>
                         {isPaid ? (
-                            <div className="bg-[#0f2a1e] border border-emerald-500/20 rounded-full px-4 py-1.5 flex items-center gap-2 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
+                            <div className="bg-success/10 border border-emerald-500/20 rounded-full px-4 py-1.5 flex items-center gap-2 text-emerald-400 text-[10px] font-bold uppercase tracking-widest">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 Invoice Settled
                             </div>
@@ -273,7 +273,7 @@ export default function PayInvoicePage() {
                     <div className="lg:col-span-8 space-y-8">
                         <div className={cn(
                             "shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] border transition-all duration-500 relative group overflow-hidden",
-                            mode === "light" ? "bg-white text-black border-neutral-200" : "bg-[#0c0c0c] text-white border-white/5",
+                            mode === "light" ? "bg-primary text-primary-foreground border-neutral-200" : "bg-card text-foreground border-border",
                             template === "Classic" && "p-12 md:p-20",
                             template === "Minimal" && "p-12 md:p-24",
                             template === "Modern" && "p-0"
@@ -287,14 +287,14 @@ export default function PayInvoicePage() {
                                 <div className="flex justify-between items-start mb-24">
                                     <div className={cn(
                                         "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border shadow-sm",
-                                        logoBg === "light" ? "bg-[#0c0c0c] border-white/10" : "bg-[#0c0c0c] border-white/10"
+                                        logoBg === "light" ? "bg-card border-border" : "bg-card border-border"
                                     )}>
                                         {invoice.logo_url ? (
                                             <img src={invoice.logo_url} alt="Logo" className="w-full h-full object-contain p-2" />
                                         ) : (
                                             <div className={cn(
                                                 "invoice-font-title font-black text-3xl",
-                                                logoBg === "light" ? "text-white" : "text-white"
+                                                logoBg === "light" ? "text-foreground" : "text-foreground"
                                             )}>E.</div>
                                         )}
                                     </div>
@@ -302,7 +302,7 @@ export default function PayInvoicePage() {
                                         <h1 className="text-6xl invoice-font-title font-bold mb-3 tracking-tighter">Invoice</h1>
                                         <p className={cn(
                                             "invoice-font-id text-xs tracking-[0.3em] uppercase opacity-40",
-                                            mode === "light" ? "text-neutral-600" : "text-white/40"
+                                            mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>{invoice.invoice_number}</p>
                                     </div>
                                 </div>
@@ -310,12 +310,12 @@ export default function PayInvoicePage() {
                                 {/* From / To Section */}
                                 <div className={cn(
                                     "grid grid-cols-2 gap-20 mb-12 pb-12 border-b",
-                                    mode === "light" ? "border-neutral-100" : "border-white/5"
+                                    mode === "light" ? "border-neutral-100" : "border-border"
                                 )}>
                                     <div className="flex flex-col gap-4">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                            mode === "light" ? "text-neutral-600" : "text-white/50"
+                                            mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>From</span>
                                         <div className="space-y-1 invoice-font-from">
                                             <p className="text-lg font-bold">Illumi Professional</p>
@@ -327,7 +327,7 @@ export default function PayInvoicePage() {
                                                     rel="noreferrer"
                                                     className={cn(
                                                         "text-xs font-medium underline underline-offset-4 opacity-60",
-                                                        mode === "light" ? "text-neutral-500" : "text-white/60"
+                                                        mode === "light" ? "text-muted-foreground" : "text-muted-foreground"
                                                     )}
                                                 >
                                                     {invoice.company_website}
@@ -335,7 +335,7 @@ export default function PayInvoicePage() {
                                             )}
                                             <p className={cn(
                                                 "text-xs leading-relaxed",
-                                                mode === "light" ? "text-neutral-500" : "text-white/40"
+                                                mode === "light" ? "text-muted-foreground" : "text-muted-foreground"
                                             )}>
                                                 123 Business Avenue<br />
                                                 Cape Town, 8001
@@ -345,14 +345,14 @@ export default function PayInvoicePage() {
                                     <div className="flex flex-col gap-4 text-right">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                            mode === "light" ? "text-neutral-600" : "text-white/50"
+                                            mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>To</span>
                                         <div className="space-y-1 invoice-font-client">
                                             <p className="text-lg font-bold opacity-90">{invoice.customers?.name || "Valued Customer"}</p>
                                             {invoice.customers?.email && <p className="text-xs font-medium opacity-60">{invoice.customers?.email}</p>}
                                             <p className={cn(
                                                 "text-xs leading-relaxed whitespace-pre-wrap",
-                                                mode === "light" ? "text-neutral-500" : "text-white/40"
+                                                mode === "light" ? "text-muted-foreground" : "text-muted-foreground"
                                             )}>
                                                 {invoice.customers?.address || "Customer Address Details"}
                                             </p>
@@ -365,7 +365,7 @@ export default function PayInvoicePage() {
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-widest",
-                                            mode === "light" ? "text-neutral-600" : "text-white/50"
+                                            mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>Issue Date</span>
                                         <p className="invoice-font-date font-semibold text-sm">
                                             {formatDate(invoice.issue_date)}
@@ -374,7 +374,7 @@ export default function PayInvoicePage() {
                                     <div className="flex flex-col gap-1">
                                         <span className={cn(
                                             "text-[10px] font-bold uppercase tracking-widest",
-                                            mode === "light" ? "text-neutral-600" : "text-white/50"
+                                            mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>Due Date</span>
                                         <p className="invoice-font-date font-semibold text-sm">
                                             {formatDate(invoice.due_date)}
@@ -386,7 +386,7 @@ export default function PayInvoicePage() {
                                 <table className="w-full mb-12">
                                     <thead className={cn(
                                         "border-b-2 text-[10px] font-bold uppercase tracking-widest",
-                                        mode === "light" ? "border-black" : "border-white"
+                                        mode === "light" ? "border-foreground" : "border-foreground"
                                     )}>
                                         <tr>
                                             <th className="py-4 text-left">Description</th>
@@ -397,7 +397,7 @@ export default function PayInvoicePage() {
                                     </thead>
                                     <tbody className={cn(
                                         "divide-y",
-                                        mode === "light" ? "divide-neutral-100" : "divide-white/5"
+                                        mode === "light" ? "divide-neutral-100" : "divide-border"
                                     )}>
                                         {invoice.invoice_items?.map((item: any, i: number) => (
                                             <tr key={i} className="text-sm">
@@ -413,17 +413,17 @@ export default function PayInvoicePage() {
                                 {/* Footer Summary */}
                                 <div className={cn(
                                     "grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t",
-                                    mode === "light" ? "border-black/10" : "border-white/5"
+                                    mode === "light" ? "border-black/10" : "border-border"
                                 )}>
                                     <div className="space-y-6">
                                         <div className="space-y-2">
                                             <span className={cn(
                                                 "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                                mode === "light" ? "text-neutral-600" : "text-white/50"
+                                                mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                             )}>Note</span>
                                             <p className={cn(
                                                 "text-sm invoice-font-notes leading-relaxed opacity-60",
-                                                mode === "light" ? "text-black/60" : "text-white/60"
+                                                mode === "light" ? "text-black/60" : "text-muted-foreground"
                                             )}>
                                                 {invoice.notes?.trim() || ""}
                                             </p>
@@ -433,11 +433,11 @@ export default function PayInvoicePage() {
                                             <div className="space-y-2">
                                                 <span className={cn(
                                                     "text-[10px] font-bold uppercase tracking-[0.2em]",
-                                                    mode === "light" ? "text-neutral-600" : "text-white/50"
+                                                    mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                                 )}>Payment Details</span>
                                                 <p className={cn(
                                                     "text-sm invoice-font-notes leading-relaxed opacity-60",
-                                                    mode === "light" ? "text-black/60" : "text-white/60"
+                                                    mode === "light" ? "text-black/60" : "text-muted-foreground"
                                                 )}>
                                                     {invoice.bank_name ? <>BANK: {invoice.bank_name}<br /></> : null}
                                                     {invoice.account_name ? <>ACCOUNT: {invoice.account_name}<br /></> : null}
@@ -474,7 +474,7 @@ export default function PayInvoicePage() {
                                         )}
                                         <div className={cn(
                                             "pt-10 border-t flex justify-between items-end",
-                                            mode === "light" ? "border-black/5" : "border-white/10"
+                                            mode === "light" ? "border-black/5" : "border-border"
                                         )}>
                                             <span className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-20 mb-2">Total Due</span>
                                             <span className="text-6xl invoice-font-amount font-bold tracking-tighter">
@@ -512,34 +512,34 @@ export default function PayInvoicePage() {
 
                     {/* Payment Sidebar */}
                     <div className="lg:col-span-4 space-y-8 sticky top-8">
-                        <Card className="bg-[#121212] border-white/5 rounded-none overflow-hidden shadow-2xl">
-                            <CardHeader className="p-8 border-b border-white/5">
-                                <CardTitle className="font-serif italic text-3xl text-white">Payment Method</CardTitle>
-                                <CardDescription className="text-neutral-500 mt-2 font-medium">Select your preferred payment option below to settle this invoice.</CardDescription>
+                        <Card className="bg-card border-border rounded-none overflow-hidden shadow-2xl">
+                            <CardHeader className="p-8 border-b border-border">
+                                <CardTitle className="font-serif italic text-3xl text-foreground">Payment Method</CardTitle>
+                                <CardDescription className="text-muted-foreground mt-2 font-medium">Select your preferred payment option below to settle this invoice.</CardDescription>
                             </CardHeader>
                             <CardContent className="p-8 space-y-6">
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Amount to Pay</span>
-                                        <span className="text-2xl font-serif italic text-white">{invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Amount to Pay</span>
+                                        <span className="text-2xl font-serif italic text-foreground">{invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">PayGate</span>
-                                        <span className="text-xs font-bold uppercase tracking-widest text-white/70">{selectedProvider}</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">PayGate</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{selectedProvider}</span>
                                     </div>
-                                    <div className="flex justify-center py-6 border-y border-white/5">
-                                        <Receipt className="h-12 w-12 text-white/5" />
+                                    <div className="flex justify-center py-6 border-y border-border">
+                                        <Receipt className="h-12 w-12 text-muted-foreground" />
                                     </div>
                                 </div>
                             </CardContent>
                             <CardFooter className="p-0">
                                 {isPaid ? (
-                                    <div className="w-full h-24 bg-[#00e676] flex items-center justify-center text-black font-serif italic text-2xl tracking-tight transition-all">
+                                    <div className="w-full h-24 bg-success flex items-center justify-center text-black font-serif italic text-2xl tracking-tight transition-all">
                                         Invoice Settled
                                     </div>
                                 ) : (
                                     <Button
-                                        className="w-full h-24 bg-[#000000] text-white hover:bg-neutral-800 rounded-none text-xl font-serif italic transition-all group border-none"
+                                        className="w-full h-24 bg-primary text-foreground hover:bg-neutral-800 rounded-none text-xl font-serif italic transition-all group border-none"
                                         disabled={isSimulating}
                                         onClick={handlePayment}
                                     >
@@ -557,14 +557,14 @@ export default function PayInvoicePage() {
                         </Card>
 
                         {!isPaid && (
-                            <div className="p-8 bg-[#111111] border border-white/5 group hover:border-white/10 transition-colors">
+                            <div className="p-8 bg-secondary border border-border group hover:border-border transition-colors">
                                 <div className="flex items-start gap-5">
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-all shrink-0">
-                                        <CreditCard className="h-5 w-5 text-white/40 group-hover:text-white transition-colors" />
+                                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border group-hover:bg-accent transition-all shrink-0">
+                                        <CreditCard className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-bold uppercase tracking-widest text-white mb-2">Secure Gateway</p>
-                                        <p className="text-xs text-neutral-500 leading-relaxed font-medium">
+                                        <p className="text-xs font-bold uppercase tracking-widest text-foreground mb-2">Secure Gateway</p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                                             Your transaction is processed via encrypted 256-bit SSL security. We do not store your credit card details.
                                         </p>
                                     </div>

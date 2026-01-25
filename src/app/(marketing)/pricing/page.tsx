@@ -86,28 +86,28 @@ const testimonials = [
 
 export default function PricingPage() {
     return (
-        <div className="bg-black grainy-gradient">
+        <div className="bg-background grainy-gradient">
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-black" />
-                    <div className="absolute inset-0 bg-black/60" />
+                    <div className="h-full w-full bg-background" />
+                    <div className="absolute inset-0 bg-white dark:bg-black/60" />
                 </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="inline-flex items-center gap-2 text-sm text-white/50 mb-6 justify-center">
-                        <span className="px-3 py-1 rounded-full bg-white/10 text-white/70">Pricing</span>
+                    <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-6 justify-center">
+                        <span className="px-3 py-1 rounded-full bg-accent text-muted-foreground">Pricing</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                         Free Invoicing Software for South Africa
                     </h1>
-                    <p className="text-white/50 max-w-2xl mx-auto text-lg mb-8">
+                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
                         Start free, upgrade when you need PayGate integration and automated payments.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button asChild className="bg-white text-black hover:bg-white/90 rounded-full px-8 h-12">
+                        <Button asChild className="bg-primary text-primary-foreground hover:bg-white/90 rounded-full px-8 h-12">
                             <Link href="/login">Get Started for Free</Link>
                         </Button>
-                        <Button asChild variant="outline" className="rounded-full px-8 h-12 border-white/20 text-white hover:bg-white/5">
+                        <Button asChild variant="outline" className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted">
                             <Link href="/features/paygate">Explore PayGate</Link>
                         </Button>
                     </div>
@@ -119,20 +119,20 @@ export default function PricingPage() {
                 <div className="mx-auto max-w-5xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Free Plan */}
-                        <div className="p-8 rounded-3xl bg-white/2 border border-white/10">
+                        <div className="p-8 rounded-3xl bg-muted/50 border border-border">
                             <div className="mb-6">
-                                <div className="text-sm font-medium text-white/50 mb-2">Free</div>
+                                <div className="text-sm font-medium text-muted-foreground mb-2">Free</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-white font-serif">R0</span>
-                                    <span className="text-white/50">/month</span>
+                                    <span className="text-4xl font-bold text-foreground font-serif">R0</span>
+                                    <span className="text-muted-foreground">/month</span>
                                 </div>
-                                <div className="text-sm text-white/40 mt-1">Free forever for freelancers and small businesses</div>
+                                <div className="text-sm text-muted-foreground mt-1">Free forever for freelancers and small businesses</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
                                 {freeFeatures.map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-sm text-white/70">
-                                        <IconCheck className="h-4 w-4 text-white/50 shrink-0" />
+                                    <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                                        <IconCheck className="h-4 w-4 text-muted-foreground shrink-0" />
                                         {feature}
                                     </li>
                                 ))}
@@ -141,15 +141,15 @@ export default function PricingPage() {
                             <Button
                                 asChild
                                 variant="outline"
-                                className="w-full rounded-full h-12 border-white/20 text-white hover:bg-white/5"
+                                className="w-full rounded-full h-12 border-border text-foreground hover:bg-muted"
                             >
                                 <Link href="/login">Get Started Free</Link>
                             </Button>
                         </div>
 
                         {/* Pro Plan */}
-                        <div className="p-8 rounded-3xl bg-white border border-white/10 relative overflow-hidden">
-                            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-black text-white text-xs font-medium">
+                        <div className="p-8 rounded-3xl bg-white border border-border relative overflow-hidden">
+                            <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-background text-foreground text-xs font-medium">
                                 Most Popular
                             </div>
 
@@ -173,7 +173,7 @@ export default function PricingPage() {
 
                             <Button
                                 asChild
-                                className="w-full rounded-full h-12 bg-black text-white hover:bg-black/90"
+                                className="w-full rounded-full h-12 bg-background text-foreground hover:bg-accent dark:hover:bg-black/90"
                             >
                                 <Link href="/login">Start free trial</Link>
                             </Button>
@@ -183,9 +183,9 @@ export default function PricingPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-3xl px-6 lg:px-8">
-                    <h2 className="text-3xl font-bold text-white text-center mb-12">
+                    <h2 className="text-3xl font-bold text-foreground text-center mb-12">
                         Frequently asked questions
                     </h2>
 
@@ -193,13 +193,13 @@ export default function PricingPage() {
                         {faqs.map((faq, i) => (
                             <details
                                 key={i}
-                                className="group border border-white/10 rounded-2xl overflow-hidden"
+                                className="group border border-border rounded-2xl overflow-hidden"
                             >
                                 <summary className="list-none cursor-pointer select-none w-full flex items-center justify-between p-6 text-left">
-                                    <span className="text-white font-medium">{faq.question}</span>
-                                    <IconChevronDown className="h-5 w-5 text-white/50 transition-transform group-open:rotate-180" />
+                                    <span className="text-foreground font-medium">{faq.question}</span>
+                                    <IconChevronDown className="h-5 w-5 text-muted-foreground transition-transform group-open:rotate-180" />
                                 </summary>
-                                <div className="px-6 pb-6 text-white/50">
+                                <div className="px-6 pb-6 text-muted-foreground">
                                     {faq.answer}
                                 </div>
                             </details>
@@ -209,25 +209,25 @@ export default function PricingPage() {
             </section>
 
             {/* Testimonials */}
-            <section className="py-24 border-t border-white/5">
+            <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white/50 text-center mb-12">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground text-center mb-12">
                         What people say
                     </h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {testimonials.map((testimonial, i) => (
-                            <div key={i} className="p-6 rounded-2xl bg-white/2 border border-white/5">
+                            <div key={i} className="p-6 rounded-2xl bg-muted/50 border border-border">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-medium text-white">
+                                    <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-sm font-medium text-foreground">
                                         {testimonial.avatar}
                                     </div>
                                     <div>
-                                        <div className="text-sm font-medium text-white">{testimonial.name}</div>
-                                        <div className="text-xs text-white/50">{testimonial.role}</div>
+                                        <div className="text-sm font-medium text-foreground">{testimonial.name}</div>
+                                        <div className="text-xs text-muted-foreground">{testimonial.role}</div>
                                     </div>
                                 </div>
-                                <p className="text-sm text-white/70">"{testimonial.content}"</p>
+                                <p className="text-sm text-muted-foreground">"{testimonial.content}"</p>
                             </div>
                         ))}
                     </div>

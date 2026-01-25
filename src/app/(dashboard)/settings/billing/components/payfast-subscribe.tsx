@@ -85,7 +85,7 @@ export function PayFastSubscribeButton() {
         return (
             <Button
                 disabled
-                className="bg-white/50 text-black h-12 px-8 font-black uppercase tracking-tighter text-sm"
+                className="bg-muted0 text-black h-12 px-8 font-black uppercase tracking-tighter text-sm"
             >
                 <IconLoader2 size={18} className="mr-2 animate-spin" />
                 Loading...
@@ -164,7 +164,7 @@ export function PayFastSubscribeButton() {
         return (
             <Button
                 type="button"
-                className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
                 onClick={ensureWorkspaceAndSubmit}
             >
                 <IconStarFilled size={18} className="mr-2" />
@@ -213,7 +213,7 @@ export function PayFastSubscribeButton() {
 
             <Button
                 type="submit"
-                className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
                 onClick={(e) => {
                     if (!merchantConfigured) {
                         e.preventDefault()
@@ -236,3 +236,4 @@ export function PayFastSubscribeButton() {
         </form>
     )
 }
+

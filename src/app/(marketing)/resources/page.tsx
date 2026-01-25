@@ -165,39 +165,39 @@ const resourceCategories = [
 
 export default function ResourcesPage() {
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             {/* Hero Section */}
-            <section className="relative pt-24 md:pt-32 pb-16 px-6 border-b border-white/10 overflow-hidden">
+            <section className="relative pt-24 md:pt-32 pb-16 px-6 border-b border-border overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-black" />
-                    <div className="absolute inset-0 bg-black/60" />
+                    <div className="h-full w-full bg-background" />
+                    <div className="absolute inset-0 bg-white dark:bg-black/60" />
                 </div>
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/70 text-sm mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-muted-foreground text-sm mb-6">
                             <IconFileAnalytics className="h-4 w-4" />
                             Free Resources & Data
                         </div>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                             SME Resources & Benchmarks for South Africa
                         </h1>
-                        <p className="text-lg text-white/60 mb-8 leading-relaxed">
+                        <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                             Free tools, calculators, and real data insights to help you understand your business performance. 
                             Compare your metrics against South African industry benchmarks and make smarter decisions.
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link
                                 href="#calculators"
-                                className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-6 h-11 text-sm font-semibold transition-colors"
+                                className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-6 h-11 text-sm font-semibold transition-colors"
                             >
                                 <IconCalculator className="mr-2 h-4 w-4" />
                                 Explore Calculators
                             </Link>
                             <Link
                                 href="#benchmarks"
-                                className="inline-flex items-center justify-center border border-white/20 text-white hover:bg-white/5 px-6 h-11 text-sm font-semibold transition-colors"
+                                className="inline-flex items-center justify-center border border-border text-foreground hover:bg-muted px-6 h-11 text-sm font-semibold transition-colors"
                             >
                                 <IconChartBar className="mr-2 h-4 w-4" />
                                 View Benchmarks
@@ -214,12 +214,12 @@ export default function ResourcesPage() {
                         <div key={category.title} id={idx === 1 ? "calculators" : idx === 0 ? "benchmarks" : undefined}>
                             <div className="mb-8">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="p-2 rounded-lg bg-white/10">
-                                        <category.icon className="h-6 w-6 text-white" />
+                                    <div className="p-2 rounded-lg bg-accent">
+                                        <category.icon className="h-6 w-6 text-foreground" />
                                     </div>
                                     <h2 className="text-2xl md:text-3xl font-bold">{category.title}</h2>
                                 </div>
-                                <p className="text-white/60 max-w-3xl">{category.description}</p>
+                                <p className="text-muted-foreground max-w-3xl">{category.description}</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -227,22 +227,22 @@ export default function ResourcesPage() {
                                     <Link
                                         key={resource.href}
                                         href={resource.href}
-                                        className="group block rounded-2xl border border-white/10 bg-[#0a0a0a] p-6 hover:border-white/20 hover:bg-white/5 transition-all"
+                                        className="group block rounded-2xl border border-border bg-card p-6 hover:border-border hover:bg-muted transition-all"
                                     >
                                         <div className="flex items-start justify-between mb-3">
-                                            <h3 className="text-lg font-semibold text-white group-hover:text-white/90 transition-colors">
+                                            <h3 className="text-lg font-semibold text-foreground group-hover:text-foreground transition-colors">
                                                 {resource.title}
                                             </h3>
                                             {resource.badge && (
-                                                <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider bg-white/10 text-white/70 rounded">
+                                                <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider bg-accent text-muted-foreground rounded">
                                                     {resource.badge}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-sm text-white/60 leading-relaxed mb-4">
+                                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                                             {resource.description}
                                         </p>
-                                        <div className="flex items-center text-sm text-white/70 group-hover:text-white transition-colors">
+                                        <div className="flex items-center text-sm text-muted-foreground group-hover:text-foreground transition-colors">
                                             Explore →
                                         </div>
                                     </Link>
@@ -254,18 +254,18 @@ export default function ResourcesPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 px-6 border-t border-white/10">
+            <section className="py-16 px-6 border-t border-border">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">
                         Ready to track your own metrics?
                     </h2>
-                    <p className="text-lg text-white/60 mb-8 max-w-2xl mx-auto">
+                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Use Illumi to create professional invoices, track expenses, and monitor your cash flow in real-time. 
                         Compare your performance against these benchmarks automatically.
                     </p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

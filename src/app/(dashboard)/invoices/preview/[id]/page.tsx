@@ -93,7 +93,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+            <div className="min-h-screen bg-card text-foreground flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         )
@@ -101,7 +101,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
     if (!invoice) {
         return (
-            <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+            <div className="min-h-screen bg-card text-foreground flex items-center justify-center">
                 <p>Invoice not found</p>
             </div>
         )
@@ -123,29 +123,29 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans pb-20">
+        <div className="min-h-screen bg-card text-foreground font-sans pb-20">
             {/* Action Header */}
-            <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 sticky top-0 bg-black/80 backdrop-blur-md z-50">
+            <header className="h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 bg-background/80 backdrop-blur-md z-50">
                 <div className="flex items-center gap-6">
-                    <button onClick={() => router.back()} className="text-neutral-500 hover:text-white transition-colors">
+                    <button onClick={() => router.back()} className="text-muted-foreground hover:text-foreground transition-colors">
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Preview</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preview</span>
                         <span className="text-sm font-medium">{invoice.invoice_number}</span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10 px-3 sm:px-4">
+                    <Button variant="outline" className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4">
                         <Share2 className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Share</span>
                     </Button>
-                    <Button variant="outline" className="h-10 border-white/10 bg-white/5 hover:bg-white/10 px-3 sm:px-4" onClick={() => window.print()}>
+                    <Button variant="outline" className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4" onClick={() => window.print()}>
                         <Printer className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Print</span>
                     </Button>
-                    <Button className="h-10 bg-white text-black hover:bg-neutral-200 font-semibold px-3 sm:px-6">
+                    <Button className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6">
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
                     </Button>
@@ -156,10 +156,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             <main className="max-w-5xl mx-auto mt-12 px-6">
                 {(() => {
                     const logoBg = (invoice.invoice_mode || 'dark') as 'light' | 'dark'
-                    const logoContainerClass = logoBg === 'light' ? 'bg-[#0c0c0c] border-white/10' : 'bg-[#0c0c0c] border-white/10'
-                    const logoTextClass = logoBg === 'light' ? 'text-white' : 'text-white'
+                    const logoContainerClass = logoBg === 'light' ? 'bg-card border-border' : 'bg-card border-border'
+                    const logoTextClass = logoBg === 'light' ? 'text-foreground' : 'text-foreground'
                     return (
-                <div className="bg-white text-black rounded-lg shadow-2xl p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
+                <div className="bg-primary text-primary-foreground rounded-lg shadow-2xl p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
                     {/* Header: Logo & Title */}
                     <div className="flex justify-between items-start mb-20">
                         <div className={"w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden border " + logoContainerClass}>
@@ -171,14 +171,14 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         </div>
                         <div className="text-right">
                             <h1 className="text-5xl invoice-font-title font-bold mb-2">Invoice</h1>
-                            <p className="text-neutral-400 invoice-font-id text-sm tracking-widest">#{invoice.invoice_number}</p>
+                            <p className="text-muted-foreground invoice-font-id text-sm tracking-widest">#{invoice.invoice_number}</p>
                         </div>
                     </div>
 
                     {/* From / To */}
                     <div className="grid grid-cols-2 gap-20 mb-16 pb-16 border-b border-neutral-100">
                         <div className="flex flex-col gap-4">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">From</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
                             <div className="space-y-1 invoice-font-from">
                                 <p className="text-lg font-bold">My Professional Co.</p>
                                 {invoice.company_website && (
@@ -186,12 +186,12 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                         href={invoice.company_website}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-sm text-neutral-600 leading-relaxed underline underline-offset-4"
+                                        className="text-sm text-muted-foreground leading-relaxed underline underline-offset-4"
                                     >
                                         {invoice.company_website}
                                     </a>
                                 )}
-                                <p className="text-sm text-neutral-600 leading-relaxed">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     123 Business Avenue<br />
                                     Innovation District<br />
                                     Cape Town, 8001<br />
@@ -200,10 +200,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             </div>
                         </div>
                         <div className="flex flex-col gap-4 text-right">
-                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">To</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
                             <div className="space-y-1 invoice-font-client">
                                 <p className="text-lg font-bold">{invoice.customer?.name || 'Customer'}</p>
-                                <p className="text-sm text-neutral-600 leading-relaxed">
+                                <p className="text-sm text-muted-foreground leading-relaxed">
                                     {invoice.customer?.email}<br />
                                     {invoice.customer?.address || ''}
                                 </p>
@@ -214,18 +214,18 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     {/* Dates */}
                     <div className="flex gap-16 mb-16">
                         <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Issue Date</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Issue Date</span>
                             <p className="invoice-font-date font-semibold text-sm">{formatDate(invoice.issue_date)}</p>
                         </div>
                         <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Due Date</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Due Date</span>
                             <p className="invoice-font-date font-semibold text-sm text-red-500">{invoice.due_date ? formatDate(invoice.due_date) : 'N/A'}</p>
                         </div>
                     </div>
 
                     {/* Line Items */}
                     <table className="w-full mb-16">
-                        <thead className="border-b-2 border-black text-[10px] font-bold uppercase tracking-widest">
+                        <thead className="border-b-2 border-foreground text-[10px] font-bold uppercase tracking-widest">
                             <tr>
                                 <th className="py-4 text-left">Description</th>
                                 <th className="py-4 text-right">Price</th>
@@ -244,19 +244,19 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             ))}
                             {invoice.items.length === 0 && (
                                 <tr className="text-sm">
-                                    <td colSpan={4} className="py-6 text-center text-neutral-400">No items</td>
+                                    <td colSpan={4} className="py-6 text-center text-muted-foreground">No items</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
 
                     {/* Footer: Notes & Totals */}
-                    <div className="flex justify-between items-start pt-12 border-t-2 border-black">
+                    <div className="flex justify-between items-start pt-12 border-t-2 border-foreground">
                         <div className="w-1/2 flex flex-col gap-8">
                             {invoice.notes && (
                             <div className="flex flex-col gap-2">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Note</span>
-                                <p className="text-xs text-neutral-500 leading-relaxed invoice-font-notes">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Note</span>
+                                <p className="text-xs text-muted-foreground leading-relaxed invoice-font-notes">
                                     {invoice.notes}
                                 </p>
                             </div>
@@ -268,8 +268,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 </div>
                             )}
                             <div className="flex flex-col gap-2">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Payment Details</span>
-                                <p className="text-[11px] text-neutral-500 leading-relaxed font-mono">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Payment Details</span>
+                                <p className="text-[11px] text-muted-foreground leading-relaxed font-mono">
                                     {invoice.bank_name ? <>BANK: {invoice.bank_name}<br /></> : null}
                                     {invoice.account_name ? <>ACCOUNT: {invoice.account_name}<br /></> : null}
                                     {invoice.account_number ? <>NUMBER: {invoice.account_number}<br /></> : null}
@@ -280,17 +280,17 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
                         <div className="w-1/3 flex flex-col gap-4">
                             <div className="flex justify-between text-sm">
-                                <span className="text-neutral-400">Subtotal</span>
+                                <span className="text-muted-foreground">Subtotal</span>
                                 <span className="invoice-font-amount">{formatCurrency(invoice.subtotal)}</span>
                             </div>
                             {(invoice.tax_rate > 0 || invoice.tax_amount > 0) && (
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-neutral-400">Tax ({invoice.tax_rate || 0}%)</span>
+                                    <span className="text-muted-foreground">Tax ({invoice.tax_rate || 0}%)</span>
                                     <span className="invoice-font-amount">{formatCurrency(invoice.tax_amount || 0)}</span>
                                 </div>
                             )}
                             <div className="flex justify-between items-center text-4xl invoice-font-amount font-bold mt-6 pt-6 border-t border-neutral-100">
-                                <span className="text-neutral-400 text-2xl">Total</span>
+                                <span className="text-muted-foreground text-2xl">Total</span>
                                 <span>{formatCurrency(invoice.total)}</span>
                             </div>
                         </div>

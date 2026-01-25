@@ -51,11 +51,11 @@ export default function RecurringInvoicesPage() {
         return (
             <div className="flex flex-col gap-y-8 animate-in fade-in duration-500 pb-20">
                 <div className="flex flex-col items-start justify-center min-h-[60vh]">
-                    <h1 className="text-4xl font-serif text-white tracking-tight italic">Recurring</h1>
+                    <h1 className="text-4xl font-serif text-foreground tracking-tight italic">Recurring</h1>
                     <p className="text-muted-foreground mt-2 max-w-xl">Recurring invoices are a Pro feature. Upgrade to automate your monthly billing.</p>
                     <div className="mt-6">
                         <Link href="/settings/billing">
-                            <HoverBorderGradient as="div" containerClassName="w-full" className="bg-white text-black font-bold h-11 px-6 flex items-center justify-center">
+                            <HoverBorderGradient as="div" containerClassName="w-full" className="bg-primary text-primary-foreground font-bold h-11 px-6 flex items-center justify-center">
                                 Upgrade to Pro
                             </HoverBorderGradient>
                         </Link>
@@ -69,7 +69,7 @@ export default function RecurringInvoicesPage() {
         <div className="flex flex-col gap-y-8 animate-in fade-in duration-500 pb-20">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-serif text-white tracking-tight italic">Recurring</h1>
+                    <h1 className="text-4xl font-serif text-foreground tracking-tight italic">Recurring</h1>
                     <p className="text-muted-foreground mt-2">Automate your billing with scheduled invoice generation.</p>
                 </div>
 
@@ -134,42 +134,42 @@ export default function RecurringInvoicesPage() {
             </div>
 
             {/* Recurring Table (Redesigned with 1px Grid) */}
-            <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+            <div className="border border-border bg-background overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-left text-[13px]">
                         <thead>
-                            <tr className="bg-white/2 border-b border-white/10">
-                                <th className="px-5 py-3 w-10 border-r border-white/10">
-                                    <div className="w-4 h-4 rounded-sm border border-white/20 flex items-center justify-center cursor-pointer hover:border-white/40 transition-colors" />
+                            <tr className="bg-muted/50 border-b border-border">
+                                <th className="px-5 py-3 w-10 border-r border-border">
+                                    <div className="w-4 h-4 rounded-sm border border-border flex items-center justify-center cursor-pointer hover:border-border transition-colors" />
                                 </th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Client</th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Frequency</th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Status</th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10 text-right">Amount</th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] border-r border-white/10">Next Date</th>
-                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Client</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Frequency</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Status</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border text-right">Amount</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground border-r border-border">Next Date</th>
+                                <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground text-center w-20">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {mockRecurring.map((item) => (
-                                <tr key={item.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
-                                    <td className="px-5 py-4 border-r border-white/10">
-                                        <div className="w-4 h-4 rounded-sm border border-white/20 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/40" />
+                                <tr key={item.id} className="hover:bg-muted/50 transition-colors border-b border-border group last:border-0">
+                                    <td className="px-5 py-4 border-r border-border">
+                                        <div className="w-4 h-4 rounded-sm border border-border transition-all flex items-center justify-center cursor-pointer group-hover:border-border" />
                                     </td>
-                                    <td className="px-5 py-4 border-r border-white/10">
+                                    <td className="px-5 py-4 border-r border-border">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787]">
+                                            <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] font-black text-muted-foreground">
                                                 {item.client.charAt(0).toUpperCase()}
                                             </div>
-                                            <span className="font-bold text-[#fafafa] tracking-tight">{item.client}</span>
+                                            <span className="font-bold text-foreground tracking-tight">{item.client}</span>
                                         </div>
                                     </td>
-                                    <td className="px-5 py-4 border-r border-white/10">
-                                        <Badge variant="outline" className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md border-white/10 bg-white/5 text-[#878787]">
+                                    <td className="px-5 py-4 border-r border-border">
+                                        <Badge variant="outline" className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md border-border bg-muted text-muted-foreground">
                                             {item.frequency}
                                         </Badge>
                                     </td>
-                                    <td className="px-5 py-4 border-r border-white/10">
+                                    <td className="px-5 py-4 border-r border-border">
                                         <span className={cn(
                                             "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border",
                                             item.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
@@ -177,23 +177,23 @@ export default function RecurringInvoicesPage() {
                                             {item.status}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-4 border-r border-white/10 text-right text-white font-bold text-sm">
+                                    <td className="px-5 py-4 border-r border-border text-right text-foreground font-bold text-sm">
                                         ZAR {item.amount.toLocaleString()}.00
                                     </td>
-                                    <td className="px-5 py-4 border-r border-white/10 text-[#878787]">
+                                    <td className="px-5 py-4 border-r border-border text-muted-foreground">
                                         {item.nextDate}
                                     </td>
                                     <td className="px-5 py-4 text-center">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all">
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
-                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Schedule</DropdownMenuItem>
-                                                <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Pause Automation</DropdownMenuItem>
-                                                <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                            <DropdownMenuContent align="end" className="w-48 bg-background border-border rounded-xl shadow-2xl p-1">
+                                                <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Schedule</DropdownMenuItem>
+                                                <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs">Pause Automation</DropdownMenuItem>
+                                                <DropdownMenuSeparator className="bg-accent mx-1" />
                                                 <DropdownMenuItem className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs">Stop Schedule</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -219,3 +219,4 @@ export default function RecurringInvoicesPage() {
         </div>
     )
 }
+

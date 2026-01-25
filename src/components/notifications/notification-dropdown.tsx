@@ -218,7 +218,7 @@ export function NotificationDropdown() {
                             <div className="divide-y divide-border">
                                 {notifications.map((notification) => {
                                     const Icon = typeIcons[notification.type] || IconBell
-                                    const colorClass = typeColors[notification.type] || "text-white"
+                                    const colorClass = typeColors[notification.type] || "text-foreground"
 
                                     return (
                                         <div

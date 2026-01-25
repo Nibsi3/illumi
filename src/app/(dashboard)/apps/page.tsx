@@ -35,15 +35,15 @@ const apps = [
         description: "Accept credit card and other payments on your invoices.",
         icon: <IconBrandStripe className="w-6 h-6 text-[#635BFF]" />,
         installed: false,
-        bg: "bg-[#635BFF]/10",
+        bg: "bg-primary/10",
         action: "Install",
     },
     {
         name: "Midday Desktop",
         description: "With Midday on Mac you have everything accessible just one click away. Track time, manage invoices, and run your business smarter.",
-        icon: <IconLayoutGrid className="w-6 h-6 text-white" />,
+        icon: <IconLayoutGrid className="w-6 h-6 text-foreground" />,
         installed: false,
-        bg: "bg-white/10",
+        bg: "bg-accent",
         action: "Download",
     }
 ]
@@ -58,7 +58,7 @@ export default function AppsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {apps.map((app) => (
-                    <Card key={app.name} className="bg-[#09090b] border-white/5 flex flex-col">
+                    <Card key={app.name} className="bg-card border-border flex flex-col">
                         <CardHeader className="flex-row items-center gap-4 space-y-0 pb-4">
                             <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center", app.bg)}>
                                 {app.icon}
@@ -77,12 +77,12 @@ export default function AppsPage() {
                                 {app.description}
                             </CardDescription>
                         </CardContent>
-                        <CardFooter className="pt-4 border-t border-white/5 grid grid-cols-2 gap-4">
-                            <Button variant="ghost" className="w-full text-xs font-medium text-muted-foreground hover:text-white">
+                        <CardFooter className="pt-4 border-t border-border grid grid-cols-2 gap-4">
+                            <Button variant="ghost" className="w-full text-xs font-medium text-muted-foreground hover:text-foreground">
                                 Details
                             </Button>
                             <Button variant="outline" className={cn(
-                                "w-full text-xs font-bold border-white/10 hover:bg-white/5",
+                                "w-full text-xs font-bold border-border hover:bg-muted",
                                 app.installed && "text-red-400 hover:text-red-300 hover:bg-red-950/30 border-red-900/30"
                             )}>
                                 {app.installed ? "Disconnect" : app.action}
@@ -94,3 +94,4 @@ export default function AppsPage() {
         </div>
     )
 }
+

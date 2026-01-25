@@ -710,11 +710,11 @@ export default function NewInvoicePage() {
             {/* MAIN CONTENT WRAPPER */}
             <div className="flex-1 flex flex-col relative h-full bg-background">
                 {/* STATIC TOP ACTION BAR */}
-                <div className="h-20 px-4 sm:px-6 md:px-8 flex justify-end items-center border-b border-white/5 bg-background z-20 shrink-0">
+                <div className="h-20 px-4 sm:px-6 md:px-8 flex justify-end items-center border-b border-border bg-background z-20 shrink-0">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar max-w-full">
                         <Button
                             variant="ghost"
-                            className="h-9 text-xs font-medium text-neutral-400 hover:text-white hover:bg-white/5"
+                            className="h-9 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted"
                             onClick={() => setIsPreviewOpen(true)}
                         >
                             <Eye className="h-4 w-4 mr-2" /> Preview
@@ -741,13 +741,13 @@ export default function NewInvoicePage() {
                                         <PopoverTrigger asChild>
                                             <Button
                                                 disabled={isSaving}
-                                                className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
+                                                className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
                                             >
                                                 {isSaving ? 'Saving...' : 'Schedule'}
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent
-                                            className="w-[360px] p-4 bg-[#09090b] border-white/10 rounded-md shadow-2xl"
+                                            className="w-[360px] p-4 bg-card border-border rounded-md shadow-2xl"
                                             side="bottom"
                                             align="center"
                                             sideOffset={12}
@@ -762,13 +762,13 @@ export default function NewInvoicePage() {
                                                 />
                                                 <div className="space-y-2">
                                                     <div className="flex items-center justify-between">
-                                                        <Label className="text-xs text-neutral-400">Time (24h):</Label>
+                                                        <Label className="text-xs text-muted-foreground">Time (24h):</Label>
                                                         <Input
                                                             inputMode="numeric"
                                                             value={scheduleTime}
                                                             onChange={(e) => setScheduleTime(normalizeTimeInput(e.target.value))}
                                                             placeholder="17:00"
-                                                            className="h-8 w-28 bg-white/5 border-white/10 text-white text-xs rounded-md"
+                                                            className="h-8 w-28 bg-muted border-border text-foreground text-xs rounded-md"
                                                         />
                                                     </div>
                                                     <div className="grid grid-cols-4 gap-2">
@@ -779,8 +779,8 @@ export default function NewInvoicePage() {
                                                                 variant="outline"
                                                                 onClick={() => setScheduleTime(t)}
                                                                 className={cn(
-                                                                    "h-8 px-0 text-[10px] font-bold border-white/10 bg-white/5 hover:bg-white/10 text-neutral-200 rounded-md",
-                                                                    scheduleTime === t ? "border-white/30 bg-white/10" : ""
+                                                                    "h-8 px-0 text-[10px] font-bold border-border bg-muted hover:bg-accent text-foreground rounded-md",
+                                                                    scheduleTime === t ? "border-border/30 bg-accent" : ""
                                                                 )}
                                                             >
                                                                 {t}
@@ -799,7 +799,7 @@ export default function NewInvoicePage() {
                                                         }
                                                     }}
                                                     disabled={isSaving || !scheduleDate}
-                                                    className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold rounded-md"
+                                                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs font-bold rounded-md"
                                                 >
                                                     Schedule Now
                                                 </Button>
@@ -817,21 +817,21 @@ export default function NewInvoicePage() {
                                         <PopoverTrigger asChild>
                                             <Button
                                                 disabled={isSaving}
-                                                className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
+                                                className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 text-xs font-bold rounded-lg z-10 disabled:opacity-50"
                                             >
                                                 {isSaving ? 'Saving...' : 'Recurring'}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-80 p-4 bg-[#09090b] border-white/10 rounded-xl shadow-2xl" align="end">
+                                        <PopoverContent className="w-80 p-4 bg-card border-border rounded-xl shadow-2xl" align="end">
                                             {!isPro ? (
                                                 <div className="space-y-3">
-                                                    <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Invoice</h4>
-                                                    <p className="text-[10px] text-neutral-500">Recurring invoices are only available on the Pro plan.</p>
+                                                    <h4 className="text-xs font-bold text-foreground uppercase tracking-widest">Recurring Invoice</h4>
+                                                    <p className="text-[10px] text-muted-foreground">Recurring invoices are only available on the Pro plan.</p>
                                                     <HoverBorderGradient
                                                         as="button"
                                                         onClick={() => router.push('/settings/billing')}
                                                         containerClassName="w-full"
-                                                        className="bg-white text-black font-bold h-8 text-xs w-full flex items-center justify-center"
+                                                        className="bg-primary text-primary-foreground font-bold h-8 text-xs w-full flex items-center justify-center"
                                                     >
                                                         Upgrade to Pro
                                                     </HoverBorderGradient>
@@ -839,12 +839,12 @@ export default function NewInvoicePage() {
                                             ) : (
                                                 <div className="space-y-4">
                                                     <div className="space-y-1">
-                                                        <h4 className="text-xs font-bold text-white uppercase tracking-widest">Recurring Settings</h4>
-                                                        <p className="text-[10px] text-neutral-500">Configure how often this invoice should be generated.</p>
+                                                        <h4 className="text-xs font-bold text-foreground uppercase tracking-widest">Recurring Settings</h4>
+                                                        <p className="text-[10px] text-muted-foreground">Configure how often this invoice should be generated.</p>
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Repeat</Label>
+                                                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Repeat</Label>
                                                         <Select value={recurringInterval} onValueChange={(val) => {
                                                             setRecurringInterval(val)
                                                             // Set sensible defaults based on selection
@@ -854,10 +854,10 @@ export default function NewInvoicePage() {
                                                                 setRecurringDayOfMonth(22)
                                                             }
                                                         }}>
-                                                            <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs">
+                                                            <SelectTrigger className="bg-muted border-border h-10 text-xs">
                                                                 <SelectValue placeholder="Select frequency" />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                            <SelectContent className="bg-card border-border text-foreground">
                                                                 <SelectItem value="weekly">Weekly on {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][recurringDayOfWeek]}</SelectItem>
                                                                 <SelectItem value="bi-weekly">Bi-weekly on {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][recurringDayOfWeek]}</SelectItem>
                                                                 <SelectItem value="monthly">Monthly on the {recurringDayOfMonth}{recurringDayOfMonth === 1 ? 'st' : recurringDayOfMonth === 2 ? 'nd' : recurringDayOfMonth === 3 ? 'rd' : 'th'}</SelectItem>
@@ -873,20 +873,20 @@ export default function NewInvoicePage() {
 
                                                     {recurringInterval === 'custom' && (
                                                         <div className="space-y-2">
-                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Repeat every</Label>
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Repeat every</Label>
                                                             <div className="flex gap-2">
                                                                 <Input
                                                                     type="number"
                                                                     min="1"
                                                                     value={recurringCustomInterval}
                                                                     onChange={(e) => setRecurringCustomInterval(parseInt(e.target.value) || 1)}
-                                                                    className="bg-white/5 border-white/10 h-10 text-xs w-20"
+                                                                    className="bg-muted border-border h-10 text-xs w-20"
                                                                 />
                                                                 <Select value={recurringCustomUnit} onValueChange={setRecurringCustomUnit}>
-                                                                    <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs flex-1">
+                                                                    <SelectTrigger className="bg-muted border-border h-10 text-xs flex-1">
                                                                         <SelectValue />
                                                                     </SelectTrigger>
-                                                                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                    <SelectContent className="bg-card border-border text-foreground">
                                                                         <SelectItem value="days">days</SelectItem>
                                                                         <SelectItem value="weeks">weeks</SelectItem>
                                                                         <SelectItem value="months">months</SelectItem>
@@ -897,12 +897,12 @@ export default function NewInvoicePage() {
                                                     )}
 
                                                     <div className="space-y-2">
-                                                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Ends</Label>
+                                                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Ends</Label>
                                                         <Select value={recurringEndType} onValueChange={(v: any) => setRecurringEndType(v)}>
-                                                            <SelectTrigger className="bg-white/5 border-white/10 h-10 text-xs">
+                                                            <SelectTrigger className="bg-muted border-border h-10 text-xs">
                                                                 <SelectValue placeholder="Select end type" />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                            <SelectContent className="bg-card border-border text-foreground">
                                                                 <SelectItem value="never">Never</SelectItem>
                                                                 <SelectItem value="on">On Date</SelectItem>
                                                                 <SelectItem value="after">After X Times</SelectItem>
@@ -912,13 +912,13 @@ export default function NewInvoicePage() {
 
                                                     {recurringEndType === 'on' && (
                                                         <div className="space-y-2">
-                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">End Date</Label>
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">End Date</Label>
                                                             <Popover>
                                                                 <PopoverTrigger asChild>
                                                                     <Button
                                                                         variant="outline"
                                                                         className={cn(
-                                                                            "h-10 w-full justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10 hover:text-white text-xs",
+                                                                            "h-10 w-full justify-start text-left font-normal bg-muted border-border hover:bg-accent hover:text-foreground text-xs",
                                                                             !recurringEndDate && "text-muted-foreground"
                                                                         )}
                                                                     >
@@ -926,7 +926,7 @@ export default function NewInvoicePage() {
                                                                         {recurringEndDate ? format(recurringEndDate, "PPP") : <span>Pick a date</span>}
                                                                     </Button>
                                                                 </PopoverTrigger>
-                                                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10" align="start">
+                                                                <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
                                                                     <Calendar selected={recurringEndDate} onSelect={setRecurringEndDate} />
                                                                 </PopoverContent>
                                                             </Popover>
@@ -935,14 +935,14 @@ export default function NewInvoicePage() {
 
                                                     {recurringEndType === 'after' && (
                                                         <div className="space-y-2">
-                                                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">
+                                                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                                                 Number of Invoices
                                                             </Label>
                                                             <Input
                                                                 type="number"
                                                                 value={recurringEndCount}
                                                                 onChange={(e) => setRecurringEndCount(parseInt(e.target.value || '0'))}
-                                                                className="bg-white/5 border-white/10 h-10 text-xs"
+                                                                className="bg-muted border-border h-10 text-xs"
                                                             />
                                                         </div>
                                                     )}
@@ -960,7 +960,7 @@ export default function NewInvoicePage() {
                                                             setActionsOpen(false)
                                                         }}
                                                         disabled={isSaving}
-                                                        className="w-full bg-white text-black hover:bg-neutral-200 h-8 text-xs font-bold"
+                                                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs font-bold"
                                                     >
                                                         Create Recurring Invoice
                                                     </Button>
@@ -972,7 +972,7 @@ export default function NewInvoicePage() {
                                     <Button
                                         onClick={() => handleCreate('send')}
                                         disabled={isSaving}
-                                        className="bg-white text-black hover:bg-neutral-200 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
+                                        className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 text-xs font-bold rounded-l-lg z-10 disabled:opacity-50"
                                     >
                                         {isSaving ? 'Saving...' : 'Send'}
                                     </Button>
@@ -981,7 +981,7 @@ export default function NewInvoicePage() {
                                 {/* Secondary Actions Container */}
                                 <div
                                     className={cn(
-                                        "flex items-center bg-[#1a1a1a] h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-white/10 overflow-hidden transition-all duration-300",
+                                        "flex items-center bg-secondary h-9 ml-[-4px] pl-2 pr-1 rounded-r-lg border border-border overflow-hidden transition-all duration-300",
                                         actionsPanelOpen
                                             ? "opacity-100 translate-x-0 pointer-events-auto max-w-[400px]"
                                             : "opacity-0 -translate-x-4 pointer-events-none max-w-0"
@@ -993,11 +993,11 @@ export default function NewInvoicePage() {
                                                 onClick={() => handleCreate('create')}
                                                 disabled={isSaving}
                                                 variant="ghost"
-                                                className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                                className="h-7 px-3 text-[10px] text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0"
                                             >
                                                 Draft
                                             </Button>
-                                            <div className="w-px h-4 bg-white/10 mx-1" />
+                                            <div className="w-px h-4 bg-accent mx-1" />
                                         </>
                                     )}
 
@@ -1006,7 +1006,7 @@ export default function NewInvoicePage() {
                                             onClick={() => handleCreate('send')}
                                             disabled={isSaving}
                                             variant="ghost"
-                                            className="h-7 px-3 text-[10px] text-neutral-400 hover:text-white hover:bg-white/10 gap-2 shrink-0"
+                                            className="h-7 px-3 text-[10px] text-muted-foreground hover:text-foreground hover:bg-accent gap-2 shrink-0"
                                         >
                                             <Send className="h-3 w-3" />
                                             Send Now
@@ -1025,7 +1025,7 @@ export default function NewInvoicePage() {
                     <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-8 md:px-12">
 
                         {/* Mobile section tabs */}
-                        <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-white/5">
+                        <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-border">
                             <div className="grid grid-cols-3 gap-2">
                                 <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-details')}>
                                     Details
@@ -1041,7 +1041,7 @@ export default function NewInvoicePage() {
 
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
-                            invoiceMode === "light" ? "bg-white text-black border border-neutral-200" : "bg-[#09090b] border border-white/5 text-white",
+                            invoiceMode === "light" ? "bg-primary text-primary-foreground border border-neutral-200" : "bg-card border border-border text-foreground",
                             template === "Classic" && "p-6 sm:p-12",
                             template === "Minimal" && "p-8 sm:p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
@@ -1060,19 +1060,19 @@ export default function NewInvoicePage() {
                                             <div className="flex items-center gap-2">
                                                 <Popover>
                                                     <PopoverTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", "text-neutral-500 hover:text-white hover:bg-white/5")}>
+                                                        <Button variant="ghost" size="icon" className={cn("h-8 w-8 rounded-lg", "text-muted-foreground hover:text-foreground hover:bg-muted")}>
                                                             <Settings2 className="h-4 w-4" />
                                                         </Button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent side="bottom" align="start" className="w-80 bg-[#09090b] border-white/10 p-4 shadow-2xl">
+                                                    <PopoverContent side="bottom" align="start" className="w-80 bg-card border-border p-4 shadow-2xl">
                                                         <div className="space-y-6">
-                                                            <h3 className="text-sm font-bold text-white uppercase tracking-widest">Invoice Settings</h3>
+                                                            <h3 className="text-sm font-bold text-foreground uppercase tracking-widest">Invoice Settings</h3>
                                                             <div className="space-y-4">
                                                                 <div className="space-y-2">
-                                                                    <div className="flex items-center gap-2 text-neutral-400"><CalendarDays className="h-4 w-4" /><span className="text-xs">Date Format</span></div>
+                                                                    <div className="flex items-center gap-2 text-muted-foreground"><CalendarDays className="h-4 w-4" /><span className="text-xs">Date Format</span></div>
                                                                     <Select value={dateFormat} onValueChange={setDateFormat}>
-                                                                        <SelectTrigger className="h-9 bg-white/5 border-white/10 text-xs text-white"><SelectValue /></SelectTrigger>
-                                                                        <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                                                                        <SelectTrigger className="h-9 bg-muted border-border text-xs text-foreground"><SelectValue /></SelectTrigger>
+                                                                        <SelectContent className="bg-card border-border text-foreground">
                                                                             <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
                                                                             <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
                                                                             <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
@@ -1087,16 +1087,16 @@ export default function NewInvoicePage() {
 
                                             </div>
 
-                                            <div className={cn("h-px w-8", "bg-white/20")} />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#878787]">Draft Invoice</span>
+                                            <div className={cn("h-px w-8", "bg-muted/500")} />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Draft Invoice</span>
                                         </div>
-                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-[#0a0a0a] border-white/5">
+                                        <div className="flex items-center p-0.5 rounded-full border transition-all bg-card border-border">
                                             <button
                                                 type="button"
                                                 onClick={() => setInvoiceMode("light")}
                                                 className={cn(
                                                     "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
-                                                    invoiceMode === "light" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
+                                                    invoiceMode === "light" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                                 )}
                                             >
                                                 Light
@@ -1106,7 +1106,7 @@ export default function NewInvoicePage() {
                                                 onClick={() => setInvoiceMode("dark")}
                                                 className={cn(
                                                     "h-6 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors",
-                                                    invoiceMode === "dark" ? "bg-white text-black" : "text-neutral-400 hover:text-white"
+                                                    invoiceMode === "dark" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                                 )}
                                             >
                                                 Dark
@@ -1119,16 +1119,16 @@ export default function NewInvoicePage() {
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
                                                 invoiceMode === "light"
-                                                    ? "bg-[#0c0c0c] border-neutral-200 hover:border-neutral-300"
-                                                    : "bg-[#0c0c0c] border-white/10 hover:bg-white/8 hover:border-white/20"
+                                                    ? "bg-card border-neutral-200 hover:border-neutral-300"
+                                                    : "bg-card border-border hover:bg-white/8 hover:border-border"
                                             )}
                                         >
                                             {logo ? (
                                                 <img src={logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                             ) : (
                                                 <>
-                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", "text-white")} />
-                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", "text-white")}>Logo</span>
+                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", "text-foreground")} />
+                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", "text-foreground")}>Logo</span>
                                                 </>
                                             )}
                                             <input
@@ -1146,22 +1146,22 @@ export default function NewInvoicePage() {
                                         )}>
                                             <h2 className={cn(
                                                 "text-5xl invoice-font-title font-bold mb-2",
-                                                invoiceMode === "light" ? "text-black" : "text-white",
+                                                invoiceMode === "light" ? "text-black" : "text-foreground",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-700" : "text-[#878787]")}>{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
                                     {/* From / To Section (Cleaned up) */}
                                     <div className={cn(
                                         "grid grid-cols-2 gap-20 mb-16",
-                                        template === "Modern" && "bg-white/5 p-8 rounded-xl"
+                                        template === "Modern" && "bg-muted p-8 rounded-xl"
                                     )}>
                                         <div className="col-span-2 flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">From</span>
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787]">To</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <div className="space-y-3">
@@ -1169,20 +1169,20 @@ export default function NewInvoicePage() {
                                                     defaultValue="Illumi Professional"
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                                 <textarea
                                                     defaultValue={"123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"}
                                                     placeholder="Address"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                             </div>
                                         </div>
@@ -1191,7 +1191,7 @@ export default function NewInvoicePage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-500 hover:text-white hover:bg-white/5")}
+                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-muted-foreground hover:text-black hover:bg-neutral-100" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
                                                     onClick={() => setIsClientModalOpen(true)}
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
@@ -1204,7 +1204,7 @@ export default function NewInvoicePage() {
                                                         list="client-suggestions"
                                                         spellCheck={false}
                                                         value={clientName}
-                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                         onChange={(e) => {
                                                             const val = e.target.value;
                                                             setClientName(val)
@@ -1228,7 +1228,7 @@ export default function NewInvoicePage() {
 
                                                     {/* Read-only client details display if selected */}
                                                     {(clientEmail || clientAddress) && (
-                                                        <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-neutral-500">
+                                                        <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-muted-foreground">
                                                             {clientEmail && <span>{clientEmail}</span>}
                                                             {clientPhone && <span>{clientPhone}</span>}
                                                             {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
@@ -1243,20 +1243,20 @@ export default function NewInvoicePage() {
                                 {/* Meta Details */}
                                 <div id="invoice-details" />
                                 {!canSchedule && (
-                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
+                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Issue Date</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Issue Date</span>
                                             <div className="relative">
                                                 <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
                                                     <PopoverTrigger asChild>
                                                         <button className={cn(
                                                             "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                            invoiceMode === "light" ? "text-black" : "text-white"
+                                                            invoiceMode === "light" ? "text-black" : "text-foreground"
                                                         )}>
                                                             {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                         </button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                    <PopoverContent className="w-auto p-0 bg-card border-border rounded-xl" align="start">
                                                         <Calendar
                                                             selected={issueDate ? parseISO(issueDate) : undefined}
                                                             onSelect={(date) => {
@@ -1272,18 +1272,18 @@ export default function NewInvoicePage() {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Due Date</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Due Date</span>
                                             <div className="relative">
                                                 <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
                                                     <PopoverTrigger asChild>
                                                         <button className={cn(
                                                             "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                            invoiceMode === "light" ? "text-black" : "text-white"
+                                                            invoiceMode === "light" ? "text-black" : "text-foreground"
                                                         )}>
                                                             {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                         </button>
                                                     </PopoverTrigger>
-                                                    <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10 rounded-xl" align="start">
+                                                    <PopoverContent className="w-auto p-0 bg-card border-border rounded-xl" align="start">
                                                         <Calendar
                                                             selected={dueDate ? parseISO(dueDate) : undefined}
                                                             onSelect={(date) => {
@@ -1306,13 +1306,13 @@ export default function NewInvoicePage() {
                                 <div className="mb-12">
                                     <table className="w-full border-collapse">
                                         <thead>
-                                            <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-[#878787]", invoiceMode === "light" ? "border-black/5" : "border-white/5")}>
+                                            <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-muted-foreground", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
                                                 <th className="py-4 text-left font-medium">
                                                     <div className="flex items-center gap-4">
                                                         Products
                                                         <button
                                                             onClick={() => setIsProductModalOpen(true)}
-                                                            className={cn("flex items-center gap-1 text-[9px] transition-colors px-2 py-1 rounded cursor-pointer", invoiceMode === "light" ? "bg-black/5 hover:bg-black/10 text-neutral-600 hover:text-black" : "bg-white/5 hover:bg-white/10 text-neutral-500 hover:text-white")}
+                                                            className={cn("flex items-center gap-1 text-[9px] transition-colors px-2 py-1 rounded cursor-pointer", invoiceMode === "light" ? "bg-black/5 hover:bg-black/10 text-muted-foreground hover:text-black" : "bg-muted hover:bg-accent text-muted-foreground hover:text-foreground")}
                                                         >
                                                             <Plus className="h-2.5 w-2.5" /> New
                                                         </button>
@@ -1325,14 +1325,14 @@ export default function NewInvoicePage() {
                                                 <th className="w-8"></th>
                                             </tr>
                                         </thead>
-                                        <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-white/5")}>
+                                        <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-border")}>
                                             {tasks.map((task) => (
                                                 <tr key={task.id} className="group transition-colors outline-none">
                                                     <td className="py-4">
                                                         <Input
                                                             placeholder="Enter Product"
                                                             spellCheck={false}
-                                                            className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-neutral-600 focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-white")}
+                                                            className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-foreground")}
                                                             value={task.description}
                                                             list="product-suggestions"
                                                             onChange={(e) => {
@@ -1378,13 +1378,13 @@ export default function NewInvoicePage() {
                                                             className="h-10 w-full"
                                                         />
                                                     </td>
-                                                    <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-white")}>
+                                                    <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-foreground")}>
                                                         {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                     </td>
                                                     <td className="py-4 text-right pl-2">
                                                         <button
                                                             onClick={() => removeTask(task.id)}
-                                                            className="text-neutral-400 hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all outline-none"
+                                                            className="text-muted-foreground hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all outline-none"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
@@ -1396,7 +1396,7 @@ export default function NewInvoicePage() {
 
                                     <Button
                                         variant="ghost"
-                                        className="mt-8 text-neutral-500 hover:text-white gap-2 px-0 hover:bg-transparent border border-dashed border-white/5 hover:border-white/20 w-full h-12 rounded-xl group transition-all"
+                                        className="mt-8 text-muted-foreground hover:text-foreground gap-2 px-0 hover:bg-transparent border border-dashed border-border hover:border-border w-full h-12 rounded-xl group transition-all"
                                         onClick={addTask}
                                     >
                                         <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
@@ -1407,43 +1407,43 @@ export default function NewInvoicePage() {
                                 {/* Summary & Totals */}
                                 {/* Summary & Totals */}
                                 <div id="invoice-summary" />
-                                <div className="grid grid-cols-12 gap-8 mt-20 pt-12 border-t border-white/5">
+                                <div className="grid grid-cols-12 gap-8 mt-20 pt-12 border-t border-border">
                                     <div className="col-span-8 flex flex-col gap-6">
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Note</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Note</span>
                                             <textarea
                                                 placeholder="Add a note (visible to client)"
                                                 value={invoiceNote}
                                                 onChange={(e) => setInvoiceNote(e.target.value)}
-                                                className="invoice-font-notes w-full bg-transparent border-none p-0 h-24 text-neutral-400 placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
+                                                className="invoice-font-notes w-full bg-transparent border-none p-0 h-24 text-muted-foreground placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
                                             />
                                         </div>
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Payment Info</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Payment Info</span>
                                             {isPro ? (
-                                                <div className="bg-[#0a0a0a] border border-white/10 p-6 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all min-w-[320px]">
-                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] -mr-16 -mt-16" />
+                                                <div className="bg-card border border-border p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all min-w-[320px]">
+                                                    <div className="absolute top-0 right-0 w-32 h-32 bg-muted blur-[50px] -mr-16 -mt-16" />
                                                     <div className="flex items-center gap-4 relative z-10">
-                                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
-                                                            <CreditCard className="h-5 w-5 text-white" />
+                                                        <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
+                                                            <CreditCard className="h-5 w-5 text-foreground" />
                                                         </div>
                                                         <div className="flex flex-col min-w-0 flex-1">
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs font-black text-white uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
-                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white/5 rounded-full border border-white/10 shrink-0">
+                                                                <span className="text-xs font-black text-foreground uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                                                    <span className="text-[8px] font-black text-white uppercase tracking-widest">Live</span>
+                                                                    <span className="text-[8px] font-black text-foreground uppercase tracking-widest">Live</span>
                                                                 </div>
-                                                                <div className="flex items-center px-2 py-0.5 bg-white/5 rounded-full border border-white/10 shrink-0">
-                                                                    <span className="text-[8px] font-black text-white uppercase tracking-widest">{paygateLabel}</span>
+                                                                <div className="flex items-center px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
+                                                                    <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{paygateLabel}</span>
                                                                 </div>
                                                             </div>
-                                                            <span className="text-[10px] text-neutral-500 font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
+                                                            <span className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
                                                         </div>
                                                     </div>
                                                     <Button
                                                         variant="ghost"
-                                                        className="w-full mt-4 h-auto py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/5 border border-white/10 gap-2 whitespace-normal text-center leading-relaxed"
+                                                        className="w-full mt-4 h-auto py-3 text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-muted border border-border gap-2 whitespace-normal text-center leading-relaxed"
                                                         onClick={() => {
                                                             import('sonner').then(({ toast }) => {
                                                                 toast.success("Payment Link Generated", {
@@ -1458,7 +1458,7 @@ export default function NewInvoicePage() {
                                                 </div>
 
                                             ) : (
-                                                <div className="space-y-1 text-sm text-neutral-500 font-medium">
+                                                <div className="space-y-1 text-sm text-muted-foreground font-medium">
                                                     {settings.accountName && <p>Account name: {settings.accountName}</p>}
                                                     {settings.accountNumber && <p>Account number: {settings.accountNumber}</p>}
                                                     {settings.bankName && <p>Bank: {settings.bankName}</p>}
@@ -1473,18 +1473,18 @@ export default function NewInvoicePage() {
 
                                     <div className="col-span-4 flex flex-col gap-6">
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="text-neutral-500">Subtotal</span>
-                                            <span className="invoice-font-amount text-white">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                            <span className="text-muted-foreground">Subtotal</span>
+                                            <span className="invoice-font-amount text-foreground">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                         </div>
                                         {taxRate > 0 && (
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-neutral-500">Tax ({taxRate}%)</span>
-                                                <span className="invoice-font-amount text-white">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                                <span className="text-muted-foreground">Tax ({taxRate}%)</span>
+                                                <span className="invoice-font-amount text-foreground">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                             </div>
                                         )}
-                                        <div className="flex justify-between items-center pt-6 border-t border-white/5">
-                                            <span className="text-sm font-bold text-white uppercase tracking-widest">Total</span>
-                                            <span className="text-3xl font-black text-white invoice-font-amount">
+                                        <div className="flex justify-between items-center pt-6 border-t border-border">
+                                            <span className="text-sm font-bold text-foreground uppercase tracking-widest">Total</span>
+                                            <span className="text-3xl font-black text-foreground invoice-font-amount">
                                                 {(calculateSubtotal() * (1 + taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                             </span>
                                         </div>
@@ -1521,7 +1521,7 @@ export default function NewInvoicePage() {
             </div>
 
             {/* Mobile sticky actions */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-background/95 backdrop-blur p-3">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur p-3">
                 <div className="max-w-5xl mx-auto flex items-center gap-2">
                     <Button
                         type="button"
@@ -1534,7 +1534,7 @@ export default function NewInvoicePage() {
 
                     <Button
                         type="button"
-                        className="h-11 flex-1 bg-white text-black hover:bg-neutral-200"
+                        className="h-11 flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
                         disabled={isSaving}
                         onClick={() => handleCreate(canSchedule ? 'schedule' : 'send')}
                     >
@@ -1604,3 +1604,4 @@ export default function NewInvoicePage() {
         </div>
     )
 }
+

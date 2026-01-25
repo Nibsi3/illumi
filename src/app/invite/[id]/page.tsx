@@ -96,11 +96,11 @@ export default function InviteAcceptPage() {
     }, [inviteId, refreshWorkspaces, router, supabase])
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-6">
-            <Card className="w-full max-w-lg bg-[#121212] border-white/10 text-white">
+        <div className="min-h-screen bg-card flex items-center justify-center p-6">
+            <Card className="w-full max-w-lg bg-card border-border text-foreground">
                 <CardHeader>
                     <CardTitle className="text-xl">Workspace Invite</CardTitle>
-                    <CardDescription className="text-neutral-400">
+                    <CardDescription className="text-muted-foreground">
                         {workspaceName ? `Accepting your invitation to ${workspaceName}…` : 'Accepting your invitation…'}
                     </CardDescription>
                 </CardHeader>
@@ -116,13 +116,13 @@ export default function InviteAcceptPage() {
                                 <AlertCircle className="h-5 w-5 mt-0.5" />
                                 <div>
                                     <div className="font-semibold">Invite not accepted</div>
-                                    <div className="text-sm text-neutral-400 mt-1">{error}</div>
+                                    <div className="text-sm text-muted-foreground mt-1">{error}</div>
                                 </div>
                             </div>
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
-                                    className="border-white/10 bg-white/5 text-white hover:bg-white/10"
+                                    className="border-border bg-muted text-foreground hover:bg-accent"
                                     onClick={async () => {
                                         try {
                                             await supabase.auth.signOut()
@@ -141,7 +141,7 @@ export default function InviteAcceptPage() {
                             <CheckCircle2 className="h-5 w-5 mt-0.5" />
                             <div>
                                 <div className="font-semibold">Invite accepted</div>
-                                <div className="text-sm text-neutral-400 mt-1">{workspaceName ? `Redirecting you to ${workspaceName}…` : 'Redirecting you to the workspace…'}</div>
+                                <div className="text-sm text-muted-foreground mt-1">{workspaceName ? `Redirecting you to ${workspaceName}…` : 'Redirecting you to the workspace…'}</div>
                             </div>
                         </div>
                     ) : null}

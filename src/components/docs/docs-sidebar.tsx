@@ -62,14 +62,14 @@ export function DocsSidebar() {
 
     return (
         <nav className="w-full h-full overflow-y-auto">
-            <div className="p-6 border-b border-white/10">
-                <div className="text-xs font-bold uppercase tracking-widest text-white/60">Documentation</div>
-                <div className="text-xs text-white/40 mt-1">Jump between guides</div>
+            <div className="p-6 border-b border-border">
+                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Documentation</div>
+                <div className="text-xs text-muted-foreground mt-1">Jump between guides</div>
             </div>
             <div className="p-4 space-y-6">
                 {NAV.map((group) => (
                     <div key={group.title} className="space-y-2">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-white/40 px-2">{group.title}</div>
+                        <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-2">{group.title}</div>
                         <div className="space-y-0.5">
                             {group.items.map((item) => {
                                 const isActive = pathname === item.href
@@ -80,13 +80,13 @@ export function DocsSidebar() {
                                         className={cn(
                                             "block px-3 py-2 transition-colors",
                                             isActive
-                                                ? "bg-white/10 text-white"
-                                                : "text-white/70 hover:bg-white/5 hover:text-white"
+                                                ? "bg-accent text-foreground"
+                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         )}
                                     >
                                         <div className="text-sm font-medium">{item.title}</div>
                                         {item.description && (
-                                            <div className="text-xs text-white/40 mt-0.5">{item.description}</div>
+                                            <div className="text-xs text-muted-foreground mt-0.5">{item.description}</div>
                                         )}
                                     </Link>
                                 )

@@ -76,14 +76,14 @@ export default function NotificationsSettingsPage() {
             </div>
 
             {/* Invoices Section */}
-            <div className="mb-8 border border-white/5 rounded-xl bg-[#09090b] overflow-hidden">
+            <div className="mb-8 border border-border rounded-xl bg-card overflow-hidden">
                 <button
                     onClick={() => toggleSection("invoices")}
-                    className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center justify-between p-6 hover:bg-muted transition-colors"
                 >
-                    <h2 className="text-lg font-medium text-white">Invoices</h2>
+                    <h2 className="text-lg font-medium text-foreground">Invoices</h2>
                     <span className={cn(
-                        "text-neutral-500 transition-transform",
+                        "text-muted-foreground transition-transform",
                         expandedSections.includes("invoices") ? "rotate-180" : ""
                     )}>
                         ↑
@@ -92,10 +92,10 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("invoices") && (
                     <div className="px-6 pb-6 space-y-4">
                         {invoiceSettings.map((setting) => (
-                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-border last:border-0">
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
-                                    <p className="text-xs text-neutral-500">{setting.description}</p>
+                                    <h3 className="text-sm font-medium text-foreground mb-1">{setting.label}</h3>
+                                    <p className="text-xs text-muted-foreground">{setting.description}</p>
                                 </div>
                                 <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
@@ -103,13 +103,13 @@ export default function NotificationsSettingsPage() {
                                         className={cn(
                                             "w-5 h-5 border-2 rounded flex items-center justify-center transition-colors",
                                             setting.inApp
-                                                ? "bg-white border-white"
-                                                : "border-white/20 hover:border-white/40"
+                                                ? "bg-white border-border"
+                                                : "border-border hover:border-border"
                                         )}
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500">In-app</span>
+                                    <span className="text-xs text-muted-foreground">In-app</span>
                                     {setting.email !== undefined && (
                                         <>
                                             <button
@@ -117,13 +117,13 @@ export default function NotificationsSettingsPage() {
                                                 className={cn(
                                                     "w-5 h-5 border-2 rounded flex items-center justify-center transition-colors",
                                                     setting.email
-                                                        ? "bg-white border-white"
-                                                        : "border-white/20 hover:border-white/40"
+                                                        ? "bg-white border-border"
+                                                        : "border-border hover:border-border"
                                                 )}
                                             >
                                                 {setting.email && <Check className="h-3 w-3 text-black" />}
                                             </button>
-                                            <span className="text-xs text-neutral-500">Email</span>
+                                            <span className="text-xs text-muted-foreground">Email</span>
                                         </>
                                     )}
                                 </div>
@@ -134,14 +134,14 @@ export default function NotificationsSettingsPage() {
             </div>
 
             {/* Payments Section */}
-            <div className="mb-8 border border-white/5 rounded-xl bg-[#09090b] overflow-hidden">
+            <div className="mb-8 border border-border rounded-xl bg-card overflow-hidden">
                 <button
                     onClick={() => toggleSection("payments")}
-                    className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center justify-between p-6 hover:bg-muted transition-colors"
                 >
-                    <h2 className="text-lg font-medium text-white">Payments</h2>
+                    <h2 className="text-lg font-medium text-foreground">Payments</h2>
                     <span className={cn(
-                        "text-neutral-500 transition-transform",
+                        "text-muted-foreground transition-transform",
                         expandedSections.includes("payments") ? "rotate-180" : ""
                     )}>
                         ↑
@@ -150,10 +150,10 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("payments") && (
                     <div className="px-6 pb-6 space-y-4">
                         {paymentSettings.map((setting) => (
-                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-border last:border-0">
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
-                                    <p className="text-xs text-neutral-500">{setting.description}</p>
+                                    <h3 className="text-sm font-medium text-foreground mb-1">{setting.label}</h3>
+                                    <p className="text-xs text-muted-foreground">{setting.description}</p>
                                 </div>
                                 <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
@@ -161,13 +161,13 @@ export default function NotificationsSettingsPage() {
                                         className={cn(
                                             "w-5 h-5 border-2 rounded flex items-center justify-center transition-colors",
                                             setting.inApp
-                                                ? "bg-white border-white"
-                                                : "border-white/20 hover:border-white/40"
+                                                ? "bg-white border-border"
+                                                : "border-border hover:border-border"
                                         )}
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500">In-app</span>
+                                    <span className="text-xs text-muted-foreground">In-app</span>
                                     {setting.email !== undefined && (
                                         <>
                                             <button
@@ -175,13 +175,13 @@ export default function NotificationsSettingsPage() {
                                                 className={cn(
                                                     "w-5 h-5 border-2 rounded flex items-center justify-center transition-colors",
                                                     setting.email
-                                                        ? "bg-white border-white"
-                                                        : "border-white/20 hover:border-white/40"
+                                                        ? "bg-white border-border"
+                                                        : "border-border hover:border-border"
                                                 )}
                                             >
                                                 {setting.email && <Check className="h-3 w-3 text-black" />}
                                             </button>
-                                            <span className="text-xs text-neutral-500">Email</span>
+                                            <span className="text-xs text-muted-foreground">Email</span>
                                         </>
                                     )}
                                 </div>
@@ -192,14 +192,14 @@ export default function NotificationsSettingsPage() {
             </div>
 
             {/* Inbox Section */}
-            <div className="mb-8 border border-white/5 rounded-xl bg-[#09090b] overflow-hidden">
+            <div className="mb-8 border border-border rounded-xl bg-card overflow-hidden">
                 <button
                     onClick={() => toggleSection("inbox")}
-                    className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors"
+                    className="w-full flex items-center justify-between p-6 hover:bg-muted transition-colors"
                 >
-                    <h2 className="text-lg font-medium text-white">Inbox</h2>
+                    <h2 className="text-lg font-medium text-foreground">Inbox</h2>
                     <span className={cn(
-                        "text-neutral-500 transition-transform",
+                        "text-muted-foreground transition-transform",
                         expandedSections.includes("inbox") ? "rotate-180" : ""
                     )}>
                         ↑
@@ -208,10 +208,10 @@ export default function NotificationsSettingsPage() {
                 {expandedSections.includes("inbox") && (
                     <div className="px-6 pb-6 space-y-4">
                         {inboxSettings.map((setting) => (
-                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
+                            <div key={setting.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 py-3 border-b border-border last:border-0">
                                 <div className="flex-1">
-                                    <h3 className="text-sm font-medium text-white mb-1">{setting.label}</h3>
-                                    <p className="text-xs text-neutral-500">{setting.description}</p>
+                                    <h3 className="text-sm font-medium text-foreground mb-1">{setting.label}</h3>
+                                    <p className="text-xs text-muted-foreground">{setting.description}</p>
                                 </div>
                                 <div className="flex items-center gap-4 sm:gap-6 sm:ml-8">
                                     <button
@@ -219,13 +219,13 @@ export default function NotificationsSettingsPage() {
                                         className={cn(
                                             "w-5 h-5 border-2 rounded flex items-center justify-center transition-colors",
                                             setting.inApp
-                                                ? "bg-white border-white"
-                                                : "border-white/20 hover:border-white/40"
+                                                ? "bg-white border-border"
+                                                : "border-border hover:border-border"
                                         )}
                                     >
                                         {setting.inApp && <Check className="h-3 w-3 text-black" />}
                                     </button>
-                                    <span className="text-xs text-neutral-500">In-app</span>
+                                    <span className="text-xs text-muted-foreground">In-app</span>
                                 </div>
                             </div>
                         ))}
@@ -235,4 +235,5 @@ export default function NotificationsSettingsPage() {
         </div>
     )
 }
+
 

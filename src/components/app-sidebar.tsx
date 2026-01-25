@@ -185,7 +185,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     {/* Logo Section - Centered and Icon only */}
                     <div className="h-16 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
                         <Link href="/overview" className="flex items-center justify-center w-full">
-                            <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                            <img src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" className="w-8 h-8 object-contain shrink-0" />
                         </Link>
                     </div>
 
@@ -469,7 +469,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <Link href="/overview" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3">
-                                <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                                <img src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" className="w-8 h-8 object-contain shrink-0" />
                                 <span className="text-sm font-bold">Illumi</span>
                             </Link>
                         </div>

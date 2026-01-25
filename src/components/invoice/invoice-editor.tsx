@@ -130,7 +130,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
     }
 
     return (
-        <div className="flex flex-col h-full bg-[#0a0a0a] text-white selection:bg-primary/30 relative">
+        <div className="flex flex-col h-full bg-card text-foreground selection:bg-primary/30 relative">
             <ScrollArea className="flex-1 w-full relative z-10 pb-32">
                 <div className="p-8 md:p-12 mb-32 flex flex-col gap-8 max-w-4xl mx-auto">
                     {/* Header Controls for Sheet Mode */}
@@ -143,7 +143,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                         </div>
                     )}
 
-                    <Card className="bg-[#121212] border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden min-h-[800px]">
+                    <Card className="bg-card border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden min-h-[800px]">
                         <CardContent className="p-8 md:p-16 flex flex-col gap-16">
                             {/* Header Section */}
                             <div className="flex justify-between items-start">
@@ -152,15 +152,15 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                                     <div className="flex flex-col text-sm text-muted-foreground">
                                         <div className="flex items-center gap-2">
                                             <span>Invoice No:</span>
-                                            <EditableText value={invoiceNumber} onChange={setInvoiceNumber} className="text-white font-bold" />
+                                            <EditableText value={invoiceNumber} onChange={setInvoiceNumber} className="text-foreground font-bold" />
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span>Issue Date:</span>
-                                            <EditableText value={issueDate} onChange={setIssueDate} className="text-white font-bold" />
+                                            <EditableText value={issueDate} onChange={setIssueDate} className="text-foreground font-bold" />
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <span>Due Date:</span>
-                                            <EditableText value={dueDate} onChange={setDueDate} className="text-white font-bold" />
+                                            <EditableText value={dueDate} onChange={setDueDate} className="text-foreground font-bold" />
                                         </div>
                                     </div>
                                 </div>
@@ -192,7 +192,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
 
                             {/* Items Table */}
                             <div className="space-y-6">
-                                <div className="grid grid-cols-12 gap-4 pb-4 border-b border-white/10 text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
+                                <div className="grid grid-cols-12 gap-4 pb-4 border-b border-border text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground">
                                     <div className="col-span-8">Description</div>
                                     <div className="col-span-1 text-right">Quantity</div>
                                     <div className="col-span-1 text-right">Price</div>
@@ -238,7 +238,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                                 </div>
                                 <Button
                                     variant="ghost"
-                                    className="mt-4 p-0 h-auto text-muted-foreground hover:text-white font-bold hover:bg-transparent flex items-center gap-2"
+                                    className="mt-4 p-0 h-auto text-muted-foreground hover:text-foreground font-bold hover:bg-transparent flex items-center gap-2"
                                     onClick={addItem}
                                 >
                                     <Plus className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                                         <span className="text-sm font-medium">Subtotal</span>
                                         <span className="font-bold tabular-nums">{currency} {subtotal.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-muted-foreground pb-4 border-b border-white/10">
+                                    <div className="flex justify-between items-center text-muted-foreground pb-4 border-b border-border">
                                         <span className="text-sm font-medium">VAT (0%)</span>
                                         <span className="font-bold tabular-nums">{currency} 0.00</span>
                                     </div>
@@ -265,7 +265,7 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                             </div>
 
                             {/* Footer Notes Section */}
-                            <div className="grid grid-cols-2 gap-20 mt-16 pt-16 border-t border-white/5">
+                            <div className="grid grid-cols-2 gap-20 mt-16 pt-16 border-t border-border">
                                 <div className="space-y-4">
                                     <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-4">Payment Details</div>
                                     <EditableText
@@ -294,27 +294,27 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
 
             {/* Sticky Actions Bar */}
             <div className="absolute bottom-10 left-0 right-0 p-8 flex justify-center z-50 pointer-events-none">
-                <div className="bg-[#18181b]/90 backdrop-blur-2xl border border-white/10 p-2 rounded-[2.5rem] shadow-2xl flex items-center gap-2 pointer-events-auto">
-                    <div className="flex items-center px-4 gap-3 bg-[#09090b] rounded-[2rem] border border-white/5 h-14 mr-2">
+                <div className="bg-card/90 backdrop-blur-2xl border border-border p-2 rounded-[2.5rem] shadow-2xl flex items-center gap-2 pointer-events-auto">
+                    <div className="flex items-center px-4 gap-3 bg-card rounded-[2rem] border border-border h-14 mr-2">
                         <InvoiceSettings />
-                        <div className="w-px h-6 bg-white/10" />
+                        <div className="w-px h-6 bg-accent" />
 
                         {/* Template Picker */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-10 text-sm font-bold flex items-center gap-2 px-3 rounded-xl hover:bg-white/5">
+                                <Button variant="ghost" className="h-10 text-sm font-bold flex items-center gap-2 px-3 rounded-xl hover:bg-muted">
                                     {selectedTemplate}
                                     <ChevronDown className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-[#121212] border-white/10">
+                            <DropdownMenuContent align="end" className="w-56 bg-card border-border">
                                 <DropdownMenuLabel className="text-xs text-muted-foreground">Select Template</DropdownMenuLabel>
-                                <DropdownMenuSeparator className="bg-white/10" />
+                                <DropdownMenuSeparator className="bg-accent" />
                                 {["Default", "Minimal", "Corporate", "Noir"].map((template) => (
                                     <DropdownMenuItem
                                         key={template}
                                         onClick={() => setSelectedTemplate(template)}
-                                        className="text-sm font-medium focus:bg-white/10 cursor-pointer"
+                                        className="text-sm font-medium focus:bg-accent cursor-pointer"
                                     >
                                         {template}
                                     </DropdownMenuItem>
@@ -341,21 +341,21 @@ export function InvoiceEditor({ onClose }: { onClose?: () => void }) {
                                     <ChevronDown className="h-5 w-5" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-[#121212] border-white/10">
-                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-white/10">
+                            <DropdownMenuContent align="end" className="w-56 bg-card border-border">
+                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-accent">
                                     <FileText className="h-4 w-4" />
                                     <span>Create & Download PDF</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-white/10">
+                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-accent">
                                     <Send className="h-4 w-4" />
                                     <span>Create & Send Email</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-white/10">
+                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-accent">
                                     <Calendar className="h-4 w-4" />
                                     <span>Schedule Invoice</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator className="bg-white/10" />
-                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-white/10">
+                                <DropdownMenuSeparator className="bg-accent" />
+                                <DropdownMenuItem className="gap-2 p-3 font-medium cursor-pointer focus:bg-accent">
                                     <Clock className="h-4 w-4" />
                                     <span>Create Recurring</span>
                                     <span className="ml-auto text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded">BETA</span>

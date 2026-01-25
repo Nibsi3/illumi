@@ -579,9 +579,9 @@ export default function PayGatePage() {
         return (
             <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
                 <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-                    <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6" />
-                    <h2 className="text-2xl font-bold text-white mb-2">Loading…</h2>
-                    <p className="text-neutral-500 max-w-md">
+                    <div className="w-20 h-20 rounded-full bg-muted border border-border flex items-center justify-center mb-6" />
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Loading…</h2>
+                    <p className="text-muted-foreground max-w-md">
                         Preparing PayGate settings.
                     </p>
                 </div>
@@ -594,11 +594,11 @@ export default function PayGatePage() {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="max-w-2xl text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
-                        <IconLock className="w-10 h-10 text-white" />
+                    <div className="w-20 h-20 mx-auto mb-6 bg-muted border border-border rounded-2xl flex items-center justify-center">
+                        <IconLock className="w-10 h-10 text-foreground" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-2">Pro Feature</h2>
-                    <p className="text-neutral-500 max-w-md mb-8">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Pro Feature</h2>
+                    <p className="text-muted-foreground max-w-md mb-8">
                         Payment gateway integration is only available on the Pro plan. 
                         Upgrade to accept payments directly from your invoices.
                     </p>
@@ -606,7 +606,7 @@ export default function PayGatePage() {
                         as="button"
                         onClick={() => window.location.href = '/settings/billing'}
                         containerClassName=""
-                        className="bg-white text-black font-bold h-12 px-8 w-full sm:w-auto"
+                        className="bg-primary text-primary-foreground font-bold h-12 px-8 w-full sm:w-auto"
                     >
                         Upgrade to Pro — R350/mo
                     </HoverBorderGradient>
@@ -619,12 +619,12 @@ export default function PayGatePage() {
         <div className="space-y-8 animate-in fade-in duration-500 font-sans pb-20">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">PayGate Settings</h2>
-                    <p className="hidden sm:block text-sm text-neutral-500">Configure your payment gateways to receive payments from clients.</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">PayGate Settings</h2>
+                    <p className="hidden sm:block text-sm text-muted-foreground">Configure your payment gateways to receive payments from clients.</p>
                 </div>
                 <div className="flex items-center gap-6 w-full md:w-auto">
-                    <div className="w-full md:w-auto flex items-center justify-between gap-3 bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
-                        <Label htmlFor="test-mode" className="text-xs font-bold uppercase tracking-wider text-neutral-400">Test Mode</Label>
+                    <div className="w-full md:w-auto flex items-center justify-between gap-3 bg-muted border border-border px-4 py-2 rounded-xl">
+                        <Label htmlFor="test-mode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Test Mode</Label>
                         <Switch
                             id="test-mode"
                             checked={isTestMode}
@@ -643,29 +643,29 @@ export default function PayGatePage() {
 
                     return (
                         <Card key={provider.id} className={cn(
-                            "bg-[#0a0a0a] border-white/10 overflow-hidden group transition-all duration-300 hover:border-white/20 hover:shadow-2xl flex flex-col rounded-2xl relative min-h-[340px]",
-                            isConnected && "border-white/20 bg-white/[0.02]",
+                            "bg-card border-border overflow-hidden group transition-all duration-300 hover:border-border hover:shadow-2xl flex flex-col rounded-2xl relative min-h-[340px]",
+                            isConnected && "border-border bg-muted/30",
                             isActive && "ring-2 ring-white/50"
                         )}>
                             <div className="p-6 flex-1 flex flex-col">
                                 <div className="flex items-start justify-between mb-6">
-                                    <div className="h-10 px-4 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-500">
-                                        <span className="text-sm font-black text-white italic">{provider.name}</span>
+                                    <div className="h-10 px-4 bg-muted border border-border rounded-lg flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-500">
+                                        <span className="text-sm font-black text-foreground italic">{provider.name}</span>
                                     </div>
                                     <div className="flex flex-col items-end gap-2">
                                         <Badge variant={isConnected ? "default" : "outline"} className={cn(
                                             "text-[10px] uppercase font-black px-2 py-0.5 rounded-full border-none",
-                                            isConnected ? "bg-white/10 text-white" : "bg-white/5 text-neutral-500"
+                                            isConnected ? "bg-accent text-foreground" : "bg-muted text-muted-foreground"
                                         )}>
                                             {isConnected ? "Connected" : "Inactive"}
                                         </Badge>
                                         {isActive && (
-                                            <Badge className="text-[9px] bg-white text-black font-black uppercase py-0 px-2">Primary</Badge>
+                                            <Badge className="text-[9px] bg-primary text-primary-foreground font-black uppercase py-0 px-2">Primary</Badge>
                                         )}
                                     </div>
                                 </div>
-                                <h3 className="text-sm font-bold text-white mb-2">{provider.name} Integration</h3>
-                                <p className="text-xs text-neutral-500 leading-relaxed flex-1">
+                                <h3 className="text-sm font-bold text-foreground mb-2">{provider.name} Integration</h3>
+                                <p className="text-xs text-muted-foreground leading-relaxed flex-1">
                                     {provider.description}
                                 </p>
                             </div>
@@ -676,68 +676,68 @@ export default function PayGatePage() {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
-                                        className="absolute inset-0 bg-[#0a0a0a] z-20 p-6 flex flex-col h-full"
+                                        className="absolute inset-0 bg-card z-20 p-6 flex flex-col h-full"
                                     >
                                         <div className="flex justify-between items-center mb-6">
-                                            <h4 className="text-sm font-bold text-white">{isConnected ? "Configure" : "Connect"} {provider.name}</h4>
-                                            <Button variant="ghost" size="icon" onClick={() => setConfiguringProvider(null)} className="h-6 w-6 text-neutral-500 hover:text-white">
+                                            <h4 className="text-sm font-bold text-foreground">{isConnected ? "Configure" : "Connect"} {provider.name}</h4>
+                                            <Button variant="ghost" size="icon" onClick={() => setConfiguringProvider(null)} className="h-6 w-6 text-muted-foreground hover:text-foreground">
                                                 <IconRefresh className="h-4 w-4 rotate-45" />
                                             </Button>
                                         </div>
 
                                         <div className="space-y-4 flex-1 overflow-y-auto">
-                                            <div className="flex items-center justify-between bg-white/5 p-3 rounded-xl border border-white/10">
-                                                <Label className="text-xs font-medium text-white">Test Mode</Label>
+                                            <div className="flex items-center justify-between bg-muted p-3 rounded-xl border border-border">
+                                                <Label className="text-xs font-medium text-foreground">Test Mode</Label>
                                                 <Switch checked={isTestMode} onCheckedChange={handleTestModeChange} />
                                             </div>
 
                                             {provider.id === 'payfast' ? (
                                                 <>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Merchant ID</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant ID</Label>
                                                         <Input
                                                             value={testKey1}
                                                             onChange={(e) => setTestKey1(e.target.value)}
                                                             placeholder={getProviderPlaceholders(provider.id).test1}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Merchant Key</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant Key</Label>
                                                         <Input
                                                             type="password"
                                                             value={testKey2}
                                                             onChange={(e) => setTestKey2(e.target.value)}
                                                             placeholder={getProviderPlaceholders(provider.id).test2}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">Salt Passphrase (Optional)</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Salt Passphrase (Optional)</Label>
                                                         <Input
                                                             type="password"
                                                             value={passphrase}
                                                             onChange={(e) => setPassphrase(e.target.value)}
                                                             placeholder="Optional but recommended"
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                 </>
                                             ) : (
                                                 <>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
                                                             {isTestMode ? getProviderFieldLabels(provider.id).test1 : getProviderFieldLabels(provider.id).live1}
                                                         </Label>
                                                         <Input
                                                             value={isTestMode ? testKey1 : liveKey1}
                                                             onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
                                                             placeholder={isTestMode ? getProviderPlaceholders(provider.id).test1 : getProviderPlaceholders(provider.id).live1}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-neutral-500">
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
                                                             {isTestMode ? getProviderFieldLabels(provider.id).test2 : getProviderFieldLabels(provider.id).live2}
                                                         </Label>
                                                         <Input
@@ -745,7 +745,7 @@ export default function PayGatePage() {
                                                             value={isTestMode ? testKey2 : liveKey2}
                                                             onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
                                                             placeholder={isTestMode ? getProviderPlaceholders(provider.id).test2 : getProviderPlaceholders(provider.id).live2}
-                                                            className="h-9 bg-white/5 border-white/10 text-xs rounded-lg focus:ring-white/10"
+                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
                                                         />
                                                     </div>
                                                 </>
@@ -755,7 +755,7 @@ export default function PayGatePage() {
                                         <Button
                                             onClick={() => confirmConnection(provider.id)}
                                             disabled={isConnecting}
-                                            className="w-full h-10 bg-white text-black hover:bg-neutral-200 mt-4 font-bold text-xs rounded-xl"
+                                            className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90 mt-4 font-bold text-xs rounded-xl"
                                         >
                                             {isConnecting ? "Saving..." : (isConnected ? "Save Changes" : "Save & Connect")}
                                         </Button>
@@ -763,20 +763,20 @@ export default function PayGatePage() {
                                 )}
                             </AnimatePresence>
 
-                            <div className="mt-auto px-6 py-4 bg-white/[0.01] border-t border-white/5 flex items-center justify-between">
+                            <div className="mt-auto px-6 py-4 bg-white/[0.01] border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     {isConnected ? (
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="text-xs text-neutral-400 hover:text-white hover:bg-white/5 h-8 px-3 rounded-lg font-medium"
+                                            className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted h-8 px-3 rounded-lg font-medium"
                                             onClick={() => handleConnect(provider.id)}
                                         >
                                             <IconSettings className="h-3.5 w-3.5 mr-2" />
                                             Configure
                                         </Button>
                                     ) : (
-                                        <span className="text-[10px] text-neutral-600 font-medium italic">Not connected</span>
+                                        <span className="text-[10px] text-muted-foreground font-medium italic">Not connected</span>
                                     )}
                                 </div>
 
@@ -787,7 +787,7 @@ export default function PayGatePage() {
                                                 onClick={() => handleMakePrimary(provider.id)}
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-8 px-3 text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10"
+                                                className="h-8 px-3 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-accent"
                                             >
                                                 Make Primary
                                             </Button>
@@ -805,7 +805,7 @@ export default function PayGatePage() {
                                     <Button
                                         onClick={() => handleConnect(provider.id)}
                                         size="sm"
-                                        className="h-8 px-4 bg-white text-black hover:bg-neutral-200 text-xs font-bold rounded-lg transition-colors"
+                                        className="h-8 px-4 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-bold rounded-lg transition-colors"
                                     >
                                         Connect
                                     </Button>
@@ -816,45 +816,45 @@ export default function PayGatePage() {
                 })}
 
                 {/* Custom Provider Request */}
-                <Card className="bg-transparent border border-dashed border-white/10 flex flex-col items-center justify-center p-8 text-center rounded-2xl group hover:border-white/20 transition-colors h-[340px]">
-                    <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                        <IconPlus className="h-6 w-6 text-neutral-500" />
+                <Card className="bg-transparent border border-dashed border-border flex flex-col items-center justify-center p-8 text-center rounded-2xl group hover:border-border transition-colors h-[340px]">
+                    <div className="w-12 h-12 rounded-full bg-muted border border-border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                        <IconPlus className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <h3 className="text-sm font-bold text-white mb-2">Request Provider</h3>
-                    <p className="text-xs text-neutral-500 mb-6 leading-relaxed">Want to use a different gateway? <br />Let our team know.</p>
+                    <h3 className="text-sm font-bold text-foreground mb-2">Request Provider</h3>
+                    <p className="text-xs text-muted-foreground mb-6 leading-relaxed">Want to use a different gateway? <br />Let our team know.</p>
 
                     {/* Request Dialog Trigger */}
                     <div className="relative">
                         {isRequestOpen && (
-                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in">
-                                <div className="bg-[#09090b] border border-white/10 p-6 rounded-2xl w-full max-w-md shadow-2xl relative">
-                                    <button onClick={() => setIsRequestOpen(false)} className="absolute top-4 right-4 text-neutral-500 hover:text-white">
+                            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in">
+                                <div className="bg-card border border-border p-6 rounded-2xl w-full max-w-md shadow-2xl relative">
+                                    <button onClick={() => setIsRequestOpen(false)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
                                         <IconPlus className="h-5 w-5 rotate-45" />
                                     </button>
-                                    <h3 className="text-lg font-bold text-white mb-4">Request New Provider</h3>
+                                    <h3 className="text-lg font-bold text-foreground mb-4">Request New Provider</h3>
                                     <div className="space-y-4">
                                         <div className="space-y-1.5 text-left">
-                                            <Label className="text-xs font-medium text-neutral-400">Subject</Label>
-                                            <Input value="PayGate Request" disabled className="bg-white/5 border-white/10 text-neutral-500" />
+                                            <Label className="text-xs font-medium text-muted-foreground">Subject</Label>
+                                            <Input value="PayGate Request" disabled className="bg-muted border-border text-muted-foreground" />
                                         </div>
                                         <div className="space-y-1.5 text-left">
-                                            <Label className="text-xs font-medium text-neutral-400">Message</Label>
+                                            <Label className="text-xs font-medium text-muted-foreground">Message</Label>
                                             <textarea
-                                                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-white/20 min-h-[100px]"
+                                                className="w-full bg-black/50 border border-border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-white/20 min-h-[100px]"
                                                 placeholder="Which provider would you like us to add? Tell us more..."
                                                 value={requestMessage}
                                                 onChange={(e) => setRequestMessage(e.target.value)}
                                             />
                                         </div>
                                         <div className="flex justify-end gap-2 pt-2">
-                                            <Button variant="ghost" onClick={() => setIsRequestOpen(false)} className="text-neutral-500 hover:text-white">Cancel</Button>
-                                            <Button onClick={submitProviderRequest} className="bg-white text-black hover:bg-neutral-200">Send Request</Button>
+                                            <Button variant="ghost" onClick={() => setIsRequestOpen(false)} className="text-muted-foreground hover:text-foreground">Cancel</Button>
+                                            <Button onClick={submitProviderRequest} className="bg-primary text-primary-foreground hover:bg-primary/90">Send Request</Button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        <Button onClick={() => setIsRequestOpen(true)} variant="outline" size="sm" className="h-9 px-6 border-white/10 hover:bg-white/5 rounded-xl text-xs font-medium">
+                        <Button onClick={() => setIsRequestOpen(true)} variant="outline" size="sm" className="h-9 px-6 border-border hover:bg-muted rounded-xl text-xs font-medium">
                             Send Request
                         </Button>
                     </div>
@@ -868,23 +868,23 @@ export default function PayGatePage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
-                        className="p-8 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl relative overflow-hidden"
+                        className="p-8 bg-card border border-border rounded-2xl shadow-2xl relative overflow-hidden"
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[100px] -mr-32 -mt-32" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-muted blur-[100px] -mr-32 -mt-32" />
 
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                                    <IconShieldLock className="h-5 w-5 text-white" />
+                                <div className="w-10 h-10 rounded-xl bg-accent border border-border flex items-center justify-center">
+                                    <IconShieldLock className="h-5 w-5 text-foreground" />
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-bold text-white">Live Connection Status</h3>
-                                    <p className="text-xs text-neutral-500">Monitoring real-time API health for {connectedProviders.length} active provider(s).</p>
+                                    <h3 className="text-base font-bold text-foreground">Live Connection Status</h3>
+                                    <p className="text-xs text-muted-foreground">Monitoring real-time API health for {connectedProviders.length} active provider(s).</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-accent rounded-full">
                                 <span className="h-2 w-2 bg-white rounded-full animate-pulse" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">System Healthy</span>
+                                <span className="text-[10px] font-black text-foreground uppercase tracking-widest">System Healthy</span>
                             </div>
                         </div>
 
@@ -895,16 +895,16 @@ export default function PayGatePage() {
                                 return (
                                     <div key={id} className={cn(
                                         "p-4 border rounded-xl flex items-center justify-between transition-colors",
-                                        isPrimary ? "bg-white/5 border-white/20" : "bg-white/5 border-white/10"
+                                        isPrimary ? "bg-muted border-border" : "bg-muted border-border"
                                     )}>
                                         <div className="flex items-center gap-3">
                                             <div className={cn("w-2 h-2 rounded-full", isPrimary ? "bg-white" : "bg-white/40")} />
-                                            <span className="text-xs font-bold text-white">{p?.name}</span>
+                                            <span className="text-xs font-bold text-foreground">{p?.name}</span>
                                         </div>
                                         {isPrimary ? (
-                                            <Badge className="text-[8px] bg-white text-black font-black uppercase py-0 px-1.5">Primary</Badge>
+                                            <Badge className="text-[8px] bg-primary text-primary-foreground font-black uppercase py-0 px-1.5">Primary</Badge>
                                         ) : (
-                                            <Badge variant="outline" className="text-[8px] border-white/10 text-neutral-500 bg-transparent py-0 px-1.5">Standby</Badge>
+                                            <Badge variant="outline" className="text-[8px] border-border text-muted-foreground bg-transparent py-0 px-1.5">Standby</Badge>
                                         )}
                                     </div>
                                 )
@@ -937,3 +937,4 @@ function IconShieldLock(props: any) {
         </svg>
     )
 }
+

@@ -375,19 +375,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
     if (kind === "workspace_switcher") {
         return (
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
-                <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/60">Workspace</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">Switch</div>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                    <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Workspace</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Switch</div>
                 </div>
                 <div className="p-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                        <div className="text-sm font-semibold text-white">Illumi Studio</div>
-                        <div className="text-xs text-white/40 mt-1">Active</div>
+                    <div className="rounded-xl border border-border bg-muted p-4">
+                        <div className="text-sm font-semibold text-foreground">Illumi Studio</div>
+                        <div className="text-xs text-muted-foreground mt-1">Active</div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/2 p-4">
-                        <div className="text-sm font-semibold text-white/70">Side Project</div>
-                        <div className="text-xs text-white/30 mt-1">Click to switch</div>
+                    <div className="rounded-xl border border-border bg-white/2 p-4">
+                        <div className="text-sm font-semibold text-muted-foreground">Side Project</div>
+                        <div className="text-xs text-muted-foreground mt-1">Click to switch</div>
                     </div>
                 </div>
             </div>
@@ -396,23 +396,23 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
 
     if (kind === "client_create") {
         return (
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
-                <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/60">New client</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">Save</div>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                    <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">New client</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Save</div>
                 </div>
                 <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                        <div className="text-[10px] text-white/40 uppercase tracking-widest">Name</div>
-                        <div className="text-sm text-white/80 mt-1">Acme Corp</div>
+                    <div className="rounded-xl border border-border bg-muted p-3">
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Name</div>
+                        <div className="text-sm text-foreground mt-1">Acme Corp</div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-                        <div className="text-[10px] text-white/40 uppercase tracking-widest">Email</div>
-                        <div className="text-sm text-white/80 mt-1">billing@acme.co.za</div>
+                    <div className="rounded-xl border border-border bg-muted p-3">
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Email</div>
+                        <div className="text-sm text-foreground mt-1">billing@acme.co.za</div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/2 p-3 sm:col-span-2">
-                        <div className="text-[10px] text-white/40 uppercase tracking-widest">Address</div>
-                        <div className="text-sm text-white/60 mt-1">1 Loop Street, Cape Town</div>
+                    <div className="rounded-xl border border-border bg-white/2 p-3 sm:col-span-2">
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Address</div>
+                        <div className="text-sm text-muted-foreground mt-1">1 Loop Street, Cape Town</div>
                     </div>
                 </div>
             </div>
@@ -421,35 +421,35 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
 
     if (kind === "invoice_editor") {
         return (
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
-                <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/60">Invoice editor</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">Preview</div>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                    <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Invoice editor</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Preview</div>
                 </div>
                 <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-4">
+                    <div className="md:col-span-2 rounded-xl border border-border bg-muted p-4">
                         <div className="flex items-start justify-between">
                             <div>
-                                <div className="text-lg font-semibold text-white">Invoice</div>
-                                <div className="text-xs text-white/40 mt-1">INV-2026-0001</div>
+                                <div className="text-lg font-semibold text-foreground">Invoice</div>
+                                <div className="text-xs text-muted-foreground mt-1">INV-2026-0001</div>
                             </div>
                             <div className="text-right">
-                                <div className="text-[10px] text-white/40 uppercase tracking-widest">Total</div>
-                                <div className="text-xl font-semibold text-white mt-1">R 4,500.00</div>
+                                <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Total</div>
+                                <div className="text-xl font-semibold text-foreground mt-1">R 4,500.00</div>
                             </div>
                         </div>
                         <div className="mt-4 space-y-2">
-                            <div className="h-9 rounded-lg border border-white/10 bg-white/2" />
-                            <div className="h-9 rounded-lg border border-white/10 bg-white/2" />
-                            <div className="h-9 rounded-lg border border-white/10 bg-white/2" />
+                            <div className="h-9 rounded-lg border border-border bg-white/2" />
+                            <div className="h-9 rounded-lg border border-border bg-white/2" />
+                            <div className="h-9 rounded-lg border border-border bg-white/2" />
                         </div>
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/2 p-4">
-                        <div className="text-[10px] text-white/40 uppercase tracking-widest">Actions</div>
+                    <div className="rounded-xl border border-border bg-white/2 p-4">
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Actions</div>
                         <div className="mt-3 space-y-2">
-                            <div className="h-9 rounded-lg bg-white text-black" />
-                            <div className="h-9 rounded-lg bg-white/10" />
-                            <div className="h-9 rounded-lg bg-white/10" />
+                            <div className="h-9 rounded-lg bg-primary text-primary-foreground" />
+                            <div className="h-9 rounded-lg bg-accent" />
+                            <div className="h-9 rounded-lg bg-accent" />
                         </div>
                     </div>
                 </div>
@@ -459,26 +459,26 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
 
     if (kind === "paygate_settings") {
         return (
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
-                <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/60">PayGate settings</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">Test mode</div>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                    <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">PayGate settings</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Test mode</div>
                 </div>
                 <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                        <div className="text-sm font-semibold text-white">PayFast</div>
-                        <div className="text-xs text-white/40 mt-1">Available</div>
-                        <div className="mt-4 h-9 rounded-lg bg-white text-black" />
+                    <div className="rounded-xl border border-border bg-muted p-4">
+                        <div className="text-sm font-semibold text-foreground">PayFast</div>
+                        <div className="text-xs text-muted-foreground mt-1">Available</div>
+                        <div className="mt-4 h-9 rounded-lg bg-primary text-primary-foreground" />
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                        <div className="text-sm font-semibold text-white">Yoco</div>
-                        <div className="text-xs text-white/40 mt-1">Available</div>
-                        <div className="mt-4 h-9 rounded-lg bg-white/10" />
+                    <div className="rounded-xl border border-border bg-muted p-4">
+                        <div className="text-sm font-semibold text-foreground">Yoco</div>
+                        <div className="text-xs text-muted-foreground mt-1">Available</div>
+                        <div className="mt-4 h-9 rounded-lg bg-accent" />
                     </div>
-                    <div className="rounded-xl border border-white/10 bg-white/2 p-4">
-                        <div className="text-sm font-semibold text-white/70">PayStack</div>
-                        <div className="text-xs text-white/30 mt-1">Available</div>
-                        <div className="mt-4 h-9 rounded-lg bg-white/10" />
+                    <div className="rounded-xl border border-border bg-white/2 p-4">
+                        <div className="text-sm font-semibold text-muted-foreground">PayStack</div>
+                        <div className="text-xs text-muted-foreground mt-1">Available</div>
+                        <div className="mt-4 h-9 rounded-lg bg-accent" />
                     </div>
                 </div>
             </div>
@@ -487,15 +487,15 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
 
     if (kind === "vault_upload") {
         return (
-            <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden">
-                <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                    <div className="text-xs font-bold uppercase tracking-widest text-white/60">Vault</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/40">Upload</div>
+            <div className="rounded-2xl border border-border bg-card overflow-hidden">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                    <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Vault</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Upload</div>
                 </div>
                 <div className="p-6">
-                    <div className="rounded-2xl border border-dashed border-white/15 bg-white/3 p-8 text-center">
-                        <div className="text-sm font-semibold text-white">Drop a file here</div>
-                        <div className="text-xs text-white/40 mt-1">PDF, PNG, JPG</div>
+                    <div className="rounded-2xl border border-dashed border-border bg-muted/50 p-8 text-center">
+                        <div className="text-sm font-semibold text-foreground">Drop a file here</div>
+                        <div className="text-xs text-muted-foreground mt-1">PDF, PNG, JPG</div>
                     </div>
                 </div>
             </div>
@@ -503,20 +503,20 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
     }
 
     return (
-        <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-            <div className="text-sm font-semibold text-white">Troubleshooting checklist</div>
+        <div className="rounded-2xl border border-border bg-card p-6">
+            <div className="text-sm font-semibold text-foreground">Troubleshooting checklist</div>
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs text-white/40 uppercase tracking-widest">Check 1</div>
-                    <div className="text-sm text-white/70 mt-2">Hard refresh</div>
+                <div className="rounded-xl border border-border bg-muted p-4">
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest">Check 1</div>
+                    <div className="text-sm text-muted-foreground mt-2">Hard refresh</div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-                    <div className="text-xs text-white/40 uppercase tracking-widest">Check 2</div>
-                    <div className="text-sm text-white/70 mt-2">Confirm settings</div>
+                <div className="rounded-xl border border-border bg-muted p-4">
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest">Check 2</div>
+                    <div className="text-sm text-muted-foreground mt-2">Confirm settings</div>
                 </div>
-                <div className="rounded-xl border border-white/10 bg-white/2 p-4 sm:col-span-2">
-                    <div className="text-xs text-white/40 uppercase tracking-widest">When to contact support</div>
-                    <div className="text-sm text-white/60 mt-2">If you can reproduce the issue consistently, include screenshots and steps.</div>
+                <div className="rounded-xl border border-border bg-white/2 p-4 sm:col-span-2">
+                    <div className="text-xs text-muted-foreground uppercase tracking-widest">When to contact support</div>
+                    <div className="text-sm text-muted-foreground mt-2">If you can reproduce the issue consistently, include screenshots and steps.</div>
                 </div>
             </div>
         </div>

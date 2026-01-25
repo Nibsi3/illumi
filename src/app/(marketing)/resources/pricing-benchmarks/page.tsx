@@ -85,23 +85,23 @@ const pricingData = [
 
 export default function PricingBenchmarksPage() {
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-6xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
 
                 <div className="mb-12">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/70 text-sm mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-muted-foreground text-sm mb-4">
                         2024 Data
                     </div>
                     <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
                         How SMEs Price Their Services Across South Africa
                     </h1>
-                    <p className="text-white/60 text-lg max-w-3xl">
+                    <p className="text-muted-foreground text-lg max-w-3xl">
                         Real-world pricing data from South African freelancers and service businesses. Use these benchmarks 
                         to price your services competitively and profitably.
                     </p>
@@ -109,51 +109,51 @@ export default function PricingBenchmarksPage() {
 
                 {/* Summary Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Average Hourly Rate</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Average Hourly Rate</div>
                         <div className="text-3xl font-bold">R 763</div>
-                        <div className="text-xs text-white/40 mt-1">Across all services</div>
+                        <div className="text-xs text-muted-foreground mt-1">Across all services</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Most Common Model</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Most Common Model</div>
                         <div className="text-3xl font-bold">Project</div>
-                        <div className="text-xs text-white/40 mt-1">62% use project pricing</div>
+                        <div className="text-xs text-muted-foreground mt-1">62% use project pricing</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Highest Paid Service</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Highest Paid Service</div>
                         <div className="text-3xl font-bold">R 1,400</div>
-                        <div className="text-xs text-white/40 mt-1">Business consulting</div>
+                        <div className="text-xs text-muted-foreground mt-1">Business consulting</div>
                     </div>
                 </div>
 
                 {/* Pricing Table */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden mb-12">
-                    <div className="p-6 border-b border-white/10">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden mb-12">
+                    <div className="p-6 border-b border-border">
                         <h2 className="text-xl font-semibold">Service Pricing Benchmarks</h2>
-                        <p className="text-sm text-white/60 mt-1">Based on 2,500+ South African service providers</p>
+                        <p className="text-sm text-muted-foreground mt-1">Based on 2,500+ South African service providers</p>
                     </div>
                     
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="border-b border-white/10">
+                            <thead className="border-b border-border">
                                 <tr className="text-left">
-                                    <th className="p-4 text-sm font-semibold text-white/80">Service</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Hourly Range</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Avg Hourly</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Pricing Model</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Service</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Hourly Range</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Avg Hourly</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Pricing Model</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {pricingData.map((row, idx) => (
-                                    <tr key={row.service} className={idx !== pricingData.length - 1 ? "border-b border-white/5" : ""}>
-                                        <td className="p-4 text-white font-medium">{row.service}</td>
-                                        <td className="p-4 text-white/70">{row.hourlyRange}</td>
+                                    <tr key={row.service} className={idx !== pricingData.length - 1 ? "border-b border-border" : ""}>
+                                        <td className="p-4 text-foreground font-medium">{row.service}</td>
+                                        <td className="p-4 text-muted-foreground">{row.hourlyRange}</td>
                                         <td className="p-4">
-                                            <span className="font-semibold text-white">{row.avgHourly}</span>
+                                            <span className="font-semibold text-foreground">{row.avgHourly}</span>
                                         </td>
-                                        <td className="p-4 text-white/70 text-sm">{row.pricingModel}</td>
+                                        <td className="p-4 text-muted-foreground text-sm">{row.pricingModel}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -164,30 +164,30 @@ export default function PricingBenchmarksPage() {
                 {/* Detailed Breakdown */}
                 <div className="space-y-6 mb-12">
                     {pricingData.map((service) => (
-                        <div key={service.service} className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
+                        <div key={service.service} className="rounded-2xl border border-border bg-card p-6">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
-                                    <h3 className="text-xl font-semibold text-white">{service.service}</h3>
-                                    <p className="text-sm text-white/60 mt-1">{service.notes}</p>
+                                    <h3 className="text-xl font-semibold text-foreground">{service.service}</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">{service.notes}</p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-sm text-white/40">Avg Hourly</div>
-                                    <div className="text-2xl font-bold text-white">{service.avgHourly}</div>
+                                    <div className="text-sm text-muted-foreground">Avg Hourly</div>
+                                    <div className="text-2xl font-bold text-foreground">{service.avgHourly}</div>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-white/10">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-border">
                                 <div>
-                                    <div className="text-xs text-white/40 mb-1">Hourly Range</div>
-                                    <div className="text-white font-semibold">{service.hourlyRange}</div>
+                                    <div className="text-xs text-muted-foreground mb-1">Hourly Range</div>
+                                    <div className="text-foreground font-semibold">{service.hourlyRange}</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs text-white/40 mb-1">Project Range</div>
-                                    <div className="text-white font-semibold">{service.projectRange}</div>
+                                    <div className="text-xs text-muted-foreground mb-1">Project Range</div>
+                                    <div className="text-foreground font-semibold">{service.projectRange}</div>
                                 </div>
                                 <div>
-                                    <div className="text-xs text-white/40 mb-1">Preferred Model</div>
-                                    <div className="text-white font-semibold">{service.pricingModel.split('(')[0].trim()}</div>
+                                    <div className="text-xs text-muted-foreground mb-1">Preferred Model</div>
+                                    <div className="text-foreground font-semibold">{service.pricingModel.split('(')[0].trim()}</div>
                                 </div>
                             </div>
                         </div>
@@ -195,36 +195,36 @@ export default function PricingBenchmarksPage() {
                 </div>
 
                 {/* Pricing Strategies */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Pricing Strategy Insights</h2>
                     <div className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Project-based pricing dominates</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Project-based pricing dominates</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 62% of service providers use project-based pricing rather than hourly. This allows for value-based 
                                 pricing and protects against scope creep. Clients also prefer fixed prices for budgeting.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Retainers provide stability</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Retainers provide stability</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Marketing agencies and accountants favor monthly retainers (75-85% adoption). Retainers provide 
                                 predictable recurring revenue and deeper client relationships. Average retainer: R 15,000/month.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Specialists command premium rates</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Specialists command premium rates</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Specialists charge 40-60% more than generalists. React developers earn R 1,200/hour vs R 450 for 
                                 general web developers. Strategy consultants earn R 2,500/hour vs R 800 for general consultants.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Experience drives pricing power</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Experience drives pricing power</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Providers with 5+ years experience charge 2x more than beginners. A senior graphic designer 
                                 averages R 850/hour vs R 350/hour for juniors. Build your portfolio and raise rates annually.
                             </p>
@@ -233,50 +233,50 @@ export default function PricingBenchmarksPage() {
                 </div>
 
                 {/* Pricing Tips */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">How to Price Your Services</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">1. Calculate Your Minimum Rate</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">1. Calculate Your Minimum Rate</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 (Monthly expenses + desired profit) ÷ billable hours = minimum hourly rate
                             </p>
-                            <p className="text-xs text-white/40">
+                            <p className="text-xs text-muted-foreground">
                                 Example: (R 40,000 + R 20,000) ÷ 120 hours = R 500/hour minimum
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">2. Research Market Rates</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">2. Research Market Rates</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Use these benchmarks to position yourself. Beginners: lower 25%, experienced: upper 25%.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">3. Add Value-Based Pricing</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">3. Add Value-Based Pricing</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Price based on client value, not just time. A logo worth R 100k to the client justifies R 15k fee.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">4. Raise Rates Annually</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">4. Raise Rates Annually</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Increase rates 10-15% per year for existing clients, 20-30% for new clients as you gain experience.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">5. Package Your Services</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">5. Package Your Services</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Create tiered packages (Basic/Pro/Premium) to increase average deal size and simplify sales.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">6. Charge for Rush Work</h3>
-                            <p className="text-sm text-white/60 mb-2">
+                            <h3 className="font-semibold mb-2 text-foreground">6. Charge for Rush Work</h3>
+                            <p className="text-sm text-muted-foreground mb-2">
                                 Add 50-100% premium for urgent projects with tight deadlines. Your time is valuable.
                             </p>
                         </div>
@@ -285,10 +285,10 @@ export default function PricingBenchmarksPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Create professional invoices with your pricing using Illumi</p>
+                    <p className="text-muted-foreground mb-4">Create professional invoices with your pricing using Illumi</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

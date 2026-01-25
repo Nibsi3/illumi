@@ -4,8 +4,8 @@
 
 :root {
   /* Light Mode - Clean, modern SaaS aesthetic */
-  /* Primary background: soft off-white to reduce eye strain */
-  --background: #f8f9fa;
+  /* Primary background: pure white for clean marketing pages */
+  --background: #ffffff;
   --foreground: #1a1a1a;
   
   /* Card/Surface colors with subtle elevation */

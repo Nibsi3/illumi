@@ -105,34 +105,34 @@ export default function NewProductPage() {
       <div className="flex-1 overflow-y-auto pb-32 lg:pb-40 no-scrollbar">
         <div className="max-w-4xl mx-auto pt-8 sm:pt-12 lg:pt-16 px-4 sm:px-6 lg:px-12">
           {/* Back Link */}
-          <Link href="/products" className="inline-flex items-center gap-2 text-neutral-500 hover:text-white transition-colors mb-12 group">
+          <Link href="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-12 group">
             <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
             <span className="text-xs font-bold uppercase tracking-widest">Back to Products</span>
           </Link>
 
           <div className="flex items-center justify-between mb-20">
             <div className="flex items-center gap-6">
-              <div className="hidden sm:flex w-16 h-16 rounded-2xl bg-[#09090b] border border-white/5 items-center justify-center shadow-2xl">
-                <Package className="h-8 w-8 text-neutral-400" />
+              <div className="hidden sm:flex w-16 h-16 rounded-2xl bg-card border border-border items-center justify-center shadow-2xl">
+                <Package className="h-8 w-8 text-muted-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-5xl font-serif text-white mb-2 italic">New Product</h1>
-                <p className="text-neutral-500 font-mono text-xs sm:text-sm tracking-widest">Add a new item or service to your catalog</p>
+                <h1 className="text-3xl sm:text-5xl font-serif text-foreground mb-2 italic">New Product</h1>
+                <p className="text-muted-foreground font-mono text-xs sm:text-sm tracking-widest">Add a new item or service to your catalog</p>
               </div>
             </div>
           </div>
 
           <div className="space-y-12">
             {/* Basic Info */}
-            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Basic Information</h2>
+            <div className="bg-card border border-border rounded-2xl p-6 sm:p-12 shadow-2xl">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-8">Basic Information</h2>
               <div className="grid gap-8">
                 <div className="space-y-3">
-                  <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Product / Service Name</Label>
+                  <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Product / Service Name</Label>
                   <Input
                     placeholder="E.g. Website Design Package"
                     spellCheck={false}
-                    className="bg-transparent border-white/10 h-12 text-lg font-bold focus-visible:ring-white/20"
+                    className="bg-transparent border-border h-12 text-lg font-bold focus-visible:ring-white/20"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -140,22 +140,22 @@ export default function NewProductPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-3">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">Price (ZAR)</Label>
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Price (ZAR)</Label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 font-mono text-sm">R</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-mono text-sm">R</span>
                       <NumberInput
                         value={price}
                         onChange={(val) => setPrice(val || 0)}
-                        className="h-12 border border-white/10 rounded-md pl-12 pr-4 focus-within:ring-1 focus-within:ring-white/20"
+                        className="h-12 border border-border rounded-md pl-12 pr-4 focus-within:ring-1 focus-within:ring-white/20"
                         placeholder="5000"
                       />
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <Label className="text-xs font-bold uppercase tracking-widest text-[#878787]">SKU / ID</Label>
+                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">SKU / ID</Label>
                     <Input
                       placeholder="WEB-001"
-                      className="bg-transparent border-white/10 h-12 font-mono focus-visible:ring-white/20 uppercase"
+                      className="bg-transparent border-border h-12 font-mono focus-visible:ring-white/20 uppercase"
                       value={sku}
                       onChange={(e) => setSku(e.target.value)}
                     />
@@ -165,12 +165,12 @@ export default function NewProductPage() {
             </div>
 
             {/* Description Section */}
-            <div className="bg-[#09090b] border border-white/5 rounded-2xl p-6 sm:p-12 shadow-2xl">
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#878787] mb-8">Public Description</h2>
+            <div className="bg-card border border-border rounded-2xl p-6 sm:p-12 shadow-2xl">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-8">Public Description</h2>
               <textarea
                 placeholder="Describe this product for your clients..."
                 spellCheck={false}
-                className="w-full bg-transparent border border-white/10 rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none"
+                className="w-full bg-transparent border border-border rounded-xl p-4 h-32 focus:ring-1 focus:ring-white/20 transition-all text-sm resize-none outline-none"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -179,18 +179,18 @@ export default function NewProductPage() {
         </div>
       </div>
 
-      <div className="lg:hidden sticky bottom-0 z-30 bg-background/95 backdrop-blur border-t border-white/10 p-4">
+      <div className="lg:hidden sticky bottom-0 z-30 bg-background/95 backdrop-blur border-t border-border p-4">
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            className="h-12 flex-1 border-white/10 bg-white/5 hover:bg-white/10"
+            className="h-12 flex-1 border-border bg-muted hover:bg-accent"
             onClick={() => router.back()}
             disabled={isLoading}
           >
             Cancel
           </Button>
           <Button
-            className="h-12 flex-1 bg-white text-black hover:bg-neutral-200"
+            className="h-12 flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
             onClick={handleSave}
             disabled={isLoading}
           >
@@ -201,14 +201,14 @@ export default function NewProductPage() {
       </div>
 
       {/* Right Side Action Bar (Centrally Sticky) */}
-      <div className="hidden lg:flex w-80 border-l border-white/10 bg-[#050505] flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
+      <div className="hidden lg:flex w-80 border-l border-border bg-card flex-col h-full sticky top-0 overflow-y-auto no-scrollbar">
         {/* Status at Top */}
         <div className="p-8 shrink-0">
           <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787] mb-1">Status</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Status</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-sm font-bold text-white uppercase tracking-tighter">Ready</span>
+              <span className="text-sm font-bold text-foreground uppercase tracking-tighter">Ready</span>
             </div>
           </div>
         </div>
@@ -219,14 +219,14 @@ export default function NewProductPage() {
             {/* Tax & Visibility Above */}
             <div className="space-y-6">
               <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Tax Configuration</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Tax Configuration</span>
                 <div className="space-y-2">
-                  <Label className="text-xs text-neutral-500 font-medium">Tax Treatment</Label>
+                  <Label className="text-xs text-muted-foreground font-medium">Tax Treatment</Label>
                   <Select value={taxTreatment} onValueChange={setTaxTreatment}>
-                    <SelectTrigger className="h-10 bg-white/5 border-white/10 text-white rounded-lg">
+                    <SelectTrigger className="h-10 bg-muted border-border text-foreground rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#09090b] border-white/10 text-white">
+                    <SelectContent className="bg-card border-border text-foreground">
                       <SelectItem value="standard">Standard Rate (15%)</SelectItem>
                       <SelectItem value="exempt">Exempt</SelectItem>
                       <SelectItem value="zero">Zero-Rated</SelectItem>
@@ -236,9 +236,9 @@ export default function NewProductPage() {
               </div>
 
               <div className="space-y-4">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-[#878787]">Catalog Visibility</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Catalog Visibility</span>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-neutral-400">Show on portal</span>
+                  <span className="text-xs text-muted-foreground">Show on portal</span>
                   <div
                     className="w-10 h-5 bg-emerald-500/20 rounded-full relative cursor-pointer"
                     onClick={() => setIsVisible(!isVisible)}
@@ -253,9 +253,9 @@ export default function NewProductPage() {
             </div>
 
             {/* Actions at the bottom of the centered block */}
-            <div className="space-y-4 pt-4 border-t border-white/5">
+            <div className="space-y-4 pt-4 border-t border-border">
               <Button
-                className="w-full h-12 bg-white text-black hover:bg-neutral-200 transition-colors font-black uppercase tracking-tighter text-xs"
+                className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-black uppercase tracking-tighter text-xs"
                 onClick={handleSave}
                 disabled={isLoading}
               >
@@ -264,7 +264,7 @@ export default function NewProductPage() {
               </Button>
               <Button
                 variant="outline"
-                className="w-full h-12 border-white/10 bg-transparent hover:bg-white/5 text-white transition-colors font-bold uppercase tracking-tighter text-xs"
+                className="w-full h-12 border-border bg-transparent hover:bg-muted text-foreground transition-colors font-bold uppercase tracking-tighter text-xs"
                 onClick={() => router.back()}
               >
                 Cancel
@@ -276,3 +276,4 @@ export default function NewProductPage() {
     </div>
   )
 }
+

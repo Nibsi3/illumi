@@ -67,7 +67,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-[#09090b] border-white/10 text-white sm:max-w-[425px]">
+            <DialogContent className="bg-card border-border text-foreground sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Create New Client</DialogTitle>
                 </DialogHeader>
@@ -78,7 +78,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             placeholder="Acme Corp"
-                            className="bg-white/5 border-white/10"
+                            className="bg-muted border-border"
                             required
                         />
                     </div>
@@ -89,7 +89,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                             onChange={(e) => setEmail(e.target.value)}
                             type="email"
                             placeholder="billing@acme.com"
-                            className="bg-white/5 border-white/10"
+                            className="bg-muted border-border"
                             required
                         />
                     </div>
@@ -99,14 +99,14 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder="123 Business St..."
-                            className="bg-white/5 border-white/10"
+                            className="bg-muted border-border"
                         />
                     </div>
                     <div className="flex justify-end gap-3 pt-4">
-                        <Button type="button" variant="ghost" onClick={onClose} className="hover:bg-white/5 text-white/60 hover:text-white">
+                        <Button type="button" variant="ghost" onClick={onClose} className="hover:bg-muted text-muted-foreground hover:text-foreground">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading} className="bg-white text-black hover:bg-neutral-200">
+                        <Button type="submit" disabled={isLoading} className="bg-primary text-primary-foreground hover:bg-primary/90">
                             {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             Create Client
                         </Button>
@@ -116,3 +116,4 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
         </Dialog>
     )
 }
+

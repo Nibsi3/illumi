@@ -41,11 +41,11 @@ export function MarketingHeader() {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
             {/* Wider navigation with reduced height */}
-            <nav className="mx-auto max-w-4xl flex items-center justify-center gap-6 px-6 py-1.5 bg-background/60 backdrop-blur-xl rounded-lg border border-border">
+            <nav className="mx-auto max-w-4xl flex items-center justify-center gap-6 px-6 py-1.5 bg-white/80 dark:bg-background/60 backdrop-blur-xl rounded-lg border border-border">
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src="/logo.png"
+                        src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'}
                         alt="Illumi Logo"
                         width={24}
                         height={24}

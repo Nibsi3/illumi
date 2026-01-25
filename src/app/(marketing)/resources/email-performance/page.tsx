@@ -62,11 +62,11 @@ const subjectLineData = [
 
 export default function EmailPerformancePage() {
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-6xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
@@ -75,7 +75,7 @@ export default function EmailPerformancePage() {
                     <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
                         Invoice Email Open & Paid Rate Stats
                     </h1>
-                    <p className="text-white/60 text-lg max-w-3xl">
+                    <p className="text-muted-foreground text-lg max-w-3xl">
                         Real data on which invoice email subject lines get opened and paid fastest. 
                         Optimize your invoice emails to improve payment speed and reduce late payments.
                     </p>
@@ -83,68 +83,68 @@ export default function EmailPerformancePage() {
 
                 {/* Key Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Best Performing Subject</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Best Performing Subject</div>
                         <div className="text-2xl font-bold text-green-400">78%</div>
-                        <div className="text-xs text-white/40 mt-1">Open rate with amount + date</div>
+                        <div className="text-xs text-muted-foreground mt-1">Open rate with amount + date</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Avg Payment Speed Diff</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Avg Payment Speed Diff</div>
                         <div className="text-3xl font-bold">16 days</div>
-                        <div className="text-xs text-white/40 mt-1">Best vs worst subject line</div>
+                        <div className="text-xs text-muted-foreground mt-1">Best vs worst subject line</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Optimal Send Time</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Optimal Send Time</div>
                         <div className="text-2xl font-bold">Tue 10am</div>
-                        <div className="text-xs text-white/40 mt-1">Highest open rate</div>
+                        <div className="text-xs text-muted-foreground mt-1">Highest open rate</div>
                     </div>
                 </div>
 
                 {/* Subject Line Performance */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Subject Line Performance</h2>
                     
                     <div className="space-y-4">
                         {subjectLineData.map((data, idx) => (
-                            <div key={idx} className="rounded-xl bg-white/5 p-6">
+                            <div key={idx} className="rounded-xl bg-muted p-6">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
-                                        <h3 className="text-lg font-semibold text-white mb-2">{data.subject}</h3>
-                                        <p className="text-sm text-white/60">{data.notes}</p>
+                                        <h3 className="text-lg font-semibold text-foreground mb-2">{data.subject}</h3>
+                                        <p className="text-sm text-muted-foreground">{data.notes}</p>
                                     </div>
-                                    <div className={`text-2xl font-bold ${data.openRate > 70 ? 'text-green-400' : data.openRate > 60 ? 'text-white' : 'text-red-400'}`}>
+                                    <div className={`text-2xl font-bold ${data.openRate > 70 ? 'text-green-400' : data.openRate > 60 ? 'text-foreground' : 'text-red-400'}`}>
                                         {data.openRate}%
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
-                                        <div className="text-xs text-white/40 mb-1">Open Rate</div>
-                                        <div className="w-full bg-white/10 rounded-full h-2 mb-1">
+                                        <div className="text-xs text-muted-foreground mb-1">Open Rate</div>
+                                        <div className="w-full bg-accent rounded-full h-2 mb-1">
                                             <div 
                                                 className={`h-full rounded-full ${data.openRate > 70 ? 'bg-green-500' : data.openRate > 60 ? 'bg-blue-500' : 'bg-red-500'}`}
                                                 style={{ width: `${data.openRate}%` }}
                                             />
                                         </div>
-                                        <div className="text-sm font-semibold text-white">{data.openRate}%</div>
+                                        <div className="text-sm font-semibold text-foreground">{data.openRate}%</div>
                                     </div>
 
                                     <div>
-                                        <div className="text-xs text-white/40 mb-1">Paid Rate</div>
-                                        <div className="w-full bg-white/10 rounded-full h-2 mb-1">
+                                        <div className="text-xs text-muted-foreground mb-1">Paid Rate</div>
+                                        <div className="w-full bg-accent rounded-full h-2 mb-1">
                                             <div 
                                                 className={`h-full rounded-full ${data.paidRate > 60 ? 'bg-green-500' : data.paidRate > 50 ? 'bg-blue-500' : 'bg-red-500'}`}
                                                 style={{ width: `${data.paidRate}%` }}
                                             />
                                         </div>
-                                        <div className="text-sm font-semibold text-white">{data.paidRate}%</div>
+                                        <div className="text-sm font-semibold text-foreground">{data.paidRate}%</div>
                                     </div>
 
                                     <div>
-                                        <div className="text-xs text-white/40 mb-1">Avg Payment Time</div>
-                                        <div className="text-sm font-semibold text-white">{data.avgDays} days</div>
+                                        <div className="text-xs text-muted-foreground mb-1">Avg Payment Time</div>
+                                        <div className="text-sm font-semibold text-foreground">{data.avgDays} days</div>
                                     </div>
                                 </div>
                             </div>
@@ -153,12 +153,12 @@ export default function EmailPerformancePage() {
                 </div>
 
                 {/* Send Time Optimization */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Best Time to Send Invoice Emails</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <h3 className="text-lg font-semibold mb-4 text-white">By Day of Week</h3>
+                            <h3 className="text-lg font-semibold mb-4 text-foreground">By Day of Week</h3>
                             <div className="space-y-3">
                                 {[
                                     { day: "Tuesday", openRate: 72, paidRate: 64 },
@@ -169,10 +169,10 @@ export default function EmailPerformancePage() {
                                     { day: "Weekend", openRate: 32, paidRate: 28 },
                                 ].map((data) => (
                                     <div key={data.day} className="flex items-center justify-between">
-                                        <span className="text-white/80">{data.day}</span>
+                                        <span className="text-foreground">{data.day}</span>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-sm text-white/60">Open: {data.openRate}%</span>
-                                            <span className="text-sm text-white/60">Paid: {data.paidRate}%</span>
+                                            <span className="text-sm text-muted-foreground">Open: {data.openRate}%</span>
+                                            <span className="text-sm text-muted-foreground">Paid: {data.paidRate}%</span>
                                         </div>
                                     </div>
                                 ))}
@@ -180,7 +180,7 @@ export default function EmailPerformancePage() {
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-4 text-white">By Time of Day</h3>
+                            <h3 className="text-lg font-semibold mb-4 text-foreground">By Time of Day</h3>
                             <div className="space-y-3">
                                 {[
                                     { time: "10:00 AM", openRate: 75, paidRate: 66 },
@@ -191,10 +191,10 @@ export default function EmailPerformancePage() {
                                     { time: "After 6 PM", openRate: 42, paidRate: 38 },
                                 ].map((data) => (
                                     <div key={data.time} className="flex items-center justify-between">
-                                        <span className="text-white/80">{data.time}</span>
+                                        <span className="text-foreground">{data.time}</span>
                                         <div className="flex items-center gap-4">
-                                            <span className="text-sm text-white/60">Open: {data.openRate}%</span>
-                                            <span className="text-sm text-white/60">Paid: {data.paidRate}%</span>
+                                            <span className="text-sm text-muted-foreground">Open: {data.openRate}%</span>
+                                            <span className="text-sm text-muted-foreground">Paid: {data.paidRate}%</span>
                                         </div>
                                     </div>
                                 ))}
@@ -210,14 +210,14 @@ export default function EmailPerformancePage() {
                 </div>
 
                 {/* Email Content Best Practices */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Email Content Best Practices</h2>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
                             <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
                                 <h3 className="font-semibold mb-2 text-green-400">✓ Do This</h3>
-                                <ul className="space-y-2 text-sm text-white/80">
+                                <ul className="space-y-2 text-sm text-foreground">
                                     <li>• Include invoice number in subject</li>
                                     <li>• Show amount due in subject or preview</li>
                                     <li>• Add due date for urgency</li>
@@ -233,7 +233,7 @@ export default function EmailPerformancePage() {
                         <div className="space-y-4">
                             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
                                 <h3 className="font-semibold mb-2 text-red-400">✗ Avoid This</h3>
-                                <ul className="space-y-2 text-sm text-white/80">
+                                <ul className="space-y-2 text-sm text-foreground">
                                     <li>• Vague subjects like "Invoice attached"</li>
                                     <li>• Sending on weekends or after 6 PM</li>
                                     <li>• All caps or excessive punctuation!!!</li>
@@ -249,36 +249,36 @@ export default function EmailPerformancePage() {
                 </div>
 
                 {/* Key Insights */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Key Insights</h2>
                     <div className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Including amount + due date increases payment speed by 27%</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Including amount + due date increases payment speed by 27%</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Subject lines with both amount and due date get paid in 22 days vs 30 days for generic subjects. 
                                 The urgency and clarity drive faster action.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Tuesday 10 AM is the sweet spot</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Tuesday 10 AM is the sweet spot</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Emails sent Tuesday at 10 AM have 75% open rates vs 32% on weekends. People are settled into their week 
                                 but not yet overwhelmed. Avoid Mondays (inbox overload) and Fridays (weekend mode).
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">"Pay Now" buttons reduce payment time by 40%</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">"Pay Now" buttons reduce payment time by 40%</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Invoices with integrated payment buttons (PayFast, Yoco, Ozow) get paid in 18 days vs 30 days for 
                                 manual EFT instructions. Remove friction = faster payment.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Vague subjects kill engagement</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Vague subjects kill engagement</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 "Invoice attached" has only 42% open rate and 35% paid rate. It's often flagged as spam or ignored. 
                                 Be specific: include company name, invoice number, and amount.
                             </p>
@@ -287,7 +287,7 @@ export default function EmailPerformancePage() {
                 </div>
 
                 {/* Optimization Checklist */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">Email Optimization Checklist</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {[
@@ -304,11 +304,11 @@ export default function EmailPerformancePage() {
                             "Include itemized breakdown",
                             "Set up automated payment reminders",
                         ].map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-white/5">
+                            <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted">
                                 <div className="w-5 h-5 rounded bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
                                     <span className="text-green-400 text-xs">✓</span>
                                 </div>
-                                <span className="text-sm text-white/80">{item}</span>
+                                <span className="text-sm text-foreground">{item}</span>
                             </div>
                         ))}
                     </div>
@@ -316,10 +316,10 @@ export default function EmailPerformancePage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Send optimized invoice emails automatically with Illumi</p>
+                    <p className="text-muted-foreground mb-4">Send optimized invoice emails automatically with Illumi</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

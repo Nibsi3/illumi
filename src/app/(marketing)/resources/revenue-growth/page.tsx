@@ -37,11 +37,11 @@ const growthBySector = [
 
 export default function RevenueGrowthPage() {
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-6xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
@@ -50,7 +50,7 @@ export default function RevenueGrowthPage() {
                     <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
                         SME Revenue Growth Benchmarks Year-on-Year
                     </h1>
-                    <p className="text-white/60 text-lg max-w-3xl">
+                    <p className="text-muted-foreground text-lg max-w-3xl">
                         Real revenue growth data from South African SMEs. Understand typical growth rates by business age 
                         and sector to set realistic targets and measure your performance.
                     </p>
@@ -58,51 +58,51 @@ export default function RevenueGrowthPage() {
 
                 {/* Key Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Year 2 Average Growth</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Year 2 Average Growth</div>
                         <div className="text-3xl font-bold text-green-400">+45%</div>
-                        <div className="text-xs text-white/40 mt-1">Highest growth year</div>
+                        <div className="text-xs text-muted-foreground mt-1">Highest growth year</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">Fastest Growing Sector</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">Fastest Growing Sector</div>
                         <div className="text-2xl font-bold">SaaS</div>
-                        <div className="text-xs text-white/40 mt-1">65% year 1 growth</div>
+                        <div className="text-xs text-muted-foreground mt-1">65% year 1 growth</div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-6">
-                        <div className="text-sm text-white/60 mb-1">5-Year Survival Rate</div>
+                    <div className="rounded-2xl border border-border bg-card p-6">
+                        <div className="text-sm text-muted-foreground mb-1">5-Year Survival Rate</div>
                         <div className="text-3xl font-bold">33%</div>
-                        <div className="text-xs text-white/40 mt-1">Of businesses reach year 5</div>
+                        <div className="text-xs text-muted-foreground mt-1">Of businesses reach year 5</div>
                     </div>
                 </div>
 
                 {/* Growth by Age */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Revenue Growth by Business Age</h2>
                     
                     <div className="space-y-4">
                         {growthByAge.map((data) => (
-                            <div key={data.age} className="rounded-xl bg-white/5 p-6">
+                            <div key={data.age} className="rounded-xl bg-muted p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <div>
-                                        <h3 className="text-lg font-semibold text-white">{data.age}</h3>
-                                        <p className="text-sm text-white/60">{data.businesses.toLocaleString()} businesses</p>
+                                        <h3 className="text-lg font-semibold text-foreground">{data.age}</h3>
+                                        <p className="text-sm text-muted-foreground">{data.businesses.toLocaleString()} businesses</p>
                                     </div>
                                     <div className="text-right">
-                                        <div className={`text-3xl font-bold ${data.avgGrowth > 30 ? 'text-green-400' : data.avgGrowth > 15 ? 'text-white' : 'text-white/60'}`}>
+                                        <div className={`text-3xl font-bold ${data.avgGrowth > 30 ? 'text-green-400' : data.avgGrowth > 15 ? 'text-foreground' : 'text-muted-foreground'}`}>
                                             {data.avgGrowth > 0 ? '+' : ''}{data.avgGrowth}%
                                         </div>
-                                        <div className="text-xs text-white/40 mt-1">Average YoY growth</div>
+                                        <div className="text-xs text-muted-foreground mt-1">Average YoY growth</div>
                                     </div>
                                 </div>
 
                                 <div className="mb-2">
-                                    <div className="flex items-center justify-between text-xs text-white/40 mb-1">
+                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                                         <span>Growth Range</span>
                                         <span>{data.range}</span>
                                     </div>
-                                    <div className="w-full bg-white/10 rounded-full h-2">
+                                    <div className="w-full bg-accent rounded-full h-2">
                                         <div 
                                             className={`h-full rounded-full ${data.avgGrowth > 30 ? 'bg-green-500' : data.avgGrowth > 15 ? 'bg-blue-500' : 'bg-white/40'}`}
                                             style={{ width: `${Math.min(data.avgGrowth, 100)}%` }}
@@ -115,36 +115,36 @@ export default function RevenueGrowthPage() {
                 </div>
 
                 {/* Growth by Sector */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] overflow-hidden mb-12">
-                    <div className="p-6 border-b border-white/10">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden mb-12">
+                    <div className="p-6 border-b border-border">
                         <h2 className="text-xl font-semibold">Revenue Growth by Sector (%)</h2>
-                        <p className="text-sm text-white/60 mt-1">Year-on-year growth rates for first 5 years</p>
+                        <p className="text-sm text-muted-foreground mt-1">Year-on-year growth rates for first 5 years</p>
                     </div>
                     
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="border-b border-white/10">
+                            <thead className="border-b border-border">
                                 <tr className="text-left">
-                                    <th className="p-4 text-sm font-semibold text-white/80">Sector</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Year 1→2</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Year 2→3</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Year 3→4</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">Year 4→5</th>
-                                    <th className="p-4 text-sm font-semibold text-white/80">5-Yr Avg</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Sector</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Year 1→2</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Year 2→3</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Year 3→4</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">Year 4→5</th>
+                                    <th className="p-4 text-sm font-semibold text-foreground">5-Yr Avg</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {growthBySector.map((row, idx) => {
                                     const fiveYearAvg = Math.round((row.year1 + row.year2 + row.year3 + row.year4 + row.year5) / 5)
                                     return (
-                                        <tr key={row.sector} className={idx !== growthBySector.length - 1 ? "border-b border-white/5" : ""}>
-                                            <td className="p-4 text-white">{row.sector}</td>
+                                        <tr key={row.sector} className={idx !== growthBySector.length - 1 ? "border-b border-border" : ""}>
+                                            <td className="p-4 text-foreground">{row.sector}</td>
                                             <td className="p-4 text-green-400 font-semibold">+{row.year1}%</td>
-                                            <td className="p-4 text-white/70">+{row.year2}%</td>
-                                            <td className="p-4 text-white/70">+{row.year3}%</td>
-                                            <td className="p-4 text-white/70">+{row.year4}%</td>
+                                            <td className="p-4 text-muted-foreground">+{row.year2}%</td>
+                                            <td className="p-4 text-muted-foreground">+{row.year3}%</td>
+                                            <td className="p-4 text-muted-foreground">+{row.year4}%</td>
                                             <td className="p-4">
-                                                <span className={`font-semibold ${fiveYearAvg > 30 ? 'text-green-400' : fiveYearAvg > 20 ? 'text-white' : 'text-white/60'}`}>
+                                                <span className={`font-semibold ${fiveYearAvg > 30 ? 'text-green-400' : fiveYearAvg > 20 ? 'text-foreground' : 'text-muted-foreground'}`}>
                                                     +{fiveYearAvg}%
                                                 </span>
                                             </td>
@@ -157,36 +157,36 @@ export default function RevenueGrowthPage() {
                 </div>
 
                 {/* Key Insights */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8 mb-12">
+                <div className="rounded-2xl border border-border bg-card p-8 mb-12">
                     <h2 className="text-2xl font-semibold mb-6">Key Insights</h2>
                     <div className="space-y-6">
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Year 2 is the highest growth year</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Year 2 is the highest growth year</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Businesses experience their fastest growth in year 2 (45% average), after establishing product-market fit 
                                 and initial customer base. This is when you should invest heavily in scaling.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Growth slows but stabilizes over time</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Growth slows but stabilizes over time</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 Growth rates decline from 45% in year 2 to 18% by year 5, but become more predictable. 
                                 Mature businesses (6+ years) grow at 12% annually with less volatility.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Tech businesses grow 2-3x faster</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Tech businesses grow 2-3x faster</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 SaaS and e-commerce businesses grow 2-3x faster than traditional sectors (retail, construction) 
                                 due to scalability and lower marginal costs. Year 1 growth: 65% vs 22%.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-semibold mb-2 text-white">Only 1 in 3 businesses reach year 5</h3>
-                            <p className="text-white/60 leading-relaxed">
+                            <h3 className="text-lg font-semibold mb-2 text-foreground">Only 1 in 3 businesses reach year 5</h3>
+                            <p className="text-muted-foreground leading-relaxed">
                                 The survival rate drops from 2,500 businesses in year 1 to 820 by year 5 (33% survival). 
                                 The biggest drop-off happens between years 2-3 when growth slows and cash flow challenges emerge.
                             </p>
@@ -195,52 +195,52 @@ export default function RevenueGrowthPage() {
                 </div>
 
                 {/* Growth Strategies */}
-                <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">How to Accelerate Growth</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">1. Add Recurring Revenue</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">1. Add Recurring Revenue</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Businesses with 60%+ recurring revenue grow 3x faster (54% vs 18% annually). 
                                 Convert projects to retainers or subscriptions.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">2. Invest in Year 2</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">2. Invest in Year 2</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Year 2 is your growth window. Reinvest 40-60% of profits into marketing, hiring, and product 
                                 to maximize the high-growth period.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">3. Focus on Retention</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">3. Focus on Retention</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Businesses with 80%+ customer retention grow 2.5x faster. It's cheaper to keep customers 
                                 than acquire new ones.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">4. Increase Prices Annually</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">4. Increase Prices Annually</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Raise prices 10-15% per year for new clients, 5-8% for existing. This alone can drive 
                                 10-12% revenue growth without new customers.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">5. Expand Service Offerings</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">5. Expand Service Offerings</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Businesses that add complementary services grow 35% faster. Cross-sell and upsell to 
                                 increase revenue per customer.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">6. Automate & Delegate</h3>
-                            <p className="text-sm text-white/60">
+                            <h3 className="font-semibold mb-2 text-foreground">6. Automate & Delegate</h3>
+                            <p className="text-sm text-muted-foreground">
                                 Founders who delegate operational tasks and automate processes grow 2x faster. 
                                 Focus your time on sales and strategy.
                             </p>
@@ -250,10 +250,10 @@ export default function RevenueGrowthPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Track your revenue growth and compare against benchmarks with Illumi</p>
+                    <p className="text-muted-foreground mb-4">Track your revenue growth and compare against benchmarks with Illumi</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

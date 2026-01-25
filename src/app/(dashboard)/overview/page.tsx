@@ -674,23 +674,23 @@ export default function DashboardPage() {
             {view === "overview" ? (
                 <div className="flex-1 flex flex-col gap-4">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
-                        <Card className="lg:col-span-7 bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors">
+                        <Card className="lg:col-span-7 bg-card border border-border rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-accent/50 transition-colors">
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                        <IconReceipt className="h-5 w-5 text-white/60" />
-                                        <h2 className="text-2xl sm:text-3xl font-serif italic text-white">Revenue</h2>
+                                        <IconReceipt className="h-5 w-5 text-muted-foreground" />
+                                        <h2 className="text-2xl sm:text-3xl font-serif italic text-foreground">Revenue</h2>
                                     </div>
-                                    <p className="text-xs sm:text-sm text-white/40 max-w-[320px]">
+                                    <p className="text-xs sm:text-sm text-muted-foreground max-w-[320px]">
                                         Track changes in income over time and access detailed data on each invoice and payments received
                                     </p>
                                 </div>
-                                <div className="text-xs sm:text-sm text-white/40">{period}</div>
+                                <div className="text-xs sm:text-sm text-muted-foreground">{period}</div>
                             </div>
 
                             <div className="relative flex items-center justify-center h-7 mb-4">
-                                <div className="absolute bg-[#111] border border-white/10 rounded-lg px-3 py-1.5 shadow-lg">
-                                    <span className="text-sm sm:text-base font-medium text-white">{currency} {Math.round(selectedBucketValue).toLocaleString()}</span>
+                                <div className="absolute bg-secondary border border-border rounded-lg px-3 py-1.5 shadow-lg">
+                                    <span className="text-sm sm:text-base font-medium text-foreground">{currency} {Math.round(selectedBucketValue).toLocaleString()}</span>
                                 </div>
                             </div>
 
@@ -705,29 +705,29 @@ export default function DashboardPage() {
                                         }}
                                         onMouseLeave={() => setHoveredBucketIndex(null)}
                                     >
-                                        <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={true} horizontal={true} />
+                                        <CartesianGrid stroke="var(--border)" strokeOpacity={0.5} vertical={true} horizontal={true} />
                                         <XAxis
                                             dataKey="label"
-                                            tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 10 }}
-                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
-                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
+                                            axisLine={{ stroke: 'var(--border)' }}
+                                            tickLine={{ stroke: 'var(--border)' }}
                                         />
                                         <YAxis
-                                            tick={{ fill: 'rgba(255,255,255,0.55)', fontSize: 10 }}
-                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
-                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
+                                            axisLine={{ stroke: 'var(--border)' }}
+                                            tickLine={{ stroke: 'var(--border)' }}
                                             width={44}
                                         />
                                         <Tooltip
-                                            cursor={{ stroke: 'rgba(255,255,255,0.16)', strokeWidth: 1 }}
+                                            cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
                                             content={({ active, payload, label }: any) => {
                                                 if (!active || !payload?.length) return null
                                                 const v = payload[0]?.value || 0
                                                 return (
-                                                    <div className="bg-black/90 backdrop-blur border border-white/15 rounded-xl px-3 py-2 shadow-2xl">
-                                                        <div className="text-[10px] uppercase tracking-widest text-white/50">{label}</div>
-                                                        <div className="text-base font-semibold text-white leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
-                                                        <div className="text-[10px] text-white/40">Hover to explore</div>
+                                                    <div className="bg-background/90 backdrop-blur border border-border rounded-xl px-3 py-2 shadow-2xl">
+                                                        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+                                                        <div className="text-base font-semibold text-foreground leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
+                                                        <div className="text-[10px] text-muted-foreground">Hover to explore</div>
                                                     </div>
                                                 )
                                             }}
@@ -735,10 +735,10 @@ export default function DashboardPage() {
                                         <Line
                                             type="monotone"
                                             dataKey="value"
-                                            stroke="rgba(255,255,255,0.75)"
+                                            stroke="var(--primary)"
                                             strokeWidth={2}
                                             dot={false}
-                                            activeDot={{ r: 6, fill: '#ffffff', stroke: 'rgba(0,0,0,0.0)' }}
+                                            activeDot={{ r: 6, fill: 'var(--primary)', stroke: 'transparent' }}
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
@@ -746,41 +746,41 @@ export default function DashboardPage() {
 
                             <div className="flex items-end justify-between">
                                 <div>
-                                    <div className="text-3xl font-serif font-bold italic text-white">{incomeTrackerChangePct >= 0 ? '+' : ''}{incomeTrackerChangePct}%</div>
-                                    <p className="text-xs text-white/40">Compared to previous {period === 'Year' ? 'month' : period === 'Month' ? 'week' : 'day'}</p>
+                                    <div className="text-3xl font-serif font-bold italic text-foreground">{incomeTrackerChangePct >= 0 ? '+' : ''}{incomeTrackerChangePct}%</div>
+                                    <p className="text-xs text-muted-foreground">Compared to previous {period === 'Year' ? 'month' : period === 'Month' ? 'week' : 'day'}</p>
                                 </div>
                             </div>
                         </Card>
 
-                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl flex flex-col">
+                        <Card className="lg:col-span-5 bg-card border border-border rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl flex flex-col">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm sm:text-base font-medium text-white">Recent Payments</h3>
-                                <Link href="/invoices" className="text-xs sm:text-sm text-white/60 hover:text-white transition-colors">
+                                <h3 className="text-sm sm:text-base font-medium text-foreground">Recent Payments</h3>
+                                <Link href="/invoices" className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">
                                     See all
                                 </Link>
                             </div>
                             <div className="flex-1 flex flex-col gap-3 overflow-hidden">
                                 {computedRecentPayments.length === 0 ? (
-                                    <div className="flex-1 flex items-center justify-center text-white/30 text-sm">No recent payments yet</div>
+                                    <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">No recent payments yet</div>
                                 ) : (
                                     computedRecentPayments.slice(0, 4).map((p, i) => (
                                         <button
                                             key={`payment-${i}`}
                                             type="button"
                                             onClick={() => router.push('/invoices')}
-                                            className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
+                                            className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-accent transition-colors text-left"
                                         >
-                                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                                                <IconReceipt className="h-5 w-5 text-white" />
+                                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+                                                <IconReceipt className="h-5 w-5 text-foreground" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-medium text-white truncate">{p.customerName || 'Invoice'}</span>
-                                                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-white/10 text-white">Paid</span>
+                                                    <span className="text-sm font-medium text-foreground truncate">{p.customerName || 'Invoice'}</span>
+                                                    <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-success/20 text-success">Paid</span>
                                                 </div>
-                                                <span className="text-xs text-white/40">{currency} {Math.round(p.amount).toLocaleString()}</span>
+                                                <span className="text-xs text-muted-foreground">{currency} {Math.round(p.amount).toLocaleString()}</span>
                                             </div>
-                                            <IconChevronDown className="h-4 w-4 text-white/20 -rotate-90" />
+                                            <IconChevronDown className="h-4 w-4 text-muted-foreground -rotate-90" />
                                         </button>
                                     ))
                                 )}
@@ -789,10 +789,10 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors">
+                        <Card className="bg-card border border-border rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-accent/50 transition-colors">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm sm:text-base font-medium text-white">Top Clients</h3>
-                                <button type="button" onClick={() => router.push('/clients')} className="text-xs sm:text-sm text-white/40 hover:text-white/60 transition-colors">See all</button>
+                                <h3 className="text-sm sm:text-base font-medium text-foreground">Top Clients</h3>
+                                <button type="button" onClick={() => router.push('/clients')} className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">See all</button>
                             </div>
                             <div className="space-y-2">
                                 {computedCashFlowMetrics.topClients.slice(0, 3).map((client, i) => (
@@ -800,57 +800,57 @@ export default function DashboardPage() {
                                         key={`tc-${i}`}
                                         type="button"
                                         onClick={() => router.push('/clients')}
-                                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors text-left"
+                                        className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-medium text-white">
+                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-foreground">
                                             {client.name?.charAt(0) || 'C'}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-xs sm:text-sm font-medium text-white truncate">{client.name}</div>
-                                            <div className="text-[10px] text-white/40">{client.count} invoices</div>
+                                            <div className="text-xs sm:text-sm font-medium text-foreground truncate">{client.name}</div>
+                                            <div className="text-[10px] text-muted-foreground">{client.count} invoices</div>
                                         </div>
-                                        <span className="text-xs sm:text-sm text-white/60">{currency} {client.total.toLocaleString()}</span>
+                                        <span className="text-xs sm:text-sm text-muted-foreground">{currency} {client.total.toLocaleString()}</span>
                                     </button>
                                 ))}
                                 {computedCashFlowMetrics.topClients.length === 0 && (
-                                    <div className="text-center text-white/30 text-xs py-4">No client data yet</div>
+                                    <div className="text-center text-muted-foreground text-xs py-4">No client data yet</div>
                                 )}
                             </div>
                         </Card>
 
                         <Card
-                            className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
+                            className="bg-card border border-border rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl hover:bg-accent/50 transition-colors cursor-pointer"
                             onClick={() => router.push('/recurring')}
                             role="button"
                             tabIndex={0}
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm sm:text-base font-medium text-white">Monthly Revenue</h3>
-                                <span className="text-[10px] text-white/40">MRR</span>
+                                <h3 className="text-sm sm:text-base font-medium text-foreground">Monthly Revenue</h3>
+                                <span className="text-[10px] text-muted-foreground">MRR</span>
                             </div>
-                            <div className="text-2xl sm:text-3xl font-serif font-bold italic text-white mb-1">
+                            <div className="text-2xl sm:text-3xl font-serif font-bold italic text-foreground mb-1">
                                 {currency} {computedMetrics.recurring.toLocaleString()}
                             </div>
-                            <p className="text-xs sm:text-sm text-white/40">Recurring revenue (monthly equivalent)</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Recurring revenue (monthly equivalent)</p>
                         </Card>
 
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
+                        <Card className="bg-card border border-border rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm sm:text-base font-medium text-white">Invoice Progress</h3>
-                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs sm:text-sm text-white/40 hover:text-white/60 transition-colors">View</button>
+                                <h3 className="text-sm sm:text-base font-medium text-foreground">Invoice Progress</h3>
+                                <button type="button" onClick={() => router.push('/invoices')} className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">View</button>
                             </div>
                             <div className="grid grid-cols-3 gap-4 mb-3">
-                                <button type="button" onClick={() => router.push('/invoices?status=pending')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.pendingCount}</div>
-                                    <div className="text-[10px] text-white/40">Pending</div>
+                                <button type="button" onClick={() => router.push('/invoices?status=pending')} className="text-center hover:bg-accent rounded-lg py-2 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-foreground">{invoiceProgress.pendingCount}</div>
+                                    <div className="text-[10px] text-muted-foreground">Pending</div>
                                 </button>
-                                <button type="button" onClick={() => router.push('/clients')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.clientsCount}</div>
-                                    <div className="text-[10px] text-white/40">Clients</div>
+                                <button type="button" onClick={() => router.push('/clients')} className="text-center hover:bg-accent rounded-lg py-2 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-foreground">{invoiceProgress.clientsCount}</div>
+                                    <div className="text-[10px] text-muted-foreground">Clients</div>
                                 </button>
-                                <button type="button" onClick={() => router.push('/invoices')} className="text-center hover:bg-white/5 rounded-lg py-2 transition-colors">
-                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-white">{invoiceProgress.paidCount}</div>
-                                    <div className="text-[10px] text-white/40">Paid</div>
+                                <button type="button" onClick={() => router.push('/invoices')} className="text-center hover:bg-accent rounded-lg py-2 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-serif font-bold italic text-foreground">{invoiceProgress.paidCount}</div>
+                                    <div className="text-[10px] text-muted-foreground">Paid</div>
                                 </button>
                             </div>
                         </Card>
@@ -860,32 +860,32 @@ export default function DashboardPage() {
                 <div className="flex-1 flex flex-col gap-4">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
                         <Card
-                            className="lg:col-span-7 bg-[#0c0c0c] border border-white/5 rounded-3xl p-8 shadow-2xl hover:bg-white/2 transition-colors cursor-pointer"
+                            className="lg:col-span-7 bg-card border border-border rounded-3xl p-8 shadow-2xl hover:bg-accent/50 transition-colors cursor-pointer"
                             onClick={() => router.push('/overview')}
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                        <IconFileAnalytics className="h-5 w-5 text-white/60" />
-                                        <h2 className="text-2xl font-serif italic text-white">Cash Flow</h2>
+                                        <IconFileAnalytics className="h-5 w-5 text-muted-foreground" />
+                                        <h2 className="text-2xl font-serif italic text-foreground">Cash Flow</h2>
                                     </div>
-                                    <p className="text-xs text-white/40 max-w-[320px]">
+                                    <p className="text-xs text-muted-foreground max-w-[320px]">
                                         Snapshot of receivables, expenses, and profitability. Click any card to drill in.
                                     </p>
                                 </div>
-                                <div className="text-xs text-white/40">{period}</div>
+                                <div className="text-xs text-muted-foreground">{period}</div>
                             </div>
 
                             <div className="flex items-baseline justify-between gap-6 mb-6">
                                 <div>
-                                    <div className="text-xs text-white/40">Projected Annual Revenue</div>
-                                    <div className="text-3xl font-serif font-bold italic text-white">
+                                    <div className="text-xs text-muted-foreground">Projected Annual Revenue</div>
+                                    <div className="text-3xl font-serif font-bold italic text-foreground">
                                         {currency} {Math.round(computedCashFlowMetrics.projectedRevenue).toLocaleString()}
                                     </div>
                                 </div>
                                 <Button
                                     variant="outline"
-                                    className="h-8 px-4 bg-white/5 border-white/10 rounded-full text-xs text-white hover:bg-white/10"
+                                    className="h-8 px-4 bg-muted border-border rounded-full text-xs text-foreground hover:bg-accent"
                                     onClick={(e) => {
                                         e.stopPropagation()
                                         router.push('/invoices')
@@ -906,28 +906,28 @@ export default function DashboardPage() {
                                         }}
                                         onMouseLeave={() => setHoveredBucketIndex(null)}
                                     >
-                                        <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={true} horizontal={true} />
+                                        <CartesianGrid stroke="var(--border)" strokeOpacity={0.5} vertical={true} horizontal={true} />
                                         <XAxis
                                             dataKey="label"
-                                            tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
-                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
-                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 9 }}
+                                            axisLine={{ stroke: 'var(--border)' }}
+                                            tickLine={{ stroke: 'var(--border)' }}
                                         />
                                         <YAxis
-                                            tick={{ fill: 'rgba(255,255,255,0.45)', fontSize: 9 }}
-                                            axisLine={{ stroke: 'rgba(255,255,255,0.10)' }}
-                                            tickLine={{ stroke: 'rgba(255,255,255,0.10)' }}
+                                            tick={{ fill: 'var(--muted-foreground)', fontSize: 9 }}
+                                            axisLine={{ stroke: 'var(--border)' }}
+                                            tickLine={{ stroke: 'var(--border)' }}
                                             width={36}
                                         />
                                         <Tooltip
-                                            cursor={{ stroke: 'rgba(255,255,255,0.16)', strokeWidth: 1 }}
+                                            cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
                                             content={({ active, payload, label }: any) => {
                                                 if (!active || !payload?.length) return null
                                                 const v = payload[0]?.value || 0
                                                 return (
-                                                    <div className="bg-black/90 backdrop-blur border border-white/15 rounded-xl px-3 py-2 shadow-2xl">
-                                                        <div className="text-[10px] uppercase tracking-widest text-white/50">{label}</div>
-                                                        <div className="text-sm font-semibold text-white leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
+                                                    <div className="bg-background/90 backdrop-blur border border-border rounded-xl px-3 py-2 shadow-2xl">
+                                                        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
+                                                        <div className="text-sm font-semibold text-foreground leading-tight">{currency} {Math.round(v).toLocaleString()}</div>
                                                     </div>
                                                 )
                                             }}
@@ -935,26 +935,26 @@ export default function DashboardPage() {
                                         <Line
                                             type="monotone"
                                             dataKey="value"
-                                            stroke="rgba(255,255,255,0.75)"
+                                            stroke="var(--primary)"
                                             strokeWidth={2}
                                             dot={false}
-                                            activeDot={{ r: 5, fill: '#ffffff', stroke: 'rgba(0,0,0,0.0)' }}
+                                            activeDot={{ r: 5, fill: 'var(--primary)', stroke: 'transparent' }}
                                         />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
                         </Card>
 
-                        <Card className="lg:col-span-5 bg-[#0c0c0c] border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col">
+                        <Card className="lg:col-span-5 bg-card border border-border rounded-3xl p-6 shadow-xl flex flex-col">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-medium text-white">Top Clients by Revenue</h3>
-                                <Link href="/clients" className="text-xs text-white/60 hover:text-white transition-colors">
+                                <h3 className="text-sm font-medium text-foreground">Top Clients by Revenue</h3>
+                                <Link href="/clients" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                                     See all
                                 </Link>
                             </div>
                             <div className="flex-1 flex flex-col gap-3 overflow-hidden">
                                 {computedCashFlowMetrics.topClients.length === 0 ? (
-                                    <div className="flex-1 flex items-center justify-center text-white/30 text-sm">
+                                    <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
                                         No client data yet
                                     </div>
                                 ) : (
@@ -962,20 +962,20 @@ export default function DashboardPage() {
                                         const maxTotal = computedCashFlowMetrics.topClients[0]?.total || 1
                                         const widthPercent = (client.total / maxTotal) * 100
                                         return (
-                                            <div key={`client-${i}`} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-                                                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                                                    <span className="text-sm font-medium text-white">{client.name.charAt(0)}</span>
+                                            <div key={`client-${i}`} className="flex items-center gap-3 p-3 rounded-xl bg-muted/50 hover:bg-accent transition-colors cursor-pointer group">
+                                                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                                                    <span className="text-sm font-medium text-foreground">{client.name.charAt(0)}</span>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="text-sm font-medium text-white truncate">{client.name}</div>
+                                                    <div className="text-sm font-medium text-foreground truncate">{client.name}</div>
                                                     <div className="flex items-center gap-2">
-                                                        <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
-                                                            <div className="h-full bg-white rounded-full transition-all" style={{ width: `${widthPercent}%` }} />
+                                                        <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
+                                                            <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${widthPercent}%` }} />
                                                         </div>
-                                                        <span className="text-xs text-white/40">{client.count} inv</span>
+                                                        <span className="text-xs text-muted-foreground">{client.count} inv</span>
                                                     </div>
                                                 </div>
-                                                <span className="text-sm font-medium text-white">{currency} {client.total.toLocaleString()}</span>
+                                                <span className="text-sm font-medium text-foreground">{currency} {client.total.toLocaleString()}</span>
                                             </div>
                                         )
                                     })
@@ -987,19 +987,19 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Outstanding & Overdue Card */}
                         <Link href="/invoices?status=pending" className="block">
-                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                            <Card className="bg-card border border-border rounded-3xl p-5 shadow-xl hover:bg-accent/50 transition-all cursor-pointer h-full">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-sm font-medium text-white">Outstanding</h3>
-                                    <span className="text-xs text-white/40">Receivable</span>
+                                    <h3 className="text-sm font-medium text-foreground">Outstanding</h3>
+                                    <span className="text-xs text-muted-foreground">Receivable</span>
                                 </div>
-                                <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                                <div className="text-2xl font-serif font-bold italic text-foreground mb-1">
                                     {currency} {computedCashFlowMetrics.outstanding.toLocaleString()}
                                 </div>
-                                <p className="text-xs text-white/40 mb-3">Awaiting payment</p>
-                                <div className="flex items-center gap-4 pt-3 border-t border-white/5">
+                                <p className="text-xs text-muted-foreground mb-3">Awaiting payment</p>
+                                <div className="flex items-center gap-4 pt-3 border-t border-border">
                                     <div>
-                                        <div className="text-lg font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.overdue.toLocaleString()}</div>
-                                        <div className="text-[10px] text-white/40">Overdue</div>
+                                        <div className="text-lg font-serif font-bold italic text-foreground">{currency} {computedCashFlowMetrics.overdue.toLocaleString()}</div>
+                                        <div className="text-[10px] text-muted-foreground">Overdue</div>
                                     </div>
                                 </div>
                             </Card>
@@ -1007,40 +1007,40 @@ export default function DashboardPage() {
 
                         {/* Expenses & Net Profit Card */}
                         <Link href="/expenses" className="block">
-                            <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                            <Card className="bg-card border border-border rounded-3xl p-5 shadow-xl hover:bg-accent/50 transition-all cursor-pointer h-full">
                                 <div className="flex items-center justify-between mb-3">
-                                    <h3 className="text-sm font-medium text-white">Expenses</h3>
-                                    <span className="text-xs text-white/40">Monthly</span>
+                                    <h3 className="text-sm font-medium text-foreground">Expenses</h3>
+                                    <span className="text-xs text-muted-foreground">Monthly</span>
                                 </div>
-                                <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                                <div className="text-2xl font-serif font-bold italic text-foreground mb-1">
                                     {currency} {(computedMonthlyExpenses[new Date().getMonth()]?.total || 0).toLocaleString()}
                                 </div>
-                                <p className="text-xs text-white/40 mb-3">This month's expenses</p>
-                                <div className="flex items-center gap-4 pt-3 border-t border-white/5">
+                                <p className="text-xs text-muted-foreground mb-3">This month's expenses</p>
+                                <div className="flex items-center gap-4 pt-3 border-t border-border">
                                     <div>
-                                        <div className={cn("text-lg font-serif font-bold italic", computedNetProfitYTD >= 0 ? "text-white" : "text-red-400")}>
+                                        <div className={cn("text-lg font-serif font-bold italic", computedNetProfitYTD >= 0 ? "text-foreground" : "text-destructive")}>
                                             {currency} {Math.round(computedNetProfitYTD).toLocaleString()}
                                         </div>
-                                        <div className="text-[10px] text-white/40">Net Profit YTD</div>
+                                        <div className="text-[10px] text-muted-foreground">Net Profit YTD</div>
                                     </div>
                                 </div>
                             </Card>
                         </Link>
 
                         {/* VAT & Paid YTD Card */}
-                        <Card className="bg-[#0c0c0c] border border-white/5 rounded-3xl p-5 shadow-xl hover:bg-white/5 transition-all cursor-pointer h-full">
+                        <Card className="bg-card border border-border rounded-3xl p-5 shadow-xl hover:bg-accent/50 transition-all cursor-pointer h-full">
                             <div className="flex items-center justify-between mb-3">
-                                <h3 className="text-sm font-medium text-white">Paid YTD</h3>
-                                <span className="text-xs text-white/40">Collected</span>
+                                <h3 className="text-sm font-medium text-foreground">Paid YTD</h3>
+                                <span className="text-xs text-muted-foreground">Collected</span>
                             </div>
-                            <div className="text-2xl font-serif font-bold italic text-white mb-1">
+                            <div className="text-2xl font-serif font-bold italic text-foreground mb-1">
                                 {currency} {computedCashFlowMetrics.paidYTD.toLocaleString()}
                             </div>
-                            <p className="text-xs text-white/40 mb-3">Revenue collected</p>
-                            <div className="flex items-center gap-4 pt-3 border-t border-white/5">
+                            <p className="text-xs text-muted-foreground mb-3">Revenue collected</p>
+                            <div className="flex items-center gap-4 pt-3 border-t border-border">
                                 <div>
-                                    <div className="text-lg font-serif font-bold italic text-white">{currency} {computedCashFlowMetrics.vatEstimate.toLocaleString()}</div>
-                                    <div className="text-[10px] text-white/40">VAT Liability</div>
+                                    <div className="text-lg font-serif font-bold italic text-foreground">{currency} {computedCashFlowMetrics.vatEstimate.toLocaleString()}</div>
+                                    <div className="text-[10px] text-muted-foreground">VAT Liability</div>
                                 </div>
                             </div>
                         </Card>
@@ -1051,3 +1051,4 @@ export default function DashboardPage() {
         </div>
     )
 }
+

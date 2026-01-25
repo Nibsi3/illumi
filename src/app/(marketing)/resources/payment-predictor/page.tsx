@@ -92,11 +92,11 @@ export default function PaymentPredictorPage() {
     const results = showResults ? predictPayment() : null
 
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-5xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
@@ -104,21 +104,21 @@ export default function PaymentPredictorPage() {
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                     Invoice Payment Predictor Tool
                 </h1>
-                <p className="text-white/60 text-lg mb-10 max-w-3xl">
+                <p className="text-muted-foreground text-lg mb-10 max-w-3xl">
                     Predict how quickly your invoice will be paid based on industry, client size, and relationship. 
                     Uses real data from 2,500+ South African SMEs.
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Input Form */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         <h2 className="text-xl font-semibold mb-6">Invoice Details</h2>
                         
                         <div className="space-y-6">
                             <div>
-                                <Label className="text-white/80 mb-2 block">Client Industry</Label>
+                                <Label className="text-foreground mb-2 block">Client Industry</Label>
                                 <Select value={industry} onValueChange={setIndustry}>
-                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                    <SelectTrigger className="bg-muted border-border text-foreground">
                                         <SelectValue placeholder="Select industry" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -135,9 +135,9 @@ export default function PaymentPredictorPage() {
                             </div>
 
                             <div>
-                                <Label className="text-white/80 mb-2 block">Client Size</Label>
+                                <Label className="text-foreground mb-2 block">Client Size</Label>
                                 <Select value={clientSize} onValueChange={setClientSize}>
-                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                    <SelectTrigger className="bg-muted border-border text-foreground">
                                         <SelectValue placeholder="Select client size" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -150,21 +150,21 @@ export default function PaymentPredictorPage() {
                             </div>
 
                             <div>
-                                <Label htmlFor="amount" className="text-white/80">Invoice Amount (ZAR)</Label>
+                                <Label htmlFor="amount" className="text-foreground">Invoice Amount (ZAR)</Label>
                                 <Input
                                     id="amount"
                                     type="number"
                                     placeholder="e.g., 15000"
                                     value={invoiceAmount}
                                     onChange={(e) => setInvoiceAmount(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
                             </div>
 
                             <div>
-                                <Label className="text-white/80 mb-2 block">Payment Terms</Label>
+                                <Label className="text-foreground mb-2 block">Payment Terms</Label>
                                 <Select value={paymentTerms} onValueChange={setPaymentTerms}>
-                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                    <SelectTrigger className="bg-muted border-border text-foreground">
                                         <SelectValue placeholder="Select payment terms" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -178,9 +178,9 @@ export default function PaymentPredictorPage() {
                             </div>
 
                             <div>
-                                <Label className="text-white/80 mb-2 block">Client Relationship</Label>
+                                <Label className="text-foreground mb-2 block">Client Relationship</Label>
                                 <Select value={relationship} onValueChange={setRelationship}>
-                                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                                    <SelectTrigger className="bg-muted border-border text-foreground">
                                         <SelectValue placeholder="Select relationship" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -194,7 +194,7 @@ export default function PaymentPredictorPage() {
                             <Button
                                 onClick={handlePredict}
                                 disabled={!industry || !clientSize || !paymentTerms || !relationship}
-                                className="w-full bg-white text-black hover:bg-white/90 h-11 disabled:opacity-50"
+                                className="w-full bg-primary text-primary-foreground hover:bg-white/90 h-11 disabled:opacity-50"
                             >
                                 Predict Payment Date
                             </Button>
@@ -202,58 +202,58 @@ export default function PaymentPredictorPage() {
                     </div>
 
                     {/* Results */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         {!showResults ? (
                             <div className="flex items-center justify-center h-full text-center">
                                 <div>
-                                    <IconClock className="h-12 w-12 text-white/20 mx-auto mb-4" />
-                                    <p className="text-white/40">Fill in all fields to predict payment timing</p>
+                                    <IconClock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                    <p className="text-muted-foreground">Fill in all fields to predict payment timing</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="text-center pb-6 border-b border-white/10">
-                                    <div className="text-sm font-bold uppercase tracking-wider text-white/40 mb-2">
+                                <div className="text-center pb-6 border-b border-border">
+                                    <div className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">
                                         Predicted Payment Time
                                     </div>
-                                    <div className="text-5xl font-bold text-white">
+                                    <div className="text-5xl font-bold text-foreground">
                                         {results!.predictedDays} days
                                     </div>
-                                    <div className="text-sm text-white/60 mt-2">
+                                    <div className="text-sm text-muted-foreground mt-2">
                                         {results!.confidence}% confidence
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div className="rounded-xl bg-white/5 p-4">
-                                        <div className="text-sm text-white/60 mb-1">Likely Payment Date</div>
+                                    <div className="rounded-xl bg-muted p-4">
+                                        <div className="text-sm text-muted-foreground mb-1">Likely Payment Date</div>
                                         <div className="text-2xl font-bold">{results!.likelyDate}</div>
                                     </div>
 
-                                    <div className="rounded-xl bg-white/5 p-4">
-                                        <div className="text-sm text-white/60 mb-3">Payment Window</div>
+                                    <div className="rounded-xl bg-muted p-4">
+                                        <div className="text-sm text-muted-foreground mb-3">Payment Window</div>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex justify-between">
-                                                <span className="text-white/60">Earliest:</span>
+                                                <span className="text-muted-foreground">Earliest:</span>
                                                 <span className="text-green-400">{results!.earliestDate}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-white/60">Most Likely:</span>
-                                                <span className="text-white font-semibold">{results!.likelyDate}</span>
+                                                <span className="text-muted-foreground">Most Likely:</span>
+                                                <span className="text-foreground font-semibold">{results!.likelyDate}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-white/60">Latest:</span>
+                                                <span className="text-muted-foreground">Latest:</span>
                                                 <span className="text-red-400">{results!.latestDate}</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl bg-white/5 p-4">
-                                        <div className="text-sm text-white/60 mb-1">Late Payment Probability</div>
+                                    <div className="rounded-xl bg-muted p-4">
+                                        <div className="text-sm text-muted-foreground mb-1">Late Payment Probability</div>
                                         <div className="flex items-center gap-3">
                                             <div className="text-2xl font-bold">{results!.latePaymentProb}%</div>
                                             <div className="flex-1">
-                                                <div className="w-full bg-white/10 rounded-full h-2">
+                                                <div className="w-full bg-accent rounded-full h-2">
                                                     <div 
                                                         className={`h-full rounded-full ${
                                                             results!.latePaymentProb > 40 ? 'bg-red-500' : 
@@ -267,9 +267,9 @@ export default function PaymentPredictorPage() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-white/10">
+                                <div className="pt-4 border-t border-border">
                                     <h3 className="text-sm font-semibold mb-3">Recommendations</h3>
-                                    <ul className="space-y-2 text-sm text-white/60">
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
                                         {results!.predictedDays > 35 && (
                                             <>
                                                 <li>• Send a payment reminder 3 days before due date</li>
@@ -291,36 +291,36 @@ export default function PaymentPredictorPage() {
                 </div>
 
                 {/* How It Works */}
-                <div className="mt-12 rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="mt-12 rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-2xl font-semibold mb-6">How the Prediction Works</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">Industry Baseline</h3>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <h3 className="font-semibold mb-2 text-foreground">Industry Baseline</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Each industry has a different average payment time based on real data. 
                                 Construction averages 45 days while retail averages 18 days.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">Client Size Impact</h3>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <h3 className="font-semibold mb-2 text-foreground">Client Size Impact</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Larger companies typically have longer approval processes. Enterprise clients 
                                 pay 50% slower than small businesses on average.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">Payment Terms</h3>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <h3 className="font-semibold mb-2 text-foreground">Payment Terms</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Stated payment terms affect timing, but most clients pay 5-8 days beyond 
                                 the stated terms. Net 30 typically means 35-38 days in reality.
                             </p>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold mb-2 text-white">Relationship History</h3>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <h3 className="font-semibold mb-2 text-foreground">Relationship History</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 Long-term clients pay 5 days faster on average. New clients take 8 days longer 
                                 as they verify work quality and set up payment processes.
                             </p>
@@ -330,10 +330,10 @@ export default function PaymentPredictorPage() {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                    <p className="text-white/60 mb-4">Track actual payment times and improve predictions with Illumi</p>
+                    <p className="text-muted-foreground mb-4">Track actual payment times and improve predictions with Illumi</p>
                     <Link
                         href="/login"
-                        className="inline-flex items-center justify-center bg-white text-black hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Get Started Free
                     </Link>

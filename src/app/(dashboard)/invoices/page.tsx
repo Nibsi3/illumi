@@ -598,8 +598,8 @@ export default function InvoicesPage() {
             {/* Mobile client folders scroller */}
             <div className="md:hidden">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-sm font-semibold text-white tracking-tight">Clients</h2>
-                    <span className="text-xs text-neutral-500">{clientFolders.length} folders</span>
+                    <h2 className="text-sm font-semibold text-foreground tracking-tight">Clients</h2>
+                    <span className="text-xs text-muted-foreground">{clientFolders.length} folders</span>
                 </div>
                 <div className="w-full max-w-full overflow-x-auto no-scrollbar">
                     <div className="flex items-center gap-2 w-max">
@@ -608,13 +608,13 @@ export default function InvoicesPage() {
                             className={cn(
                                 "flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all whitespace-nowrap",
                                 !filterCustomerId
-                                    ? "bg-white/10 text-white"
-                                    : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                    ? "bg-accent text-foreground"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <FolderOpen className="h-4 w-4 shrink-0" />
                             <span className="text-sm font-medium">All</span>
-                            <span className="text-xs text-neutral-500">{totalInvoiceCount}</span>
+                            <span className="text-xs text-muted-foreground">{totalInvoiceCount}</span>
                         </button>
                         {clientFolders.map((folder) => (
                             <button
@@ -623,8 +623,8 @@ export default function InvoicesPage() {
                                 className={cn(
                                     "flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all whitespace-nowrap",
                                     filterCustomerId === folder.id
-                                        ? "bg-white/10 text-white"
-                                        : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                        ? "bg-accent text-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <Folder className="h-4 w-4 shrink-0" />
@@ -639,8 +639,8 @@ export default function InvoicesPage() {
             <div className="hidden md:block w-64 shrink-0">
                 <div className="sticky top-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-sm font-semibold text-white tracking-tight">Clients</h2>
-                        <span className="text-xs text-neutral-500">{clientFolders.length} folders</span>
+                        <h2 className="text-sm font-semibold text-foreground tracking-tight">Clients</h2>
+                        <span className="text-xs text-muted-foreground">{clientFolders.length} folders</span>
                     </div>
                     <div className="space-y-1">
                         {/* All Invoices */}
@@ -649,13 +649,13 @@ export default function InvoicesPage() {
                             className={cn(
                                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all",
                                 !filterCustomerId
-                                    ? "bg-white/10 text-white"
-                                    : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                    ? "bg-accent text-foreground"
+                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                             )}
                         >
                             <FolderOpen className="h-4 w-4 shrink-0" />
                             <span className="flex-1 text-sm font-medium truncate">All Invoices</span>
-                            <span className="text-xs text-neutral-500">{totalInvoiceCount}</span>
+                            <span className="text-xs text-muted-foreground">{totalInvoiceCount}</span>
                         </button>
 
                         {/* Client Folders */}
@@ -666,14 +666,14 @@ export default function InvoicesPage() {
                                 className={cn(
                                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all",
                                     filterCustomerId === folder.id
-                                        ? "bg-white/10 text-white"
-                                        : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                        ? "bg-accent text-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <Folder className="h-4 w-4 shrink-0" />
                                 <span className="flex-1 text-sm font-medium truncate">{folder.name}</span>
                                 {typeof folder.count === 'number' && (
-                                    <span className="text-xs text-neutral-500">{folder.count}</span>
+                                    <span className="text-xs text-muted-foreground">{folder.count}</span>
                                 )}
                             </button>
                         ))}
@@ -687,30 +687,30 @@ export default function InvoicesPage() {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Invoices</h1>
-                        <p className="hidden sm:block text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
+                        <h1 className="text-2xl sm:text-4xl font-serif text-foreground tracking-tight italic">Invoices</h1>
+                        <p className="hidden sm:block text-muted-foreground mt-1">Manage and track your business invoices and payments.</p>
                     </div>
                     <div className="flex items-center gap-3 w-full sm:w-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button className="h-11 w-full sm:w-auto bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
+                                <Button className="h-11 w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium rounded-none">
                                     Create
                                     <ChevronDown className="ml-2 h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-[#0d0d0d] border-white/10 rounded-none">
+                            <DropdownMenuContent align="end" className="w-56 bg-card border-border rounded-none">
                                 <Link href="/invoices/new">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                    <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-none cursor-pointer">
                                         Invoice
                                     </DropdownMenuItem>
                                 </Link>
                                 <Link href="/invoices/scheduled/new">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                    <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-none cursor-pointer">
                                         Schedule Invoice
                                     </DropdownMenuItem>
                                 </Link>
                                 <Link href="/invoices/recurring/new">
-                                    <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-none cursor-pointer">
+                                    <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-none cursor-pointer">
                                         Recurring Invoice
                                     </DropdownMenuItem>
                                 </Link>
@@ -756,24 +756,24 @@ export default function InvoicesPage() {
                                 key={card.label}
                                 onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
                                 className={cn(
-                                    "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none",
-                                    filterStatus === card.status && "bg-white/5 border-white/20"
+                                    "bg-transparent border-border shadow-none overflow-hidden cursor-pointer transition-all hover:bg-muted rounded-none",
+                                    filterStatus === card.status && "bg-muted border-border"
                                 )}
                             >
                                 <CardContent className="p-4">
-                                    <h3 className="text-lg font-serif text-white mb-2 italic">{card.value}</h3>
-                                    <p className="text-xs font-medium text-white">{card.label}</p>
-                                    <p className="text-[10px] text-neutral-500">{card.count}</p>
+                                    <h3 className="text-lg font-serif text-foreground mb-2 italic">{card.value}</h3>
+                                    <p className="text-xs font-medium text-foreground">{card.label}</p>
+                                    <p className="text-[10px] text-muted-foreground">{card.count}</p>
                                 </CardContent>
                             </Card>
                         ))}
 
-                        <Card className="bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none">
+                        <Card className="bg-transparent border-border shadow-none overflow-hidden relative rounded-none">
                             <CardContent className="p-4">
                                 <div>
-                                    <h3 className="text-lg font-serif text-white mb-2 italic">{Object.keys(invoicesByCompany).length}</h3>
-                                    <p className="text-xs font-medium text-white">Clients</p>
-                                    <p className="text-[10px] text-neutral-500">Active</p>
+                                    <h3 className="text-lg font-serif text-foreground mb-2 italic">{Object.keys(invoicesByCompany).length}</h3>
+                                    <p className="text-xs font-medium text-foreground">Clients</p>
+                                    <p className="text-[10px] text-muted-foreground">Active</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -814,25 +814,25 @@ export default function InvoicesPage() {
                                 key={card.label}
                                 onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
                                 className={cn(
-                                    "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none",
-                                    filterStatus === card.status && "bg-white/5 border-white/20"
+                                    "bg-transparent border-border shadow-none overflow-hidden cursor-pointer transition-all hover:bg-muted rounded-none",
+                                    filterStatus === card.status && "bg-muted border-border"
                                 )}
                             >
                                 <CardContent className="p-6">
-                                    <h3 className="text-3xl font-serif text-white mb-4 italic">{card.value}</h3>
-                                    <p className="text-sm font-medium text-white">{card.label}</p>
-                                    <p className="text-xs text-neutral-500">{card.count}</p>
+                                    <h3 className="text-3xl font-serif text-foreground mb-4 italic">{card.value}</h3>
+                                    <p className="text-sm font-medium text-foreground">{card.label}</p>
+                                    <p className="text-xs text-muted-foreground">{card.count}</p>
                                 </CardContent>
                             </Card>
                         ))}
 
-                        <Card className="bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none">
+                        <Card className="bg-transparent border-border shadow-none overflow-hidden relative rounded-none">
                             <CardContent className="p-6">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="text-3xl font-serif text-white mb-4 italic">{Object.keys(invoicesByCompany).length}</h3>
-                                        <p className="text-sm font-medium text-white">Active Clients</p>
-                                        <p className="text-xs text-neutral-500">Tracking payment history</p>
+                                        <h3 className="text-3xl font-serif text-foreground mb-4 italic">{Object.keys(invoicesByCompany).length}</h3>
+                                        <p className="text-sm font-medium text-foreground">Active Clients</p>
+                                        <p className="text-xs text-muted-foreground">Tracking payment history</p>
                                     </div>
                                     <div className="flex items-end gap-[2px] h-12 opacity-30 pt-2">
                                         {[2, 4, 3, 6, 8, 10, 7, 5, 9, 6].map((h, i) => (
@@ -846,17 +846,17 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Filter & Actions Bar */}
-                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 md:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-border py-3 md:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                         <div className="relative w-full sm:max-w-sm group">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />
                             <Input
                                 placeholder="Search or filter"
-                                className="pl-10 h-11 bg-transparent border-white/5 focus-visible:ring-offset-0 focus-visible:ring-white/10 rounded-none transition-all"
+                                className="pl-10 h-11 bg-transparent border-border focus-visible:ring-offset-0 focus-visible:ring-white/10 rounded-none transition-all"
                             />
                         </div>
 
-                        <div className="flex flex-wrap items-center border border-white/10 p-1">
+                        <div className="flex flex-wrap items-center border border-border p-1">
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -866,7 +866,7 @@ export default function InvoicesPage() {
                                 }}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    filterInvoiceType === 'all' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'all' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 All
@@ -880,7 +880,7 @@ export default function InvoicesPage() {
                                 }}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    filterInvoiceType === 'invoices' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'invoices' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 Invoices
@@ -894,7 +894,7 @@ export default function InvoicesPage() {
                                 }}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    filterInvoiceType === 'recurring' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'recurring' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 Recurring Invoices
@@ -908,7 +908,7 @@ export default function InvoicesPage() {
                                 }}
                                 className={cn(
                                     "h-9 px-4 rounded-none text-xs transition-all",
-                                    filterInvoiceType === 'scheduled' ? "bg-white text-black" : "text-neutral-500 hover:text-white"
+                                    filterInvoiceType === 'scheduled' ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 Scheduled Invoices
@@ -919,12 +919,12 @@ export default function InvoicesPage() {
                     <div className="hidden md:flex items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="h-11 border-white/5 bg-transparent hover:bg-white/5 transition-colors rounded-none">
+                                <Button variant="outline" className="h-11 border-border bg-transparent hover:bg-muted transition-colors rounded-none">
                                     <Filter className="mr-2 h-4 w-4" />
                                     Columns
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56 bg-[#0d0d0d] border-white/10 rounded-none">
+                            <DropdownMenuContent align="end" className="w-56 bg-card border-border rounded-none">
                                 {columnsList.map(col => (
                                     <DropdownMenuCheckboxItem
                                         key={col.id}
@@ -934,7 +934,7 @@ export default function InvoicesPage() {
                                                 checked ? [...prev, col.id] : prev.filter(c => c !== col.id)
                                             )
                                         }}
-                                        className="focus:bg-white/5 focus:text-white rounded-none"
+                                        className="focus:bg-muted focus:text-foreground rounded-none"
                                     >
                                         {col.label}
                                     </DropdownMenuCheckboxItem>
@@ -945,18 +945,18 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Main Content Area */}
-                <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
+                <div className="border border-border bg-background overflow-hidden shadow-2xl">
                         {/* Mobile list */}
-                        <div className="md:hidden divide-y divide-white/10">
+                        <div className="md:hidden divide-y divide-border">
                             {paginatedInvoices.map((invoice: any) => (
                                 <div key={invoice.id} className="p-4">
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
-                                            <div className="text-sm font-bold text-white truncate">#{invoice.displayId}</div>
-                                            <div className="mt-1 text-xs text-neutral-400 truncate">{invoice.customer}</div>
+                                            <div className="text-sm font-bold text-foreground truncate">#{invoice.displayId}</div>
+                                            <div className="mt-1 text-xs text-muted-foreground truncate">{invoice.customer}</div>
                                         </div>
                                         <div className="flex flex-col items-end gap-2">
-                                            <div className="text-sm font-bold text-white">{invoice.amount}</div>
+                                            <div className="text-sm font-bold text-foreground">{invoice.amount}</div>
                                             <StatusDot
                                                 variant={
                                                     invoice.status === 'Paid' ? 'success' :
@@ -970,7 +970,7 @@ export default function InvoicesPage() {
                                         </div>
                                     </div>
 
-                                    <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-500">
+                                    <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
                                         <div className="flex items-center gap-3">
                                             {invoice.dueDate ? <span>Due: {invoice.dueDate}</span> : <span />}
                                             {invoice.issueDate ? <span>Issued: {invoice.issueDate}</span> : null}
@@ -980,14 +980,14 @@ export default function InvoicesPage() {
                                     <div className="mt-4 flex items-center gap-2">
                                         <Link
                                             href={`/invoices/edit/${invoice.id}`}
-                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-border bg-muted text-xs font-bold text-foreground hover:bg-accent transition-colors"
                                         >
                                             Edit
                                         </Link>
                                         <Link
                                             href={`/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`}
                                             target="_blank"
-                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-white hover:bg-white/10 transition-colors"
+                                            className="flex-1 h-10 inline-flex items-center justify-center rounded-lg border border-border bg-muted text-xs font-bold text-foreground hover:bg-accent transition-colors"
                                         >
                                             View
                                         </Link>
@@ -1000,57 +1000,57 @@ export default function InvoicesPage() {
                         <div className="hidden md:block overflow-x-auto">
                             <table className="w-full border-collapse text-left text-[13px]">
                                 <thead>
-                                    <tr className="bg-white/2 border-b border-white/10">
-                                        <th className="px-5 py-3 w-10 border-r border-white/10 text-neutral-500 italic lowercase font-serif bg-white/10 text-xs">
+                                    <tr className="bg-muted/50 border-b border-border">
+                                        <th className="px-5 py-3 w-10 border-r border-border text-muted-foreground italic lowercase font-serif bg-accent text-xs">
                                             <div
                                                 onClick={toggleSelectAll}
-                                                className="w-4 h-4 rounded-sm border border-white/40 bg-white/5 flex items-center justify-center cursor-pointer hover:border-white/60 hover:bg-white/10 transition-colors"
+                                                className="w-4 h-4 rounded-sm border border-border bg-muted flex items-center justify-center cursor-pointer hover:border-border/60 hover:bg-accent transition-colors"
                                             >
-                                                {selectedIds.length === invoices.length && <Check className="h-3 w-3 text-white" />}
+                                                {selectedIds.length === invoices.length && <Check className="h-3 w-3 text-foreground" />}
                                             </div>
                                         </th>
                                         {columnsList.filter(c => visibleColumns.includes(c.id)).map(col => (
                                             <th 
                                                 key={col.id} 
                                                 className={cn(
-                                                    "px-5 py-3 font-medium uppercase text-[10px] tracking-widest border-r border-white/10 select-none",
-                                                    col.sortable ? "cursor-pointer hover:bg-white/5 hover:text-white transition-colors" : "",
-                                                    sortColumn === col.id ? "text-white bg-white/5" : "text-[#878787]"
+                                                    "px-5 py-3 font-medium uppercase text-[10px] tracking-widest border-r border-border select-none",
+                                                    col.sortable ? "cursor-pointer hover:bg-muted hover:text-foreground transition-colors" : "",
+                                                    sortColumn === col.id ? "text-foreground bg-muted" : "text-muted-foreground"
                                                 )}
                                                 onClick={() => col.sortable && handleColumnSort(col.id)}
                                             >
                                                 <div className="flex items-center gap-2">
                                                     {col.label}
                                                     {sortColumn === col.id && sortDirection && (
-                                                        <span className="text-[8px] text-white/60 normal-case font-normal">
+                                                        <span className="text-[8px] text-muted-foreground normal-case font-normal">
                                                             ({sortDirection})
                                                         </span>
                                                     )}
                                                 </div>
                                             </th>
                                         ))}
-                                        <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-[#878787] text-center w-20">Actions</th>
+                                        <th className="px-5 py-3 font-medium uppercase text-[10px] tracking-widest text-muted-foreground text-center w-20">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {paginatedInvoices.map((invoice: any) => (
-                                        <tr key={invoice.id} className="hover:bg-white/2 transition-colors border-b border-white/10 group last:border-0">
-                                            <td className="px-5 py-4 border-r border-white/10">
+                                        <tr key={invoice.id} className="hover:bg-muted/50 transition-colors border-b border-border group last:border-0">
+                                            <td className="px-5 py-4 border-r border-border">
                                                 <div
                                                     onClick={() => toggleSelect(invoice.id)}
                                                     className={cn(
-                                                        "w-4 h-4 rounded-sm border border-white/40 bg-white/5 transition-all flex items-center justify-center cursor-pointer group-hover:border-white/60 group-hover:bg-white/10",
-                                                        selectedIds.includes(invoice.id) && "bg-white border-white"
+                                                        "w-4 h-4 rounded-sm border border-border bg-muted transition-all flex items-center justify-center cursor-pointer group-hover:border-border/60 group-hover:bg-accent",
+                                                        selectedIds.includes(invoice.id) && "bg-white border-border"
                                                     )}
                                                 >
                                                     {selectedIds.includes(invoice.id) && <Check className="h-3 w-3 text-black" />}
                                                 </div>
                                             </td>
                                             {visibleColumns.includes("id") && (
-                                                <td className="px-5 py-4 border-r border-white/10 font-bold text-[#fafafa] tracking-tight">#{invoice.displayId}</td>
+                                                <td className="px-5 py-4 border-r border-border font-bold text-foreground tracking-tight">#{invoice.displayId}</td>
                                             )}
                                             {visibleColumns.includes("status") && (
-                                                <td className="px-5 py-4 border-r border-white/10">
+                                                <td className="px-5 py-4 border-r border-border">
                                                     <StatusDot
                                                         variant={
                                                             invoice.status === 'Paid' ? 'success' :
@@ -1064,39 +1064,39 @@ export default function InvoicesPage() {
                                                 </td>
                                             )}
                                             {visibleColumns.includes("dueDate") && (
-                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-white/10 text-[#878787]">{invoice.dueDate}</td>
+                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-border text-muted-foreground">{invoice.dueDate}</td>
                                             )}
                                             {visibleColumns.includes("customer") && (
-                                                <td className="px-5 py-4 border-r border-white/10 text-[#fafafa] font-medium">{invoice.customer}</td>
+                                                <td className="px-5 py-4 border-r border-border text-foreground font-medium">{invoice.customer}</td>
                                             )}
                                             {visibleColumns.includes("amount") && (
-                                                <td className="px-5 py-4 border-r border-white/10 text-white font-bold">{invoice.amount}</td>
+                                                <td className="px-5 py-4 border-r border-border text-foreground font-bold">{invoice.amount}</td>
                                             )}
                                             {visibleColumns.includes("issueDate") && (
-                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-white/10 text-neutral-400">{invoice.issueDate}</td>
+                                                <td className="hidden sm:table-cell px-5 py-4 border-r border-border text-muted-foreground">{invoice.issueDate}</td>
                                             )}
                                             <td className="px-5 py-4 text-center">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-neutral-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all">
                                                             <MoreHorizontal className="h-4 w-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="w-48 bg-black border-white/10 rounded-xl shadow-2xl p-1">
+                                                    <DropdownMenuContent align="end" className="w-48 bg-background border-border rounded-xl shadow-2xl p-1">
                                                         <Link href={`/invoices/edit/${invoice.id}`}>
-                                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
+                                                            <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs">Edit Invoice</DropdownMenuItem>
                                                         </Link>
                                                         <Link href={`/pay/${invoice.displayId}${activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`} target="_blank">
-                                                            <DropdownMenuItem className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
+                                                            <DropdownMenuItem className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs">View Details</DropdownMenuItem>
                                                         </Link>
                                                         <DropdownMenuItem
-                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => handleDuplicateInvoice(invoice.id)}
                                                         >
                                                             Duplicate Invoice
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={async () => {
                                                                 toast.info("Preparing PDF...", { duration: 1000 })
                                                                 const qs = new URLSearchParams()
@@ -1107,27 +1107,27 @@ export default function InvoicesPage() {
                                                         >
                                                             Download PDF
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                        <DropdownMenuSeparator className="bg-accent mx-1" />
                                                         <DropdownMenuItem
-                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => openMarkPaidDialog(invoice)}
                                                         >
                                                             Mark as Paid
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                        <DropdownMenuSeparator className="bg-accent mx-1" />
                                                         <DropdownMenuItem
-                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => handleEmailShare(invoice)}
                                                         >
                                                             Send via Email
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            className="focus:bg-white/5 focus:text-white rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                            className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => handleCopyLink(invoice.displayId)}
                                                         >
                                                             Copy link
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuSeparator className="bg-white/10 mx-1" />
+                                                        <DropdownMenuSeparator className="bg-accent mx-1" />
                                                         <DropdownMenuItem
                                                             className="focus:bg-red-500/10 focus:text-red-500 text-red-500 rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                             onClick={() => handleDeleteInvoice(invoice.id)}
@@ -1144,8 +1144,8 @@ export default function InvoicesPage() {
                         </div>
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-5 py-4 border-t border-white/10">
-                                <div className="text-xs text-neutral-500">
+                            <div className="flex items-center justify-between px-5 py-4 border-t border-border">
+                                <div className="text-xs text-muted-foreground">
                                     Showing {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, totalInvoiceCount)} of {totalInvoiceCount} invoices
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -1154,7 +1154,7 @@ export default function InvoicesPage() {
                                         size="sm"
                                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                         disabled={currentPage === 1}
-                                        className="h-8 px-3 text-xs text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
                                         Previous
                                     </Button>
@@ -1177,8 +1177,8 @@ export default function InvoicesPage() {
                                                     className={cn(
                                                         "w-8 h-8 text-xs rounded-lg transition-colors",
                                                         currentPage === pageNum
-                                                            ? "bg-white text-black font-bold"
-                                                            : "text-neutral-400 hover:bg-white/5 hover:text-white"
+                                                            ? "bg-primary text-primary-foreground font-bold"
+                                                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                                     )}
                                                 >
                                                     {pageNum}
@@ -1191,7 +1191,7 @@ export default function InvoicesPage() {
                                         size="sm"
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="h-8 px-3 text-xs text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="h-8 px-3 text-xs text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
                                     >
                                         Next
                                     </Button>
@@ -1203,24 +1203,24 @@ export default function InvoicesPage() {
                 {/* Selection Toolbar */}
                 {selectedIds.length > 0 && (
                     <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-100 animate-in slide-in-from-bottom-5">
-                        <div className="flex items-center gap-6 px-6 py-4 bg-black border border-white/10 shadow-2xl rounded-none min-w-[400px]">
-                            <div className="flex items-center gap-3 border-r border-white/10 pr-6">
-                                <span className="text-sm font-bold text-white tracking-tight">{selectedIds.length} selected</span>
+                        <div className="flex items-center gap-6 px-6 py-4 bg-background border border-border shadow-2xl rounded-none min-w-[400px]">
+                            <div className="flex items-center gap-3 border-r border-border pr-6">
+                                <span className="text-sm font-bold text-foreground tracking-tight">{selectedIds.length} selected</span>
                                 <button
                                     onClick={() => setSelectedIds([])}
-                                    className="text-xs text-neutral-500 hover:text-white transition-colors"
+                                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     Deselect all
                                 </button>
                             </div>
                             <div className="flex items-center gap-4">
-                                <Button variant="ghost" className="h-9 text-xs font-bold text-white hover:bg-white/5 rounded-none gap-2">
+                                <Button variant="ghost" className="h-9 text-xs font-bold text-foreground hover:bg-muted rounded-none gap-2">
                                     <Download className="h-3.5 w-3.5" />
                                     Download ZIP
                                 </Button>
                                 <button
                                     onClick={() => setSelectedIds([])}
-                                    className="ml-auto p-1 text-neutral-500 hover:text-white transition-colors"
+                                    className="ml-auto p-1 text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -1232,29 +1232,29 @@ export default function InvoicesPage() {
 
             {/* Mark as Paid Dialog */}
             <Dialog open={markPaidDialogOpen} onOpenChange={setMarkPaidDialogOpen}>
-                <DialogContent className="bg-[#09090b] border-white/10 text-white max-w-md">
+                <DialogContent className="bg-card border-border text-foreground max-w-md">
                     <DialogHeader>
                         <DialogTitle className="text-lg font-bold">Mark Invoice as Paid</DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6 py-4">
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Invoice</Label>
-                            <p className="text-sm text-white">{markPaidInvoice?.displayId} - {markPaidInvoice?.customer}</p>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Invoice</Label>
+                            <p className="text-sm text-foreground">{markPaidInvoice?.displayId} - {markPaidInvoice?.customer}</p>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Payment Date</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Payment Date</Label>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant="outline"
-                                        className="w-full justify-start text-left font-normal bg-white/5 border-white/10 hover:bg-white/10 h-11"
+                                        className="w-full justify-start text-left font-normal bg-muted border-border hover:bg-accent h-11"
                                     >
-                                        <CalendarDays className="mr-2 h-4 w-4 text-neutral-400" />
+                                        <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
                                         {format(markPaidDate, "dd/MM/yyyy")}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 bg-[#09090b] border-white/10" align="start">
+                                <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={markPaidDate}
@@ -1266,32 +1266,32 @@ export default function InvoicesPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Amount Received</Label>
+                            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Amount Received</Label>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">R</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R</span>
                                 <Input
                                     type="number"
                                     step="0.01"
                                     value={markPaidAmount}
                                     onChange={(e) => setMarkPaidAmount(e.target.value)}
-                                    className="pl-7 bg-white/5 border-white/10 h-11 text-white"
+                                    className="pl-7 bg-muted border-border h-11 text-foreground"
                                     placeholder="0.00"
                                 />
                             </div>
-                            <p className="text-[10px] text-neutral-500">Original amount: {markPaidInvoice?.amount}</p>
+                            <p className="text-[10px] text-muted-foreground">Original amount: {markPaidInvoice?.amount}</p>
                         </div>
                     </div>
                     <DialogFooter className="gap-2">
                         <Button
                             variant="ghost"
                             onClick={() => setMarkPaidDialogOpen(false)}
-                            className="text-neutral-400 hover:text-white hover:bg-white/5"
+                            className="text-muted-foreground hover:text-foreground hover:bg-muted"
                         >
                             Cancel
                         </Button>
                         <Button
                             onClick={handleMarkAsPaid}
-                            className="bg-white text-black hover:bg-neutral-200"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
                         >
                             Confirm Payment
                         </Button>
@@ -1301,3 +1301,4 @@ export default function InvoicesPage() {
         </> 
     )
 }
+

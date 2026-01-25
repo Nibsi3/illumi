@@ -48,22 +48,22 @@ export function Calendar({
     const daysLabels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
     return (
-        <div className={cn("ring-1 ring-white/10 bg-white/5 rounded-xl p-4 w-[280px]", className)}>
+        <div className={cn("ring-1 ring-white/10 bg-muted rounded-xl p-4 w-[280px]", className)}>
             {/* Header */}
             <div className="flex items-center justify-between mb-4 px-1">
-                <span className="text-[10px] font-bold text-white uppercase tracking-[0.2em]">
+                <span className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em]">
                     {format(currentMonth, "MMMM yyyy")}
                 </span>
                 <div className="flex items-center gap-1">
                     <button
                         onClick={prevMonth}
-                        className="p-1 hover:bg-white/5 rounded-md text-neutral-500 hover:text-white transition-colors"
+                        className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <ChevronLeft className="h-3 w-3" />
                     </button>
                     <button
                         onClick={nextMonth}
-                        className="p-1 hover:bg-white/5 rounded-md text-neutral-500 hover:text-white transition-colors"
+                        className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <ChevronRight className="h-3 w-3" />
                     </button>
@@ -101,9 +101,9 @@ export function Calendar({
                                     className={cn(
                                         "h-8 w-8 rounded-lg flex items-center justify-center transition-all text-sm",
                                         isCurrentMonth
-                                            ? "text-neutral-300 hover:bg-white/10"
-                                            : "text-slate-600 hover:bg-white/5",
-                                        isToday && "border border-white/20 text-white"
+                                            ? "text-neutral-300 hover:bg-accent"
+                                            : "text-slate-600 hover:bg-muted",
+                                        isToday && "border border-primary text-foreground"
                                     )}
                                 >
                                     {format(day, "d")}

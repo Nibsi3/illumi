@@ -94,11 +94,11 @@ export default function CashFlowCalculatorPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white grainy-gradient">
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
             <MarketingHeader />
             
             <main className="relative z-10 mx-auto max-w-5xl px-6 pt-32 md:pt-40 pb-20">
-                <Link href="/resources" className="inline-flex items-center text-sm text-white/60 hover:text-white transition-colors mb-8">
+                <Link href="/resources" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
                     <IconArrowLeft className="mr-2 h-4 w-4" />
                     Back to Resources
                 </Link>
@@ -106,83 +106,83 @@ export default function CashFlowCalculatorPage() {
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                     SME Cash Flow Health Score Calculator
                 </h1>
-                <p className="text-white/60 text-lg mb-10 max-w-3xl">
+                <p className="text-muted-foreground text-lg mb-10 max-w-3xl">
                     Get an instant assessment of your business's cash flow health. Input your basic financial data 
                     to receive a visual health score and actionable insights.
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Input Form */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         <h2 className="text-xl font-semibold mb-6">Your Business Data</h2>
                         
                         <div className="space-y-6">
                             <div>
-                                <Label htmlFor="revenue" className="text-white/80">Monthly Revenue (ZAR)</Label>
+                                <Label htmlFor="revenue" className="text-foreground">Monthly Revenue (ZAR)</Label>
                                 <Input
                                     id="revenue"
                                     type="number"
                                     placeholder="e.g., 50000"
                                     value={monthlyRevenue}
                                     onChange={(e) => setMonthlyRevenue(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
                             </div>
 
                             <div>
-                                <Label htmlFor="expenses" className="text-white/80">Monthly Expenses (ZAR)</Label>
+                                <Label htmlFor="expenses" className="text-foreground">Monthly Expenses (ZAR)</Label>
                                 <Input
                                     id="expenses"
                                     type="number"
                                     placeholder="e.g., 35000"
                                     value={monthlyExpenses}
                                     onChange={(e) => setMonthlyExpenses(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
                             </div>
 
                             <div>
-                                <Label htmlFor="receivable" className="text-white/80">Accounts Receivable (ZAR)</Label>
+                                <Label htmlFor="receivable" className="text-foreground">Accounts Receivable (ZAR)</Label>
                                 <Input
                                     id="receivable"
                                     type="number"
                                     placeholder="e.g., 75000"
                                     value={accountsReceivable}
                                     onChange={(e) => setAccountsReceivable(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
-                                <p className="text-xs text-white/40 mt-1">Money owed to you by clients</p>
+                                <p className="text-xs text-muted-foreground mt-1">Money owed to you by clients</p>
                             </div>
 
                             <div>
-                                <Label htmlFor="payable" className="text-white/80">Accounts Payable (ZAR)</Label>
+                                <Label htmlFor="payable" className="text-foreground">Accounts Payable (ZAR)</Label>
                                 <Input
                                     id="payable"
                                     type="number"
                                     placeholder="e.g., 20000"
                                     value={accountsPayable}
                                     onChange={(e) => setAccountsPayable(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
-                                <p className="text-xs text-white/40 mt-1">Money you owe to suppliers</p>
+                                <p className="text-xs text-muted-foreground mt-1">Money you owe to suppliers</p>
                             </div>
 
                             <div>
-                                <Label htmlFor="reserves" className="text-white/80">Cash Reserves (ZAR)</Label>
+                                <Label htmlFor="reserves" className="text-foreground">Cash Reserves (ZAR)</Label>
                                 <Input
                                     id="reserves"
                                     type="number"
                                     placeholder="e.g., 100000"
                                     value={cashReserves}
                                     onChange={(e) => setCashReserves(e.target.value)}
-                                    className="mt-2 bg-white/5 border-white/10 text-white"
+                                    className="mt-2 bg-muted border-border text-foreground"
                                 />
-                                <p className="text-xs text-white/40 mt-1">Cash in bank accounts</p>
+                                <p className="text-xs text-muted-foreground mt-1">Cash in bank accounts</p>
                             </div>
 
                             <Button
                                 onClick={handleCalculate}
-                                className="w-full bg-white text-black hover:bg-white/90 h-11"
+                                className="w-full bg-primary text-primary-foreground hover:bg-white/90 h-11"
                             >
                                 Calculate Health Score
                             </Button>
@@ -190,32 +190,32 @@ export default function CashFlowCalculatorPage() {
                     </div>
 
                     {/* Results */}
-                    <div className="rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                    <div className="rounded-2xl border border-border bg-card p-8">
                         {!showResults ? (
                             <div className="flex items-center justify-center h-full text-center">
                                 <div>
-                                    <IconAlertCircle className="h-12 w-12 text-white/20 mx-auto mb-4" />
-                                    <p className="text-white/40">Enter your data and click calculate to see your health score</p>
+                                    <IconAlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                    <p className="text-muted-foreground">Enter your data and click calculate to see your health score</p>
                                 </div>
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="text-center pb-6 border-b border-white/10">
-                                    <div className="text-sm font-bold uppercase tracking-wider text-white/40 mb-2">
+                                <div className="text-center pb-6 border-b border-border">
+                                    <div className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">
                                         Cash Flow Health Score
                                     </div>
                                     <div className={`text-6xl font-bold ${getScoreColor(results!.score)}`}>
                                         {results!.score}
                                     </div>
-                                    <div className="text-lg text-white/60 mt-2">
+                                    <div className="text-lg text-muted-foreground mt-2">
                                         {getScoreLabel(results!.score)}
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div className="rounded-xl bg-white/5 p-4">
+                                    <div className="rounded-xl bg-muted p-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm text-white/60">Net Cash Flow</span>
+                                            <span className="text-sm text-muted-foreground">Net Cash Flow</span>
                                             {results!.netCashFlow >= 0 ? (
                                                 <IconTrendingUp className="h-4 w-4 text-green-400" />
                                             ) : (
@@ -225,41 +225,41 @@ export default function CashFlowCalculatorPage() {
                                         <div className="text-2xl font-bold">
                                             R {results!.netCashFlow.toLocaleString()}
                                         </div>
-                                        <div className="text-xs text-white/40 mt-1">
+                                        <div className="text-xs text-muted-foreground mt-1">
                                             {results!.cashFlowRatio.toFixed(1)}% of revenue
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl bg-white/5 p-4">
+                                    <div className="rounded-xl bg-muted p-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm text-white/60">Cash Runway</span>
-                                            <IconMinus className="h-4 w-4 text-white/40" />
+                                            <span className="text-sm text-muted-foreground">Cash Runway</span>
+                                            <IconMinus className="h-4 w-4 text-muted-foreground" />
                                         </div>
                                         <div className="text-2xl font-bold">
                                             {results!.runway.toFixed(1)} months
                                         </div>
-                                        <div className="text-xs text-white/40 mt-1">
+                                        <div className="text-xs text-muted-foreground mt-1">
                                             At current burn rate
                                         </div>
                                     </div>
 
-                                    <div className="rounded-xl bg-white/5 p-4">
+                                    <div className="rounded-xl bg-muted p-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="text-sm text-white/60">Working Capital</span>
-                                            <IconCircleCheck className="h-4 w-4 text-white/40" />
+                                            <span className="text-sm text-muted-foreground">Working Capital</span>
+                                            <IconCircleCheck className="h-4 w-4 text-muted-foreground" />
                                         </div>
                                         <div className="text-2xl font-bold">
                                             R {results!.workingCapital.toLocaleString()}
                                         </div>
-                                        <div className="text-xs text-white/40 mt-1">
+                                        <div className="text-xs text-muted-foreground mt-1">
                                             Ratio: {results!.workingCapitalRatio.toFixed(2)}x
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="pt-4 border-t border-white/10">
+                                <div className="pt-4 border-t border-border">
                                     <h3 className="text-sm font-semibold mb-3">Recommendations</h3>
-                                    <ul className="space-y-2 text-sm text-white/60">
+                                    <ul className="space-y-2 text-sm text-muted-foreground">
                                         {results!.score < 70 && (
                                             <>
                                                 {results!.runway < 3 && (
@@ -284,23 +284,23 @@ export default function CashFlowCalculatorPage() {
                 </div>
 
                 {/* Benchmark Context */}
-                <div className="mt-12 rounded-2xl border border-white/10 bg-[#0a0a0a] p-8">
+                <div className="mt-12 rounded-2xl border border-border bg-card p-8">
                     <h2 className="text-xl font-semibold mb-4">How SA SMEs Compare</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                            <div className="text-sm text-white/40 mb-1">Average Cash Flow Ratio</div>
+                            <div className="text-sm text-muted-foreground mb-1">Average Cash Flow Ratio</div>
                             <div className="text-2xl font-bold">12.5%</div>
-                            <div className="text-xs text-white/40 mt-1">Across all industries</div>
+                            <div className="text-xs text-muted-foreground mt-1">Across all industries</div>
                         </div>
                         <div>
-                            <div className="text-sm text-white/40 mb-1">Median Cash Runway</div>
+                            <div className="text-sm text-muted-foreground mb-1">Median Cash Runway</div>
                             <div className="text-2xl font-bold">2.3 months</div>
-                            <div className="text-xs text-white/40 mt-1">For businesses under 5 years</div>
+                            <div className="text-xs text-muted-foreground mt-1">For businesses under 5 years</div>
                         </div>
                         <div>
-                            <div className="text-sm text-white/40 mb-1">Healthy Working Capital Ratio</div>
+                            <div className="text-sm text-muted-foreground mb-1">Healthy Working Capital Ratio</div>
                             <div className="text-2xl font-bold">&gt; 1.5x</div>
-                            <div className="text-xs text-white/40 mt-1">Industry benchmark</div>
+                            <div className="text-xs text-muted-foreground mt-1">Industry benchmark</div>
                         </div>
                     </div>
                 </div>

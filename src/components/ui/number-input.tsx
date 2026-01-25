@@ -55,7 +55,7 @@ export function NumberInput({
                 "relative flex items-center group transition-all rounded-md h-10",
                 isLight
                     ? "bg-neutral-100 border border-neutral-200 focus-within:border-neutral-400 focus-within:ring-1 focus-within:ring-neutral-300"
-                    : "bg-transparent border border-white/10 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10",
+                    : "bg-transparent border border-border focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20",
                 className
             )}
             onMouseEnter={() => setIsHovered(true)}
@@ -80,8 +80,8 @@ export function NumberInput({
                 className={cn(
                     "w-full bg-transparent border-none px-3 h-full focus:ring-0 focus:outline-none text-sm font-semibold font-mono",
                     isLight
-                        ? "text-neutral-900 placeholder:text-neutral-400"
-                        : "text-white placeholder:text-neutral-600",
+                        ? "text-neutral-900 placeholder:text-muted-foreground"
+                        : "text-foreground placeholder:text-neutral-600",
                     !className?.includes("text-left") && "text-right"
                 )}
             />
@@ -95,8 +95,8 @@ export function NumberInput({
                         className={cn(
                             "h-5 w-6 p-0 rounded-none rounded-tr-md",
                             isLight
-                                ? "hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900"
-                                : "hover:bg-white/10 text-neutral-500 hover:text-white"
+                                ? "hover:bg-neutral-200 text-muted-foreground hover:text-neutral-900"
+                                : "hover:bg-accent text-muted-foreground hover:text-foreground"
                         )}
                         onMouseDown={() => startContinuous(increment)}
                         onMouseUp={stopContinuous}
@@ -111,8 +111,8 @@ export function NumberInput({
                         className={cn(
                             "h-5 w-6 p-0 rounded-none rounded-br-md border-t border-inherit",
                             isLight
-                                ? "hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900"
-                                : "hover:bg-white/10 text-neutral-500 hover:text-white"
+                                ? "hover:bg-neutral-200 text-muted-foreground hover:text-neutral-900"
+                                : "hover:bg-accent text-muted-foreground hover:text-foreground"
                         )}
                         onMouseDown={() => startContinuous(decrement)}
                         onMouseUp={stopContinuous}
