@@ -49,6 +49,20 @@ export const metadata: Metadata = {
     description: "Create professional invoices in ZAR. Free forever for South African businesses.",
     type: "website",
     locale: "en_ZA",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Illumi",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Illumi | Professional Invoicing for South African Businesses",
+    description: "Create professional invoices in ZAR. Free forever for South African businesses.",
+    images: ["/logo.png"],
   },
   icons: {
     icon: [

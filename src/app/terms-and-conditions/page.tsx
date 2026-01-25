@@ -14,11 +14,13 @@ export default function TermsAndConditionsPage() {
             <MarketingHeader />
             <section className="relative py-24 pt-32 md:pt-40">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="h-full w-full bg-black" />
                     <div className="absolute inset-0 bg-black/60" />
                 </div>
                 <div className="relative mx-auto max-w-4xl px-6">
-                    <h1 className="text-4xl font-bold tracking-tight">Terms and Conditions</h1>
+                    <div className="max-w-3xl">
+                        <h1 className="text-4xl font-bold tracking-tight">Terms and Conditions</h1>
+                    </div>
                 </div>
             </section>
             <main className="relative z-10 mx-auto max-w-4xl px-6 pb-20">

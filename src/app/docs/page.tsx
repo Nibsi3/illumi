@@ -34,7 +34,7 @@ export default function DocsPage() {
                 {/* Hero Search Section */}
                 <section className="relative pt-24 md:pt-28 pb-16 px-6 border-b border-white/10 overflow-hidden">
                     <div className="absolute inset-0 z-0">
-                        <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                        <div className="h-full w-full bg-black" />
                         <div className="absolute inset-0 bg-black/60" />
                     </div>
                     <div className="max-w-3xl mx-auto text-center relative z-10">

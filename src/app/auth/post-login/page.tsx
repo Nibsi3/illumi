@@ -17,10 +17,6 @@ export default function PostLoginRedirectPage() {
                 // ignore
             }
 
-            if (nextPath === '/admin' || nextPath.startsWith('/admin/')) {
-                nextPath = '/overview'
-            }
-
             // Give the browser time to persist cookies set by the callback response.
             const supabase = createClient()
             for (let i = 0; i < 10; i++) {

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import {
@@ -167,6 +168,14 @@ const proFeatures = [
     "Auto-update invoice status",
 ]
 
+export const metadata: Metadata = {
+    title: "Illumi | Professional Invoicing for South African Businesses",
+    description: "Create professional invoices in ZAR with optional VAT. Track expenses, manage clients, and accept online payments with PayGate — built for South African businesses.",
+    alternates: {
+        canonical: "/",
+    },
+}
+
 export default function LandingPage() {
     return (
         <>
@@ -187,14 +196,7 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section className="relative overflow-hidden border-b border-white/5 py-24 md:py-32 pt-32 md:pt-40">
                 <div className="absolute inset-0 z-0">
-                    <Image
-                        src="/bg.webp"
-                        alt=""
-                        fill
-                        priority
-                        sizes="100vw"
-                        className="object-cover object-center"
-                    />
+                    <div className="h-full w-full bg-black" />
                     <div className="absolute inset-0 bg-black/60" />
                 </div>
                 <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">

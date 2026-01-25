@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { isAdminEmail } from '@/lib/admin'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -10,7 +9,6 @@ export async function updateSession(request: NextRequest) {
     })
 
     const pathname = request.nextUrl.pathname
-    const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
 
     const publicPrefixes = [
         '/login',
@@ -42,11 +40,6 @@ export async function updateSession(request: NextRequest) {
     if (!supabaseUrl || !supabaseKey ||
         supabaseUrl.includes('placeholder') ||
         supabaseKey.includes('placeholder')) {
-        if (isAdminRoute) {
-            const notFoundUrl = request.nextUrl.clone()
-            notFoundUrl.pathname = '/not-found'
-            return NextResponse.rewrite(notFoundUrl, { status: 404 })
-        }
         return supabaseResponse
     }
 
@@ -83,21 +76,6 @@ export async function updateSession(request: NextRequest) {
         } = await supabase.auth.getSession()
 
         const user = session?.user || null
-
-        if (isAdminRoute) {
-            if (!user) {
-                const url = request.nextUrl.clone()
-                url.pathname = '/login'
-                url.searchParams.set('next', pathname)
-                return NextResponse.redirect(url)
-            }
-
-            if (!isAdminEmail(user.email)) {
-                const notFoundUrl = request.nextUrl.clone()
-                notFoundUrl.pathname = '/not-found'
-                return NextResponse.rewrite(notFoundUrl, { status: 404 })
-            }
-        }
 
         if (!user && !isPublicRoute) {
             const cookieNames = request.cookies.getAll().map((c) => c.name)

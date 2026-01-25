@@ -171,7 +171,7 @@ export default function ResourcesPage() {
             {/* Hero Section */}
             <section className="relative pt-24 md:pt-32 pb-16 px-6 border-b border-white/10 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="h-full w-full bg-black" />
                     <div className="absolute inset-0 bg-black/60" />
                 </div>
                 <div className="max-w-7xl mx-auto relative z-10">

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { MarketingHeader } from "@/components/marketing/marketing-header"
 import { MarketingFooter } from "@/components/marketing/marketing-footer"
@@ -352,6 +353,23 @@ const DOCS: Record<string, DocArticle> = {
             },
         ],
     },
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params
+    const doc = DOCS[slug]
+
+    if (!doc) {
+        return {}
+    }
+
+    return {
+        title: `${doc.title} | Illumi Docs`,
+        description: doc.description,
+        alternates: {
+            canonical: `/docs/${slug}`,
+        },
+    }
 }
 
 function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {

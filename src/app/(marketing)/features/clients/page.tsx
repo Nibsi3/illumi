@@ -61,7 +61,7 @@ export default function ClientsFeaturePage() {
             {/* Hero Section */}
             <section className="relative py-24 md:py-32 pt-32 md:pt-40 text-center">
                 <div className="absolute inset-0 z-0">
-                    <div className="h-full w-full bg-center bg-cover" style={{ backgroundImage: "url(/bg.webp)" }} />
+                    <div className="h-full w-full bg-black" />
                     <div className="absolute inset-0 bg-black/60" />
                 </div>
                 <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
