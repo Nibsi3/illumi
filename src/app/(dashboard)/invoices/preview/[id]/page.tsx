@@ -262,23 +262,9 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             </div>
                             )}
 
-                            {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && (
+                            {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && Boolean(isPro) && (
                                 <div>
-                                    {Boolean(isPro) ? (
-                                        <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain opacity-40" />
-                                    ) : (
-                                        <a
-                                            href="https://illumi.co.za"
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="inline-flex items-center gap-2 opacity-40 hover:opacity-60"
-                                        >
-                                            <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain" />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
-                                                Made with Illumi Invoice
-                                            </span>
-                                        </a>
-                                    )}
+                                    <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain opacity-40" />
                                 </div>
                             )}
                             <div className="flex flex-col gap-2">
@@ -309,6 +295,22 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             </div>
                         </div>
                     </div>
+
+                    {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && !Boolean(isPro) && (
+                        <div className="flex justify-center pt-10">
+                            <a
+                                href="https://illumi.co.za"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 opacity-40 hover:opacity-60"
+                            >
+                                <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain" />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
+                                    Made with Illumi Invoice
+                                </span>
+                            </a>
+                        </div>
+                    )}
 
                 </div>
                     )

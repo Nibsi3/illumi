@@ -288,37 +288,16 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     </div>
                                 )}
 
-                                {!data.hideIllumiBranding && (
+                                {!data.hideIllumiBranding && data.isPro && (
                                     <div className="pt-6">
-                                        {data.isPro ? (
-                                            <img
-                                                src={illumiLogoSrc}
-                                                alt="Illumi"
-                                                className={cn(
-                                                    "h-5 w-5 object-contain",
-                                                    isLight ? "opacity-40" : "opacity-60"
-                                                )}
-                                            />
-                                        ) : (
-                                            <a
-                                                href="https://illumi.co.za"
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className={cn(
-                                                    "inline-flex items-center gap-2",
-                                                    isLight ? "opacity-40 hover:opacity-60" : "opacity-60 hover:opacity-80"
-                                                )}
-                                            >
-                                                <img
-                                                    src={illumiLogoSrc}
-                                                    alt="Illumi"
-                                                    className="h-5 w-5 object-contain"
-                                                />
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
-                                                    Made with Illumi Invoice
-                                                </span>
-                                            </a>
-                                        )}
+                                        <img
+                                            src={illumiLogoSrc}
+                                            alt="Illumi"
+                                            className={cn(
+                                                "h-5 w-5 object-contain",
+                                                isLight ? "opacity-40" : "opacity-60"
+                                            )}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -343,6 +322,29 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                 </div>
                             </div>
                         </div>
+
+                        {!data.hideIllumiBranding && !data.isPro && (
+                            <div className="flex justify-center pt-10">
+                                <a
+                                    href="https://illumi.co.za"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={cn(
+                                        "inline-flex items-center gap-2",
+                                        isLight ? "opacity-40 hover:opacity-60" : "opacity-60 hover:opacity-80"
+                                    )}
+                                >
+                                    <img
+                                        src={illumiLogoSrc}
+                                        alt="Illumi"
+                                        className="h-5 w-5 object-contain"
+                                    />
+                                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
+                                        Made with Illumi Invoice
+                                    </span>
+                                </a>
+                            </div>
+                        )}
 
                     </div>
                 </div>
