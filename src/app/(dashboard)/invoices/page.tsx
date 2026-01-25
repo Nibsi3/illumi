@@ -687,13 +687,13 @@ export default function InvoicesPage() {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-4xl font-serif text-white tracking-tight italic">Invoices</h1>
-                        <p className="text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
+                        <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Invoices</h1>
+                        <p className="hidden sm:block text-neutral-500 mt-1">Manage and track your business invoices and payments.</p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
+                                <Button className="h-11 w-full sm:w-auto bg-white text-black hover:bg-neutral-200 transition-colors font-medium rounded-none">
                                     Create
                                     <ChevronDown className="ml-2 h-4 w-4" />
                                 </Button>
@@ -720,7 +720,9 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Status Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="md:grid md:grid-cols-4 gap-4">
+                    <div className="md:hidden -mx-4 px-4 overflow-x-auto no-scrollbar">
+                        <div className="flex gap-3 w-max">
                     {[
                         {
                             label: "Open",
@@ -755,38 +757,100 @@ export default function InvoicesPage() {
                             key={card.label}
                             onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
                             className={cn(
-                                "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none",
+                                "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none w-[240px]",
                                 filterStatus === card.status && "bg-white/5 border-white/20"
                             )}
                         >
-                            <CardContent className="p-6">
-                                <h3 className="text-3xl font-serif text-white mb-4 italic">{card.value}</h3>
+                            <CardContent className="p-4">
+                                <h3 className="text-2xl font-serif text-white mb-3 italic">{card.value}</h3>
                                 <p className="text-sm font-medium text-white">{card.label}</p>
                                 <p className="text-xs text-neutral-500">{card.count}</p>
                             </CardContent>
                         </Card>
                     ))}
 
-                    <Card className="bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none">
-                        <CardContent className="p-6">
+                    <Card className="md:hidden bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none w-[220px]">
+                        <CardContent className="p-4">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h3 className="text-3xl font-serif text-white mb-4 italic">{Object.keys(invoicesByCompany).length}</h3>
-                                    <p className="text-sm font-medium text-white">Active Clients</p>
-                                    <p className="text-xs text-neutral-500">Tracking payment history</p>
-                                </div>
-                                <div className="flex items-end gap-[2px] h-12 opacity-30 pt-2">
-                                    {[2, 4, 3, 6, 8, 10, 7, 5, 9, 6].map((h, i) => (
-                                        <div key={i} className="w-[3px] bg-white rounded-none" style={{ height: `${h * 4}px` }} />
-                                    ))}
+                                    <h3 className="text-2xl font-serif text-white mb-3 italic">{Object.keys(invoicesByCompany).length}</h3>
+                                    <p className="text-sm font-medium text-white">Clients</p>
+                                    <p className="text-xs text-neutral-500">Active</p>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
+                        </div>
+                    </div>
+
+                    <div className="hidden md:contents">
+                        {[
+                            {
+                                label: "Open",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: `${invoices.filter(i => ['sent', 'viewed', 'draft'].includes(i.status.toLowerCase())).length} invoices`,
+                                status: "unpaid"
+                            },
+                            {
+                                label: "Overdue",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => i.status.toLowerCase() === 'overdue').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: invoices.filter(i => i.status.toLowerCase() === 'overdue').length > 0
+                                    ? `${invoices.filter(i => i.status.toLowerCase() === 'overdue').length} invoices`
+                                    : "No invoices",
+                                status: "overdue"
+                            },
+                            {
+                                label: "Paid",
+                                value: new Intl.NumberFormat('en-ZA', { style: 'currency', currency: currency || 'ZAR' }).format(
+                                    invoices.filter(i => i.status.toLowerCase() === 'paid').reduce((acc, curr) => acc + (curr.total || 0), 0)
+                                ),
+                                count: invoices.filter(i => i.status.toLowerCase() === 'paid').length > 0
+                                    ? `${invoices.filter(i => i.status.toLowerCase() === 'paid').length} invoices`
+                                    : "No invoices",
+                                status: "paid"
+                            },
+                        ].map((card) => (
+                            <Card
+                                key={card.label}
+                                onClick={() => setFilterStatus(filterStatus === card.status ? null : card.status)}
+                                className={cn(
+                                    "bg-transparent border-white/5 shadow-none overflow-hidden cursor-pointer transition-all hover:bg-white/5 rounded-none",
+                                    filterStatus === card.status && "bg-white/5 border-white/20"
+                                )}
+                            >
+                                <CardContent className="p-6">
+                                    <h3 className="text-3xl font-serif text-white mb-4 italic">{card.value}</h3>
+                                    <p className="text-sm font-medium text-white">{card.label}</p>
+                                    <p className="text-xs text-neutral-500">{card.count}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+
+                        <Card className="bg-transparent border-white/5 shadow-none overflow-hidden relative rounded-none">
+                            <CardContent className="p-6">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="text-3xl font-serif text-white mb-4 italic">{Object.keys(invoicesByCompany).length}</h3>
+                                        <p className="text-sm font-medium text-white">Active Clients</p>
+                                        <p className="text-xs text-neutral-500">Tracking payment history</p>
+                                    </div>
+                                    <div className="flex items-end gap-[2px] h-12 opacity-30 pt-2">
+                                        {[2, 4, 3, 6, 8, 10, 7, 5, 9, 6].map((h, i) => (
+                                            <div key={i} className="w-[3px] bg-white rounded-none" style={{ height: `${h * 4}px` }} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
 
                 {/* Filter & Actions Bar */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                         <div className="relative w-full sm:max-w-sm group">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
@@ -856,7 +920,7 @@ export default function InvoicesPage() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="h-11 border-white/5 bg-transparent hover:bg-white/5 transition-colors rounded-none">
