@@ -42,6 +42,10 @@ export default function GeneralSettings() {
         hideIllumiBranding, setHideIllumiBranding,
         companyName, setCompanyName,
         companyWebsite, setCompanyWebsite,
+        bankName, setBankName,
+        accountName, setAccountName,
+        accountNumber, setAccountNumber,
+        branchCode, setBranchCode,
         fromEmail, setFromEmail,
         sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf,
         currency, setCurrency,
@@ -117,6 +121,23 @@ export default function GeneralSettings() {
                         .from('invoices')
                         .update({
                             company_website: companyWebsite || null,
+                        } as any)
+                        .eq('workspace_id', workspaceId)
+                        .eq('user_id', user.id)
+                        .or('status.eq.scheduled,is_recurring.eq.true')
+                } catch {
+                    // ignore
+                }
+
+                // Best-effort: update banking details (older DBs may not have these columns)
+                try {
+                    await supabase
+                        .from('invoices')
+                        .update({
+                            bank_name: bankName || null,
+                            account_name: accountName || null,
+                            account_number: accountNumber || null,
+                            branch_code: branchCode || null,
                         } as any)
                         .eq('workspace_id', workspaceId)
                         .eq('user_id', user.id)
@@ -222,6 +243,48 @@ export default function GeneralSettings() {
                             value={companyName}
                             onChange={(e) => setCompanyName(e.target.value)}
                             placeholder="My Professional Co."
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Bank Name</Label>
+                        <Input
+                            value={bankName}
+                            onChange={(e) => setBankName(e.target.value)}
+                            placeholder="FNB"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Account Name</Label>
+                        <Input
+                            value={accountName}
+                            onChange={(e) => setAccountName(e.target.value)}
+                            placeholder="My Company (Pty) Ltd"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Account Number</Label>
+                        <Input
+                            value={accountNumber}
+                            onChange={(e) => setAccountNumber(e.target.value)}
+                            placeholder="123456789"
+                            className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Branch Code</Label>
+                        <Input
+                            value={branchCode}
+                            onChange={(e) => setBranchCode(e.target.value)}
+                            placeholder="250655"
                             className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
                         />
                     </div>

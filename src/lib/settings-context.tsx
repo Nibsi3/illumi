@@ -24,6 +24,14 @@ interface SettingsContextType {
     setCompanyWebsite: (website: string) => void
     companyAddress: string
     setCompanyNameAddress: (address: string) => void
+    bankName: string
+    setBankName: (bankName: string) => void
+    accountName: string
+    setAccountName: (accountName: string) => void
+    accountNumber: string
+    setAccountNumber: (accountNumber: string) => void
+    branchCode: string
+    setBranchCode: (branchCode: string) => void
     country: string
     setCountry: (country: string) => void
     activePaymentProvider: string | null
@@ -76,6 +84,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [companyName, setCompanyName] = useState("Illumi Professional")
     const [companyWebsite, setCompanyWebsite] = useState("")
     const [companyAddress, setCompanyNameAddress] = useState("")
+    const [bankName, setBankName] = useState("")
+    const [accountName, setAccountName] = useState("")
+    const [accountNumber, setAccountNumber] = useState("")
+    const [branchCode, setBranchCode] = useState("")
     const [country, setCountry] = useState("South Africa")
     const [activePaymentProvider, setActivePaymentProvider] = useState<string | null>("payfast")
     const [connectedProviders, setConnectedProviders] = useState<string[]>(["payfast"])
@@ -121,6 +133,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.companyName) setCompanyName(parsed.companyName)
                     if (parsed.companyWebsite !== undefined) setCompanyWebsite(parsed.companyWebsite)
                     if (parsed.companyAddress) setCompanyNameAddress(parsed.companyAddress)
+                    if (parsed.bankName !== undefined) setBankName(parsed.bankName)
+                    if (parsed.accountName !== undefined) setAccountName(parsed.accountName)
+                    if (parsed.accountNumber !== undefined) setAccountNumber(parsed.accountNumber)
+                    if (parsed.branchCode !== undefined) setBranchCode(parsed.branchCode)
                     if (parsed.country) setCountry(parsed.country)
                     if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
                     if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
@@ -170,12 +186,16 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             companyName,
             companyWebsite,
             companyAddress,
+            bankName,
+            accountName,
+            accountNumber,
+            branchCode,
             country,
             activePaymentProvider,
             connectedProviders,
         }
         localStorage.setItem(storageKey, JSON.stringify(settings))
-    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
+    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, bankName, accountName, accountNumber, branchCode, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
 
     useEffect(() => {
         if (!isBillingLoaded) return
@@ -194,6 +214,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             companyName, setCompanyName,
             companyWebsite, setCompanyWebsite,
             companyAddress, setCompanyNameAddress,
+            bankName, setBankName,
+            accountName, setAccountName,
+            accountNumber, setAccountNumber,
+            branchCode, setBranchCode,
             country, setCountry: handleSetCountry,
             activePaymentProvider, setActivePaymentProvider,
             connectedProviders, setConnectedProviders,

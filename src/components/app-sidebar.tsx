@@ -76,6 +76,10 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         getUser();
     }, [supabase]);
 
+    const effectiveIsOwner = Boolean(
+        isOwner || (activeWorkspace && user && activeWorkspace.owner_id === user.id)
+    )
+
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         try {
@@ -275,7 +279,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                             <div className="p-3 text-xs text-muted-foreground text-center">No workspaces yet</div>
                                         )}
                                         <DropdownMenuSeparator className="bg-border" />
-                                        {isOwner ? (
+                                        {effectiveIsOwner ? (
                                             <Button
                                                 onClick={() => setIsWorkspaceDialogOpen(true)}
                                                 variant="ghost"

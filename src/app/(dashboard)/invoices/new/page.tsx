@@ -405,6 +405,10 @@ export default function NewInvoicePage() {
                 payment_provider: activePaymentProvider || null,
                 from_email: fromEmail,
                 company_website: settings.companyWebsite || null,
+                bank_name: settings.bankName || null,
+                account_name: settings.accountName || null,
+                account_number: settings.accountNumber || null,
+                branch_code: settings.branchCode || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
@@ -1461,9 +1465,13 @@ export default function NewInvoicePage() {
 
                                             ) : (
                                                 <div className="space-y-1 text-sm text-neutral-500 font-medium">
-                                                    <p>Account name: Illumi Professional</p>
-                                                    <p>Account number: 123456789</p>
-                                                    <p>Bank: First National Bank</p>
+                                                    {settings.accountName && <p>Account name: {settings.accountName}</p>}
+                                                    {settings.accountNumber && <p>Account number: {settings.accountNumber}</p>}
+                                                    {settings.bankName && <p>Bank: {settings.bankName}</p>}
+                                                    {settings.branchCode && <p>Branch code: {settings.branchCode}</p>}
+                                                    {!settings.accountName && !settings.accountNumber && !settings.bankName && !settings.branchCode && (
+                                                        <p>Enter your banking details in Settings to show them on invoices.</p>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -1511,6 +1519,10 @@ export default function NewInvoicePage() {
                             isPro: Boolean(isPro),
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             companyWebsite: settings.companyWebsite,
+                            bankName: settings.bankName,
+                            accountName: settings.accountName,
+                            accountNumber: settings.accountNumber,
+                            branchCode: settings.branchCode,
                             clientName,
                             clientEmail,
                             clientPhone,

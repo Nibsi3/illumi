@@ -22,6 +22,10 @@ interface PreviewModalProps {
         isPro?: boolean
         hideIllumiBranding?: boolean
         companyWebsite?: string
+        bankName?: string
+        accountName?: string
+        accountNumber?: string
+        branchCode?: string
         clientName: string
         clientEmail: string
         clientPhone: string
@@ -265,6 +269,24 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         {data.note?.trim() || ""}
                                     </p>
                                 </div>
+
+                                {(data.bankName || data.accountName || data.accountNumber || data.branchCode) && (
+                                    <div className="space-y-2">
+                                        <span className={cn(
+                                            "text-[10px] font-bold uppercase tracking-[0.2em]",
+                                            isLight ? "text-neutral-500" : "text-white/20"
+                                        )}>Payment Details</span>
+                                        <p className={cn(
+                                            "text-sm invoice-font-notes leading-relaxed opacity-60",
+                                            isLight ? "text-neutral-700" : "text-white/60"
+                                        )}>
+                                            {data.bankName ? <>BANK: {data.bankName}<br /></> : null}
+                                            {data.accountName ? <>ACCOUNT: {data.accountName}<br /></> : null}
+                                            {data.accountNumber ? <>NUMBER: {data.accountNumber}<br /></> : null}
+                                            {data.branchCode ? <>CODE: {data.branchCode}</> : null}
+                                        </p>
+                                    </div>
+                                )}
 
                                 {!data.hideIllumiBranding && (
                                     <div className="pt-6">

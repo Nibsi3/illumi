@@ -97,6 +97,10 @@ export async function GET(request: NextRequest) {
             vat_amount: data.vat_amount,
             from_email: data.from_email,
             company_website: data.company_website,
+            bank_name: data.bank_name,
+            account_name: data.account_name,
+            account_number: data.account_number,
+            branch_code: data.branch_code,
             workspace_id: data.workspace_id,
             customers: data.customers
                 ? {

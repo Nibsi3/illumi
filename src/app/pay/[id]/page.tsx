@@ -429,6 +429,24 @@ export default function PayInvoicePage() {
                                             </p>
                                         </div>
 
+                                        {(invoice.bank_name || invoice.account_name || invoice.account_number || invoice.branch_code) && (
+                                            <div className="space-y-2">
+                                                <span className={cn(
+                                                    "text-[10px] font-bold uppercase tracking-[0.2em]",
+                                                    mode === "light" ? "text-neutral-600" : "text-white/50"
+                                                )}>Payment Details</span>
+                                                <p className={cn(
+                                                    "text-sm invoice-font-notes leading-relaxed opacity-60",
+                                                    mode === "light" ? "text-black/60" : "text-white/60"
+                                                )}>
+                                                    {invoice.bank_name ? <>BANK: {invoice.bank_name}<br /></> : null}
+                                                    {invoice.account_name ? <>ACCOUNT: {invoice.account_name}<br /></> : null}
+                                                    {invoice.account_number ? <>NUMBER: {invoice.account_number}<br /></> : null}
+                                                    {invoice.branch_code ? <>CODE: {invoice.branch_code}</> : null}
+                                                </p>
+                                            </div>
+                                        )}
+
                                         {!invoice.hide_illumi_branding && (
                                             <div className="pt-6">
                                                 {invoice.is_pro_workspace ? (

@@ -32,6 +32,10 @@ interface Invoice {
     currency: string
     logo_url?: string | null
     company_website?: string | null
+    bank_name?: string | null
+    account_name?: string | null
+    account_number?: string | null
+    branch_code?: string | null
     hide_illumi_branding?: boolean | null
     invoice_mode?: "light" | "dark" | null
     customer: {
@@ -280,10 +284,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             <div className="flex flex-col gap-2">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Payment Details</span>
                                 <p className="text-[11px] text-neutral-500 leading-relaxed font-mono">
-                                    BANK: FNB<br />
-                                    ACCOUNT: Professional Branding<br />
-                                    NUMBER: 123456789<br />
-                                    CODE: 250655
+                                    {invoice.bank_name ? <>BANK: {invoice.bank_name}<br /></> : null}
+                                    {invoice.account_name ? <>ACCOUNT: {invoice.account_name}<br /></> : null}
+                                    {invoice.account_number ? <>NUMBER: {invoice.account_number}<br /></> : null}
+                                    {invoice.branch_code ? <>CODE: {invoice.branch_code}</> : null}
                                 </p>
                             </div>
                         </div>

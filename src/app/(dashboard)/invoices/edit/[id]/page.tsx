@@ -255,6 +255,10 @@ export default function EditInvoicePage() {
                 logo_bg: null,
                 from_email: fromEmail,
                 company_website: settings.companyWebsite || null,
+                bank_name: settings.bankName || null,
+                account_name: settings.accountName || null,
+                account_number: settings.accountNumber || null,
+                branch_code: settings.branchCode || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
@@ -275,7 +279,7 @@ export default function EditInvoicePage() {
             }
 
             if (invoiceError && (invoiceError as any).code === 'PGRST204') {
-                const { hide_illumi_branding, company_website, ...fallbackData } = invoiceData as any
+                const { hide_illumi_branding, company_website, bank_name, account_name, account_number, branch_code, ...fallbackData } = invoiceData as any
                 const { error: retryError } = await supabase
                     .from('invoices')
                     .update(fallbackData)
@@ -889,6 +893,10 @@ export default function EditInvoicePage() {
                             isPro: Boolean(isPro),
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             companyWebsite: settings.companyWebsite,
+                            bankName: settings.bankName,
+                            accountName: settings.accountName,
+                            accountNumber: settings.accountNumber,
+                            branchCode: settings.branchCode,
                             clientName,
                             clientEmail,
                             clientPhone,
