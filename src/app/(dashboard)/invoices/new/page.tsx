@@ -404,6 +404,7 @@ export default function NewInvoicePage() {
                 logo_bg: null,
                 payment_provider: activePaymentProvider || null,
                 from_email: fromEmail,
+                company_website: settings.companyWebsite || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
@@ -1387,14 +1388,35 @@ export default function NewInvoicePage() {
 
                                             {!(Boolean(isPro) && Boolean(settings.hideIllumiBranding)) && (
                                                 <div>
-                                                    <img
-                                                        src={illumiLogoSrc}
-                                                        alt="Illumi"
-                                                        className={cn(
-                                                            "h-5 w-5 object-contain",
-                                                            invoiceMode === 'light' ? 'opacity-40' : 'opacity-60'
-                                                        )}
-                                                    />
+                                                    {Boolean(isPro) ? (
+                                                        <img
+                                                            src={illumiLogoSrc}
+                                                            alt="Illumi"
+                                                            className={cn(
+                                                                "h-5 w-5 object-contain",
+                                                                invoiceMode === 'light' ? 'opacity-40' : 'opacity-60'
+                                                            )}
+                                                        />
+                                                    ) : (
+                                                        <a
+                                                            href="https://illumi.co.za"
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className={cn(
+                                                                "inline-flex items-center gap-2",
+                                                                invoiceMode === 'light' ? 'opacity-40 hover:opacity-60' : 'opacity-60 hover:opacity-80'
+                                                            )}
+                                                        >
+                                                            <img
+                                                                src={illumiLogoSrc}
+                                                                alt="Illumi"
+                                                                className="h-5 w-5 object-contain"
+                                                            />
+                                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
+                                                                Made with Illumi Invoice
+                                                            </span>
+                                                        </a>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -1486,7 +1508,9 @@ export default function NewInvoicePage() {
                             taxRate,
                             dateFormat,
                             invoiceMode,
+                            isPro: Boolean(isPro),
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
+                            companyWebsite: settings.companyWebsite,
                             clientName,
                             clientEmail,
                             clientPhone,

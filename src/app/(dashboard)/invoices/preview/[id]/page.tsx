@@ -31,6 +31,7 @@ interface Invoice {
     terms: string
     currency: string
     logo_url?: string | null
+    company_website?: string | null
     hide_illumi_branding?: boolean | null
     invoice_mode?: "light" | "dark" | null
     customer: {
@@ -176,6 +177,16 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">From</span>
                             <div className="space-y-1 invoice-font-from">
                                 <p className="text-lg font-bold">My Professional Co.</p>
+                                {invoice.company_website && (
+                                    <a
+                                        href={invoice.company_website}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-sm text-neutral-600 leading-relaxed underline underline-offset-4"
+                                    >
+                                        {invoice.company_website}
+                                    </a>
+                                )}
                                 <p className="text-sm text-neutral-600 leading-relaxed">
                                     123 Business Avenue<br />
                                     Innovation District<br />
@@ -249,7 +260,21 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
                             {!(Boolean(isPro) && Boolean(invoice.hide_illumi_branding)) && (
                                 <div>
-                                    <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain opacity-40" />
+                                    {Boolean(isPro) ? (
+                                        <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain opacity-40" />
+                                    ) : (
+                                        <a
+                                            href="https://illumi.co.za"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="inline-flex items-center gap-2 opacity-40 hover:opacity-60"
+                                        >
+                                            <img src={illumiLogoSrc} alt="Illumi" className="h-5 w-5 object-contain" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
+                                                Made with Illumi Invoice
+                                            </span>
+                                        </a>
+                                    )}
                                 </div>
                             )}
                             <div className="flex flex-col gap-2">

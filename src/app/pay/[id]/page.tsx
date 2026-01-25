@@ -320,6 +320,19 @@ export default function PayInvoicePage() {
                                         <div className="space-y-1 invoice-font-from">
                                             <p className="text-lg font-bold">Illumi Professional</p>
                                             {invoice.from_email && <p className="text-xs font-medium opacity-60">{invoice.from_email}</p>}
+                                            {invoice.company_website && (
+                                                <a
+                                                    href={invoice.company_website}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className={cn(
+                                                        "text-xs font-medium underline underline-offset-4 opacity-60",
+                                                        mode === "light" ? "text-neutral-500" : "text-white/60"
+                                                    )}
+                                                >
+                                                    {invoice.company_website}
+                                                </a>
+                                            )}
                                             <p className={cn(
                                                 "text-xs leading-relaxed",
                                                 mode === "light" ? "text-neutral-500" : "text-white/40"
@@ -418,14 +431,35 @@ export default function PayInvoicePage() {
 
                                         {!invoice.hide_illumi_branding && (
                                             <div className="pt-6">
-                                                <img
-                                                    src={illumiLogoSrc}
-                                                    alt="Illumi"
-                                                    className={cn(
-                                                        "h-5 w-5 object-contain",
-                                                        mode === 'light' ? 'opacity-40' : 'opacity-60'
-                                                    )}
-                                                />
+                                                {invoice.is_pro_workspace ? (
+                                                    <img
+                                                        src={illumiLogoSrc}
+                                                        alt="Illumi"
+                                                        className={cn(
+                                                            "h-5 w-5 object-contain",
+                                                            mode === 'light' ? 'opacity-40' : 'opacity-60'
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    <a
+                                                        href="https://illumi.co.za"
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className={cn(
+                                                            "inline-flex items-center gap-2",
+                                                            mode === 'light' ? 'opacity-40 hover:opacity-60' : 'opacity-60 hover:opacity-80'
+                                                        )}
+                                                    >
+                                                        <img
+                                                            src={illumiLogoSrc}
+                                                            alt="Illumi"
+                                                            className="h-5 w-5 object-contain"
+                                                        />
+                                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4">
+                                                            Made with Illumi Invoice
+                                                        </span>
+                                                    </a>
+                                                )}
                                             </div>
                                         )}
                                     </div>

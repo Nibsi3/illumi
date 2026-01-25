@@ -91,10 +91,12 @@ export async function GET(request: NextRequest) {
             invoice_mode: data.invoice_mode,
             logo_url: data.logo_url,
             hide_illumi_branding: Boolean(data.hide_illumi_branding && allowHideIllumiBranding),
+            is_pro_workspace: Boolean(allowHideIllumiBranding),
             payment_provider: data.payment_provider,
             vat_rate: data.vat_rate,
             vat_amount: data.vat_amount,
             from_email: data.from_email,
+            company_website: data.company_website,
             workspace_id: data.workspace_id,
             customers: data.customers
                 ? {

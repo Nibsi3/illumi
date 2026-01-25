@@ -110,6 +110,20 @@ export default function GeneralSettings() {
                     .eq('user_id', user.id)
                     .or('status.eq.scheduled,is_recurring.eq.true')
                     .is('from_email', null)
+
+                // Best-effort: update company_website (older DBs may not have this column)
+                try {
+                    await supabase
+                        .from('invoices')
+                        .update({
+                            company_website: companyWebsite || null,
+                        } as any)
+                        .eq('workspace_id', workspaceId)
+                        .eq('user_id', user.id)
+                        .or('status.eq.scheduled,is_recurring.eq.true')
+                } catch {
+                    // ignore
+                }
             }
 
             toast.success("Settings saved successfully")
@@ -261,16 +275,12 @@ export default function GeneralSettings() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Website</Label>
-                            {!isPro && <span className="text-[10px] font-bold uppercase tracking-widest text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded">PRO</span>}
-                        </div>
+                        <Label className="text-xs font-bold uppercase tracking-widest text-neutral-500">Company Website</Label>
                         <Input
                             value={companyWebsite}
                             onChange={(e) => setCompanyWebsite(e.target.value)}
                             placeholder="https://yourcompany.com"
                             className="bg-black border-white/5 h-11 focus-visible:ring-white/10"
-                            disabled={!isPro}
                         />
                     </div>
                 </div>
