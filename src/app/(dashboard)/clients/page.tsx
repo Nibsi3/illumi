@@ -148,13 +148,13 @@ export default function ClientsPage() {
         <div className="flex flex-col gap-y-10 font-sans pb-20">
             {/* Header Section */}
             <div>
-                <h1 className="text-4xl font-serif text-white tracking-tight italic">Clients</h1>
-                <p className="text-neutral-500 mt-1">Manage your clients and the invoices you send to them.</p>
+                <h1 className="text-2xl sm:text-4xl font-serif text-white tracking-tight italic">Clients</h1>
+                <p className="hidden sm:block text-neutral-500 mt-1">Manage your clients and the invoices you send to them.</p>
             </div>
 
             {/* Filter & Actions Bar */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 flex-1 max-w-md">
+            <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-white/5 py-3 -mx-4 px-4 md:py-0 md:mx-0 md:px-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4 flex-1 sm:max-w-md">
                     <div className="relative flex-1 group">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500 group-focus-within:text-white transition-colors" />
                         <Input
@@ -169,10 +169,10 @@ export default function ClientsPage() {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="h-11 border-white/5 bg-transparent hover:bg-white/5 transition-colors rounded-none">
+                            <Button variant="outline" className="hidden md:inline-flex h-11 border-white/5 bg-transparent hover:bg-white/5 transition-colors rounded-none">
                                 <Filter className="mr-2 h-4 w-4" />
                                 Columns
                             </Button>
@@ -196,7 +196,7 @@ export default function ClientsPage() {
                     </DropdownMenu>
 
                     <Link href="/clients/new">
-                        <Button className="h-11 bg-white text-black hover:bg-neutral-200 transition-colors font-semibold rounded-none">
+                        <Button className="h-11 w-full sm:w-auto bg-white text-black hover:bg-neutral-200 transition-colors font-semibold rounded-none">
                             <Plus className="mr-2 h-4 w-4" />
                             Create Client
                         </Button>
@@ -233,7 +233,61 @@ export default function ClientsPage() {
             {/* Customers Table */}
             {!isLoading && customers.length > 0 && (
                 <div className="border border-white/10 bg-black overflow-hidden shadow-2xl">
-                    <div className="overflow-x-auto">
+                    {/* Mobile list */}
+                    <div className="md:hidden divide-y divide-white/10">
+                        {filteredCustomers.map((customer) => (
+                            <div key={customer.id} className="p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-[#878787] shrink-0">
+                                                {customer.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="text-sm font-bold text-white truncate">{customer.name}</div>
+                                                <div className="text-xs text-neutral-500 truncate">{customer.email}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className={cn(
+                                        "inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border shrink-0",
+                                        customer.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-white/5 text-neutral-400 border-white/10'
+                                    )}>
+                                        {customer.status}
+                                    </span>
+                                </div>
+
+                                <div className="mt-3 text-xs text-neutral-500">
+                                    <div className="flex items-center justify-between">
+                                        <span>{customer.country || 'South Africa'}</span>
+                                        <span className="truncate max-w-[55%] text-right">{customer.industry || '-'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 flex items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                        onClick={() => openHistory(customer)}
+                                    >
+                                        History
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="h-10 flex-1 border-white/10 bg-white/5 hover:bg-white/10 rounded-lg"
+                                        onClick={() => toggleCustomerStatus(customer)}
+                                    >
+                                        {customer.status === 'active' ? 'Deactivate' : 'Activate'}
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop table */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full border-collapse text-left text-[13px]">
                             <thead>
                                 <tr className="bg-white/2 border-b border-white/10">
@@ -360,26 +414,28 @@ export default function ClientsPage() {
                             <div className="text-sm text-neutral-400">No invoices found for this customer.</div>
                         ) : (
                             <div className="border border-white/10 rounded-xl overflow-hidden">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="border-b border-white/10 text-[10px] uppercase tracking-widest text-neutral-500">
-                                        <tr>
-                                            <th className="px-4 py-3">Invoice</th>
-                                            <th className="px-4 py-3">Status</th>
-                                            <th className="px-4 py-3 text-right">Total</th>
-                                            <th className="px-4 py-3">Issued</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/10">
-                                        {historyInvoices.map((inv: any) => (
-                                            <tr key={inv.invoice_number} className="hover:bg-white/5">
-                                                <td className="px-4 py-3 text-white">{inv.invoice_number || '-'}</td>
-                                                <td className="px-4 py-3 text-neutral-400">{inv.status}</td>
-                                                <td className="px-4 py-3 text-right text-white">{Number(inv.total || 0).toLocaleString()}</td>
-                                                <td className="px-4 py-3 text-neutral-400">{inv.issue_date || '-'}</td>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="border-b border-white/10 text-[10px] uppercase tracking-widest text-neutral-500">
+                                            <tr>
+                                                <th className="px-4 py-3">Invoice</th>
+                                                <th className="px-4 py-3">Status</th>
+                                                <th className="px-4 py-3 text-right">Total</th>
+                                                <th className="px-4 py-3">Issued</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody className="divide-y divide-white/10">
+                                            {historyInvoices.map((inv: any) => (
+                                                <tr key={inv.invoice_number} className="hover:bg-white/5">
+                                                    <td className="px-4 py-3 text-white">{inv.invoice_number || '-'}</td>
+                                                    <td className="px-4 py-3 text-neutral-400">{inv.status}</td>
+                                                    <td className="px-4 py-3 text-right text-white">{Number(inv.total || 0).toLocaleString()}</td>
+                                                    <td className="px-4 py-3 text-neutral-400">{inv.issue_date || '-'}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                     </div>
