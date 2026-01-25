@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
+import { AnalyticsTracker } from "@/components/analytics-tracker"
 import { SettingsProvider } from "@/lib/settings-context"
 import { WorkspaceProvider } from "@/lib/workspace-context"
 import { QueryProvider } from "@/lib/query-provider"
@@ -15,6 +16,7 @@ export default function DashboardLayout({
             <WorkspaceProvider>
                 <SettingsProvider>
                     <AppSidebar>
+                        <AnalyticsTracker />
                         {children}
                     </AppSidebar>
                 </SettingsProvider>

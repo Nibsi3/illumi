@@ -50,15 +50,18 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for:
-         * 1. /api routes
-         * 2. /_next (static files)
-         * 3. /_static (metadata)
-         * 4. /auth/callback (The route that handles the login)
-         * 5. /login (The page where users sign in)
-         * 6. All images/favicons
-         */
-        '/((?!api|_next/static|_next/image|auth/callback|login|sitemap\\.xml|robots\\.txt|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|mp4)$).*)',
+        '/admin/:path*',
+        '/apps/:path*',
+        '/clients/:path*',
+        '/expenses/:path*',
+        '/inbox/:path*',
+        '/invoices/:path*',
+        '/notifications/:path*',
+        '/overview/:path*',
+        '/products/:path*',
+        '/recurring/:path*',
+        '/settings/:path*',
+        '/transactions/:path*',
+        '/upgrade/:path*',
     ],
 }

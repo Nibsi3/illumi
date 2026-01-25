@@ -2,8 +2,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import {
     IconFileInvoice,
     IconFolder,
@@ -23,7 +21,6 @@ import {
     IconChartBar,
     IconReceipt,
 } from "@tabler/icons-react"
-import Script from "next/script"
 
 const stats = [
     { label: "Invoices created", value: "15,000+" },
@@ -170,32 +167,33 @@ const proFeatures = [
     "Auto-update invoice status",
 ]
 
-export default async function LandingPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (user) {
-        redirect('/overview')
-    }
-
+export default function LandingPage() {
     return (
         <>
-            <Script
-                id="faq-schema"
+            <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Script
-                id="software-application-schema"
+            <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationSchema) }}
+            />
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `(() => { try { const u = new URL(window.location.href); if (u.pathname === '/' && u.searchParams.get('code')) { u.pathname = '/auth/callback'; window.location.replace(u.toString()); } } catch {} })();`,
+                }}
             />
             <div className="bg-black font-sans text-white grainy-gradient">
             {/* Hero Section */}
             <section className="relative overflow-hidden border-b border-white/5 py-24 md:py-32 pt-32 md:pt-40">
                 <div className="absolute inset-0 z-0">
-                    <div
-                        className="h-full w-full bg-center bg-cover"
-                        style={{ backgroundImage: "url(/bg.webp)" }}
+                    <Image
+                        src="/bg.webp"
+                        alt=""
+                        fill
+                        priority
+                        sizes="100vw"
+                        className="object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-black/60" />
                 </div>
