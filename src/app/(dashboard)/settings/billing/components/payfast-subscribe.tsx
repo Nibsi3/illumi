@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { IconStarFilled, IconLoader2 } from "@tabler/icons-react"
 import { useWorkspace } from "@/lib/workspace-context"
 import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 // PayFast Production Credentials
 const PAYFAST_MERCHANT_ID = process.env.NEXT_PUBLIC_PAYFAST_MERCHANT_ID || ""
@@ -15,7 +16,7 @@ const PAYFAST_URL = "https://www.payfast.co.za/eng/process"
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://illumi.co.za"
 
 export function PayFastSubscribeButton() {
-    const { activeWorkspace } = useWorkspace()
+    const { activeWorkspace, workspaces, isLoading: workspaceLoading, refreshWorkspaces } = useWorkspace()
     const [userEmail, setUserEmail] = useState<string>("")
     const [userName, setUserName] = useState<string>("")
     const [isLoading, setIsLoading] = useState(true)
@@ -27,7 +28,11 @@ export function PayFastSubscribeButton() {
         async function fetchUserDetails() {
             try {
                 const { data: sessionData } = await supabase.auth.getSession()
-                const user = sessionData?.session?.user || null
+                let user = sessionData?.session?.user || null
+                if (!user) {
+                    const { data: userData } = await supabase.auth.getUser()
+                    user = userData?.user || null
+                }
                 if (user) {
                     setResolvedUserId(user.id)
                     setUserEmail(user.email || "")
@@ -40,9 +45,12 @@ export function PayFastSubscribeButton() {
         fetchUserDetails()
     }, [supabase])
     
-    const workspaceId = activeWorkspace?.id || (typeof window !== 'undefined' ? (localStorage.getItem('activeWorkspaceId') || '') : '')
+    const workspaceId =
+        activeWorkspace?.id ||
+        workspaces?.[0]?.id ||
+        (typeof window !== 'undefined' ? (localStorage.getItem('activeWorkspaceId') || '') : '')
 
-    if (isLoading) {
+    if (isLoading || workspaceLoading) {
         return (
             <Button
                 disabled
@@ -57,9 +65,27 @@ export function PayFastSubscribeButton() {
     if (!workspaceId || !resolvedUserId) {
         return (
             <Button
-                disabled
-                className="bg-white/50 text-black h-12 px-8 font-black uppercase tracking-tighter text-sm"
+                type="button"
+                className="bg-white text-black hover:bg-neutral-200 h-12 px-8 font-black uppercase tracking-tighter text-sm shadow-2xl transition-all"
+                onClick={async () => {
+                    try {
+                        setIsLoading(true)
+                        await refreshWorkspaces(true)
+                        const { data: sessionData } = await supabase.auth.getSession()
+                        const user = sessionData?.session?.user || null
+                        if (user) {
+                            setResolvedUserId(user.id)
+                            setUserEmail(user.email || "")
+                            setUserName(user.user_metadata?.full_name || user.email?.split("@")[0] || "")
+                        }
+                    } catch {
+                        toast.error("Could not load billing details")
+                    } finally {
+                        setIsLoading(false)
+                    }
+                }}
             >
+                <IconStarFilled size={18} className="mr-2" />
                 Subscribe Now — R350/mo
             </Button>
         )

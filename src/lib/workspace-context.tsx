@@ -16,7 +16,7 @@ interface WorkspaceContextType {
     activeWorkspace: Workspace | null
     setActiveWorkspace: (workspace: Workspace) => void
     isLoading: boolean
-    refreshWorkspaces: () => Promise<void>
+    refreshWorkspaces: (forceRefresh?: boolean) => Promise<void>
     isOwner: boolean
     userId: string | null
     userEmail: string | null

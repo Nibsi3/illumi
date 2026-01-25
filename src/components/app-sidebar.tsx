@@ -3,6 +3,7 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import {
     IconLayoutDashboard,
+    IconMenu2,
     IconPackage,
     IconSettings,
     IconReceipt,
@@ -22,6 +23,7 @@ const NotificationDropdown = lazy(() => import("@/components/notifications/notif
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -50,6 +52,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
     const [showSwitcher, setShowSwitcher] = useState(false);
     const [user, setUser] = useState<any>(null);
+    const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [isWorkspaceDialogOpen, setIsWorkspaceDialogOpen] = useState(false);
     const [newWorkspaceName, setNewWorkspaceName] = useState("");
     const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
@@ -169,7 +172,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                         setOpen(false);
                         setShowSwitcher(false);
                     }}
-                    className="h-full bg-sidebar border-r border-sidebar-border flex flex-col z-60 transition-colors duration-300 absolute left-0 top-0 shadow-xl"
+                    className="hidden md:flex h-full bg-sidebar border-r border-sidebar-border flex-col z-60 transition-colors duration-300 absolute left-0 top-0 shadow-xl"
                 >
                     {/* Logo Section - Centered and Icon only */}
                     <div className="h-16 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
@@ -326,7 +329,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                 </motion.aside>
 
                 {/* Content Spacer for Overlay Sidebar */}
-                <div className="w-[72px] shrink-0" />
+                <div className="hidden md:block w-[72px] shrink-0" />
 
                 {/* Main Content Area */}
                 <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-background relative overflow-y-auto">
@@ -342,6 +345,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     {/* Header (Stayed relatively similar but polished) */}
                     <header className="h-16 flex items-center justify-between px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50">
                         <div className="flex items-center gap-6 flex-1">
+                            <button
+                                type="button"
+                                onClick={() => setMobileNavOpen(true)}
+                                className="md:hidden -ml-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                aria-label="Open menu"
+                            >
+                                <IconMenu2 className="h-5 w-5" />
+                            </button>
                             <button 
                                 type="button"
                                 onClick={() => setIsSearchOpen(true)}
@@ -432,6 +443,53 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     </main>
                 </div>
             </div>
+
+            <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                <SheetContent side="left" className="w-full max-w-none sm:max-w-none p-6 overflow-y-auto">
+                    <div className="flex flex-col gap-6">
+                        <div className="flex items-center gap-3">
+                            <Link href="/overview" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3">
+                                <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                                <span className="text-sm font-bold">Illumi</span>
+                            </Link>
+                        </div>
+
+                        <div className="space-y-1">
+                            {links.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    onClick={() => setMobileNavOpen(false)}
+                                    className={cn(
+                                        "flex items-center gap-3 px-3 py-3 rounded-lg text-sm transition-colors",
+                                        pathname === link.href
+                                            ? "bg-accent text-accent-foreground"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                                    )}
+                                >
+                                    <div className="w-6 flex items-center justify-center shrink-0">{link.icon}</div>
+                                    <span className="font-medium">{link.label}</span>
+                                </Link>
+                            ))}
+                        </div>
+
+                        <div className="pt-4 border-t border-border">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => {
+                                    setMobileNavOpen(false)
+                                    handleSignOut()
+                                }}
+                                className="w-full justify-start"
+                            >
+                                <IconLogout className="h-4 w-4 mr-2" />
+                                Sign out
+                            </Button>
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
 
             {/* Workspace Creation Dialog */}
             <Dialog open={isWorkspaceDialogOpen} onOpenChange={setIsWorkspaceDialogOpen}>

@@ -195,13 +195,15 @@ export default function LoginPage() {
             <div className="hidden lg:flex lg:w-1/2 bg-black flex-col items-center justify-center p-12 relative overflow-hidden">
                 {/* Logo top left */}
                 <div className="absolute top-12 left-12">
-                    <Image
-                        src="/logo.png"
-                        alt="Illumi Logo"
-                        width={32}
-                        height={32}
-                        className="w-8 h-8"
-                    />
+                    <Link href="/" aria-label="Go to Illumi home">
+                        <Image
+                            src="/logo.png"
+                            alt="Illumi Logo"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8"
+                        />
+                    </Link>
                 </div>
 
                 {/* Large Background Quote */}
@@ -221,7 +223,18 @@ export default function LoginPage() {
             </div>
 
             {/* Right side - Login form */}
-            <div className="w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col items-center justify-center p-8">
+            <div className="w-full lg:w-1/2 bg-[#0a0a0a] flex flex-col items-center justify-center p-8 relative">
+                <div className="absolute top-6 left-6 lg:hidden">
+                    <Link href="/" aria-label="Go to Illumi home">
+                        <Image
+                            src="/logo.png"
+                            alt="Illumi Logo"
+                            width={32}
+                            height={32}
+                            className="w-8 h-8"
+                        />
+                    </Link>
+                </div>
                 <div className="w-full max-w-[350px]">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-medium text-[#fafafa] mb-2">Welcome to Illumi</h1>
