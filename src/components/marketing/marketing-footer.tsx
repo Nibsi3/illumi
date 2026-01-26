@@ -141,7 +141,7 @@ export function MarketingFooter() {
                     illumi
                 </div>
                 <div className="text-center mt-8 text-xs text-muted-foreground">
-                    Proudly supporting small businesses in Johannesburg, Cape Town, Durban, Pretoria, and across South Africa, including Bloemfontein, Port Elizabeth, East London, and the Garden Route.
+                    Proudly supporting freelancers and small businesses worldwide.
                 </div>
             </div>
         </footer>

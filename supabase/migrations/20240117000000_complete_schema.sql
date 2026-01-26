@@ -17,22 +17,6 @@ CREATE TABLE IF NOT EXISTS public.workspaces (
 -- Enable RLS
 ALTER TABLE public.workspaces ENABLE ROW LEVEL SECURITY;
 
--- Policies for workspaces
-CREATE POLICY "Users can view workspaces they own or are members of" ON public.workspaces
-  FOR SELECT USING (
-    auth.uid() = owner_id OR 
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = id AND user_id = auth.uid())
-  );
-
-CREATE POLICY "Users can create workspaces" ON public.workspaces
-  FOR INSERT WITH CHECK (auth.uid() = owner_id);
-
-CREATE POLICY "Owners can update their workspaces" ON public.workspaces
-  FOR UPDATE USING (auth.uid() = owner_id);
-
-CREATE POLICY "Owners can delete their workspaces" ON public.workspaces
-  FOR DELETE USING (auth.uid() = owner_id);
-
 -- ============================================
 -- WORKSPACE MEMBERS TABLE
 -- ============================================
@@ -73,6 +57,22 @@ CREATE POLICY "Owners can remove members" ON public.workspace_members
     EXISTS (SELECT 1 FROM public.workspaces WHERE id = workspace_id AND owner_id = auth.uid())
   );
 
+-- Policies for workspaces
+CREATE POLICY "Users can view workspaces they own or are members of" ON public.workspaces
+  FOR SELECT USING (
+    auth.uid() = owner_id OR 
+    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = id AND user_id = auth.uid())
+  );
+
+CREATE POLICY "Users can create workspaces" ON public.workspaces
+  FOR INSERT WITH CHECK (auth.uid() = owner_id);
+
+CREATE POLICY "Owners can update their workspaces" ON public.workspaces
+  FOR UPDATE USING (auth.uid() = owner_id);
+
+CREATE POLICY "Owners can delete their workspaces" ON public.workspaces
+  FOR DELETE USING (auth.uid() = owner_id);
+
 -- ============================================
 -- CUSTOMERS TABLE (formerly clients)
 -- ============================================
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS public.customers (
   phone TEXT,
   website TEXT,
   address TEXT,
-  country TEXT DEFAULT 'South Africa',
+  country TEXT DEFAULT 'United States',
   tax_id TEXT,
   contact_person TEXT,
   industry TEXT,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   sku TEXT,
   description TEXT,
   price DECIMAL(12, 2) NOT NULL DEFAULT 0,
-  currency TEXT NOT NULL DEFAULT 'ZAR',
+  currency TEXT NOT NULL DEFAULT 'USD',
   billing_type TEXT NOT NULL DEFAULT 'one-time' CHECK (billing_type IN ('one-time', 'recurring')),
   recurring_interval TEXT CHECK (recurring_interval IN ('weekly', 'monthly', 'quarterly', 'yearly')),
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived')),
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS public.invoices (
   issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
   due_date DATE,
   scheduled_date TIMESTAMP WITH TIME ZONE,
-  currency TEXT NOT NULL DEFAULT 'ZAR',
+  currency TEXT NOT NULL DEFAULT 'USD',
   subtotal DECIMAL(12, 2) NOT NULL DEFAULT 0,
   tax_rate DECIMAL(5, 2) DEFAULT 0,
   tax_amount DECIMAL(12, 2) DEFAULT 0,
@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS public.payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   invoice_id UUID NOT NULL REFERENCES public.invoices(id) ON DELETE CASCADE,
   amount DECIMAL(12, 2) NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'ZAR',
+  currency TEXT NOT NULL DEFAULT 'USD',
   provider TEXT NOT NULL,
   provider_transaction_id TEXT,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),

@@ -5,7 +5,7 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Pricing | Illumi",
-    description: "Simple pricing for South African businesses. Start free, upgrade to Pro for PayGate, recurring invoices, and advanced features.",
+    description: "Simple pricing for businesses worldwide. Start free, upgrade to Pro for Stripe payments, recurring invoices, and advanced features.",
     alternates: {
         canonical: "/pricing",
     },
@@ -52,8 +52,8 @@ const faqs = [
         answer: "Absolutely. All data is encrypted and stored securely. Payments are processed securely by your connected payment provider.",
     },
     {
-        question: "Does Illumi support South African VAT?",
-        answer: "Yes, Illumi is built for South African businesses. All invoices support VAT calculations and display amounts in ZAR (Rands).",
+        question: "Does Illumi support tax calculations?",
+        answer: "Yes, Illumi supports tax calculations for businesses worldwide. Set your tax rate in settings and invoices will automatically calculate tax.",
     },
 ]
 
@@ -98,17 +98,17 @@ export default function PricingPage() {
                         <span className="px-3 py-1 rounded-full bg-accent text-muted-foreground">Pricing</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-                        Free Invoicing Software for South Africa
+                        Free Invoicing Software
                     </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
-                        Start free, upgrade when you need PayGate integration and automated payments.
+                        Start free, upgrade when you need Stripe payments and automated invoicing.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
                             <Link href="/login">Get Started for Free</Link>
                         </Button>
                         <Button asChild variant="outline" className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted">
-                            <Link href="/features/paygate">Explore PayGate</Link>
+                            <Link href="/features/paygate">Explore Stripe Payments</Link>
                         </Button>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function PricingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-muted-foreground mb-2">Free</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-foreground font-serif">R0</span>
+                                    <span className="text-4xl font-bold text-foreground font-serif">$0</span>
                                     <span className="text-muted-foreground">/month</span>
                                 </div>
                                 <div className="text-sm text-muted-foreground mt-1">Free forever for freelancers and small businesses</div>
@@ -156,7 +156,7 @@ export default function PricingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-black/50 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-black font-serif">R350</span>
+                                    <span className="text-4xl font-bold text-black font-serif">$29</span>
                                     <span className="text-black/50">/month</span>
                                 </div>
                                 <div className="text-sm text-black/40 mt-1">For businesses that want online invoice payments</div>

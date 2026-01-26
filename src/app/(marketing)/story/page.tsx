@@ -5,7 +5,7 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Story | Illumi",
-    description: "Learn why we’re building Illumi — simpler invoicing, expense tracking, and getting paid for South African small businesses.",
+    description: "Learn why we're building Illumi — simpler invoicing, expense tracking, and getting paid for freelancers and small businesses worldwide.",
     alternates: {
         canonical: "/story",
     },
@@ -29,7 +29,7 @@ export default function StoryPage() {
                         <span className="font-serif italic">Illumi.</span>
                     </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
-                        A simpler way to invoice, track expenses, and get paid—built specifically for South African small businesses.
+                        A simpler way to invoice, track expenses, and get paid—built for freelancers and small businesses worldwide.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
@@ -52,7 +52,7 @@ export default function StoryPage() {
                     <div className="mb-16">
                         <h2 className="text-xl font-bold text-foreground mb-6">The Problem</h2>
                         <p className="text-muted-foreground leading-relaxed mb-4">
-                            As small business owners in South Africa, we've always struggled with invoicing.
+                            As small business owners, we've always struggled with invoicing.
                             The tools we found were either too expensive, too complicated, or simply didn't
                             understand how we actually work.
                         </p>
@@ -69,7 +69,7 @@ export default function StoryPage() {
                         <div className="space-y-6 text-muted-foreground leading-relaxed">
                             <p>
                                 So we built Illumi — the invoicing app we wished existed. Simple, beautiful,
-                                and built specifically for South African businesses.
+                                and built for freelancers and small businesses worldwide.
                             </p>
                             <p>
                                 With Illumi, you can build a client database, create a product catalog, and
@@ -82,12 +82,12 @@ export default function StoryPage() {
                             </p>
                             <p>
                                 For businesses ready to level up, our Pro version includes a client payment portal
-                                powered by PayGate. Your clients can pay directly from the invoice, and Illumi
+                                powered by Stripe. Your clients can pay directly from the invoice, and Illumi
                                 automatically updates the status. No more chasing payments.
                             </p>
                             <p>
                                 This isn't another bloated accounting system. It's just invoicing — done right.
-                                For South African businesses, by South African entrepreneurs.
+                                For modern businesses, by entrepreneurs who understand your needs.
                             </p>
                         </div>
                     </div>
@@ -105,7 +105,7 @@ export default function StoryPage() {
                         Ready to simplify your invoicing?
                     </h2>
                     <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-                        Join thousands of South African businesses who've made invoicing effortless.
+                        Join thousands of businesses worldwide who've made invoicing effortless.
                         Start for free — no credit card required.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

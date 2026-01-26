@@ -29,7 +29,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'eagwfcctvfrvxgxaitbd.supabase.co',
+        hostname: 'itnpydhppfajlwofjouv.supabase.co',
       },
     ],
     // Cache optimized images for 1 year

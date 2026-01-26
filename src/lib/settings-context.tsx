@@ -45,39 +45,39 @@ interface SettingsContextType {
 }
 
 const VAT_RATES: Record<string, number> = {
-    "South Africa": 15,
-    "Nigeria": 7.5,
-    "Egypt": 14,
-    "Algeria": 19,
-    "Morocco": 20,
-    "Ethiopia": 15,
-    "Kenya": 16,
-    "Tanzania": 18,
-    "Ghana": 15,
-    "Angola": 14
+    "United States": 0,
+    "United Kingdom": 20,
+    "Canada": 5,
+    "Australia": 10,
+    "Germany": 19,
+    "France": 20,
+    "Netherlands": 21,
+    "Ireland": 23,
+    "New Zealand": 15,
+    "Singapore": 8
 }
 
 const COUNTRY_CURRENCIES: Record<string, string> = {
-    "South Africa": "ZAR",
-    "Nigeria": "NGN",
-    "Egypt": "EGP",
-    "Algeria": "DZD",
-    "Morocco": "MAD",
-    "Ethiopia": "ETB",
-    "Kenya": "KES",
-    "Tanzania": "TZS",
-    "Ghana": "GHS",
-    "Angola": "AOA"
+    "United States": "USD",
+    "United Kingdom": "GBP",
+    "Canada": "CAD",
+    "Australia": "AUD",
+    "Germany": "EUR",
+    "France": "EUR",
+    "Netherlands": "EUR",
+    "Ireland": "EUR",
+    "New Zealand": "NZD",
+    "Singapore": "SGD"
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const { activeWorkspace } = useWorkspace()
-    const [currency, setCurrency] = useState("ZAR")
+    const [currency, setCurrency] = useState("USD")
     const [taxRate, setTaxRate] = useState(0)
     const [dateFormat, setDateFormat] = useState("DD/MM/YYYY")
-    const [fromEmail, setFromEmail] = useState("hello@illumi.co.za")
+    const [fromEmail, setFromEmail] = useState("hello@illumiinvoice.com")
     const [sendInvoiceCopyToSelf, setSendInvoiceCopyToSelf] = useState(false)
     const [hideIllumiBranding, setHideIllumiBranding] = useState(false)
     const [logo, setLogo] = useState<string | null>(null)
@@ -88,9 +88,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     const [accountName, setAccountName] = useState("")
     const [accountNumber, setAccountNumber] = useState("")
     const [branchCode, setBranchCode] = useState("")
-    const [country, setCountry] = useState("South Africa")
-    const [activePaymentProvider, setActivePaymentProvider] = useState<string | null>("payfast")
-    const [connectedProviders, setConnectedProviders] = useState<string[]>(["payfast"])
+    const [country, setCountry] = useState("United States")
+    const [activePaymentProvider, setActivePaymentProvider] = useState<string | null>("stripe")
+    const [connectedProviders, setConnectedProviders] = useState<string[]>(["stripe"])
     const [providerKeys, setProviderKeys] = useState<Record<string, any>>({})
     const [billingMethods, setBillingMethods] = useState<any[]>([])
     const [isLoaded, setIsLoaded] = useState(false)

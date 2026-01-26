@@ -3,48 +3,23 @@ import { Metadata } from "next"
 import { IconArrowRight, IconPlugConnected, IconShieldCheck, IconCurrencyDollar } from "@tabler/icons-react"
 
 export const metadata: Metadata = {
-    title: "Integrations | Illumi (South Africa)",
-    description: "Connect your preferred South African payment gateway for online invoice payments. PayFast, Yoco, Ozow, PayStack, Peach Payments and more.",
+    title: "Integrations | Illumi Invoice",
+    description: "Connect Stripe for online invoice payments. Accept credit cards and digital wallets worldwide.",
     keywords: [
-        "invoicing app integrations South Africa",
-        "PayFast invoicing integration",
-        "Yoco invoice payments",
-        "Ozow EFT payments online",
-        "South African payment gateway for invoices",
-        "ZAR invoicing software",
+        "invoicing app integrations",
+        "Stripe invoicing integration",
+        "online invoice payments",
+        "credit card payments for invoices",
+        "payment gateway for invoices",
+        "invoice payment software",
     ],
 }
 
 const INTEGRATIONS = [
     {
-        slug: "payfast",
-        name: "PayFast",
-        blurb: "Accept card, Instant EFT and more on your invoices.",
-    },
-    {
-        slug: "yoco",
-        name: "Yoco",
-        blurb: "Let clients pay your invoices online using Yoco.",
-    },
-    {
-        slug: "ozow",
-        name: "Ozow",
-        blurb: "Offer fast bank-to-bank EFT payments from your invoices.",
-    },
-    {
-        slug: "paystack",
-        name: "PayStack",
-        blurb: "Modern payments infrastructure for African businesses.",
-    },
-    {
-        slug: "peach-payments",
-        name: "Peach Payments",
-        blurb: "Enterprise-ready card payments for higher-volume businesses.",
-    },
-    {
-        slug: "snapscan",
-        name: "SnapScan",
-        blurb: "Enable QR-based payments where supported by your provider.",
+        slug: "stripe",
+        name: "Stripe",
+        blurb: "Accept credit cards and digital wallets worldwide via Stripe Checkout.",
     },
 ]
 
@@ -65,14 +40,14 @@ export default function IntegrationsIndexPage() {
                             Connect the payment provider you already use
                         </h1>
                         <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
-                            Illumi connects your preferred South African payment gateway via PayGate so clients can pay online and you can get paid in ZAR.
+                            Illumi connects to Stripe so your clients can pay invoices online with credit cards and digital wallets.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/features/paygate"
                                 className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-white/90 px-8 h-12 text-sm font-semibold"
                             >
-                                Learn about PayGate
+                                Learn about Stripe Payments
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                             <Link
@@ -99,19 +74,19 @@ export default function IntegrationsIndexPage() {
                                 <div className="border-t border-border md:border-t-0 md:border-l p-6 md:p-7 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                                         <IconCurrencyDollar className="h-4 w-4 text-muted-foreground" />
-                                        ZAR-first invoicing
+                                        Multi-currency invoicing
                                     </div>
                                     <div className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                        Built for South African SMMEs and contractors.
+                                        Built for freelancers and small businesses worldwide.
                                     </div>
                                 </div>
                                 <div className="border-t border-border md:border-t-0 md:border-l p-6 md:p-7 flex flex-col justify-center">
                                     <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                                         <IconPlugConnected className="h-4 w-4 text-muted-foreground" />
-                                        Multiple provider options
+                                        Global payments
                                     </div>
                                     <div className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                        Use PayFast, Yoco, Ozow, PayStack and more.
+                                        Accept payments from customers worldwide via Stripe.
                                     </div>
                                 </div>
                             </div>
@@ -144,7 +119,7 @@ export default function IntegrationsIndexPage() {
                     </div>
 
                     <div className="mt-12 border-t border-border pt-8 text-muted-foreground text-sm">
-                        Provider availability and payment methods can vary. Configure your provider in Settings &gt; PayGate.
+                        Configure your Stripe integration in Settings &gt; PayGate.
                     </div>
                 </div>
             </section>

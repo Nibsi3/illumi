@@ -9,7 +9,7 @@ function getResendClient() {
 
 type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
 
-const ILLUMI_PUBLIC_LOGO = "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png"
+const ILLUMI_PUBLIC_LOGO = "https://itnpydhppfajlwofjouv.supabase.co/storage/v1/object/public/logo/logo.png"
 
 interface InvoiceItem {
     description: string
@@ -50,7 +50,7 @@ interface EmailPayload {
     note?: string
 }
 
-function generateTotalsSummary(items: InvoiceItem[], currency: string = 'ZAR', totalRaw?: string): string {
+function generateTotalsSummary(items: InvoiceItem[], currency: string = 'USD', totalRaw?: string): string {
     if (!items || items.length === 0) return ''
 
     const subtotal = (items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.unit_price) || 0), 0)
@@ -58,7 +58,7 @@ function generateTotalsSummary(items: InvoiceItem[], currency: string = 'ZAR', t
     const total = totalNumber !== null ? totalNumber : subtotal
     const vat = total - subtotal
 
-    const formatter = new Intl.NumberFormat('en-ZA', { style: 'currency', currency })
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
     const showVat = Number.isFinite(vat) && vat > 0.009
 
     return `
@@ -84,10 +84,10 @@ function generateTotalsSummary(items: InvoiceItem[], currency: string = 'ZAR', t
 }
 
 // Generate items table HTML for invoice emails
-function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): string {
+function generateItemsTable(items: InvoiceItem[], currency: string = 'USD'): string {
     if (!items || items.length === 0) return ''
 
-    const formatter = new Intl.NumberFormat('en-ZA', { style: 'currency', currency })
+    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency })
 
     const rows = items.slice(0, 5).map(item => `
         <tr>
@@ -126,7 +126,7 @@ function extractAmountNumber(raw: string | undefined): number | null {
 }
 
 function buildGmailInvoiceSchema(payload: EmailPayload): string {
-    const currency = (payload.currency || 'ZAR').toUpperCase()
+    const currency = (payload.currency || 'USD').toUpperCase()
     const amountNumber = extractAmountNumber(payload.amount)
     const invoiceNumber = (payload.invoiceNumber || '').trim()
     const paymentLink = (payload.paymentLink || '').trim()
@@ -138,7 +138,7 @@ function buildGmailInvoiceSchema(payload: EmailPayload): string {
         "provider": {
             "@type": "Organization",
             "name": "Illumi",
-            "email": "invoice@illumi.co.za",
+            "email": "invoice@illumiinvoice.com",
         },
         ...(invoiceNumber ? { "confirmationNumber": invoiceNumber } : {}),
         ...(amountNumber !== null
@@ -285,12 +285,12 @@ export async function POST(req: Request) {
 
             case "invoice":
                 const invoiceCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
-                const invoiceSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const invoiceSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumiinvoice.com").trim() || "support@illumiinvoice.com"
                 const invoiceCompanyWebsite = (payload.companyWebsite || "").trim()
                 const invoiceAllowCustomBranding = Boolean(payload.allowCustomBranding)
                 const invoiceHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const invoicePoweredByName = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyName : "Illumi"
-                const invoicePoweredByUrl = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyWebsite : "https://illumi.co.za"
+                const invoicePoweredByUrl = invoiceAllowCustomBranding && invoiceCompanyWebsite ? invoiceCompanyWebsite : "https://illumiinvoice.com"
                 emailSubject = payload.subject || `Invoice ${payload.invoiceNumber || ""} from ${invoiceCompanyName}`
                 const invoiceSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
@@ -309,7 +309,7 @@ export async function POST(req: Request) {
                         ${generateTotalsSummary(payload.items || [], payload.currency, payload.amount)}
                         <div style="background: #f5f5f5; padding: 24px; border-radius: 12px; margin: 24px 0;">
                             <p style="margin: 0 0 8px 0; font-size: 14px; color: #666;">Amount Due</p>
-                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #000;">${payload.amount || "ZAR 0.00"}</p>
+                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #000;">${payload.amount || "$0.00"}</p>
                             ${payload.dueDate ? `<p style="margin: 16px 0 0 0; font-size: 14px; color: #666;">Due by: ${payload.dueDate}</p>` : ""}
                         </div>
                         ${payload.note ? `<div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #000;"><p style="margin: 0; font-size: 14px; color: #666; font-style: italic;">${payload.note}</p></div>` : ""}
@@ -333,12 +333,12 @@ export async function POST(req: Request) {
 
             case "payment_reminder":
                 const reminderCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
-                const reminderSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const reminderSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumiinvoice.com").trim() || "support@illumiinvoice.com"
                 const reminderCompanyWebsite = (payload.companyWebsite || "").trim()
                 const reminderAllowCustomBranding = Boolean(payload.allowCustomBranding)
                 const reminderHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const reminderPoweredByName = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyName : "Illumi"
-                const reminderPoweredByUrl = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyWebsite : "https://illumi.co.za"
+                const reminderPoweredByUrl = reminderAllowCustomBranding && reminderCompanyWebsite ? reminderCompanyWebsite : "https://illumiinvoice.com"
                 emailSubject = `Reminder: Invoice ${payload.invoiceNumber || ""} from ${reminderCompanyName} - Payment Due Soon`
                 const reminderSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
@@ -356,7 +356,7 @@ export async function POST(req: Request) {
                         ${generateItemsTable(payload.items || [], payload.currency)}
                         <div style="background: #fef3c7; padding: 24px; border-radius: 12px; margin: 24px 0; border: 1px solid #f59e0b;">
                             <p style="margin: 0 0 8px 0; font-size: 14px; color: #92400e;">Amount Due</p>
-                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #92400e;">${payload.amount || "ZAR 0.00"}</p>
+                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #92400e;">${payload.amount || "$0.00"}</p>
                             ${payload.dueDate ? `<p style="margin: 16px 0 0 0; font-size: 14px; color: #92400e;">Due: ${payload.dueDate}</p>` : ""}
                         </div>
                         <div style="text-align: center; margin: 40px 0;">
@@ -382,12 +382,12 @@ export async function POST(req: Request) {
 
             case "final_notice":
                 const finalCompanyName = (payload.companyName || "Illumi").trim() || "Illumi"
-                const finalSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumi.co.za").trim() || "support@illumi.co.za"
+                const finalSupportEmail = (payload.supportEmail || payload.fromEmail || "support@illumiinvoice.com").trim() || "support@illumiinvoice.com"
                 const finalCompanyWebsite = (payload.companyWebsite || "").trim()
                 const finalAllowCustomBranding = Boolean(payload.allowCustomBranding)
                 const finalHideIllumiBranding = Boolean(payload.hideIllumiBranding)
                 const finalPoweredByName = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyName : "Illumi"
-                const finalPoweredByUrl = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyWebsite : "https://illumi.co.za"
+                const finalPoweredByUrl = finalAllowCustomBranding && finalCompanyWebsite ? finalCompanyWebsite : "https://illumiinvoice.com"
                 emailSubject = `FINAL NOTICE: Invoice ${payload.invoiceNumber || ""} from ${finalCompanyName} - Payment Due Today`
                 const finalNoticeSchema = buildGmailInvoiceSchema(payload)
                 emailHtml = `
@@ -406,7 +406,7 @@ export async function POST(req: Request) {
                         ${generateItemsTable(payload.items || [], payload.currency)}
                         <div style="background: #fee2e2; padding: 24px; border-radius: 12px; margin: 24px 0; border: 1px solid #dc2626;">
                             <p style="margin: 0 0 8px 0; font-size: 14px; color: #991b1b;">Amount Due</p>
-                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #991b1b;">${payload.amount || "ZAR 0.00"}</p>
+                            <p style="margin: 0; font-size: 32px; font-weight: bold; color: #991b1b;">${payload.amount || "$0.00"}</p>
                             <p style="margin: 16px 0 0 0; font-size: 14px; color: #991b1b; font-weight: 600;">Due: TODAY</p>
                         </div>
                         <div style="text-align: center; margin: 40px 0;">
@@ -437,18 +437,18 @@ export async function POST(req: Request) {
                 )
         }
 
-        const INVOICE_FROM = "invoice@illumi.co.za"
-        const INVITE_FROM = "invite@illumi.co.za"
+        const INVOICE_FROM = "invoice@illumiinvoice.com"
+        const INVITE_FROM = "invite@illumiinvoice.com"
         const isInvoiceLike = type === "invoice" || type === "payment_reminder" || type === "final_notice"
 
         // Determine the "from" address
         const fromAddress = (type === "support" || type === "contact")
-            ? (type === "support" ? "support@illumi.co.za" : "info@illumi.co.za")
+            ? (type === "support" ? "support@illumiinvoice.com" : "info@illumiinvoice.com")
             : isInvoiceLike
                 ? INVOICE_FROM
                 : type === "invite"
                     ? INVITE_FROM
-                : "invoices@illumi.co.za"
+                : "invoices@illumiinvoice.com"
 
         const replyToAddress =
             (type === "support" || type === "contact")
@@ -460,9 +460,9 @@ export async function POST(req: Request) {
                     : (payload.fromEmail || undefined)
 
         const primaryTo = type === "support"
-            ? "support@illumi.co.za"
+            ? "support@illumiinvoice.com"
             : type === "contact"
-                ? "info@illumi.co.za"
+                ? "info@illumiinvoice.com"
                 : cleanTo
 
         const requestedCopyRecipients = normalizeEmailList(payload.bcc)

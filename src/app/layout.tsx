@@ -30,27 +30,27 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://www.illumi.co.za"
+    process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://www.illumiinvoice.com"
   ),
-  title: "Illumi | Professional Invoicing for South African Businesses",
-  description: "Create professional invoices in ZAR, track expenses, and get paid online. Built for South African freelancers and small businesses — VAT optional.",
+  title: "Illumi Invoice | Professional Invoicing Software",
+  description: "Create professional invoices, track expenses, and get paid online with Stripe. Built for freelancers and small businesses worldwide.",
   keywords: [
-    "invoice generator South Africa",
-    "professional invoice South Africa",
-    "VAT invoice generator South Africa",
-    "free invoice software South Africa",
-    "invoice generator ZAR",
-    "SMME invoicing software",
-    "freelance invoice template South Africa",
-    "online invoice payment South Africa",
-    "expense tracker South Africa",
-    "proforma invoice South Africa",
+    "invoice generator",
+    "professional invoice software",
+    "free invoice software",
+    "online invoicing",
+    "freelance invoice template",
+    "small business invoicing",
+    "expense tracker",
+    "Stripe invoice payments",
+    "recurring invoices",
+    "invoice management",
   ],
   openGraph: {
-    title: "Illumi | Professional Invoicing for South African Businesses",
-    description: "Create professional invoices in ZAR. Free forever for South African businesses.",
+    title: "Illumi Invoice | Professional Invoicing Software",
+    description: "Create professional invoices and get paid online with Stripe. Free forever for freelancers and small businesses.",
     type: "website",
-    locale: "en_ZA",
+    locale: "en_US",
     images: [
       {
         url: "/logo.png",
@@ -62,8 +62,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Illumi | Professional Invoicing for South African Businesses",
-    description: "Create professional invoices in ZAR. Free forever for South African businesses.",
+    title: "Illumi Invoice | Professional Invoicing Software",
+    description: "Create professional invoices and get paid online with Stripe. Free forever for freelancers and small businesses.",
     images: ["/logo.png"],
   },
   icons: {

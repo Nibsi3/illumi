@@ -18,44 +18,9 @@ import { useWorkspace } from "@/lib/workspace-context"
 
 const providers = [
     {
-        id: "payfast",
-        name: "PayFast",
-        description: "The most popular South African payment gateway. Supports Credit Card, Instant EFT, and more.",
-        logo: "https://www.payfast.co.za/wp-content/themes/payfast-co-za/images/payfast-logo.svg",
-        connected: true,
-    },
-    {
-        id: "paystack",
-        name: "PayStack",
-        description: "Modern payment infrastructure for Africa. Fast, secure, and reliable.",
-        logo: "https://paystack.com/assets/payment/img/paystack-logo-vector.svg",
-        connected: false,
-    },
-    {
-        id: "yoco",
-        name: "Yoco",
-        description: "Simple online payments for small businesses. Low fees and great support.",
-        logo: "https://www.yoco.com/za/wp-content/themes/yoco/assets/images/logo/yoco-logo-black.svg",
-        connected: false,
-    },
-    {
-        id: "ozow",
-        name: "Ozow",
-        description: "Direct bank-to-bank electronic funds transfer. No credit card required.",
-        logo: "https://ozow.com/wp-content/uploads/2021/05/ozow-logo.svg",
-        connected: false,
-    },
-    {
-        id: "peach",
-        name: "Peach Payments",
-        description: "Enterprise-grade payment gateway for high-volume businesses.",
-        logo: "https://www.peachpayments.com/hubfs/Peach%20Payments%20Logo.svg",
-        connected: false,
-    },
-    {
         id: "stripe",
         name: "Stripe",
-        description: "Global payments platform. Accept cards and wallets worldwide via Stripe Checkout.",
+        description: "Global payments platform. Accept credit cards and digital wallets worldwide via Stripe Checkout.",
         logo: "https://stripe.com/img/v3/home/social.png",
         connected: false,
     },
@@ -608,7 +573,7 @@ export default function PayGatePage() {
                         containerClassName=""
                         className="bg-primary text-primary-foreground font-bold h-12 px-8 w-full sm:w-auto"
                     >
-                        Upgrade to Pro — R350/mo
+                        Upgrade to Pro — $29/mo
                     </HoverBorderGradient>
                 </div>
             </div>

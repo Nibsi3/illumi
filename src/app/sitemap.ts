@@ -9,7 +9,7 @@ export const revalidate = 0
 const baseUrl =
   process.env.NEXT_PUBLIC_URL ||
   process.env.NEXT_PUBLIC_SITE_URL ||
-  'https://www.illumi.co.za'
+  'https://www.illumiinvoice.com'
 
 const isRouteGroup = (segment: string) => segment.startsWith('(') && segment.endsWith(')')
 

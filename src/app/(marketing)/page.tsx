@@ -26,9 +26,9 @@ import {
 
 const stats = [
     { label: "Invoices created", value: "15,000+" },
-    { label: "SA businesses", value: "2,500+" },
+    { label: "Businesses", value: "2,500+" },
     { label: "Clients managed", value: "8,400+" },
-    { label: "ZAR processed", value: "R12M+" },
+    { label: "Processed", value: "$2M+" },
 ]
 
 const featureCards = [
@@ -36,7 +36,7 @@ const featureCards = [
         icon: IconMail,
         title: "Email Invoicing",
         description: "Send invoices by email in one click. Clients receive a secure link to view and pay.",
-        keyword: "Tax invoices in ZAR",
+        keyword: "Professional email invoices",
     },
     {
         icon: IconFolder,
@@ -47,20 +47,20 @@ const featureCards = [
     {
         icon: IconChartBar,
         title: "Net Profit Tracking",
-        description: "See your real profit after expenses. Track income vs expenses in ZAR.",
-        keyword: "Business expense tracker SA",
+        description: "See your real profit after expenses. Track income vs expenses in any currency.",
+        keyword: "Business expense tracker",
     },
     {
         icon: IconShieldCheck,
-        title: "PayGate Integration",
-        description: "Accept online payments using your chosen provider. Invoices auto-update when paid.",
-        keyword: "Invoice payment gateway",
+        title: "Stripe Payments",
+        description: "Accept online payments via Stripe. Invoices auto-update when paid.",
+        keyword: "Stripe invoice payments",
     },
     {
         icon: IconReceipt,
-        title: "Tax & VAT Reports",
-        description: "Export invoices and expenses for tax season. VAT-ready reporting.",
-        keyword: "VAT invoice generator South Africa",
+        title: "Tax Reports",
+        description: "Export invoices and expenses for tax season. Tax-ready reporting.",
+        keyword: "Invoice tax reporting",
     },
     {
         icon: IconRefresh,
@@ -72,28 +72,28 @@ const featureCards = [
 
 const faqs = [
     {
-        question: "What must be on a South African tax invoice?",
-        answer: "A professional invoice should include: your business name and details, invoice number and date, customer details, itemized description of goods/services, and clear pricing. For VAT-registered businesses, you should also include your VAT number and VAT breakdown. Illumi handles all of this automatically based on your settings.",
+        question: "What should be on a professional invoice?",
+        answer: "A professional invoice should include: your business name and details, invoice number and date, customer details, itemized description of goods/services, and clear pricing. For tax-registered businesses, you should also include your tax ID and tax breakdown. Illumi handles all of this automatically based on your settings.",
     },
     {
-        question: "Does Illumi work for VAT-registered businesses?",
-        answer: "Yes! Illumi works for both VAT-registered and non-VAT registered businesses. You can set your VAT rate to 15% (or any rate) in settings, and invoices will automatically calculate and display VAT. For non-VAT registered businesses, simply keep the tax rate at 0% for clean, simple invoices.",
+        question: "Does Illumi work for tax-registered businesses?",
+        answer: "Yes! Illumi works for both tax-registered and non-tax registered businesses. You can set your tax rate in settings, and invoices will automatically calculate and display tax. For non-tax registered businesses, simply keep the tax rate at 0% for clean, simple invoices.",
     },
     {
         question: "How do clients receive invoices?",
-        answer: "Illumi sends invoices by email. Your client receives a secure link to view the invoice and pay online in ZAR (when PayGate is enabled with PayFast, Yoco, Ozow, or other South African payment providers).",
+        answer: "Illumi sends invoices by email. Your client receives a secure link to view the invoice and pay online via Stripe (when Stripe payments are enabled).",
     },
     {
-        question: "Can I accept online payments in South Africa?",
-        answer: "Yes! Pro users can connect South African payment providers like PayFast, Yoco, Ozow, PayStack, or Peach Payments through PayGate. Once connected, a 'Pay Now' button appears on invoices, clients can pay online in ZAR, and invoice status updates automatically when paid.",
+        question: "Can I accept online payments?",
+        answer: "Yes! Pro users can connect Stripe to accept credit card payments worldwide. Once connected, a 'Pay Now' button appears on invoices, clients can pay online, and invoice status updates automatically when paid.",
     },
     {
-        question: "Is Illumi really free for South African businesses?",
-        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R350/month.",
+        question: "Is Illumi really free?",
+        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like Stripe payments, custom branding, and recurring invoices are $29/month.",
     },
     {
         question: "Can I track business expenses and calculate net profit?",
-        answer: "Absolutely. Track once-off and recurring expenses in ZAR, categorize them, and see your net profit (income minus expenses) on your dashboard. Export expense reports as CSV for your accountant or SARS tax submissions.",
+        answer: "Absolutely. Track one-time and recurring expenses, categorize them, and see your net profit (income minus expenses) on your dashboard. Export expense reports as CSV for your accountant or tax submissions.",
     },
 ]
 
@@ -113,16 +113,16 @@ const faqSchema = {
 const softwareApplicationSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "Illumi - Professional Invoice Generator for South Africa",
+    "name": "Illumi Invoice - Professional Invoice Generator",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
-    "description": "Create professional invoices in ZAR for South African businesses. Optional VAT calculation. Free invoicing software.",
+    "description": "Create professional invoices for businesses worldwide. Optional tax calculation. Free invoicing software with Stripe payments.",
     "offers": {
         "@type": "Offer",
         "price": "0.00",
-        "priceCurrency": "ZAR",
+        "priceCurrency": "USD",
         "availability": "https://schema.org/InStock",
-        "description": "Free plan with unlimited invoices. Pro plan at R350/month.",
+        "description": "Free plan with unlimited invoices. Pro plan at $29/month.",
     },
     "aggregateRating": {
         "@type": "AggregateRating",
@@ -132,11 +132,11 @@ const softwareApplicationSchema = {
         "worstRating": "1",
     },
     "featureList": [
-        "Professional invoices for South Africa",
-        "Optional VAT calculation",
-        "ZAR currency support",
+        "Professional invoices worldwide",
+        "Optional tax calculation",
+        "Multi-currency support (USD, GBP, CAD, EUR)",
         "Email invoicing",
-        "Online payment integration",
+        "Stripe payment integration",
         "Expense tracking",
         "PDF export",
     ],
@@ -163,15 +163,15 @@ const freeFeatures = [
 
 const proFeatures = [
     "Custom business logo",
-    "PayGate integration",
+    "Stripe payments",
     "Client payment portal",
     "Recurring emails",
     "Auto-update invoice status",
 ]
 
 export const metadata: Metadata = {
-    title: "Illumi | Professional Invoicing for South African Businesses",
-    description: "Create professional invoices in ZAR with optional VAT. Track expenses, manage clients, and accept online payments with PayGate — built for South African businesses.",
+    title: "Illumi Invoice | Professional Invoicing Software",
+    description: "Create professional invoices with optional tax. Track expenses, manage clients, and accept online payments with Stripe — built for freelancers and small businesses worldwide.",
     alternates: {
         canonical: "/",
     },
@@ -204,19 +204,19 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div>
                             <div className="inline-flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-                                <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground">Built for South Africa</span>
-                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">ZAR-first invoicing</span>
-                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">PayGate-ready</span>
+                                <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground">Built for Business</span>
+                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">Multi-currency</span>
+                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">Stripe-ready</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-foreground mb-6 font-serif font-medium tracking-tight">
                                 Professional Invoicing
                                 <br className="hidden md:block" />
-                                <span className="text-muted-foreground">for South African Businesses</span>
+                                <span className="text-muted-foreground">for Modern Businesses</span>
                             </h1>
 
                             <p className="text-lg text-muted-foreground mb-7 max-w-xl leading-relaxed">
-                                Create professional invoices in ZAR with optional VAT. Perfect for VAT and non-VAT registered businesses. Get paid online with PayFast, Yoco, Ozow. Free forever.
+                                Create professional invoices with optional tax. Perfect for freelancers and small businesses. Get paid online with Stripe. Free forever.
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">
@@ -289,7 +289,7 @@ export default function LandingPage() {
                                         </div>
                                     </div>
                                     <div className="p-8">
-                                        <div className="text-4xl font-serif text-foreground mb-8">R 5,278.50</div>
+                                        <div className="text-4xl font-serif text-foreground mb-8">$5,278.50</div>
                                         <div className="h-32 flex items-end gap-1.5 mb-8">
                                             {[20, 35, 25, 50, 30, 45, 40, 60, 50, 65, 40, 75, 55, 70, 60, 80].map((h, i) => (
                                                 <div
@@ -301,8 +301,8 @@ export default function LandingPage() {
                                         </div>
                                         <div className="space-y-3">
                                             {[
-                                                { client: "Acme Corp", amount: "R 2,500.00", status: "Paid" },
-                                                { client: "TechStart", amount: "R 1,800.00", status: "Pending" },
+                                                { client: "Acme Corp", amount: "$2,500.00", status: "Paid" },
+                                                { client: "TechStart", amount: "$1,800.00", status: "Pending" },
                                             ].map((invoice, i) => (
                                                 <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
                                                     <span className="text-sm text-muted-foreground">{invoice.client}</span>
@@ -412,14 +412,14 @@ export default function LandingPage() {
 
                             {/* PayGate */}
                             <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                                <h3 className="text-2xl font-medium text-foreground mb-6">PayGate</h3>
+                                <h3 className="text-2xl font-medium text-foreground mb-6">Stripe Payments</h3>
                                 <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                                    Accept online payments via your preferred provider. Add a Pay Now button and let invoice status update automatically when paid.
+                                    Accept online payments via Stripe. Add a Pay Now button and let invoice status update automatically when paid.
                                 </p>
                                 <ul className="space-y-4 mb-12">
                                     {[
-                                        "Connect PayFast, Yoco, PayStack and more",
-                                        "Provider-dependent payment methods (card / EFT)",
+                                        "Connect your Stripe account",
+                                        "Accept credit cards worldwide",
                                         "Automatic status updates via webhooks",
                                         "Secure client payment portal link",
                                     ].map((item, i) => (
@@ -430,7 +430,7 @@ export default function LandingPage() {
                                     ))}
                                 </ul>
                                 <Link href="/features/paygate" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                    Learn about PayGate
+                                    Learn about Stripe Payments
                                     <IconArrowRight className="h-4 w-4" />
                                 </Link>
                             </div>
@@ -562,9 +562,9 @@ export default function LandingPage() {
             <section className="py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mb-16 text-center">
-                        <h2 className="text-4xl font-medium text-foreground mb-4 font-sans">Built for South African Small Businesses</h2>
+                        <h2 className="text-4xl font-medium text-foreground mb-4 font-sans">Built for Small Businesses Worldwide</h2>
                         <p className="text-muted-foreground text-lg font-sans max-w-2xl mx-auto">
-                            Everything you need to invoice clients, track expenses, and grow your business in ZAR.
+                            Everything you need to invoice clients, track expenses, and grow your business.
                         </p>
                     </div>
 
@@ -587,15 +587,15 @@ export default function LandingPage() {
                     <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <IconShieldCheck className="h-5 w-5" />
-                            <span>Secure payments via PayGate</span>
+                            <span>Secure payments via Stripe</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <IconReceipt className="h-5 w-5" />
-                            <span>VAT-ready reporting</span>
+                            <span>Tax-ready reporting</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <IconCurrencyDollar className="h-5 w-5" />
-                            <span>ZAR currency support</span>
+                            <span>Multi-currency support</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <IconMail className="h-5 w-5" />
