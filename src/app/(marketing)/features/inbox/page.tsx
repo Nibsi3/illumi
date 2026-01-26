@@ -136,7 +136,7 @@ export default function ClientPortalFeaturePage() {
                                             </div>
                                         </div>
 
-                                        <div className="rounded-xl border border-border bg-black/40 p-4">
+                                        <div className="rounded-xl border border-border bg-muted p-4">
                                             <div className="text-sm font-medium text-foreground">Payment method</div>
                                             <div className="mt-2 text-xs text-muted-foreground">Your connected provider</div>
                                             <div className="mt-4 inline-flex items-center justify-center rounded-xl bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold">

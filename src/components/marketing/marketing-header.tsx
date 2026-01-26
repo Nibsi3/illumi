@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTheme } from "@/lib/theme-context"
 
 const featureDropdownItems = [
@@ -21,6 +21,45 @@ const navigation = [
     { name: "Story", href: "/story" },
     { name: "Contact", href: "/contact" },
 ]
+
+function ThemeToggleWithShimmer({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
+    const [shimmer, setShimmer] = useState(false)
+
+    useEffect(() => {
+        // Initial shimmer after 3 seconds
+        const initialTimeout = setTimeout(() => {
+            setShimmer(true)
+            setTimeout(() => setShimmer(false), 1000)
+        }, 3000)
+
+        // Then shimmer every 30 seconds
+        const interval = setInterval(() => {
+            setShimmer(true)
+            setTimeout(() => setShimmer(false), 1000)
+        }, 30000)
+
+        return () => {
+            clearTimeout(initialTimeout)
+            clearInterval(interval)
+        }
+    }, [])
+
+    return (
+        <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className={`relative p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors overflow-hidden ${shimmer ? 'animate-shimmer' : ''}`}
+        >
+            {shimmer && (
+                <span className="absolute inset-0 -translate-x-full animate-[shimmer-slide_1s_ease-in-out]">
+                    <span className="absolute inset-0 bg-linear-to-r from-transparent via-primary/30 to-transparent" />
+                </span>
+            )}
+            {theme === 'dark' ? <IconSun className="h-4 w-4 relative z-10" /> : <IconMoon className="h-4 w-4 relative z-10" />}
+        </button>
+    )
+}
 
 
 export function MarketingHeader() {
@@ -49,7 +88,7 @@ export function MarketingHeader() {
                         alt="Illumi Logo"
                         width={24}
                         height={24}
-                        className={theme === 'dark' ? 'w-6 h-6' : 'w-6 h-6 scale-[0.8] origin-center'}
+                        className={theme === 'dark' ? 'w-6 h-6' : 'w-6 h-6 scale-[0.75] origin-center'}
                     />
                 </Link>
 
@@ -89,20 +128,13 @@ export function MarketingHeader() {
                 {/* Separator and Sign in */}
                 <div className="hidden md:flex items-center gap-4">
                     <span className="text-muted-foreground/30">|</span>
-                    <button
-                        type="button"
-                        onClick={toggleTheme}
-                        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                        className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                    >
-                        {theme === 'dark' ? <IconSun className="h-4 w-4" /> : <IconMoon className="h-4 w-4" />}
-                    </button>
                     <Link
                         href="/login"
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                         Sign in
                     </Link>
+                    <ThemeToggleWithShimmer theme={theme} toggleTheme={toggleTheme} />
                 </div>
 
                 {/* Mobile menu */}

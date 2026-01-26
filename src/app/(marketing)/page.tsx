@@ -444,8 +444,7 @@ export default function LandingPage() {
 
                         {/* Pro */}
                         <div className="bg-card border border-primary/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-primary/10 to-transparent" />
-                            <div className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-6">Pro</div>
+                                                        <div className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-6">Pro</div>
                             <h3 className="text-2xl font-medium text-foreground mb-6">Automate your payments</h3>
                             <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
                                 Client payment portal with PayGate integration. Invoices update automatically when paid.

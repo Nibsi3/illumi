@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Metadata } from "next";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import { DocsSidebar } from "@/components/docs/docs-sidebar";
 
 export const metadata: Metadata = {
     title: "Documentation & Help Center | Illumi",
@@ -55,12 +54,7 @@ export default function DocsPage() {
                     </div>
                 </section>
 
-                <section className="flex">
-                    <aside className="hidden lg:block w-80 border-r border-border bg-card sticky top-0 h-screen overflow-y-auto">
-                        <DocsSidebar />
-                    </aside>
-
-                    <div className="flex-1 py-16 px-6 lg:px-12">
+                <section className="py-16 px-6 lg:px-12">
                         <div className="max-w-5xl mx-auto">
                             {/* Categories Grid */}
                     <div className="mb-12 rounded-3xl border border-border bg-card p-8 md:p-10">
@@ -232,7 +226,6 @@ export default function DocsPage() {
                                 </div>
                             </section>
                         </div>
-                    </div>
                 </section>
             </main>
             <MarketingFooter />

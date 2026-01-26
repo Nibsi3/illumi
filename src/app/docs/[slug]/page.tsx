@@ -385,7 +385,7 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
                         <div className="text-sm font-semibold text-foreground">Illumi Studio</div>
                         <div className="text-xs text-muted-foreground mt-1">Active</div>
                     </div>
-                    <div className="rounded-xl border border-border bg-white/2 p-4">
+                    <div className="rounded-xl border border-border bg-background p-4 hover:bg-accent transition-colors cursor-pointer">
                         <div className="text-sm font-semibold text-muted-foreground">Side Project</div>
                         <div className="text-xs text-muted-foreground mt-1">Click to switch</div>
                     </div>
@@ -410,9 +410,9 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
                         <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Email</div>
                         <div className="text-sm text-foreground mt-1">billing@acme.co.za</div>
                     </div>
-                    <div className="rounded-xl border border-border bg-white/2 p-3 sm:col-span-2">
+                    <div className="rounded-xl border border-border bg-background p-3 sm:col-span-2">
                         <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Address</div>
-                        <div className="text-sm text-muted-foreground mt-1">1 Loop Street, Cape Town</div>
+                        <div className="text-sm text-foreground mt-1">1 Loop Street, Cape Town</div>
                     </div>
                 </div>
             </div>
@@ -439,17 +439,26 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
                             </div>
                         </div>
                         <div className="mt-4 space-y-2">
-                            <div className="h-9 rounded-lg border border-border bg-white/2" />
-                            <div className="h-9 rounded-lg border border-border bg-white/2" />
-                            <div className="h-9 rounded-lg border border-border bg-white/2" />
+                            <div className="h-9 rounded-lg border border-border bg-background flex items-center px-3">
+                                <span className="text-xs text-muted-foreground">Website Design</span>
+                                <span className="ml-auto text-xs text-foreground">R 2,500.00</span>
+                            </div>
+                            <div className="h-9 rounded-lg border border-border bg-background flex items-center px-3">
+                                <span className="text-xs text-muted-foreground">Development</span>
+                                <span className="ml-auto text-xs text-foreground">R 1,500.00</span>
+                            </div>
+                            <div className="h-9 rounded-lg border border-border bg-background flex items-center px-3">
+                                <span className="text-xs text-muted-foreground">Hosting (monthly)</span>
+                                <span className="ml-auto text-xs text-foreground">R 500.00</span>
+                            </div>
                         </div>
                     </div>
-                    <div className="rounded-xl border border-border bg-white/2 p-4">
+                    <div className="rounded-xl border border-border bg-background p-4">
                         <div className="text-[10px] text-muted-foreground uppercase tracking-widest">Actions</div>
                         <div className="mt-3 space-y-2">
-                            <div className="h-9 rounded-lg bg-primary text-primary-foreground" />
-                            <div className="h-9 rounded-lg bg-accent" />
-                            <div className="h-9 rounded-lg bg-accent" />
+                            <div className="h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-xs font-medium">Send Invoice</div>
+                            <div className="h-9 rounded-lg bg-accent flex items-center justify-center text-xs text-foreground">Download PDF</div>
+                            <div className="h-9 rounded-lg bg-accent flex items-center justify-center text-xs text-foreground">Preview</div>
                         </div>
                     </div>
                 </div>
@@ -475,10 +484,10 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
                         <div className="text-xs text-muted-foreground mt-1">Available</div>
                         <div className="mt-4 h-9 rounded-lg bg-accent" />
                     </div>
-                    <div className="rounded-xl border border-border bg-white/2 p-4">
-                        <div className="text-sm font-semibold text-muted-foreground">PayStack</div>
+                    <div className="rounded-xl border border-border bg-background p-4">
+                        <div className="text-sm font-semibold text-foreground">PayStack</div>
                         <div className="text-xs text-muted-foreground mt-1">Available</div>
-                        <div className="mt-4 h-9 rounded-lg bg-accent" />
+                        <div className="mt-4 h-9 rounded-lg bg-accent flex items-center justify-center text-xs text-foreground">Connect</div>
                     </div>
                 </div>
             </div>
@@ -514,9 +523,9 @@ function UIMock({ kind }: { kind: NonNullable<DocSection["mock"]> }) {
                     <div className="text-xs text-muted-foreground uppercase tracking-widest">Check 2</div>
                     <div className="text-sm text-muted-foreground mt-2">Confirm settings</div>
                 </div>
-                <div className="rounded-xl border border-border bg-white/2 p-4 sm:col-span-2">
+                <div className="rounded-xl border border-border bg-background p-4 sm:col-span-2">
                     <div className="text-xs text-muted-foreground uppercase tracking-widest">When to contact support</div>
-                    <div className="text-sm text-muted-foreground mt-2">If you can reproduce the issue consistently, include screenshots and steps.</div>
+                    <div className="text-sm text-foreground mt-2">If you can reproduce the issue consistently, include screenshots and steps.</div>
                 </div>
             </div>
         </div>
