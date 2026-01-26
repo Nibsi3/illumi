@@ -40,12 +40,14 @@ import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 import { toast } from "sonner"
+import { useInvalidateCache } from "@/lib/hooks/use-cached-data"
 
 export default function NewClientPage() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
+    const { invalidateCustomers } = useInvalidateCache()
     
     // Form state
     const [name, setName] = useState("")
@@ -100,6 +102,7 @@ export default function NewClientPage() {
 
             if (error) throw error
 
+            await invalidateCustomers()
             toast.success("Client created successfully")
             router.push("/clients")
         } catch (error: any) {

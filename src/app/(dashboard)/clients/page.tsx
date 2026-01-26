@@ -1,8 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Building2, Check, Loader2 } from "lucide-react"
+import { Plus, Search, Filter, MoreHorizontal, ChevronDown, Building2, Check, Loader2, Pencil } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState, useMemo } from "react"
 import { cn } from "@/lib/utils"
@@ -65,6 +66,9 @@ export default function ClientsPage() {
     const [historyCustomer, setHistoryCustomer] = useState<Customer | null>(null)
     const [historyInvoices, setHistoryInvoices] = useState<any[]>([])
     const [isHistoryLoading, setIsHistoryLoading] = useState(false)
+    const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const [isSavingEdit, setIsSavingEdit] = useState(false)
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
 
@@ -136,6 +140,40 @@ export default function ClientsPage() {
             toast.success("Client deleted")
         } catch (error: any) {
             toast.error("Failed to delete client", { description: error.message })
+        }
+    }
+
+    const openEdit = (customer: Customer) => {
+        setEditingCustomer({ ...customer })
+        setIsEditOpen(true)
+    }
+
+    const saveEdit = async () => {
+        if (!editingCustomer) return
+        setIsSavingEdit(true)
+        try {
+            const { error } = await supabase
+                .from('customers')
+                .update({
+                    name: editingCustomer.name,
+                    email: editingCustomer.email,
+                    billing_email: editingCustomer.billing_email || null,
+                    phone: editingCustomer.phone || null,
+                    address: editingCustomer.address || null,
+                    industry: editingCustomer.industry || null,
+                    country: editingCustomer.country,
+                })
+                .eq('id', editingCustomer.id)
+
+            if (error) throw error
+            refetch()
+            setIsEditOpen(false)
+            setEditingCustomer(null)
+            toast.success('Client updated')
+        } catch (error: any) {
+            toast.error('Failed to update client', { description: error.message })
+        } finally {
+            setIsSavingEdit(false)
         }
     }
 
@@ -371,6 +409,13 @@ export default function ClientsPage() {
                                                 <DropdownMenuContent align="end" className="w-48 bg-background border-border rounded-xl shadow-2xl p-1">
                                                     <DropdownMenuItem
                                                         className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
+                                                        onClick={() => openEdit(customer)}
+                                                    >
+                                                        <Pencil className="h-3 w-3 mr-2" />
+                                                        Edit Client
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="focus:bg-muted focus:text-foreground rounded-lg cursor-pointer px-3 py-2 text-xs"
                                                         onClick={() => openHistory(customer)}
                                                     >
                                                         View History
@@ -438,6 +483,102 @@ export default function ClientsPage() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+                <DialogContent className="bg-card border-border max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle className="text-foreground">Edit Client</DialogTitle>
+                    </DialogHeader>
+
+                    {editingCustomer && (
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Name</Label>
+                                <Input
+                                    value={editingCustomer.name}
+                                    onChange={(e) => setEditingCustomer({ ...editingCustomer, name: e.target.value })}
+                                    className="bg-background border-border h-11"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Email</Label>
+                                    <Input
+                                        value={editingCustomer.email}
+                                        onChange={(e) => setEditingCustomer({ ...editingCustomer, email: e.target.value })}
+                                        className="bg-background border-border h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Billing Email</Label>
+                                    <Input
+                                        value={editingCustomer.billing_email || ''}
+                                        onChange={(e) => setEditingCustomer({ ...editingCustomer, billing_email: e.target.value })}
+                                        className="bg-background border-border h-11"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Phone</Label>
+                                    <Input
+                                        value={editingCustomer.phone || ''}
+                                        onChange={(e) => setEditingCustomer({ ...editingCustomer, phone: e.target.value })}
+                                        className="bg-background border-border h-11"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Country</Label>
+                                    <Input
+                                        value={editingCustomer.country}
+                                        onChange={(e) => setEditingCustomer({ ...editingCustomer, country: e.target.value })}
+                                        className="bg-background border-border h-11"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Address</Label>
+                                <Input
+                                    value={editingCustomer.address || ''}
+                                    onChange={(e) => setEditingCustomer({ ...editingCustomer, address: e.target.value })}
+                                    className="bg-background border-border h-11"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Industry</Label>
+                                <Input
+                                    value={editingCustomer.industry || ''}
+                                    onChange={(e) => setEditingCustomer({ ...editingCustomer, industry: e.target.value })}
+                                    className="bg-background border-border h-11"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex justify-end gap-3 pt-4">
+                        <Button
+                            variant="outline"
+                            className="border-border bg-muted hover:bg-accent"
+                            onClick={() => setIsEditOpen(false)}
+                            disabled={isSavingEdit}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-primary text-primary-foreground hover:bg-primary/90"
+                            onClick={saveEdit}
+                            disabled={isSavingEdit || !editingCustomer}
+                        >
+                            {isSavingEdit ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                            Save
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>

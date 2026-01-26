@@ -106,6 +106,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isIntegrationProvider = path.startsWith('/integrations/')
     const isResources = path === '/resources' || path.startsWith('/resources/')
     const isLegal = path === '/privacy' || path === '/terms' || path === '/terms-and-conditions'
+    const isInvoicingSoftware = path.startsWith('/invoicing-software')
+    const isCalculator = path.includes('calculator')
+    const isFreeTools = path === '/invoice-generator' || path === '/receipt-maker'
+    const isSeoContent = path === '/glossary' || path === '/what-is-an-invoice' || path === '/blog'
+    const isSolutions = path === '/for-business' || path === '/for-individuals'
 
     let changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']
     let priority: number
@@ -116,6 +121,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (isPricing) {
       changeFrequency = 'weekly'
       priority = 0.9
+    } else if (isFreeTools) {
+      changeFrequency = 'weekly'
+      priority = 0.85
+    } else if (isInvoicingSoftware) {
+      changeFrequency = 'weekly'
+      priority = 0.8
+    } else if (isSolutions) {
+      changeFrequency = 'weekly'
+      priority = 0.8
+    } else if (isCalculator) {
+      changeFrequency = 'monthly'
+      priority = 0.75
+    } else if (isSeoContent) {
+      changeFrequency = 'weekly'
+      priority = 0.7
     } else if (isFeatures) {
       changeFrequency = 'weekly'
       priority = 0.8

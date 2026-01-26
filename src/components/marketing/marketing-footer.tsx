@@ -9,8 +9,32 @@ import {
 } from "@tabler/icons-react"
 
 const footerLinks = {
-    features: [
-        { name: "Overview", href: "/features/overview" },
+    illumi: [
+        { name: "Sales Tax Calculator", href: "/sales-tax-calculator" },
+        { name: "Hourly Rate Calculator", href: "/hourly-rate-calculator" },
+        { name: "Percentage Calculator", href: "/percentage-calculator" },
+        { name: "Free Invoice Generator", href: "/invoice-generator" },
+        { name: "Free Receipt Maker", href: "/receipt-maker" },
+        { name: "Invoicing Glossary", href: "/glossary" },
+        { name: "What is an Invoice?", href: "/what-is-an-invoice" },
+        { name: "Blog", href: "/blog" },
+    ],
+    invoicingSoftware: [
+        { name: "Premium", href: "/invoicing-software/premium" },
+        { name: "Freelancers", href: "/invoicing-software/freelancers" },
+        { name: "Contractors", href: "/invoicing-software/contractors" },
+        { name: "Invoice Without Company", href: "/invoicing-software/no-company" },
+        { name: "Self-Employed", href: "/invoicing-software/self-employed" },
+        { name: "Small Businesses", href: "/invoicing-software/small-business" },
+        { name: "Startups", href: "/invoicing-software/startups" },
+        { name: "Solopreneurs", href: "/invoicing-software/solopreneurs" },
+        { name: "Restaurants", href: "/invoicing-software/restaurants" },
+        { name: "Hotels", href: "/invoicing-software/hotels" },
+    ],
+    solutions: [
+        { name: "For Businesses", href: "/for-business" },
+        { name: "For Individuals", href: "/for-individuals" },
+        { name: "Features", href: "/features/overview" },
         { name: "Invoicing", href: "/features/invoicing" },
         { name: "Client Portal", href: "/features/inbox" },
         { name: "Vault", href: "/features/vault" },
@@ -20,13 +44,13 @@ const footerLinks = {
         { name: "Documentation", href: "/docs" },
         { name: "Integrations", href: "/integrations" },
         { name: "Support", href: "/contact" },
-        { name: "Privacy Policy", href: "/privacy" },
-        { name: "Terms", href: "/terms-and-conditions" },
     ],
     company: [
         { name: "Story", href: "/story" },
         { name: "Pricing", href: "/pricing" },
         { name: "Contact", href: "/contact" },
+        { name: "Privacy Policy", href: "/privacy" },
+        { name: "Terms", href: "/terms-and-conditions" },
     ],
 }
 
@@ -43,14 +67,52 @@ export function MarketingFooter() {
             {/* Links Section */}
             <div className="border-t border-border py-16">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {/* Features */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+                        {/* Illumi */}
                         <div>
                             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-                                Features
+                                Illumi
                             </h3>
                             <ul className="space-y-3">
-                                {footerLinks.features.map((link) => (
+                                {footerLinks.illumi.map((link) => (
+                                    <li key={link.name}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Free Invoicing Software */}
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                                Free Invoicing Software
+                            </h3>
+                            <ul className="space-y-3">
+                                {footerLinks.invoicingSoftware.map((link) => (
+                                    <li key={link.name}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Solutions */}
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                                Solutions
+                            </h3>
+                            <ul className="space-y-3">
+                                {footerLinks.solutions.map((link) => (
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}
@@ -104,12 +166,15 @@ export function MarketingFooter() {
                         {/* Newsletter */}
                         <div>
                             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
-                                Run your business smarter.
+                                Stay Updated
                             </h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Run your business smarter.
+                            </p>
                             <div className="flex gap-2">
                                 <Input
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder="Email"
                                     className="bg-background border-border text-foreground placeholder:text-muted-foreground rounded-full h-10"
                                 />
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-4 h-10">

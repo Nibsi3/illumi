@@ -23,10 +23,12 @@ import { NumberInput } from "@/components/ui/number-input"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useWorkspace } from "@/lib/workspace-context"
+import { useInvalidateCache } from "@/lib/hooks/use-cached-data"
 
 export default function NewProductPage() {
   const router = useRouter()
   const { activeWorkspace } = useWorkspace()
+  const { invalidateProducts } = useInvalidateCache()
   const [isLoading, setIsLoading] = useState(false)
 
   // Form State
@@ -89,6 +91,7 @@ export default function NewProductPage() {
 
       if (error) throw error
 
+      await invalidateProducts()
       toast.success("Product created successfully")
       router.push("/products")
     } catch (error: any) {
