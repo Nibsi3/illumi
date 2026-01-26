@@ -32,11 +32,11 @@ function ThemeToggleWithShimmer({ theme, toggleTheme }: { theme: string; toggleT
             setTimeout(() => setShimmer(false), 1000)
         }, 3000)
 
-        // Then shimmer every 30 seconds
+        // Then shimmer every 15 seconds
         const interval = setInterval(() => {
             setShimmer(true)
             setTimeout(() => setShimmer(false), 1000)
-        }, 30000)
+        }, 15000)
 
         return () => {
             clearTimeout(initialTimeout)
@@ -49,7 +49,7 @@ function ThemeToggleWithShimmer({ theme, toggleTheme }: { theme: string; toggleT
             type="button"
             onClick={toggleTheme}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className={`relative p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors overflow-hidden ${shimmer ? 'animate-shimmer' : ''}`}
+            className={`relative p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors overflow-hidden focus:outline-none focus-visible:ring-0 ${shimmer ? 'animate-shimmer' : ''}`}
         >
             {shimmer && (
                 <span className="absolute inset-0 -translate-x-full animate-[shimmer-slide_1s_ease-in-out]">

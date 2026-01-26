@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Metadata } from "next"
 import { Button } from "@/components/ui/button"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
+import { InvoiceDemo } from "@/components/marketing/invoice-demo"
 import {
     IconFileInvoice,
     IconFolder,
@@ -323,6 +324,23 @@ export default function LandingPage() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* Interactive Demo Section */}
+            <section className="py-24 border-t border-border">
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                            Live Demo
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-medium text-foreground mb-4 font-sans leading-none tracking-tight">See it in action</h2>
+                        <p className="text-muted-foreground text-lg font-sans max-w-2xl mx-auto">
+                            Watch how easy it is to create an invoice, send it to your client, and get paid online.
+                        </p>
+                    </div>
+                    <InvoiceDemo />
                 </div>
             </section>
 

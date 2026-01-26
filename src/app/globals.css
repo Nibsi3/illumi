@@ -9,9 +9,9 @@
   --foreground: #1a1a1a;
   
   /* Card/Surface colors with subtle elevation */
-  --card: #ffffff;
+  --card: #f8fafc;
   --card-foreground: #1a1a1a;
-  --popover: #ffffff;
+  --popover: #f8fafc;
   --popover-foreground: #1a1a1a;
   
   /* Brand blue as primary accent */
@@ -54,7 +54,7 @@
   --chart-5: #dc2626;
   
   /* Sidebar */
-  --sidebar: #ffffff;
+  --sidebar: #f8fafc;
   --sidebar-foreground: #1a1a1a;
   --sidebar-primary: #2563eb;
   --sidebar-primary-foreground: #ffffff;
