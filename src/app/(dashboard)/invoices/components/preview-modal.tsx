@@ -26,6 +26,8 @@ interface PreviewModalProps {
         accountName?: string
         accountNumber?: string
         branchCode?: string
+        fromName?: string
+        fromAddress?: string
         clientName: string
         clientEmail: string
         clientPhone: string
@@ -158,27 +160,13 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     isLight ? "text-muted-foreground" : "text-muted-foreground"
                                 )}>From</span>
                                 <div className="space-y-1 invoice-font-from">
-                                    <p className="text-lg font-bold">Illumi Professional</p>
+                                    <p className="text-lg font-bold">{data.fromName || ""}</p>
                                     {data.fromEmail && <p className="text-xs font-medium opacity-60">{data.fromEmail}</p>}
-                                    {data.companyWebsite && (
-                                        <a
-                                            href={data.companyWebsite}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className={cn(
-                                                "text-xs font-medium underline underline-offset-4 opacity-60",
-                                                isLight ? "text-muted-foreground" : "text-muted-foreground"
-                                            )}
-                                        >
-                                            {data.companyWebsite}
-                                        </a>
-                                    )}
                                     <p className={cn(
-                                        "text-xs leading-relaxed",
+                                        "text-xs leading-relaxed whitespace-pre-wrap",
                                         isLight ? "text-muted-foreground" : "text-muted-foreground"
                                     )}>
-                                        123 Business Avenue<br />
-                                        Cape Town, 8001
+                                        {data.fromAddress || ""}
                                     </p>
                                 </div>
                             </div>
@@ -323,8 +311,8 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                             </div>
                         </div>
 
-                        {!data.hideIllumiBranding && !data.isPro && (
-                            <div className="flex justify-center pt-10">
+                        <div className="flex flex-col items-center pt-10 gap-2">
+                            {!data.hideIllumiBranding && !data.isPro && (
                                 <a
                                     href="https://illumi.co.za"
                                     target="_blank"
@@ -343,8 +331,21 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         Made with Illumi Invoice
                                     </span>
                                 </a>
-                            </div>
-                        )}
+                            )}
+                            {data.companyWebsite && (
+                                <a
+                                    href={data.companyWebsite.startsWith('http') ? data.companyWebsite : `https://${data.companyWebsite}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className={cn(
+                                        "text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4",
+                                        isLight ? "opacity-40 hover:opacity-60" : "opacity-60 hover:opacity-80"
+                                    )}
+                                >
+                                    {data.companyWebsite}
+                                </a>
+                            )}
+                        </div>
 
                     </div>
                 </div>

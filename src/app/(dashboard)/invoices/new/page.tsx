@@ -140,7 +140,12 @@ export default function NewInvoicePage() {
     const [clientEmail, setClientEmail] = useState("")
     const [clientPhone, setClientPhone] = useState("")
 
+    const defaultFromName = "Illumi Professional"
+    const defaultFromAddress = "123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"
+
+    const [fromName, setFromName] = useState(settings.companyName ?? defaultFromName)
     const [fromEmail, setFromEmail] = useState(settings.fromEmail ?? "hello@illumi.co.za")
+    const [fromAddress, setFromAddress] = useState(settings.companyAddress ?? defaultFromAddress)
     const [issueDate, setIssueDate] = useState(format(new Date(), 'yyyy-MM-dd'))
     const [dueDate, setDueDate] = useState("")
     const [isIssueDateOpen, setIsIssueDateOpen] = useState(false)
@@ -188,7 +193,9 @@ export default function NewInvoicePage() {
     useEffect(() => {
         if (settings.logo && !logo) setLogo(settings.logo)
         if (settings.fromEmail && fromEmail === "hello@illumi.co.za") setFromEmail(settings.fromEmail)
-    }, [settings.logo, settings.fromEmail])
+        if (settings.companyName && fromName === defaultFromName) setFromName(settings.companyName)
+        if (settings.companyAddress && fromAddress === defaultFromAddress) setFromAddress(settings.companyAddress)
+    }, [settings.logo, settings.fromEmail, settings.companyName, settings.companyAddress])
 
     const [customers, setCustomers] = useState<any[]>([])
     const [products, setProducts] = useState<any[]>([])
@@ -1164,9 +1171,10 @@ export default function NewInvoicePage() {
                                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
                                         </div>
                                         <div className="flex flex-col gap-4">
-                                            <div className="space-y-3">
+                                            <div className="space-y-2">
                                                 <Input
-                                                    defaultValue="Illumi Professional"
+                                                    value={fromName}
+                                                    onChange={(e) => setFromName(e.target.value)}
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
                                                     className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
@@ -1179,10 +1187,12 @@ export default function NewInvoicePage() {
                                                     className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                                 <textarea
-                                                    defaultValue={"123 Business Avenue\nInnovation District\nCape Town, 8001\nSouth Africa"}
+                                                    value={fromAddress}
+                                                    onChange={(e) => setFromAddress(e.target.value)}
                                                     placeholder="Address"
+                                                    rows={3}
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-20 placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
                                                 />
                                             </div>
                                         </div>
@@ -1491,8 +1501,8 @@ export default function NewInvoicePage() {
                                     </div>
                                 </div>
 
-                                {!(Boolean(isPro) && Boolean(settings.hideIllumiBranding)) && !Boolean(isPro) && (
-                                    <div className="flex justify-center pt-10">
+                                <div className="flex flex-col items-center pt-10 gap-2">
+                                    {!(Boolean(isPro) && Boolean(settings.hideIllumiBranding)) && !Boolean(isPro) && (
                                         <a
                                             href="https://illumi.co.za"
                                             target="_blank"
@@ -1511,8 +1521,21 @@ export default function NewInvoicePage() {
                                                 Made with Illumi Invoice
                                             </span>
                                         </a>
-                                    </div>
-                                )}
+                                    )}
+                                    {settings.companyWebsite && (
+                                        <a
+                                            href={settings.companyWebsite.startsWith('http') ? settings.companyWebsite : `https://${settings.companyWebsite}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className={cn(
+                                                "text-[10px] font-bold uppercase tracking-[0.2em] underline underline-offset-4",
+                                                invoiceMode === 'light' ? "opacity-40 hover:opacity-60" : "opacity-60 hover:opacity-80"
+                                            )}
+                                        >
+                                            {settings.companyWebsite}
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1563,6 +1586,8 @@ export default function NewInvoicePage() {
                             accountName: settings.accountName,
                             accountNumber: settings.accountNumber,
                             branchCode: settings.branchCode,
+                            fromName,
+                            fromAddress,
                             clientName,
                             clientEmail,
                             clientPhone,

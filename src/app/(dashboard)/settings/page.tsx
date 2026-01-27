@@ -42,6 +42,7 @@ export default function GeneralSettings() {
         hideIllumiBranding, setHideIllumiBranding,
         companyName, setCompanyName,
         companyWebsite, setCompanyWebsite,
+        companyAddress, setCompanyNameAddress,
         bankName, setBankName,
         accountName, setAccountName,
         accountNumber, setAccountNumber,
@@ -244,6 +245,19 @@ export default function GeneralSettings() {
                             onChange={(e) => setCompanyName(e.target.value)}
                             placeholder="My Professional Co."
                             className="bg-background border-border h-11 focus-visible:ring-white/10"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Company Address</Label>
+                        <textarea
+                            value={companyAddress}
+                            onChange={(e) => setCompanyNameAddress(e.target.value)}
+                            placeholder="Street address\nCity, Postal Code\nCountry"
+                            spellCheck={false}
+                            className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm min-h-[120px] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/10"
                         />
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
 import { useEffect, useState, useRef } from "react"
 import { useTheme } from "@/lib/theme-context"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const featureDropdownItems = [
     { name: "Financial Overview", href: "/features/overview" },
@@ -21,45 +22,6 @@ const navigation = [
     { name: "Story", href: "/story" },
     { name: "Contact", href: "/contact" },
 ]
-
-function ThemeToggleWithShimmer({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
-    const [shimmer, setShimmer] = useState(false)
-
-    useEffect(() => {
-        // Initial shimmer after 3 seconds
-        const initialTimeout = setTimeout(() => {
-            setShimmer(true)
-            setTimeout(() => setShimmer(false), 1000)
-        }, 3000)
-
-        // Then shimmer every 15 seconds
-        const interval = setInterval(() => {
-            setShimmer(true)
-            setTimeout(() => setShimmer(false), 1000)
-        }, 15000)
-
-        return () => {
-            clearTimeout(initialTimeout)
-            clearInterval(interval)
-        }
-    }, [])
-
-    return (
-        <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className={`relative p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-accent transition-colors overflow-hidden focus:outline-none focus-visible:ring-0 ${shimmer ? 'animate-shimmer' : ''}`}
-        >
-            {shimmer && (
-                <span className="absolute inset-0 -translate-x-full animate-[shimmer-slide_1s_ease-in-out]">
-                    <span className="absolute inset-0 bg-linear-to-r from-transparent via-primary/30 to-transparent" />
-                </span>
-            )}
-            {theme === 'dark' ? <IconSun className="h-4 w-4 relative z-10" /> : <IconMoon className="h-4 w-4 relative z-10" />}
-        </button>
-    )
-}
 
 
 export function MarketingHeader() {
@@ -134,7 +96,7 @@ export function MarketingHeader() {
                     >
                         Sign in
                     </Link>
-                    <ThemeToggleWithShimmer theme={theme} toggleTheme={toggleTheme} />
+                    <ThemeToggle theme={theme} onToggle={toggleTheme} shimmer />
                 </div>
 
                 {/* Mobile menu */}
