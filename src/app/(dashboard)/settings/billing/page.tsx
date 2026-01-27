@@ -89,7 +89,7 @@ function BillingContent() {
                         id: payment.id,
                         description: payment.description || 'Pro Subscription',
                         date: payment.payment_date,
-                        amount: payment.amount || 350,
+                        amount: payment.amount || 200,
                         status: payment.status || 'paid'
                     }))
                     setBillingHistory(history)
@@ -165,7 +165,7 @@ function BillingContent() {
                         <p className="text-sm text-muted-foreground max-w-md">
                             {isPro
                                 ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
-                                : "Upgrade to Pro for R350/mo to unlock recurring invoices, PayGate, and remove Illumi branding."}
+                                : "Upgrade to Pro for R200/mo to unlock recurring invoices, PayGate, and remove Illumi branding."}
                         </p>
 
                         <div className="mt-8 flex items-center gap-4">
@@ -361,7 +361,7 @@ function BillingContent() {
                                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Active</span>
                             </div>
                             <p className="text-2xl font-bold text-foreground mb-1">Pro Plan</p>
-                            <p className="text-sm text-muted-foreground">R350/month • Renews automatically</p>
+                            <p className="text-sm text-muted-foreground">R200/month • Renews automatically</p>
                         </div>
 
                         {/* Billing Info */}
@@ -385,7 +385,7 @@ function BillingContent() {
                             </div>
                             <div className="flex items-center justify-between py-2">
                                 <span className="text-sm text-muted-foreground">Amount</span>
-                                <span className="text-sm font-medium text-foreground">R350.00/mo</span>
+                                <span className="text-sm font-medium text-foreground">R200.00/mo</span>
                             </div>
                         </div>
 
@@ -497,7 +497,7 @@ function BillingContent() {
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-foreground bg-accent px-2 py-1 rounded">Current</span>
                             )}
                         </div>
-                        <p className="text-3xl font-bold text-foreground mb-1">R350</p>
+                        <p className="text-3xl font-bold text-foreground mb-1">R200</p>
                         <p className="text-sm text-muted-foreground mb-6">per month</p>
                         
                         <p className="text-xs text-muted-foreground mb-4">Everything in Starter, plus:</p>

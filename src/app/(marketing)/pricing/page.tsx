@@ -156,7 +156,7 @@ export default function PricingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-black/50 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-black font-serif">R350</span>
+                                    <span className="text-4xl font-bold text-black font-serif">R200</span>
                                     <span className="text-black/50">/month</span>
                                 </div>
                                 <div className="text-sm text-black/40 mt-1">For businesses that want online invoice payments</div>

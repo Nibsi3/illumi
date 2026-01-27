@@ -168,7 +168,7 @@ export function PayFastSubscribeButton() {
                 onClick={ensureWorkspaceAndSubmit}
             >
                 <IconStarFilled size={18} className="mr-2" />
-                Subscribe Now — R350/mo
+                Subscribe Now — R200/mo
             </Button>
         )
     }
@@ -197,7 +197,7 @@ export function PayFastSubscribeButton() {
             
             {/* Transaction Details */}
             <input type="hidden" name="m_payment_id" value={`SUB-${workspaceId}-${Date.now()}`} />
-            <input type="hidden" name="amount" value="350.00" />
+            <input type="hidden" name="amount" value="200.00" />
             <input type="hidden" name="item_name" value="Illumi Pro Plan" />
             <input type="hidden" name="item_description" value="Monthly subscription to Illumi Pro Plan" />
             
@@ -207,7 +207,7 @@ export function PayFastSubscribeButton() {
             
             {/* Subscription Details for Recurring Billing */}
             <input type="hidden" name="subscription_type" value="1" />
-            <input type="hidden" name="recurring_amount" value="350.00" />
+            <input type="hidden" name="recurring_amount" value="200.00" />
             <input type="hidden" name="frequency" value="3" /> {/* 3 = Monthly */}
             <input type="hidden" name="cycles" value="0" /> {/* 0 = Indefinite */}
 
@@ -231,7 +231,7 @@ export function PayFastSubscribeButton() {
                 }}
             >
                 <IconStarFilled size={18} className="mr-2" />
-                Subscribe Now — R350/mo
+                Subscribe Now — R200/mo
             </Button>
         </form>
     )

@@ -89,7 +89,7 @@ const faqs = [
     },
     {
         question: "Is Illumi really free for South African businesses?",
-        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R350/month.",
+        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R200/month.",
     },
     {
         question: "Can I track business expenses and calculate net profit?",
@@ -122,7 +122,7 @@ const softwareApplicationSchema = {
         "price": "0.00",
         "priceCurrency": "ZAR",
         "availability": "https://schema.org/InStock",
-        "description": "Free plan with unlimited invoices. Pro plan at R350/month.",
+        "description": "Free plan with unlimited invoices. Pro plan at R200/month.",
     },
     "aggregateRating": {
         "@type": "AggregateRating",

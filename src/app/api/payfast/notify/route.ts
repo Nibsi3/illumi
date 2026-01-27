@@ -121,9 +121,9 @@ export async function POST(request: NextRequest) {
             return new NextResponse("Invalid signature", { status: 400 })
         }
         
-        // Validate amount (R350 for Pro plan)
+        // Validate amount (R200 for Pro plan)
         const amount = parseFloat(data.amount_gross || "0")
-        if (amount !== 350.00) {
+        if (amount !== 200.00) {
             console.error("[PayFast ITN] Invalid amount:", amount)
             return new NextResponse("Invalid amount", { status: 400 })
         }

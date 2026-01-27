@@ -608,7 +608,7 @@ export default function PayGatePage() {
                         containerClassName=""
                         className="bg-primary text-primary-foreground font-bold h-12 px-8 w-full sm:w-auto"
                     >
-                        Upgrade to Pro — R350/mo
+                        Upgrade to Pro — R200/mo
                     </HoverBorderGradient>
                 </div>
             </div>

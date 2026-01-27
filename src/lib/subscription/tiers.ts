@@ -9,7 +9,7 @@
  * - PDF Exports
  * - Basic reporting
  * 
- * Pro (R350/month):
+ * Pro (R200/month):
  * - Everything in Starter
  * - Remove Illumi branding
  * - PayGate integration
@@ -67,7 +67,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
         },
     },
     pro: {
-        // Pro plan - R350/month
+        // Pro plan - R200/month
         invoicesPerMonth: Infinity,
         connectedBanks: 10,
         inboxItemsPerMonth: Infinity,
