@@ -485,7 +485,7 @@ export default function EditInvoicePage() {
                             "rounded-2xl shadow-2xl transition-all duration-500",
                             invoiceMode === "light"
                                 ? "bg-white text-black border border-neutral-200"
-                                : "bg-neutral-950 border border-border text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
+                                : "bg-neutral-950 border border-transparent text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
                             template === "Classic" && "p-12",
                             template === "Minimal" && "p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"

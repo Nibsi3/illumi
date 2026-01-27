@@ -71,16 +71,16 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     const total = subtotal + tax
 
     return (
-        <div className={cn("fixed inset-0 z-100 flex flex-col backdrop-blur-xl animate-in fade-in duration-300", isLight ? "bg-neutral-100/95" : "bg-neutral-900/95")}>
+        <div className="fixed inset-0 z-100 flex flex-col bg-background/90 backdrop-blur-xl animate-in fade-in duration-300">
             {/* Header */}
-            <header className={cn("h-16 border-b flex items-center justify-between px-4 sm:px-6 sticky top-0 z-10", isLight ? "bg-white border-neutral-200" : "bg-neutral-900 border-neutral-800")}>
+            <header className="h-16 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-background/80 sticky top-0 z-10">
                 <div className="flex items-center gap-6">
-                    <button onClick={onClose} className={cn("transition-colors", isLight ? "text-neutral-500 hover:text-black" : "text-neutral-400 hover:text-white")}>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
                         <X className="h-5 w-5" />
                     </button>
                     <div className="flex flex-col">
-                        <span className={cn("text-[10px] font-bold uppercase tracking-widest", isLight ? "text-neutral-500" : "text-neutral-400")}>Live Preview</span>
-                        <span className={cn("text-sm font-medium tracking-tight", isLight ? "text-black" : "text-white")}>{data.invoiceNumber || "INV-0000"}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Live Preview</span>
+                        <span className="text-sm font-medium text-foreground tracking-tight">{data.invoiceNumber || "INV-0000"}</span>
                     </div>
                 </div>
 
@@ -88,7 +88,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     {!isBankingMode && (
                         <Button
                             variant="outline"
-                            className={cn("h-9 text-xs font-bold uppercase tracking-tighter px-3 sm:px-4", isLight ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black" : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white")}
+                            className="h-9 border-border bg-muted hover:bg-accent text-foreground text-xs font-bold uppercase tracking-tighter px-3 sm:px-4"
                             onClick={() => {
                                 const provider = data.paymentProvider || activePaymentProvider
                                 const url = `${window.location.origin}/pay/${data.invoiceNumber}${provider ? `?provider=${provider}` : ''}`
@@ -102,14 +102,14 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     )}
                     <Button
                         variant="outline"
-                        className={cn("h-9 text-xs font-bold uppercase tracking-tighter px-3 sm:px-4", isLight ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black" : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white")}
+                        className="h-9 border-border bg-muted hover:bg-accent text-foreground text-xs font-bold uppercase tracking-tighter px-3 sm:px-4"
                         onClick={() => window.print()}
                     >
                         <Printer className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Print</span>
                     </Button>
                     <Button
-                        className={cn("h-9 text-xs font-black uppercase tracking-tighter px-3 sm:px-6", isLight ? "bg-black text-white hover:bg-neutral-800" : "bg-white text-black hover:bg-neutral-200")}
+                        className="h-9 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-black uppercase tracking-tighter px-3 sm:px-6"
                         onClick={() => window.print()}
                     >
                         <Download className="mr-2 h-4 w-4" />
@@ -119,12 +119,12 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
             </header>
 
             {/* Scrollable Content */}
-            <div className={cn("flex-1 overflow-y-auto p-4 sm:p-12 scrollbar-hide", isLight ? "bg-neutral-100" : "bg-neutral-900")}>
+            <div className="flex-1 overflow-y-auto p-4 sm:p-12 scrollbar-hide">
                 <div className={cn(
                     "mx-auto shadow-2xl min-h-[1000px] printable-area transition-all duration-500",
                     isLight
-                        ? "!bg-white !text-black border !border-neutral-200"
-                        : "!bg-neutral-950 !text-neutral-100 border border-border [&_.text-muted-foreground]:!text-neutral-400 [&_.text-foreground]:!text-neutral-100",
+                        ? "bg-white! text-black! border border-neutral-200!"
+                        : "bg-neutral-950! text-neutral-100! border border-transparent [&_.text-muted-foreground]:text-neutral-400! [&_.text-foreground]:text-neutral-100!",
                     data.template === "Classic" && "p-16 max-w-4xl",
                     data.template === "Minimal" && "p-20 max-w-3xl",
                     data.template === "Modern" && "max-w-4xl p-0 overflow-hidden"

@@ -127,68 +127,40 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     }
 
     return (
-        <div className={cn(
-            "min-h-screen font-sans pb-20",
-            isLight ? "bg-neutral-100 text-black" : "bg-neutral-900 text-white"
-        )}>
+        <div className="min-h-screen bg-background text-foreground font-sans pb-20">
             {/* Action Header */}
-            <header className={cn(
-                "h-16 border-b flex items-center justify-between px-6 sticky top-0 backdrop-blur-md z-50",
-                isLight ? "bg-white/90 border-neutral-200" : "bg-neutral-900/90 border-neutral-800"
-            )}>
+            <header className="h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 bg-background/80 backdrop-blur-md z-50">
                 <div className="flex items-center gap-6">
                     <button
                         onClick={() => router.back()}
-                        className={cn(
-                            "transition-colors",
-                            isLight ? "text-neutral-500 hover:text-black" : "text-neutral-400 hover:text-white"
-                        )}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <div className="flex flex-col">
-                        <span className={cn(
-                            "text-xs font-bold uppercase tracking-widest",
-                            isLight ? "text-neutral-500" : "text-neutral-400"
-                        )}>Preview</span>
-                        <span className={cn(
-                            "text-sm font-medium",
-                            isLight ? "text-black" : "text-white"
-                        )}>{invoice.invoice_number}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preview</span>
+                        <span className="text-sm font-medium">{invoice.invoice_number}</span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3">
                     <Button
                         variant="outline"
-                        className={cn(
-                            "h-10 px-3 sm:px-4",
-                            isLight
-                                ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black"
-                                : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white"
-                        )}
+                        className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4"
                     >
                         <Share2 className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Share</span>
                     </Button>
                     <Button
                         variant="outline"
-                        className={cn(
-                            "h-10 px-3 sm:px-4",
-                            isLight
-                                ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black"
-                                : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white"
-                        )}
+                        className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4"
                         onClick={() => window.print()}
                     >
                         <Printer className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Print</span>
                     </Button>
                     <Button
-                        className={cn(
-                            "h-10 font-semibold px-3 sm:px-6",
-                            isLight ? "bg-black text-white hover:bg-neutral-800" : "bg-white text-black hover:bg-neutral-200"
-                        )}
+                        className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6"
                     >
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
@@ -207,7 +179,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     "rounded-lg shadow-2xl border p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area",
                     logoBg === 'light'
                         ? "bg-white! text-black! border-neutral-200! [&_.text-muted-foreground]:text-neutral-500! [&_.text-foreground]:text-black!"
-                        : "bg-neutral-950! text-neutral-100! border-neutral-700! [&_.text-muted-foreground]:text-neutral-400! [&_.text-foreground]:text-neutral-100!"
+                        : "bg-neutral-950! text-neutral-100! border-transparent [&_.text-muted-foreground]:text-neutral-400! [&_.text-foreground]:text-neutral-100!"
                 )}>
                     {/* Header: Logo & Title */}
                     <div className="flex justify-between items-start mb-20">

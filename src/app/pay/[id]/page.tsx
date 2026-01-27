@@ -217,17 +217,15 @@ export default function PayInvoicePage() {
         }
     }
 
-    const isLight = mode === "light"
-
     return (
-        <div className={cn("min-h-screen py-16 px-4 sm:px-6 lg:px-8 font-sans", isLight ? "bg-neutral-100 selection:bg-black selection:text-white" : "bg-neutral-900 selection:bg-white selection:text-black")}>
+        <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8 font-sans selection:bg-white selection:text-black">
             <div className="max-w-6xl mx-auto space-y-12">
                 {/* Header Section */}
-                <div className={cn("flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b", isLight ? "border-neutral-200" : "border-neutral-800")}>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-8 border-b border-border">
                     <div>
-                        <h1 className={cn("text-3xl sm:text-5xl font-serif italic tracking-tight mb-3", isLight ? "text-black" : "text-white")}>Invoice Payment</h1>
-                        <div className={cn("flex items-center gap-3 group cursor-default", isLight ? "text-neutral-500" : "text-neutral-400")}>
-                            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center border transition-colors", isLight ? "bg-white border-neutral-200" : "bg-neutral-800 border-neutral-700")}>
+                        <h1 className="text-3xl sm:text-5xl font-serif text-foreground italic tracking-tight mb-3">Invoice Payment</h1>
+                        <div className="flex items-center gap-3 text-muted-foreground group cursor-default">
+                            <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center border border-border group-hover:border-border transition-colors">
                                 <DollarSign className="h-4 w-4" />
                             </div>
                             <span className="font-mono tracking-wider text-sm">{invoice.invoice_number}</span>
@@ -239,7 +237,7 @@ export default function PayInvoicePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className={cn("h-8 rounded-lg text-xs gap-2", isLight ? "border-neutral-300 bg-white text-black hover:bg-neutral-100" : "border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700")}
+                                className="h-8 border-border bg-muted text-foreground hover:bg-accent rounded-lg text-xs gap-2"
                                 onClick={() => window.print()}
                             >
                                 <Download className="h-3.5 w-3.5" />
@@ -248,7 +246,7 @@ export default function PayInvoicePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className={cn("h-9 rounded-lg text-xs gap-2", isLight ? "border-neutral-300 bg-white text-black hover:bg-neutral-100" : "border-neutral-700 bg-neutral-800 text-white hover:bg-neutral-700")}
+                                className="h-9 border-border bg-muted text-foreground hover:bg-accent rounded-lg text-xs gap-2"
                                 onClick={() => {
                                     navigator.clipboard.writeText(window.location.href)
                                     toast.success("Link copied to clipboard")
@@ -279,7 +277,7 @@ export default function PayInvoicePage() {
                             "shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] border transition-all duration-500 relative group overflow-hidden",
                             mode === "light"
                                 ? "bg-white text-black border-neutral-200"
-                                : "bg-neutral-950 text-neutral-100 border-border [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
+                                : "bg-neutral-950 text-neutral-100 border-transparent [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
                             template === "Classic" && "p-12 md:p-20",
                             template === "Minimal" && "p-12 md:p-24",
                             template === "Modern" && "p-0"
@@ -497,31 +495,31 @@ export default function PayInvoicePage() {
 
                     {/* Payment Sidebar */}
                     <div className="lg:col-span-4 space-y-8 sticky top-8">
-                        <Card className={cn("rounded-none overflow-hidden shadow-2xl", isLight ? "bg-white border-neutral-200" : "bg-neutral-800 border-neutral-700")}>
-                            <CardHeader className={cn("p-8 border-b", isLight ? "border-neutral-200" : "border-neutral-700")}>
-                                <CardTitle className={cn("font-serif italic text-3xl", isLight ? "text-black" : "text-white")}>Payment Method</CardTitle>
-                                <CardDescription className={cn("mt-2 font-medium", isLight ? "text-neutral-500" : "text-neutral-400")}>Select your preferred payment option below to settle this invoice.</CardDescription>
+                        <Card className="bg-card border-border rounded-none overflow-hidden shadow-2xl">
+                            <CardHeader className="p-8 border-b border-border">
+                                <CardTitle className="font-serif italic text-3xl text-foreground">Payment Method</CardTitle>
+                                <CardDescription className="text-muted-foreground mt-2 font-medium">Select your preferred payment option below to settle this invoice.</CardDescription>
                             </CardHeader>
                             <CardContent className="p-8 space-y-6">
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center">
-                                        <span className={cn("text-xs font-bold uppercase tracking-widest", isLight ? "text-neutral-500" : "text-neutral-400")}>Amount to Pay</span>
-                                        <span className={cn("text-2xl font-serif italic", isLight ? "text-black" : "text-white")}>{invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Amount to Pay</span>
+                                        <span className="text-2xl font-serif italic text-foreground">{invoice.total.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className={cn("text-xs font-bold uppercase tracking-widest", isLight ? "text-neutral-500" : "text-neutral-400")}>Method</span>
-                                        <span className={cn("text-xs font-bold uppercase tracking-widest", isLight ? "text-neutral-500" : "text-neutral-400")}>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Method</span>
+                                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                             {isBankingMode ? 'Banking details' : selectedProvider}
                                         </span>
                                     </div>
-                                    <div className={cn("flex justify-center py-6 border-y", isLight ? "border-neutral-200" : "border-neutral-700")}>
-                                        <Receipt className={cn("h-12 w-12", isLight ? "text-neutral-400" : "text-neutral-500")} />
+                                    <div className="flex justify-center py-6 border-y border-border">
+                                        <Receipt className="h-12 w-12 text-muted-foreground" />
                                     </div>
 
                                     {isBankingMode && (invoice.bank_name || invoice.account_name || invoice.account_number || invoice.branch_code) && (
                                         <div className="space-y-2">
-                                            <p className={cn("text-[10px] font-bold uppercase tracking-widest", isLight ? "text-neutral-500" : "text-neutral-400")}>Payment Details</p>
-                                            <p className={cn("text-xs leading-relaxed font-medium", isLight ? "text-neutral-600" : "text-neutral-400")}>
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Payment Details</p>
+                                            <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                                                 {invoice.bank_name ? <>Bank: {invoice.bank_name}<br /></> : null}
                                                 {invoice.account_name ? <>Account: {invoice.account_name}<br /></> : null}
                                                 {invoice.account_number ? <>Number: {invoice.account_number}<br /></> : null}
@@ -537,12 +535,12 @@ export default function PayInvoicePage() {
                                         Invoice Settled
                                     </div>
                                 ) : isBankingMode ? (
-                                    <div className={cn("w-full h-24 flex items-center justify-center font-serif italic text-2xl tracking-tight transition-all", isLight ? "bg-neutral-100 text-black" : "bg-neutral-700 text-white")}>
+                                    <div className="w-full h-24 bg-muted flex items-center justify-center text-foreground font-serif italic text-2xl tracking-tight transition-all">
                                         Awaiting Manual Payment
                                     </div>
                                 ) : (
                                     <Button
-                                        className={cn("w-full h-24 rounded-none text-xl font-serif italic transition-all group border-none", isLight ? "bg-black text-white hover:bg-neutral-800" : "bg-white text-black hover:bg-neutral-200")}
+                                        className="w-full h-24 bg-primary text-primary-foreground hover:bg-neutral-800 rounded-none text-xl font-serif italic transition-all group border-none"
                                         disabled={isSimulating}
                                         onClick={handlePayment}
                                     >
@@ -560,14 +558,14 @@ export default function PayInvoicePage() {
                         </Card>
 
                         {!isPaid && !isBankingMode && (
-                            <div className={cn("p-8 border group transition-colors", isLight ? "bg-neutral-50 border-neutral-200 hover:border-neutral-300" : "bg-neutral-800 border-neutral-700 hover:border-neutral-600")}>
+                            <div className="p-8 bg-secondary border border-border group hover:border-border transition-colors">
                                 <div className="flex items-start gap-5">
-                                    <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center border transition-all shrink-0", isLight ? "bg-white border-neutral-200 group-hover:bg-neutral-100" : "bg-neutral-700 border-neutral-600 group-hover:bg-neutral-600")}>
-                                        <CreditCard className={cn("h-5 w-5 transition-colors", isLight ? "text-neutral-400 group-hover:text-black" : "text-neutral-400 group-hover:text-white")} />
+                                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border group-hover:bg-accent transition-all shrink-0">
+                                        <CreditCard className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
                                     </div>
                                     <div>
-                                        <p className={cn("text-xs font-bold uppercase tracking-widest mb-2", isLight ? "text-black" : "text-white")}>Secure Gateway</p>
-                                        <p className={cn("text-xs leading-relaxed font-medium", isLight ? "text-neutral-500" : "text-neutral-400")}>
+                                        <p className="text-xs font-bold uppercase tracking-widest text-foreground mb-2">Secure Gateway</p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                                             Your transaction is processed via encrypted 256-bit SSL security. We do not store your credit card details.
                                         </p>
                                     </div>

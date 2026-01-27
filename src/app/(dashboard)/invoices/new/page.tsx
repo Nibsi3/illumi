@@ -1084,7 +1084,7 @@ export default function NewInvoicePage() {
                             "rounded-2xl shadow-2xl transition-all duration-500",
                             invoiceMode === "light"
                                 ? "bg-white text-black border border-neutral-200"
-                                : "bg-neutral-950 border border-border text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
+                                : "bg-neutral-950 border border-transparent text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
                             template === "Classic" && "p-6 sm:p-12",
                             template === "Minimal" && "p-8 sm:p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
@@ -1464,13 +1464,45 @@ export default function NewInvoicePage() {
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment Info</span>
-                                            <div className="flex items-center justify-between gap-4">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                 <span className={cn("text-xs font-medium", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment method</span>
                                                 <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)}>
-                                                    <SelectTrigger className="h-9 w-[220px]">
-                                                        <SelectValue placeholder="Select" />
+                                                    <SelectTrigger className={cn(
+                                                        "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs",
+                                                        invoiceMode === "light"
+                                                            ? "bg-white border-neutral-200"
+                                                            : "bg-neutral-900 border-neutral-700"
+                                                    )}>
+                                                        <div className="flex items-center gap-3 min-w-0">
+                                                            <div className={cn(
+                                                                "h-8 w-8 rounded-lg flex items-center justify-center border shrink-0",
+                                                                invoiceMode === "light" ? "bg-neutral-100 border-neutral-200" : "bg-neutral-950 border-neutral-700"
+                                                            )}>
+                                                                {paymentMethod === 'paygate' ? (
+                                                                    <CreditCard className={cn("h-4 w-4", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-200")} />
+                                                                ) : (
+                                                                    <Banknote className={cn("h-4 w-4", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-200")} />
+                                                                )}
+                                                            </div>
+                                                            <div className="flex flex-col min-w-0 flex-1">
+                                                                <span className={cn(
+                                                                    "text-[10px] font-black uppercase tracking-widest leading-tight",
+                                                                    invoiceMode === "light" ? "text-black" : "text-neutral-100"
+                                                                )}>
+                                                                    {paymentMethod === 'paygate' ? 'PayGate' : 'Banking details'}
+                                                                </span>
+                                                                <span className={cn(
+                                                                    "text-[10px] font-medium uppercase tracking-wider truncate",
+                                                                    invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400"
+                                                                )}>
+                                                                    {paymentMethod === 'paygate' ? `${paygateLabel} • Pay now link` : 'Manual transfer'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
                                                     </SelectTrigger>
-                                                    <SelectContent>
+                                                    <SelectContent className={cn(
+                                                        invoiceMode === "light" ? "bg-white border-neutral-200 text-black" : "bg-neutral-950 border-neutral-700 text-neutral-100"
+                                                    )}>
                                                         <SelectItem value="bank">Banking details (manual)</SelectItem>
                                                         {isPro && <SelectItem value="paygate">PayGate (Pay now link)</SelectItem>}
                                                     </SelectContent>
