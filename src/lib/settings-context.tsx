@@ -127,8 +127,12 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.taxRate !== undefined) setTaxRate(parsed.taxRate)
                     if (parsed.dateFormat) setDateFormat(parsed.dateFormat)
                     if (parsed.fromEmail) setFromEmail(parsed.fromEmail)
-                    if (parsed.sendInvoiceCopyToSelf !== undefined) setSendInvoiceCopyToSelf(Boolean(parsed.sendInvoiceCopyToSelf))
-                    if (parsed.hideIllumiBranding !== undefined) setHideIllumiBranding(Boolean(parsed.hideIllumiBranding))
+                    if (parsed.sendInvoiceCopyToSelf !== undefined) {
+                        setSendInvoiceCopyToSelf(parsed.sendInvoiceCopyToSelf === true || parsed.sendInvoiceCopyToSelf === 'true')
+                    }
+                    if (parsed.hideIllumiBranding !== undefined) {
+                        setHideIllumiBranding(parsed.hideIllumiBranding === true || parsed.hideIllumiBranding === 'true')
+                    }
                     if (parsed.logo) setLogo(parsed.logo)
                     if (parsed.companyName) setCompanyName(parsed.companyName)
                     if (parsed.companyWebsite !== undefined) setCompanyWebsite(parsed.companyWebsite)

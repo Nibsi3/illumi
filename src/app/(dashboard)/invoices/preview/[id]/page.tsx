@@ -8,6 +8,7 @@ import { use, useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useSettings } from "@/lib/settings-context"
 import { useSubscription } from "@/lib/subscription/hooks"
+import { cn } from "@/lib/utils"
 
 interface InvoiceItem {
     id: string
@@ -52,7 +53,6 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     const supabase = createClient()
     const { currency } = useSettings()
     const { isPro } = useSubscription()
-    const illumiLogoSrc = '/midday-logo.png'
     
     const [invoice, setInvoice] = useState<Invoice | null>(null)
     const [loading, setLoading] = useState(true)
@@ -107,6 +107,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
         )
     }
 
+    const invoiceMode = (invoice.invoice_mode || 'dark') as 'light' | 'dark'
+    const isLight = invoiceMode === 'light'
+    const illumiLogoSrc = isLight ? '/midday-logo.png' : '/logo.png'
+
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-ZA', { 
             style: 'currency', 
@@ -123,29 +127,69 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     }
 
     return (
-        <div className="min-h-screen bg-card text-foreground font-sans pb-20">
+        <div className={cn(
+            "min-h-screen font-sans pb-20",
+            isLight ? "bg-neutral-100 text-black" : "bg-neutral-900 text-white"
+        )}>
             {/* Action Header */}
-            <header className="h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 bg-background/80 backdrop-blur-md z-50">
+            <header className={cn(
+                "h-16 border-b flex items-center justify-between px-6 sticky top-0 backdrop-blur-md z-50",
+                isLight ? "bg-white/90 border-neutral-200" : "bg-neutral-900/90 border-neutral-800"
+            )}>
                 <div className="flex items-center gap-6">
-                    <button onClick={() => router.back()} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <button
+                        onClick={() => router.back()}
+                        className={cn(
+                            "transition-colors",
+                            isLight ? "text-neutral-500 hover:text-black" : "text-neutral-400 hover:text-white"
+                        )}
+                    >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preview</span>
-                        <span className="text-sm font-medium">{invoice.invoice_number}</span>
+                        <span className={cn(
+                            "text-xs font-bold uppercase tracking-widest",
+                            isLight ? "text-neutral-500" : "text-neutral-400"
+                        )}>Preview</span>
+                        <span className={cn(
+                            "text-sm font-medium",
+                            isLight ? "text-black" : "text-white"
+                        )}>{invoice.invoice_number}</span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <Button variant="outline" className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4">
+                    <Button
+                        variant="outline"
+                        className={cn(
+                            "h-10 px-3 sm:px-4",
+                            isLight
+                                ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black"
+                                : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white"
+                        )}
+                    >
                         <Share2 className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Share</span>
                     </Button>
-                    <Button variant="outline" className="h-10 border-border bg-muted hover:bg-accent px-3 sm:px-4" onClick={() => window.print()}>
+                    <Button
+                        variant="outline"
+                        className={cn(
+                            "h-10 px-3 sm:px-4",
+                            isLight
+                                ? "border-neutral-300 bg-white hover:bg-neutral-100 text-black"
+                                : "border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-white"
+                        )}
+                        onClick={() => window.print()}
+                    >
                         <Printer className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Print</span>
                     </Button>
-                    <Button className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6">
+                    <Button
+                        className={cn(
+                            "h-10 font-semibold px-3 sm:px-6",
+                            isLight ? "bg-black text-white hover:bg-neutral-800" : "bg-white text-black hover:bg-neutral-200"
+                        )}
+                    >
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
                     </Button>
@@ -155,11 +199,16 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             {/* Invoice Paper Layout */}
             <main className="max-w-5xl mx-auto mt-12 px-6">
                 {(() => {
-                    const logoBg = (invoice.invoice_mode || 'dark') as 'light' | 'dark'
-                    const logoContainerClass = logoBg === 'light' ? 'bg-card border-border' : 'bg-card border-border'
-                    const logoTextClass = logoBg === 'light' ? 'text-foreground' : 'text-foreground'
+                    const logoBg = invoiceMode
+                    const logoContainerClass = 'bg-neutral-950 border-border'
+                    const logoTextClass = 'text-neutral-100'
                     return (
-                <div className="bg-primary text-primary-foreground rounded-lg shadow-2xl p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area">
+                <div className={cn(
+                    "rounded-lg shadow-2xl border p-6 sm:p-10 md:p-20 min-h-[1120px] mx-auto overflow-hidden printable-area",
+                    logoBg === 'light'
+                        ? "bg-white! text-black! border-neutral-200! [&_.text-muted-foreground]:text-neutral-500! [&_.text-foreground]:text-black!"
+                        : "bg-neutral-950! text-neutral-100! border-neutral-700! [&_.text-muted-foreground]:text-neutral-400! [&_.text-foreground]:text-neutral-100!"
+                )}>
                     {/* Header: Logo & Title */}
                     <div className="flex justify-between items-start mb-20">
                         <div className={"w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden border " + logoContainerClass}>
@@ -176,7 +225,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </div>
 
                     {/* From / To */}
-                    <div className="grid grid-cols-2 gap-20 mb-16 pb-16 border-b border-neutral-100">
+                    <div className={cn(
+                        "grid grid-cols-2 gap-20 mb-16 pb-16 border-b",
+                        logoBg === 'light' ? "border-neutral-200" : "border-neutral-700"
+                    )}>
                         <div className="flex flex-col gap-4">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
                             <div className="space-y-1 invoice-font-from">
@@ -225,7 +277,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
                     {/* Line Items */}
                     <table className="w-full mb-16">
-                        <thead className="border-b-2 border-foreground text-[10px] font-bold uppercase tracking-widest">
+                        <thead className={cn(
+                            "border-b-2 text-[10px] font-bold uppercase tracking-widest",
+                            logoBg === 'light' ? "border-neutral-300" : "border-neutral-600"
+                        )}>
                             <tr>
                                 <th className="py-4 text-left">Description</th>
                                 <th className="py-4 text-right">Price</th>
@@ -233,7 +288,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 <th className="py-4 text-right">Total</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-neutral-100">
+                        <tbody className={cn(
+                            "divide-y",
+                            logoBg === 'light' ? "divide-neutral-200" : "divide-neutral-700"
+                        )}>
                             {invoice.items.map((item) => (
                                 <tr key={item.id} className="text-sm">
                                     <td className="py-6 font-medium invoice-font-item">{item.description}</td>
@@ -251,7 +309,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </table>
 
                     {/* Footer: Notes & Totals */}
-                    <div className="flex justify-between items-start pt-12 border-t-2 border-foreground">
+                    <div className={cn(
+                        "flex justify-between items-start pt-12 border-t-2",
+                        logoBg === 'light' ? "border-neutral-300" : "border-neutral-600"
+                    )}>
                         <div className="w-1/2 flex flex-col gap-8">
                             {invoice.notes && (
                             <div className="flex flex-col gap-2">

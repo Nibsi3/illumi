@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react"
 import { NumberInput } from "@/components/ui/number-input"
 import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
+import { useInvalidateCache } from "@/lib/hooks/use-cached-data"
 
 interface CreateProductModalProps {
     isOpen: boolean
@@ -22,8 +23,11 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
     const [name, setName] = useState("")
     const [price, setPrice] = useState(0)
     const [description, setDescription] = useState("")
+    const [sku, setSku] = useState("")
+    const [billingType, setBillingType] = useState<"one-time" | "recurring">("one-time")
     const supabase = createClient()
     const { activeWorkspace } = useWorkspace()
+    const { invalidateProducts } = useInvalidateCache()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -48,6 +52,9 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
                     name,
                     price,
                     description,
+                    currency: 'ZAR',
+                    sku: sku || null,
+                    billing_type: billingType,
                     user_id: user.id,
                     workspace_id: activeWorkspace.id,
                     status: 'active'
@@ -58,6 +65,7 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
             if (error) throw error
 
             toast.success("Product created successfully")
+            await invalidateProducts()
             if (onSuccess) {
                 onSuccess(data)
             }
@@ -65,6 +73,8 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
             setName("")
             setPrice(0)
             setDescription("")
+            setSku("")
+            setBillingType("one-time")
         } catch (error: any) {
             toast.error("Failed to create product", {
                 description: error.message
@@ -92,12 +102,42 @@ export function CreateProductModal({ isOpen, onClose, onSuccess }: CreateProduct
                         />
                     </div>
                     <div className="space-y-2">
+                        <Label>SKU / ID</Label>
+                        <Input
+                            value={sku}
+                            onChange={(e) => setSku(e.target.value)}
+                            placeholder="WEB-001"
+                            className="bg-muted border-border"
+                        />
+                    </div>
+                    <div className="space-y-2">
                         <Label>Price</Label>
                         <NumberInput
                             value={price}
                             onChange={setPrice}
                             className="bg-muted border-border h-10 px-3"
                         />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Billing Type</Label>
+                        <div className="flex gap-2">
+                            <Button
+                                type="button"
+                                variant={billingType === 'one-time' ? 'default' : 'outline'}
+                                className="h-10 flex-1"
+                                onClick={() => setBillingType('one-time')}
+                            >
+                                One-time
+                            </Button>
+                            <Button
+                                type="button"
+                                variant={billingType === 'recurring' ? 'default' : 'outline'}
+                                className="h-10 flex-1"
+                                onClick={() => setBillingType('recurring')}
+                            >
+                                Recurring
+                            </Button>
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <Label>Description (Optional)</Label>

@@ -81,6 +81,9 @@ export default function NewInvoicePage() {
     const { activeWorkspace } = useWorkspace()
     const { activePaymentProvider } = settings
 
+    const [isPaygateTestMode, setIsPaygateTestMode] = useState(true)
+    const [paymentMethod, setPaymentMethod] = useState<'paygate' | 'bank'>('paygate')
+
     const isDev = process.env.NODE_ENV !== 'production'
     const debugLog = (...args: any[]) => {
         if (isDev) console.log(...args)
@@ -121,6 +124,30 @@ export default function NewInvoicePage() {
         .split('_')
         .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
         .join(' ')
+
+    useEffect(() => {
+        if (!activeWorkspace?.id) return
+
+        fetch(`/api/paygate/config?workspace_id=${activeWorkspace.id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data?.success && data?.settings) {
+                    setIsPaygateTestMode(Boolean(data.settings.test_mode ?? true))
+                }
+            })
+            .catch(() => {})
+    }, [activeWorkspace?.id])
+
+    useEffect(() => {
+        const shouldDefaultToPaygate = Boolean(isPro && activePaymentProvider)
+        setPaymentMethod(shouldDefaultToPaygate ? 'paygate' : 'bank')
+    }, [isPro, activePaymentProvider])
+
+    useEffect(() => {
+        if (!isPro && paymentMethod !== 'bank') {
+            setPaymentMethod('bank')
+        }
+    }, [isPro, paymentMethod])
 
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
@@ -374,6 +401,8 @@ export default function NewInvoicePage() {
                 ? overrides.scheduledDate.toISOString()
                 : null
 
+            const resolvedPaymentProvider = isPro && paymentMethod === 'paygate' ? (activePaymentProvider || 'payfast') : null
+
             const invoiceData: any = {
                 user_id: user.id,
                 workspace_id: activeWorkspace?.id,
@@ -389,12 +418,17 @@ export default function NewInvoicePage() {
                 total,
                 status,
                 notes: invoiceNote,
-                payment_provider: activePaymentProvider || 'payfast',
+                payment_provider: resolvedPaymentProvider,
                 logo_url: logo || null,
                 logo_bg: null,
                 template,
                 invoice_mode: invoiceMode,
                 from_email: fromEmail,
+                company_website: settings.companyWebsite || null,
+                bank_name: settings.bankName || null,
+                account_name: settings.accountName || null,
+                account_number: settings.accountNumber || null,
+                branch_code: settings.branchCode || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 is_recurring: Boolean(isRecurring),
                 recurring_interval: isRecurring ? recurringIntervalForDb : null,
@@ -419,7 +453,7 @@ export default function NewInvoicePage() {
                 invoice_mode: invoiceMode,
                 logo_url: logo,
                 logo_bg: null,
-                payment_provider: activePaymentProvider || null,
+                payment_provider: resolvedPaymentProvider,
                 from_email: fromEmail,
                 company_website: settings.companyWebsite || null,
                 bank_name: settings.bankName || null,
@@ -1048,7 +1082,9 @@ export default function NewInvoicePage() {
 
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
-                            invoiceMode === "light" ? "bg-primary text-primary-foreground border border-neutral-200" : "bg-card border border-border text-foreground",
+                            invoiceMode === "light"
+                                ? "bg-white text-black border border-neutral-200"
+                                : "bg-neutral-950 border border-border text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
                             template === "Classic" && "p-6 sm:p-12",
                             template === "Minimal" && "p-8 sm:p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
@@ -1125,9 +1161,7 @@ export default function NewInvoicePage() {
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                invoiceMode === "light"
-                                                    ? "bg-card border-neutral-200 hover:border-neutral-300"
-                                                    : "bg-card border-border hover:bg-white/8 hover:border-border"
+                                                "bg-neutral-950 border-border hover:bg-neutral-900 hover:border-border"
                                             )}
                                         >
                                             {logo ? (
@@ -1153,11 +1187,11 @@ export default function NewInvoicePage() {
                                         )}>
                                             <h2 className={cn(
                                                 "text-5xl invoice-font-title font-bold mb-2",
-                                                invoiceMode === "light" ? "text-black" : "text-foreground",
+                                                invoiceMode === "light" ? "text-black" : "text-neutral-100",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}>{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
@@ -1167,8 +1201,8 @@ export default function NewInvoicePage() {
                                         template === "Modern" && "bg-muted p-8 rounded-xl"
                                     )}>
                                         <div className="col-span-2 flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>From</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>To</span>
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <div className="space-y-2">
@@ -1177,14 +1211,14 @@ export default function NewInvoicePage() {
                                                     onChange={(e) => setFromName(e.target.value)}
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                                 <textarea
                                                     value={fromAddress}
@@ -1192,7 +1226,7 @@ export default function NewInvoicePage() {
                                                     placeholder="Address"
                                                     rows={3}
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
                                         </div>
@@ -1201,7 +1235,7 @@ export default function NewInvoicePage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-muted-foreground hover:text-black hover:bg-neutral-100" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
+                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800")}
                                                     onClick={() => setIsClientModalOpen(true)}
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
@@ -1214,7 +1248,7 @@ export default function NewInvoicePage() {
                                                         list="client-suggestions"
                                                         spellCheck={false}
                                                         value={clientName}
-                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                         onChange={(e) => {
                                                             const val = e.target.value;
                                                             setClientName(val)
@@ -1238,7 +1272,7 @@ export default function NewInvoicePage() {
 
                                                     {/* Read-only client details display if selected */}
                                                     {(clientEmail || clientAddress) && (
-                                                        <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-muted-foreground">
+                                                        <div className={cn("invoice-font-from flex flex-col items-end gap-1 text-xs", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>
                                                             {clientEmail && <span>{clientEmail}</span>}
                                                             {clientPhone && <span>{clientPhone}</span>}
                                                             {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
@@ -1253,15 +1287,15 @@ export default function NewInvoicePage() {
                                 {/* Meta Details */}
                                 <div id="invoice-details" />
                                 {!canSchedule && (
-                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
+                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Issue Date</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Issue Date</span>
                                             <div className="relative">
                                                 <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
                                                     <PopoverTrigger asChild>
                                                         <button className={cn(
                                                             "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                            invoiceMode === "light" ? "text-black" : "text-foreground"
+                                                            invoiceMode === "light" ? "text-black" : "text-neutral-100"
                                                         )}>
                                                             {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                         </button>
@@ -1282,13 +1316,13 @@ export default function NewInvoicePage() {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Due Date</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Due Date</span>
                                             <div className="relative">
                                                 <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
                                                     <PopoverTrigger asChild>
                                                         <button className={cn(
                                                             "invoice-font-date bg-transparent border-none p-0 h-auto font-bold text-sm focus:ring-0 cursor-pointer min-w-[150px] outline-none text-left",
-                                                            invoiceMode === "light" ? "text-black" : "text-foreground"
+                                                            invoiceMode === "light" ? "text-black" : "text-neutral-100"
                                                         )}>
                                                             {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                         </button>
@@ -1316,13 +1350,13 @@ export default function NewInvoicePage() {
                                 <div className="mb-12">
                                     <table className="w-full border-collapse">
                                         <thead>
-                                            <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-muted-foreground", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
+                                            <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "border-neutral-200 text-neutral-500" : "border-neutral-700 text-neutral-400")}>
                                                 <th className="py-4 text-left font-medium">
                                                     <div className="flex items-center gap-4">
                                                         Products
                                                         <button
                                                             onClick={() => setIsProductModalOpen(true)}
-                                                            className={cn("flex items-center gap-1 text-[9px] transition-colors px-2 py-1 rounded cursor-pointer", invoiceMode === "light" ? "bg-black/5 hover:bg-black/10 text-muted-foreground hover:text-black" : "bg-muted hover:bg-accent text-muted-foreground hover:text-foreground")}
+                                                            className={cn("flex items-center gap-1 text-[9px] transition-colors px-2 py-1 rounded cursor-pointer", invoiceMode === "light" ? "bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-black" : "bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-100")}
                                                         >
                                                             <Plus className="h-2.5 w-2.5" /> New
                                                         </button>
@@ -1335,14 +1369,14 @@ export default function NewInvoicePage() {
                                                 <th className="w-8"></th>
                                             </tr>
                                         </thead>
-                                        <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-border")}>
+                                        <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-neutral-200" : "divide-neutral-700")}>
                                             {tasks.map((task) => (
                                                 <tr key={task.id} className="group transition-colors outline-none">
                                                     <td className="py-4">
                                                         <Input
                                                             placeholder="Enter Product"
                                                             spellCheck={false}
-                                                            className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                            className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground focus-visible:ring-0 text-sm font-medium w-full", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                             value={task.description}
                                                             list="product-suggestions"
                                                             onChange={(e) => {
@@ -1388,7 +1422,7 @@ export default function NewInvoicePage() {
                                                             className="h-10 w-full"
                                                         />
                                                     </td>
-                                                    <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                                    <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                         {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                     </td>
                                                     <td className="py-4 text-right pl-2">
@@ -1417,20 +1451,33 @@ export default function NewInvoicePage() {
                                 {/* Summary & Totals */}
                                 {/* Summary & Totals */}
                                 <div id="invoice-summary" />
-                                <div className="grid grid-cols-12 gap-8 mt-20 pt-12 border-t border-border">
+                                <div className={cn("grid grid-cols-12 gap-8 mt-20 pt-12 border-t", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
                                     <div className="col-span-8 flex flex-col gap-6">
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Note</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Note</span>
                                             <textarea
                                                 placeholder="Add a note (visible to client)"
                                                 value={invoiceNote}
                                                 onChange={(e) => setInvoiceNote(e.target.value)}
-                                                className="invoice-font-notes w-full bg-transparent border-none p-0 h-24 text-muted-foreground placeholder:text-neutral-800 text-sm focus:ring-0 resize-none"
+                                                className={cn("invoice-font-notes w-full bg-transparent border-none p-0 h-24 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                             />
                                         </div>
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Payment Info</span>
-                                            {isPro ? (
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment Info</span>
+                                            <div className="flex items-center justify-between gap-4">
+                                                <span className={cn("text-xs font-medium", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment method</span>
+                                                <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)}>
+                                                    <SelectTrigger className="h-9 w-[220px]">
+                                                        <SelectValue placeholder="Select" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="bank">Banking details (manual)</SelectItem>
+                                                        {isPro && <SelectItem value="paygate">PayGate (Pay now link)</SelectItem>}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {paymentMethod === 'paygate' ? (
                                                 <div className="bg-card border border-border p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all min-w-[320px]">
                                                     <div className="absolute top-0 right-0 w-32 h-32 bg-muted blur-[50px] -mr-16 -mt-16" />
                                                     <div className="flex items-center gap-4 relative z-10">
@@ -1442,7 +1489,7 @@ export default function NewInvoicePage() {
                                                                 <span className="text-xs font-black text-foreground uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
                                                                 <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
                                                                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                                                    <span className="text-[8px] font-black text-foreground uppercase tracking-widest">Live</span>
+                                                                    <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{isPaygateTestMode ? 'Test' : 'Live'}</span>
                                                                 </div>
                                                                 <div className="flex items-center px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
                                                                     <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{paygateLabel}</span>
@@ -1468,13 +1515,15 @@ export default function NewInvoicePage() {
                                                 </div>
 
                                             ) : (
-                                                <div className="space-y-1 text-sm text-muted-foreground font-medium">
+                                                <div className={cn("space-y-1 text-sm font-medium", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}>
                                                     {settings.accountName && <p>Account name: {settings.accountName}</p>}
                                                     {settings.accountNumber && <p>Account number: {settings.accountNumber}</p>}
                                                     {settings.bankName && <p>Bank: {settings.bankName}</p>}
                                                     {settings.branchCode && <p>Branch code: {settings.branchCode}</p>}
                                                     {!settings.accountName && !settings.accountNumber && !settings.bankName && !settings.branchCode && (
-                                                        <p>Enter your banking details in Settings to show them on invoices.</p>
+                                                        <p>
+                                                            Enter your banking details in <Link href="/settings/bank" className="underline underline-offset-4">Settings</Link> to show them on invoices.
+                                                        </p>
                                                     )}
                                                 </div>
                                             )}
@@ -1483,18 +1532,18 @@ export default function NewInvoicePage() {
 
                                     <div className="col-span-4 flex flex-col gap-6">
                                         <div className="flex justify-between items-center text-sm">
-                                            <span className="text-muted-foreground">Subtotal</span>
-                                            <span className="invoice-font-amount text-foreground">{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                            <span className={cn(invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Subtotal</span>
+                                            <span className={cn("invoice-font-amount", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                         </div>
                                         {taxRate > 0 && (
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-muted-foreground">Tax ({taxRate}%)</span>
-                                                <span className="invoice-font-amount text-foreground">{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
+                                                <span className={cn(invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Tax ({taxRate}%)</span>
+                                                <span className={cn("invoice-font-amount", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>{(calculateSubtotal() * taxRate / 100).toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
                                             </div>
                                         )}
-                                        <div className="flex justify-between items-center pt-6 border-t border-border">
-                                            <span className="text-sm font-bold text-foreground uppercase tracking-widest">Total</span>
-                                            <span className="text-3xl font-black text-foreground invoice-font-amount">
+                                        <div className={cn("flex justify-between items-center pt-6 border-t", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
+                                            <span className={cn("text-sm font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>Total</span>
+                                            <span className={cn("text-3xl font-black invoice-font-amount", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                 {(calculateSubtotal() * (1 + taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                             </span>
                                         </div>
@@ -1582,6 +1631,7 @@ export default function NewInvoicePage() {
                             isPro: Boolean(isPro),
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             companyWebsite: settings.companyWebsite,
+                            paymentProvider: isPro && paymentMethod === 'paygate' ? (activePaymentProvider || 'payfast') : null,
                             bankName: settings.bankName,
                             accountName: settings.accountName,
                             accountNumber: settings.accountNumber,
@@ -1607,6 +1657,11 @@ export default function NewInvoicePage() {
                 isOpen={isClientModalOpen}
                 onClose={() => setIsClientModalOpen(false)}
                 onSuccess={(client) => {
+                    setCustomers((prev) => {
+                        if (prev.some((c) => c?.id === client?.id)) return prev
+                        return [...prev, client]
+                    })
+                    if (client?.id) setCustomerId(client.id)
                     setClientName(client.name)
                     setClientEmail(client.email)
                     setClientAddress(client.address)
@@ -1617,6 +1672,10 @@ export default function NewInvoicePage() {
                 isOpen={isProductModalOpen}
                 onClose={() => setIsProductModalOpen(false)}
                 onSuccess={(product) => {
+                    setProducts((prev) => {
+                        if (prev.some((p) => p?.id === product?.id)) return prev
+                        return [...prev, product]
+                    })
                     const newId = Date.now()
                     setTasks([...tasks, {
                         id: newId,

@@ -86,3 +86,94 @@ export async function GET() {
         )
     }
 }
+
+export async function POST(req: Request) {
+    try {
+        const supabase = await createServerClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+        }
+
+        const body = await req.json().catch(() => null)
+        const name = (body?.name || '').toString().trim()
+        const slug = (body?.slug || '').toString().trim()
+
+        if (!name) {
+            return NextResponse.json({ success: false, error: 'Workspace name is required.' }, { status: 400 })
+        }
+
+        const safeSlug = slug || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+
+        const service = getServiceClient()
+
+        // Determine if user has any active Pro subscription.
+        // If subscription table is missing/unavailable, treat as free.
+        let hasActivePro = false
+        try {
+            const nowIso = new Date().toISOString()
+            const { data: subs, error: subsError } = await service
+                .from('subscriptions')
+                .select('tier, status, expires_at')
+                .eq('user_id', user.id)
+
+            const subsErrorCode = (subsError as any)?.code
+            const isExpectedSubsError =
+                subsErrorCode === 'PGRST205' ||
+                subsErrorCode === '42P01' ||
+                subsErrorCode === '42501'
+
+            if (subsError && !isExpectedSubsError) {
+                return NextResponse.json({ success: false, error: subsError.message }, { status: 500 })
+            }
+
+            hasActivePro = Boolean(
+                (subs || []).some((s: any) => {
+                    const tier = (s?.tier || '').toString().toLowerCase()
+                    const status = (s?.status || '').toString().toLowerCase()
+                    const expiresAt = s?.expires_at ? new Date(s.expires_at).toISOString() : null
+                    return tier === 'pro' && status === 'active' && (!expiresAt || expiresAt > nowIso)
+                })
+            )
+        } catch {
+            hasActivePro = false
+        }
+
+        // Enforce free tier limit: max 1 owned workspace.
+        if (!hasActivePro) {
+            const { data: ownedWorkspaces, error: ownedError } = await service
+                .from('workspaces')
+                .select('id')
+                .eq('owner_id', user.id)
+
+            if (ownedError) {
+                return NextResponse.json({ success: false, error: ownedError.message }, { status: 500 })
+            }
+
+            if ((ownedWorkspaces || []).length >= 1) {
+                return NextResponse.json(
+                    { success: false, error: 'Free plan is limited to 1 workspace. Upgrade to Pro to create more.' },
+                    { status: 403 }
+                )
+            }
+        }
+
+        const { data: created, error: createError } = await service
+            .from('workspaces')
+            .insert([{ name, owner_id: user.id, slug: safeSlug }])
+            .select('*')
+            .single()
+
+        if (createError) {
+            return NextResponse.json({ success: false, error: createError.message }, { status: 500 })
+        }
+
+        return NextResponse.json({ success: true, workspace: created }, { status: 200 })
+    } catch (error: any) {
+        return NextResponse.json(
+            { success: false, error: error?.message || 'Failed to create workspace.' },
+            { status: 500 }
+        )
+    }
+}

@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
+import { useWorkspace } from "@/lib/workspace-context"
+import { useInvalidateCache } from "@/lib/hooks/use-cached-data"
 
 interface CreateCustomerModalProps {
     isOpen: boolean
@@ -19,8 +21,14 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
     const [isLoading, setIsLoading] = useState(false)
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
+    const [billingEmail, setBillingEmail] = useState("")
+    const [phone, setPhone] = useState("")
     const [address, setAddress] = useState("")
+    const [country, setCountry] = useState("South Africa")
+    const [industry, setIndustry] = useState("")
     const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
+    const { invalidateCustomers } = useInvalidateCache()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -34,13 +42,23 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                 return
             }
 
+            if (!activeWorkspace?.id) {
+                toast.error("No workspace selected")
+                return
+            }
+
             const { data, error } = await supabase
                 .from('customers')
                 .insert([{
                     name,
                     email,
-                    address,
+                    billing_email: billingEmail || null,
+                    phone: phone || null,
+                    address: address || null,
+                    country,
+                    industry: industry || null,
                     user_id: user.id,
+                    workspace_id: activeWorkspace.id,
                     status: 'active'
                 }])
                 .select()
@@ -49,13 +67,18 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
             if (error) throw error
 
             toast.success("Client created successfully")
+            await invalidateCustomers()
             if (onSuccess) {
                 onSuccess(data)
             }
             onClose()
             setName("")
             setEmail("")
+            setBillingEmail("")
+            setPhone("")
             setAddress("")
+            setCountry("South Africa")
+            setIndustry("")
         } catch (error: any) {
             toast.error("Failed to create client", {
                 description: error.message
@@ -94,11 +117,48 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
                         />
                     </div>
                     <div className="space-y-2">
+                        <Label>Billing Email</Label>
+                        <Input
+                            value={billingEmail}
+                            onChange={(e) => setBillingEmail(e.target.value)}
+                            type="email"
+                            placeholder="finance@acme.com"
+                            className="bg-muted border-border"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Phone Number</Label>
+                        <Input
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="+27 12 345 6789"
+                            className="bg-muted border-border"
+                        />
+                    </div>
+                    <div className="space-y-2">
                         <Label>Physical Address</Label>
                         <Input
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder="123 Business St..."
+                            className="bg-muted border-border"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Country</Label>
+                        <Input
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                            placeholder="South Africa"
+                            className="bg-muted border-border"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label>Industry</Label>
+                        <Input
+                            value={industry}
+                            onChange={(e) => setIndustry(e.target.value)}
+                            placeholder="E.g. Construction"
                             className="bg-muted border-border"
                         />
                     </div>

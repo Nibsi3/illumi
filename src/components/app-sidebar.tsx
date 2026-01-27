@@ -97,19 +97,29 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         e.preventDefault();
         if (!user || !newWorkspaceName.trim()) return;
 
+        const ownedCount = (workspaces || []).filter((w: any) => w?.owner_id === user.id).length
+        if (!isPro && ownedCount >= 1) {
+            toast.error("Workspace limit reached", {
+                description: "Free plan is limited to 1 workspace. Upgrade to Pro to create more.",
+            })
+            return
+        }
+
         setIsCreatingWorkspace(true);
         try {
-            const { data, error } = await supabase
-                .from('workspaces')
-                .insert([{
+            const res = await fetch('/api/workspaces', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     name: newWorkspaceName.trim(),
-                    owner_id: user.id,
-                    slug: newWorkspaceName.toLowerCase().replace(/\s+/g, '-')
-                }])
-                .select()
-                .single();
-
-            if (error) throw error;
+                    slug: newWorkspaceName.toLowerCase().replace(/\s+/g, '-'),
+                }),
+            })
+            const json = await res.json().catch(() => null)
+            if (!res.ok || !json?.success) {
+                throw new Error(json?.error || 'Failed to create workspace')
+            }
+            const data = json.workspace
 
             // Refresh workspaces from context
             await refreshWorkspaces();

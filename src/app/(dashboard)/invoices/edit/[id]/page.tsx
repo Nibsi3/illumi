@@ -483,7 +483,9 @@ export default function EditInvoicePage() {
 
                         <div className={cn(
                             "rounded-2xl shadow-2xl transition-all duration-500",
-                            invoiceMode === "light" ? "bg-primary text-primary-foreground border border-neutral-200" : "bg-card border border-border text-foreground",
+                            invoiceMode === "light"
+                                ? "bg-white text-black border border-neutral-200"
+                                : "bg-neutral-950 border border-border text-neutral-100 [&_.text-muted-foreground]:text-neutral-400 [&_.text-foreground]:text-neutral-100",
                             template === "Classic" && "p-12",
                             template === "Minimal" && "p-20 border-none shadow-none",
                             template === "Modern" && "p-0 overflow-hidden"
@@ -600,9 +602,7 @@ export default function EditInvoicePage() {
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
                                                 "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                invoiceMode === "light"
-                                                    ? "bg-card border-neutral-200 hover:border-neutral-300"
-                                                    : "bg-card border-border hover:bg-white/8 hover:border-border"
+                                                "bg-neutral-950 border-border hover:bg-neutral-900 hover:border-border"
                                             )}
                                         >
                                             {logo ? (
@@ -628,12 +628,12 @@ export default function EditInvoicePage() {
                                         )}>
                                             <h2 className={cn(
                                                 "text-5xl font-serif mb-2 italic",
-                                                invoiceMode === "light" ? "text-black" : "text-foreground",
+                                                invoiceMode === "light" ? "text-black" : "text-neutral-100",
                                                 template === "Classic" && "italic",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
                                                 template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}>{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
@@ -642,21 +642,21 @@ export default function EditInvoicePage() {
                                         template === "Modern" && "bg-muted p-8 rounded-xl"
                                     )}>
                                         <div className="flex flex-col gap-4">
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">From</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>From</span>
                                             <div className="space-y-2">
                                                 <Input
                                                     value={fromName}
                                                     onChange={(e) => setFromName(e.target.value)}
                                                     placeholder="Your Name / Company"
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                 />
                                                 <Input
                                                     value={fromEmail}
                                                     onChange={(e) => setFromEmail(e.target.value)}
                                                     placeholder="your@email.com"
                                                     type="email"
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                                 <textarea
                                                     value={fromAddress}
@@ -664,17 +664,17 @@ export default function EditInvoicePage() {
                                                     placeholder="Address"
                                                     rows={3}
                                                     spellCheck={false}
-                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("invoice-font-from w-full bg-transparent border-none p-0 h-auto placeholder:text-neutral-400 text-sm focus:ring-0 resize-none", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-4 text-right">
                                             <div className="flex justify-end items-center gap-2 mb-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
+                                                <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>To</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-muted-foreground hover:text-black hover:bg-neutral-100" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
+                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800")}
                                                     onClick={() => setIsClientModalOpen(true)}
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
@@ -686,7 +686,7 @@ export default function EditInvoicePage() {
                                                     list="client-suggestions"
                                                     spellCheck={false}
                                                     value={clientName}
-                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                    className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                     onChange={(e) => {
                                                         const val = e.target.value;
                                                         setClientName(val)
@@ -704,7 +704,7 @@ export default function EditInvoicePage() {
                                                 </datalist>
 
                                                 {(clientEmail || clientAddress) && (
-                                                    <div className="invoice-font-from flex flex-col items-end gap-1 text-xs text-muted-foreground">
+                                                    <div className={cn("invoice-font-from flex flex-col items-end gap-1 text-xs", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>
                                                         {clientEmail && <span>{clientEmail}</span>}
                                                         {clientPhone && <span>{clientPhone}</span>}
                                                         {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
@@ -714,12 +714,12 @@ export default function EditInvoicePage() {
                                         </div>
                                     </div>
 
-                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
+                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Issue Date</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Issue Date</span>
                                             <Popover open={isIssueDateOpen} onOpenChange={setIsIssueDateOpen}>
                                                 <PopoverTrigger asChild>
-                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                         {issueDate ? format(parseISO(issueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                     </button>
                                                 </PopoverTrigger>
@@ -735,10 +735,10 @@ export default function EditInvoicePage() {
                                             </Popover>
                                         </div>
                                         <div className="flex flex-col gap-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Due Date</span>
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Due Date</span>
                                             <Popover open={isDueDateOpen} onOpenChange={setIsDueDateOpen}>
                                                 <PopoverTrigger asChild>
-                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                                    <button className={cn("bg-transparent border-none p-0 h-auto font-bold text-sm outline-none text-left", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                         {dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : "Select Date"}
                                                     </button>
                                                 </PopoverTrigger>
@@ -758,7 +758,7 @@ export default function EditInvoicePage() {
                                     <div className="mb-12">
                                         <table className="w-full border-collapse">
                                             <thead>
-                                                <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest text-muted-foreground", invoiceMode === "light" ? "border-foreground/5" : "border-border")}>
+                                                <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "border-neutral-200 text-neutral-500" : "border-neutral-700 text-neutral-400")}>
                                                     <th className="py-4 text-left">Description</th>
                                                     <th className="py-4 text-right w-32">Price</th>
                                                     <th className="py-4 text-right w-24">Qty</th>
@@ -766,12 +766,12 @@ export default function EditInvoicePage() {
                                                     <th className="w-8"></th>
                                                 </tr>
                                             </thead>
-                                            <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-black/5" : "divide-border")}>
+                                            <tbody className={cn("divide-y", invoiceMode === "light" ? "divide-neutral-200" : "divide-neutral-700")}>
                                                 {tasks.map((task) => (
                                                     <tr key={task.id} className="group">
                                                         <td className="py-4">
                                                             <Input
-                                                                className={cn("bg-transparent border-none p-0 h-auto text-sm font-medium focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-foreground")}
+                                                                className={cn("bg-transparent border-none p-0 h-auto text-sm font-medium focus-visible:ring-0", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                                 value={task.description}
                                                                 onChange={(e) => {
                                                                     const newTasks = [...tasks]
@@ -803,7 +803,7 @@ export default function EditInvoicePage() {
                                                                 }}
                                                             />
                                                         </td>
-                                                        <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                                        <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                             {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                         </td>
                                                         <td className="py-4 text-right">
@@ -818,15 +818,15 @@ export default function EditInvoicePage() {
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t border-border">
+                                    <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
                                         <div className="space-y-6">
                                             <div className="space-y-2">
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Note</span>
+                                                <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Note</span>
                                                 <textarea
                                                     placeholder="Add a note (visible to client)"
                                                     value={invoiceNote}
                                                     onChange={(e) => setInvoiceNote(e.target.value)}
-                                                    className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-muted-foreground text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-muted-foreground" : "text-muted-foreground")}
+                                                    className={cn("w-full bg-transparent border-none p-0 h-24 placeholder:text-neutral-400 text-sm focus:ring-0 resize-none italic font-serif", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}
                                                 />
                                             </div>
 
@@ -845,20 +845,20 @@ export default function EditInvoicePage() {
                                         </div>
                                         <div className="space-y-4">
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Subtotal</span>
-                                                <span className={cn("font-mono", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                                <span className={cn("text-[10px] uppercase font-bold tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Subtotal</span>
+                                                <span className={cn("font-mono", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                     {calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Tax ({taxRate}%)</span>
-                                                <span className="text-muted-foreground font-mono">
+                                                <span className={cn("text-[10px] uppercase font-bold tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Tax ({taxRate}%)</span>
+                                                <span className={cn("font-mono", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}>
                                                     {(calculateSubtotal() * (taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>
-                                            <div className={cn("pt-6 border-t flex justify-between items-end", invoiceMode === "light" ? "border-foreground/10" : "border-border")}>
-                                                <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-muted-foreground mb-2">Total Amount</span>
-                                                <span className={cn("text-5xl font-serif italic font-bold tracking-tighter", invoiceMode === "light" ? "text-black" : "text-foreground")}>
+                                            <div className={cn("pt-6 border-t flex justify-between items-end", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
+                                                <span className={cn("text-[10px] uppercase font-bold tracking-[0.3em] mb-2", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Total Amount</span>
+                                                <span className={cn("text-5xl font-serif italic font-bold tracking-tighter", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
                                                     {(calculateSubtotal() * (1 + taxRate / 100)).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                 </span>
                                             </div>
@@ -923,6 +923,7 @@ export default function EditInvoicePage() {
                             isPro: Boolean(isPro),
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             companyWebsite: settings.companyWebsite,
+                            paymentProvider: isPro ? (activePaymentProvider || null) : null,
                             bankName: settings.bankName,
                             accountName: settings.accountName,
                             accountNumber: settings.accountNumber,

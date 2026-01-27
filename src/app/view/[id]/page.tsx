@@ -18,6 +18,11 @@ type Invoice = {
     total: number
     notes: string | null
     status: string
+    payment_provider?: string | null
+    bank_name?: string | null
+    account_name?: string | null
+    account_number?: string | null
+    branch_code?: string | null
     customer?: {
         name: string
         email: string
@@ -105,6 +110,8 @@ export default function PublicInvoicePage() {
             </div>
         )
     }
+
+    const isBankingMode = !invoice.payment_provider
 
     return (
         <div className="min-h-screen bg-muted/5 font-sans pb-20">
@@ -220,10 +227,38 @@ export default function PublicInvoicePage() {
 
                             {invoice.status !== 'paid' && (
                                 <div className="space-y-3">
-                                    <Button className="w-full h-12 rounded-full font-bold text-base bg-blue-600 hover:bg-blue-700">
-                                        <CreditCard className="mr-2 h-5 w-5" />
-                                        Pay Now
-                                    </Button>
+                                    {isBankingMode ? (
+                                        <div className="space-y-3">
+                                            {(invoice.bank_name || invoice.account_name || invoice.account_number || invoice.branch_code) ? (
+                                                <div className="p-4 bg-muted/20 rounded-2xl">
+                                                    <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-3">Payment Details</div>
+                                                    <div className="text-sm text-muted-foreground leading-relaxed font-medium">
+                                                        {invoice.bank_name ? <>Bank: {invoice.bank_name}<br /></> : null}
+                                                        {invoice.account_name ? <>Account: {invoice.account_name}<br /></> : null}
+                                                        {invoice.account_number ? <>Number: {invoice.account_number}<br /></> : null}
+                                                        {invoice.branch_code ? <>Code: {invoice.branch_code}</> : null}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-muted-foreground">
+                                                    No banking details were provided for this invoice.
+                                                </div>
+                                            )}
+                                            <div className="text-[10px] text-center text-muted-foreground uppercase tracking-widest font-bold">
+                                                Manual payment required
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Button
+                                            className="w-full h-12 rounded-full font-bold text-base bg-blue-600 hover:bg-blue-700"
+                                            onClick={() => {
+                                                window.location.href = `/pay/${invoice.id}${invoice.payment_provider ? `?provider=${invoice.payment_provider}` : ''}`
+                                            }}
+                                        >
+                                            <CreditCard className="mr-2 h-5 w-5" />
+                                            Pay Now
+                                        </Button>
+                                    )}
                                 </div>
                             )}
 
