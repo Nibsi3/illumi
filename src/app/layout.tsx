@@ -107,6 +107,19 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'AW-17895371637');
+              
+              function gtag_report_conversion(url) {
+                var callback = function () {
+                  if (typeof(url) != 'undefined') {
+                    window.location = url;
+                  }
+                };
+                gtag('event', 'conversion', {
+                  'send_to': 'AW-17895371637/XFcrCJmX6e0bEPXmltVC',
+                  'event_callback': callback
+                });
+                return false;
+              }
             `,
           }}
         />

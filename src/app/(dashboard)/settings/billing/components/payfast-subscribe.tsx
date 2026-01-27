@@ -108,6 +108,11 @@ export function PayFastSubscribeButton() {
             return
         }
 
+        // Track Google Ads conversion
+        if (typeof window !== 'undefined' && typeof (window as typeof window & { gtag_report_conversion?: (url?: string) => boolean }).gtag_report_conversion === 'function') {
+            (window as typeof window & { gtag_report_conversion: (url?: string) => boolean }).gtag_report_conversion()
+        }
+
         setIsLoading(true)
         try {
             const { data: sessionData } = await supabase.auth.getSession()
@@ -220,6 +225,7 @@ export function PayFastSubscribeButton() {
                         toast.error("PayFast is not configured", {
                             description: "Add NEXT_PUBLIC_PAYFAST_MERCHANT_ID and NEXT_PUBLIC_PAYFAST_MERCHANT_KEY to your environment variables.",
                         })
+                        return
                     }
 
                     if (!isSandbox && !isPublicBaseUrl) {
@@ -227,6 +233,12 @@ export function PayFastSubscribeButton() {
                         toast.error("PayFast cannot be started from localhost", {
                             description: "Use an HTTPS public URL for NEXT_PUBLIC_URL (e.g. https://illumi.co.za) or use a tunnel (ngrok) for local testing.",
                         })
+                        return
+                    }
+
+                    // Track Google Ads conversion
+                    if (typeof window !== 'undefined' && typeof (window as typeof window & { gtag_report_conversion?: (url?: string) => boolean }).gtag_report_conversion === 'function') {
+                        (window as typeof window & { gtag_report_conversion: (url?: string) => boolean }).gtag_report_conversion()
                     }
                 }}
             >
