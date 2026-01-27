@@ -251,7 +251,7 @@ function CountUpStats() {
 ============================================================================= */
 
 function InlineNotifications() {
-    const [visibleIndex, setVisibleIndex] = useState(-1)
+    const [activeIndex, setActiveIndex] = useState(-1)
     const [shownItems, setShownItems] = useState<number[]>([])
     const [hasStarted, setHasStarted] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
@@ -264,10 +264,18 @@ function InlineNotifications() {
                     let index = 0
                     const showNext = () => {
                         if (index < painPoints.length) {
-                            setVisibleIndex(index)
+                            // First, set this item as active (highlighted)
+                            setActiveIndex(index)
+                            // Then add it to visible items
                             setShownItems((prev) => [...prev, index])
                             index++
+                            // After delay, show next item (which will become the new active)
                             setTimeout(showNext, 1500)
+                        } else {
+                            // Animation complete - clear active state after short delay
+                            setTimeout(() => {
+                                setActiveIndex(-1)
+                            }, 800)
                         }
                     }
                     setTimeout(showNext, 500)
@@ -281,32 +289,34 @@ function InlineNotifications() {
     }, [hasStarted])
 
     return (
-        <div ref={ref} className="space-y-4 w-full max-w-4xl mx-auto">
+        <div ref={ref} className="space-y-3 w-full max-w-4xl mx-auto px-4 sm:px-0">
             {painPoints.map((item, i) => {
                 const isVisible = shownItems.includes(i)
-                const isAnimating = visibleIndex === i
+                const isActive = activeIndex === i
                 
                 return (
                     <div
                         key={i}
-                        className={`transition-all duration-500 ${
+                        className={`transition-all duration-300 ${
                             isVisible
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 translate-y-4"
-                        } ${isAnimating ? "scale-[1.02]" : "scale-100"}`}
+                        }`}
                     >
-                        <div className="w-full bg-white dark:bg-muted rounded-2xl shadow-lg border border-border p-4 flex flex-col md:flex-row md:items-center gap-4">
-                            <div className="flex items-center gap-3 flex-1">
-                                <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
-                                    <IconX className="h-4 w-4 text-red-500" />
+                        <div className={`w-full bg-white dark:bg-muted rounded-2xl shadow-lg border p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-all duration-300 ${
+                            isActive ? 'border-primary ring-2 ring-primary/20' : 'border-border'
+                        }`}>
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+                                    <IconX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
                                 </div>
-                                <span className="text-sm text-muted-foreground line-through">{item.problem}</span>
+                                <span className="text-xs sm:text-sm text-muted-foreground line-through truncate">{item.problem}</span>
                             </div>
-                            <div className="flex items-center gap-3 flex-1">
-                                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                    <IconCheck className="h-4 w-4 text-emerald-500" />
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                                    <IconCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
                                 </div>
-                                <span className="text-sm text-foreground font-medium">{item.solution}</span>
+                                <span className="text-xs sm:text-sm text-foreground font-medium">{item.solution}</span>
                             </div>
                         </div>
                     </div>
@@ -390,30 +400,46 @@ export default function GoogleAdsLandingPage() {
             </div>
 
             {/* Hero Section */}
-            <section className="relative py-16 md:py-24 overflow-hidden">
+            <section className="relative py-12 sm:py-16 md:py-24 overflow-hidden">
                 <div className="absolute inset-0 bg-linear-to-b from-primary/5 to-transparent" />
-                <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center max-w-4xl mx-auto">
                         {/* Trust indicator - no avatars */}
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-sm text-muted-foreground mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-accent text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
                             <IconCheck className="h-4 w-4 text-primary" />
                             <span>Trusted by 2,500+ South African businesses</span>
                         </div>
 
                         {/* Headline */}
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 leading-tight px-2">
                             Stop Chasing Payments.
                             <br />
                             <span className="text-primary">Get Paid Faster</span> with Professional Invoicing.
                         </h1>
 
-                        <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                        <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto px-2">
                             Create professional invoices in ZAR, send them by email, and let clients pay online with PayFast, Yoco, or Ozow. 
                             <strong className="text-foreground"> Free forever</strong> — no credit card required.
                         </p>
 
+                        {/* Key Benefits - Get Paid Online prominently displayed */}
+                        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-8 px-2">
+                            <div className="flex items-center gap-2 text-sm sm:text-base">
+                                <IconCreditCard className="h-5 w-5 text-primary" />
+                                <span className="text-foreground font-medium">Get Paid Online</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm sm:text-base">
+                                <IconMail className="h-5 w-5 text-primary" />
+                                <span className="text-foreground font-medium">Email Invoices</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm sm:text-base">
+                                <IconShieldCheck className="h-5 w-5 text-primary" />
+                                <span className="text-foreground font-medium">PayFast & Yoco</span>
+                            </div>
+                        </div>
+
                         {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-6 px-4 sm:px-0">
                             <Link href="/login">
                                 <HoverBorderGradient
                                     as="div"
@@ -447,13 +473,13 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Problem/Solution Section - White Background with Inline Notifications */}
-            <section className="py-16 md:py-24 bg-white dark:bg-card">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <section className="py-12 sm:py-16 md:py-24 bg-white dark:bg-card">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-8 sm:mb-12 px-2">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
                             Sound Familiar?
                         </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                        <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
                             If you're tired of these invoicing headaches, you're not alone. Here's how Illumi solves them.
                         </p>
                     </div>
@@ -463,8 +489,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Interactive Demo Section */}
-            <section id="demo" className="py-16 md:py-24 scroll-mt-8">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <section id="demo" className="py-12 sm:py-16 md:py-24 scroll-mt-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
                             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
@@ -482,8 +508,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Features Grid */}
-            <section className="py-16 md:py-24 bg-muted/30">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <section className="py-12 sm:py-16 md:py-24 bg-muted/30">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             Everything You Need to Get Paid
@@ -493,7 +519,7 @@ export default function GoogleAdsLandingPage() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                         {features.map((feature, i) => (
                             <div key={i} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors">
                                 <feature.icon className="h-10 w-10 text-primary mb-4" />
@@ -506,8 +532,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Pricing Section */}
-            <section className="py-16 md:py-24" id="pricing">
-                <div className="max-w-5xl mx-auto px-6 lg:px-8">
+            <section className="py-12 sm:py-16 md:py-24" id="pricing">
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             Simple, Transparent Pricing
@@ -519,14 +545,15 @@ export default function GoogleAdsLandingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Free Plan */}
-                        <div className="p-8 rounded-3xl bg-card border border-border flex flex-col">
+                        <div className="p-6 sm:p-8 rounded-3xl bg-card border border-border flex flex-col">
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-muted-foreground mb-2">Free</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-bold text-foreground">R0</span>
+                                    <span className="text-4xl sm:text-5xl font-bold text-foreground">R0</span>
                                     <span className="text-muted-foreground">/month</span>
                                 </div>
-                                <div className="text-sm text-muted-foreground mt-2">Free forever. No credit card required.</div>
+                                <div className="text-sm text-primary font-medium mt-2">Best for freelancers & solo businesses starting out</div>
+                                <div className="text-xs text-muted-foreground mt-1">Free forever. No credit card required.</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -552,7 +579,7 @@ export default function GoogleAdsLandingPage() {
                         </div>
 
                         {/* Pro Plan */}
-                        <div className="p-8 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden flex flex-col">
+                        <div className="p-6 sm:p-8 rounded-3xl bg-primary text-primary-foreground relative overflow-hidden flex flex-col">
                             <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-white/20 text-xs font-semibold">
                                 Most Popular
                             </div>
@@ -560,10 +587,11 @@ export default function GoogleAdsLandingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-primary-foreground/70 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-5xl font-bold">R200</span>
+                                    <span className="text-4xl sm:text-5xl font-bold">R200</span>
                                     <span className="text-primary-foreground/70">/month</span>
                                 </div>
-                                <div className="text-sm text-primary-foreground/70 mt-2">For businesses that want online payments.</div>
+                                <div className="text-sm text-white font-medium mt-2">Best for growing businesses that want faster payments</div>
+                                <div className="text-xs text-primary-foreground/60 mt-1">Online payments & advanced features included.</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -596,8 +624,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Testimonials Carousel */}
-            <section className="py-16 md:py-24 bg-muted/30 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <section className="py-12 sm:py-16 md:py-24 bg-muted/30 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             Loved by South African Businesses
@@ -611,9 +639,9 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Trust Badges */}
-            <section className="py-12 border-y border-border">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="flex flex-wrap items-center justify-center gap-8">
+            <section className="py-8 sm:py-12 border-y border-border">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
                         {trustBadges.map((badge, i) => (
                             <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <badge.icon className="h-5 w-5" />
@@ -625,8 +653,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-16 md:py-24">
-                <div className="max-w-3xl mx-auto px-6 lg:px-8">
+            <section className="py-12 sm:py-16 md:py-24">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                             Frequently Asked Questions
@@ -658,9 +686,9 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Final CTA Section */}
-            <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-                <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <section className="py-12 sm:py-16 md:py-24 bg-primary text-primary-foreground">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">
                         Ready to Get Paid Faster?
                     </h2>
                     <p className="text-lg text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
@@ -685,8 +713,8 @@ export default function GoogleAdsLandingPage() {
             </section>
 
             {/* Minimal Footer */}
-            <footer className="py-8 border-t border-border">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <footer className="py-6 sm:py-8 border-t border-border">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
                             <span className="font-serif font-bold text-lg italic text-foreground">Illumi</span>
