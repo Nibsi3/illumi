@@ -68,7 +68,7 @@ export function HoverBorderGradient({
     >
       <div
         className={cn(
-          "w-auto z-10 px-4 py-2 rounded-none",
+          "relative w-auto z-10 px-4 py-2 rounded-none bg-background",
           className
         )}
       >
@@ -76,7 +76,7 @@ export function HoverBorderGradient({
       </div>
       <motion.div
         className={cn(
-          "flex-none inset-0 overflow-hidden absolute z-0 rounded-none"
+          "flex-none inset-0 overflow-hidden absolute z-0 rounded-none pointer-events-none"
         )}
         style={{
           filter: "blur(2px)",
@@ -90,7 +90,7 @@ export function HoverBorderGradient({
         }}
         transition={{ ease: "linear", duration: duration ?? 1 }}
       />
-      <div className="bg-background absolute z-1 flex-none inset-[2px] rounded-none" />
+      <div className="bg-transparent absolute z-0 flex-none inset-[2px] rounded-none pointer-events-none" />
     </Tag>
   );
 }

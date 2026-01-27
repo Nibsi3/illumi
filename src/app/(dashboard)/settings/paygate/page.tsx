@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
-import { IconCreditCard, IconCheck, IconPlug, IconArrowRight, IconRefresh, IconPlus, IconSettings, IconLock } from "@tabler/icons-react"
+import { IconCreditCard, IconCheck, IconPlug, IconArrowRight, IconRefresh, IconPlus, IconSettings, IconLock, IconEye, IconEyeOff } from "@tabler/icons-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -118,6 +118,10 @@ export default function PayGatePage() {
     const [testKey1, setTestKey1] = useState("")
     const [testKey2, setTestKey2] = useState("")
     const [passphrase, setPassphrase] = useState("")
+
+    const [showKey1, setShowKey1] = useState(false)
+    const [showKey2, setShowKey2] = useState(false)
+    const [showPassphrase, setShowPassphrase] = useState(false)
 
     const getProviderFieldLabels = (providerId: string) => {
         switch (providerId) {
@@ -695,32 +699,69 @@ export default function PayGatePage() {
                                                 <>
                                                     <div className="space-y-1.5">
                                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant ID</Label>
-                                                        <Input
-                                                            value={testKey1}
-                                                            onChange={(e) => setTestKey1(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).test1}
-                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
-                                                        />
+                                                        <div className="relative">
+                                                            <Input
+                                                                type={showKey1 ? "text" : "password"}
+                                                                value={testKey1}
+                                                                onChange={(e) => setTestKey1(e.target.value)}
+                                                                placeholder={getProviderPlaceholders(provider.id).test1}
+                                                                className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => setShowKey1(v => !v)}
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                                                                aria-label={showKey1 ? "Hide key" : "Show key"}
+                                                            >
+                                                                {showKey1 ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                     <div className="space-y-1.5">
                                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant Key</Label>
-                                                        <Input
-                                                            type="password"
-                                                            value={testKey2}
-                                                            onChange={(e) => setTestKey2(e.target.value)}
-                                                            placeholder={getProviderPlaceholders(provider.id).test2}
-                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
-                                                        />
+                                                        <div className="relative">
+                                                            <Input
+                                                                type={showKey2 ? "text" : "password"}
+                                                                value={testKey2}
+                                                                onChange={(e) => setTestKey2(e.target.value)}
+                                                                placeholder={getProviderPlaceholders(provider.id).test2}
+                                                                className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => setShowKey2(v => !v)}
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                                                                aria-label={showKey2 ? "Hide key" : "Show key"}
+                                                            >
+                                                                {showKey2 ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                     <div className="space-y-1.5">
                                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">Salt Passphrase (Optional)</Label>
-                                                        <Input
-                                                            type="password"
-                                                            value={passphrase}
-                                                            onChange={(e) => setPassphrase(e.target.value)}
-                                                            placeholder="Optional but recommended"
-                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
-                                                        />
+                                                        <div className="relative">
+                                                            <Input
+                                                                type={showPassphrase ? "text" : "password"}
+                                                                value={passphrase}
+                                                                onChange={(e) => setPassphrase(e.target.value)}
+                                                                placeholder="Optional but recommended"
+                                                                className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => setShowPassphrase(v => !v)}
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                                                                aria-label={showPassphrase ? "Hide passphrase" : "Show passphrase"}
+                                                            >
+                                                                {showPassphrase ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 </>
                                             ) : (
@@ -729,24 +770,49 @@ export default function PayGatePage() {
                                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">
                                                             {isTestMode ? getProviderFieldLabels(provider.id).test1 : getProviderFieldLabels(provider.id).live1}
                                                         </Label>
-                                                        <Input
-                                                            value={isTestMode ? testKey1 : liveKey1}
-                                                            onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
-                                                            placeholder={isTestMode ? getProviderPlaceholders(provider.id).test1 : getProviderPlaceholders(provider.id).live1}
-                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
-                                                        />
+                                                        <div className="relative">
+                                                            <Input
+                                                                type={showKey1 ? "text" : "password"}
+                                                                value={isTestMode ? testKey1 : liveKey1}
+                                                                onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
+                                                                placeholder={isTestMode ? getProviderPlaceholders(provider.id).test1 : getProviderPlaceholders(provider.id).live1}
+                                                                className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => setShowKey1(v => !v)}
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                                                                aria-label={showKey1 ? "Hide key" : "Show key"}
+                                                            >
+                                                                {showKey1 ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                     <div className="space-y-1.5">
                                                         <Label className="text-[10px] uppercase font-bold text-muted-foreground">
                                                             {isTestMode ? getProviderFieldLabels(provider.id).test2 : getProviderFieldLabels(provider.id).live2}
                                                         </Label>
-                                                        <Input
-                                                            type="password"
-                                                            value={isTestMode ? testKey2 : liveKey2}
-                                                            onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
-                                                            placeholder={isTestMode ? getProviderPlaceholders(provider.id).test2 : getProviderPlaceholders(provider.id).live2}
-                                                            className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10"
-                                                        />
+                                                        <div className="relative">
+                                                            <Input
+                                                                type={showKey2 ? "text" : "password"}
+                                                                value={isTestMode ? testKey2 : liveKey2}
+                                                                onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
+                                                                placeholder={isTestMode ? getProviderPlaceholders(provider.id).test2 : getProviderPlaceholders(provider.id).live2}
+                                                                className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => setShowKey2(v => !v)}
+                                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground"
+                                                                aria-label={showKey2 ? "Hide key" : "Show key"}
+                                                            >
+                                                                {showKey2 ? <IconEyeOff className="h-4 w-4" /> : <IconEye className="h-4 w-4" />}
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 </>
                                             )}
@@ -763,7 +829,7 @@ export default function PayGatePage() {
                                 )}
                             </AnimatePresence>
 
-                            <div className="mt-auto px-6 py-4 bg-white/[0.01] border-t border-border flex items-center justify-between">
+                            <div className="mt-auto px-6 py-4 bg-white/1 border-t border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     {isConnected ? (
                                         <Button
