@@ -303,9 +303,7 @@ function InlineNotifications() {
                                 : "opacity-0 translate-y-4"
                         }`}
                     >
-                        <div className={`w-full bg-white dark:bg-muted rounded-2xl shadow-lg border p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 transition-all duration-300 ${
-                            isActive ? 'border-primary ring-2 ring-primary/20' : 'border-border'
-                        }`}>
+                        <div className="w-full bg-white dark:bg-muted rounded-2xl shadow-lg border border-border p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
                                     <IconX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
