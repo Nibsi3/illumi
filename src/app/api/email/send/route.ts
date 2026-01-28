@@ -44,7 +44,14 @@ interface EmailPayload {
     customerName?: string
     amount?: string
     dueDate?: string
-    paymentLink?: string
+    paymentLink?: string | null
+    paymentMethod?: 'paygate' | 'bank'
+    bankDetails?: {
+        bankName?: string | null
+        accountName?: string | null
+        accountNumber?: string | null
+        branchCode?: string | null
+    } | null
     items?: InvoiceItem[]
     currency?: string
     note?: string
@@ -313,12 +320,25 @@ export async function POST(req: Request) {
                             ${payload.dueDate ? `<p style="margin: 16px 0 0 0; font-size: 14px; color: #666;">Due by: ${payload.dueDate}</p>` : ""}
                         </div>
                         ${payload.note ? `<div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #000;"><p style="margin: 0; font-size: 14px; color: #666; font-style: italic;">${payload.note}</p></div>` : ""}
+                        ${payload.paymentLink ? `
                         <div style="text-align: center; margin: 40px 0;">
-                            <a href="${payload.paymentLink || process.env.NEXT_PUBLIC_URL}" 
+                            <a href="${payload.paymentLink}" 
                                style="background: #000; color: #fff; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block;">
                                 View & Pay Invoice
                             </a>
                         </div>
+                        ` : payload.bankDetails ? `
+                        <div style="background: #f5f5f5; padding: 24px; border-radius: 12px; margin: 24px 0;">
+                            <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600; color: #000;">Payment Details</p>
+                            ${payload.bankDetails.bankName ? `<p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>Bank:</strong> ${payload.bankDetails.bankName}</p>` : ''}
+                            ${payload.bankDetails.accountName ? `<p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>Account Name:</strong> ${payload.bankDetails.accountName}</p>` : ''}
+                            ${payload.bankDetails.accountNumber ? `<p style="margin: 0 0 8px 0; font-size: 14px; color: #666;"><strong>Account Number:</strong> ${payload.bankDetails.accountNumber}</p>` : ''}
+                            ${payload.bankDetails.branchCode ? `<p style="margin: 0; font-size: 14px; color: #666;"><strong>Branch Code:</strong> ${payload.bankDetails.branchCode}</p>` : ''}
+                        </div>
+                        <p style="color: #666; font-size: 14px; text-align: center; margin: 24px 0;">
+                            Please use invoice number <strong>${payload.invoiceNumber || ''}</strong> as your payment reference.
+                        </p>
+                        ` : ''}
                         <p style="color: #999; font-size: 12px; text-align: center;">
                             Questions? Send an email to ${invoiceSupportEmail}
                         </p>

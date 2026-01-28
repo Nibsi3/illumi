@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
             logo_url: data.logo_url,
             hide_illumi_branding: Boolean(data.hide_illumi_branding && allowHideIllumiBranding),
             is_pro_workspace: Boolean(allowHideIllumiBranding),
-            payment_provider: allowHideIllumiBranding ? data.payment_provider : null,
+            payment_provider: data.payment_provider || null,
             vat_rate: data.vat_rate,
             vat_amount: data.vat_amount,
             from_email: data.from_email,
