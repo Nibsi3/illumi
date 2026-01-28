@@ -7,6 +7,7 @@ import {
     IconClock,
     IconUser,
 } from "@tabler/icons-react"
+import BlogClient from "./blog-client"
 
 export const metadata: Metadata = {
     title: "Blog | Invoicing Tips & Business Advice | Illumi",
@@ -133,6 +134,60 @@ const blogPosts = [
         category: "Tax & Compliance",
         href: "/blog/expense-tracking",
     },
+    {
+        title: "Illumi vs Invoice Ninja: Which is Better for South African Businesses?",
+        excerpt: "Compare Illumi and Invoice Ninja for SA freelancers. See why local payment gateways and unlimited free plans make Illumi the better choice.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "6 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-invoice-ninja",
+    },
+    {
+        title: "Illumi vs Conta: Which Invoicing Software is Best for South Africa?",
+        excerpt: "Discover why Illumi's unlimited free plan, local payment gateways, and expense tracking make it superior to Conta for SA businesses.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "5 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-conta",
+    },
+    {
+        title: "Illumi vs Zoho Invoice: Which is Better for South African Businesses?",
+        excerpt: "Compare Illumi and Zoho Invoice. See why Illumi's local payment gateways, simpler pricing, and ZAR-first design win for SA freelancers.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "6 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-zoho-invoice",
+    },
+    {
+        title: "Illumi vs FreshBooks: Which is Better for South African Businesses?",
+        excerpt: "FreshBooks is popular globally, but is it right for SA? Compare pricing, features, and payment options to see why Illumi wins locally.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "7 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-freshbooks",
+    },
+    {
+        title: "Illumi vs QuickBooks Online: Which is Better for South African Businesses?",
+        excerpt: "QuickBooks is powerful accounting software, but is it overkill? See why Illumi's simple invoicing focus is better for SA freelancers.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "7 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-quickbooks",
+    },
+    {
+        title: "Illumi vs Wave: Which is Better for South African Businesses?",
+        excerpt: "Wave is free, but its payment features don't work in SA. See why Illumi's local payment gateways make it the practical choice.",
+        author: "Illumi Team",
+        date: "January 2026",
+        readTime: "6 min read",
+        category: "Comparison",
+        href: "/blog/illumi-vs-wave",
+    },
 ]
 
 const categories = [
@@ -144,6 +199,7 @@ const categories = [
     "Business Growth",
     "Automation",
     "Payments",
+    "Comparison",
 ]
 
 export default function BlogPage() {
@@ -167,26 +223,6 @@ export default function BlogPage() {
                         <p className="text-lg text-muted-foreground leading-relaxed">
                             Less theory, more tactics. Learn how to invoice better, get paid faster, and run a smarter business in South Africa.
                         </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Categories */}
-            <section className="py-6 px-6 border-b border-border">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-wrap gap-2">
-                        {categories.map((cat) => (
-                            <button
-                                key={cat}
-                                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                                    cat === "All"
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted text-muted-foreground hover:text-foreground"
-                                }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
                     </div>
                 </div>
             </section>
@@ -274,34 +310,7 @@ export default function BlogPage() {
                 </div>
             </section>
 
-            {/* Blog Grid */}
-            <section className="py-8 px-6 pb-20">
-                <div className="max-w-7xl mx-auto">
-                    <h2 className="text-2xl font-bold mb-8">Latest Articles</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {blogPosts.map((post) => (
-                            <Link key={post.title} href={post.href} className="group">
-                                <article className="rounded-xl border border-border bg-card p-6 h-full hover:border-primary/50 transition-colors">
-                                    <div className="px-2 py-0.5 rounded bg-muted text-xs font-medium text-muted-foreground w-fit mb-4">
-                                        {post.category}
-                                    </div>
-                                    <h3 className="text-lg font-semibold mb-3 group-hover:text-primary transition-colors">
-                                        {post.title}
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                                        {post.excerpt}
-                                    </p>
-                                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto">
-                                        <span>{post.date}</span>
-                                        <span>•</span>
-                                        <span>{post.readTime}</span>
-                                    </div>
-                                </article>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <BlogClient posts={blogPosts} categories={categories} />
 
             {/* Newsletter CTA */}
             <section className="py-16 px-6 bg-muted/30 border-t border-border">
