@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef, lazy, Suspense } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -76,6 +77,7 @@ type TemplateType = "Classic" | "Minimal" | "Modern"
 export default function NewInvoicePage() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const queryClient = useQueryClient()
     const { isPro } = useSubscription()
     const settings = useSettings()
     const { activeWorkspace } = useWorkspace()
@@ -634,100 +636,52 @@ export default function NewInvoicePage() {
                     debugLog('[Invoice Save] Items inserted successfully')
                 }
 
-                // 3. Send Email if status is 'sent'
+                // 3. Send Email if status is 'sent' (fire and forget - don't block UI)
                 const targetEmail = clientEmail?.trim()
                 if (status === 'sent' && targetEmail) {
                     debugLog('[Invoice Save] Triggering email send to:', targetEmail)
-                    try {
-                        const requestedBcc = settings.sendInvoiceCopyToSelf
-                            ? ((fromEmail || settings.fromEmail || '').trim() || undefined)
-                            : undefined
+                    const requestedBcc = settings.sendInvoiceCopyToSelf
+                        ? ((fromEmail || settings.fromEmail || '').trim() || undefined)
+                        : undefined
 
-                        debugLog('[Invoice Save] Copy config:', {
-                            sendInvoiceCopyToSelf: settings.sendInvoiceCopyToSelf,
-                            requestedBcc,
-                            fromEmail,
-                            settingsFromEmail: settings.fromEmail,
+                    // Fire and forget - send email in background
+                    fetch('/api/email/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'invoice',
+                            to: targetEmail,
+                            bcc: requestedBcc,
+                            companyName: settings.companyName,
+                            supportEmail: fromEmail,
+                            companyWebsite: settings.companyWebsite,
+                            allowCustomBranding: Boolean(isPro),
+                            hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
+                            invoiceNumber: invoiceNumber,
+                            customerName: clientName,
+                            amount: `${currency} ${total.toLocaleString()}`,
+                            currency,
+                            dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
+                            paymentLink: `${window.location.origin}/pay/${invoiceNumber}${paymentMethod === 'paygate' && isPro && activePaymentProvider ? `?provider=${activePaymentProvider}` : ''}`,
+                            note: invoiceNote,
+                            items: tasks.map(t => ({
+                                description: t.description,
+                                quantity: t.qty,
+                                unit_price: t.price
+                            })),
                         })
-
-                        const emailRes = await fetch('/api/email/send', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                type: 'invoice',
-                                to: targetEmail,
-                                bcc: requestedBcc,
-                                companyName: settings.companyName,
-                                supportEmail: fromEmail,
-                                companyWebsite: settings.companyWebsite,
-                                allowCustomBranding: Boolean(isPro),
-                                hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
-                                invoiceNumber: invoiceNumber,
-                                customerName: clientName,
-                                amount: `${currency} ${total.toLocaleString()}`,
-                                currency,
-                                dueDate: dueDate ? format(parseISO(dueDate), dateFormat.replace('DD', 'dd').replace('YYYY', 'yyyy')) : 'N/A',
-                                paymentLink: paymentMethod === 'paygate' && isPro && activePaymentProvider 
-                                                    ? `${window.location.origin}/pay/${invoiceNumber}?provider=${activePaymentProvider}` 
-                                                    : null,
-                                                paymentMethod: paymentMethod,
-                                                bankDetails: paymentMethod === 'bank' ? {
-                                                    bankName: settings.bankName || null,
-                                                    accountName: settings.accountName || null,
-                                                    accountNumber: settings.accountNumber || null,
-                                                    branchCode: settings.branchCode || null,
-                                                } : null,
-                                note: invoiceNote,
-                                items: tasks.map(t => ({
-                                    description: t.description,
-                                    quantity: t.qty,
-                                    unit_price: t.price
-                                })),
-                            })
-                        })
-                        const emailData = await emailRes.json()
+                    }).then(res => res.json()).then(emailData => {
                         if (emailData.success) {
                             debugLog('[Invoice Save] Email sent successfully')
-                            if (emailData.copy) {
-                                debugLog('[Invoice Save] Copy result:', emailData.copy)
-                                const requested = Array.isArray(emailData.copy.requested)
-                                    ? emailData.copy.requested.join(', ')
-                                    : ''
-                                const attempted = Array.isArray(emailData.copy.attempted)
-                                    ? emailData.copy.attempted.join(', ')
-                                    : ''
-
-                                if (emailData.copy.sent === false) {
-                                    toast.warning("Invoice sent, but copy failed", {
-                                        description: `${emailData.copy.error || 'Copy could not be delivered'}${attempted ? ` (attempted: ${attempted})` : requested ? ` (requested: ${requested})` : ''}`,
-                                    })
-                                } else {
-                                    toast.success("Copy sent", {
-                                        description: attempted || requested || "Copy delivered",
-                                    })
-                                }
-                            }
                         } else {
                             const isDomainError = emailData.error?.includes("verify a domain") || emailData.error?.includes("testing emails");
-                            if (isDomainError) {
-                                debugWarn('[Invoice Save] Email blocked by Resend domain verification/testing restriction:', emailData.error)
-                            } else {
+                            if (!isDomainError) {
                                 console.error('[Invoice Save] Email send failed:', emailData.error)
                             }
-                            toast.warning("Invoice created, but email failed", {
-                                description: isDomainError
-                                    ? "Resend requires a verified domain to send to external recipients."
-                                    : emailData.error,
-                                action: isDomainError ? {
-                                    label: "Verify Domain",
-                                    onClick: () => window.open("https://resend.com/domains", "_blank")
-                                } : undefined
-                            })
                         }
-                    } catch (emailErr) {
+                    }).catch(emailErr => {
                         console.error('[Invoice Save] Email API error:', emailErr)
-                        toast.warning("Invoice created, but email service is unavailable")
-                    }
+                    })
                 }
 
                 debugLog('[Invoice Save] SUCCESS! Invoice created:', invoice?.id)
@@ -735,6 +689,9 @@ export default function NewInvoicePage() {
                 toast.success("Invoice saved successfully", {
                     description: `Invoice ${invoiceNumber} has been created.`
                 })
+
+                // Invalidate invoices cache so the list refreshes
+                queryClient.invalidateQueries({ queryKey: ['invoices'] })
 
                 setTimeout(() => {
                     router.push('/invoices')
@@ -1130,6 +1087,13 @@ export default function NewInvoicePage() {
                                                                             <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
                                                                         </SelectContent>
                                                                     </Select>
+                                                                </div>
+                                                                <div className="pt-2 border-t border-border">
+                                                                    <Link href="/settings" className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                                                                        <Settings2 className="h-3.5 w-3.5" />
+                                                                        <span>All Settings</span>
+                                                                        <ChevronRight className="h-3 w-3 ml-auto" />
+                                                                    </Link>
                                                                 </div>
                                                             </div>
                                                         </div>

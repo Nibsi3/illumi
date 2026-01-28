@@ -71,11 +71,11 @@ export async function updateSession(request: NextRequest) {
         // getUser(). A simple mistake can make it very hard to debug
         // issues with users being randomly logged out.
 
+        // Use getUser() instead of getSession() for more reliable session validation
+        // getUser() validates the session with the server and refreshes if needed
         const {
-            data: { session },
-        } = await supabase.auth.getSession()
-
-        const user = session?.user || null
+            data: { user },
+        } = await supabase.auth.getUser()
 
         if (!user && !isPublicRoute) {
             const cookieNames = request.cookies.getAll().map((c) => c.name)
