@@ -7,6 +7,9 @@ export const metadata: Metadata = {
     title: "Client Portal for Invoice Tracking | Illumi",
     description: "Give your clients a professional portal to view invoices, track payments, and pay online. Automated invoice tracking for South African businesses.",
     keywords: ["client portal", "invoice tracking", "payment portal", "customer portal South Africa", "automated invoicing"],
+    alternates: {
+        canonical: "/features/inbox",
+    },
 }
 
 const features = [

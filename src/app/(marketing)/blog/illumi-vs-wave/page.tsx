@@ -22,6 +22,14 @@ export const metadata: Metadata = {
         "PayFast invoicing",
         "Wave not available South Africa",
     ],
+    alternates: {
+        canonical: "/blog/illumi-vs-wave",
+    },
+    openGraph: {
+        title: "Illumi vs Wave: Which is Better for South African Businesses?",
+        description: "Compare Illumi and Wave for SA freelancers. See why local payment gateways and ZAR-first design make Illumi the practical choice.",
+        type: "article",
+    },
 }
 
 const comparisonData = [
@@ -62,6 +70,32 @@ const comparisonData = [
         illumiWins: true,
     },
 ]
+
+const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Illumi vs Wave: Which is Better for South African Businesses?",
+    "description": "Compare Illumi and Wave for South African freelancers and small businesses. See why Illumi's local payment gateways, ZAR-first design, and SA focus make it the better choice.",
+    "author": {
+        "@type": "Organization",
+        "name": "Illumi",
+        "url": "https://illumi.co.za"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Illumi",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://illumi.co.za/logo.png"
+        }
+    },
+    "datePublished": "2026-01-28",
+    "dateModified": "2026-01-28",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://illumi.co.za/blog/illumi-vs-wave"
+    }
+}
 
 const keyDifferences = [
     {
@@ -113,6 +147,10 @@ const regionalComparison = [
 export default function IllumiVsWavePost() {
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
             <section className="relative pt-24 md:pt-32 pb-12 px-6 border-b border-border overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />

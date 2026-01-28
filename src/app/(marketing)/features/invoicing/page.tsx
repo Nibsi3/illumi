@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     title: "Free Invoice Generator for South Africa | Illumi",
     description: "Create and send professional invoices by email. Clients receive a secure link to view and pay online via your client portal. Built for South African businesses.",
     keywords: ["free invoice generator", "email invoicing", "recurring invoices South Africa", "track overdue payments", "invoice software ZAR"],
+    alternates: {
+        canonical: "/features/invoicing",
+    },
 }
 
 const features = [

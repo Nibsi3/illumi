@@ -22,6 +22,14 @@ export const metadata: Metadata = {
         "PayFast invoicing",
         "Yoco invoicing",
     ],
+    alternates: {
+        canonical: "/blog/illumi-vs-invoice-ninja",
+    },
+    openGraph: {
+        title: "Illumi vs Invoice Ninja: Which is Better for South African Businesses?",
+        description: "Compare Illumi and Invoice Ninja for SA freelancers. See why local payment gateways and unlimited free plans make Illumi the better choice.",
+        type: "article",
+    },
 }
 
 const comparisonData = [
@@ -63,6 +71,32 @@ const comparisonData = [
     },
 ]
 
+const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Illumi vs Invoice Ninja: Which is Better for South African Businesses?",
+    "description": "Compare Illumi and Invoice Ninja for South African freelancers and small businesses. See why Illumi's local payment integrations, ZAR-first design, and unlimited free plan make it the better choice.",
+    "author": {
+        "@type": "Organization",
+        "name": "Illumi",
+        "url": "https://illumi.co.za"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Illumi",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://illumi.co.za/logo.png"
+        }
+    },
+    "datePublished": "2026-01-28",
+    "dateModified": "2026-01-28",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://illumi.co.za/blog/illumi-vs-invoice-ninja"
+    }
+}
+
 const keyDifferences = [
     {
         title: "Local Payment Gateways",
@@ -85,6 +119,10 @@ const keyDifferences = [
 export default function IllumiVsInvoiceNinjaPost() {
     return (
         <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
             <section className="relative pt-24 md:pt-32 pb-12 px-6 border-b border-border overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />

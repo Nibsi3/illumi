@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     title: "Client Management & CRM for Freelancers | Illumi",
     description: "Simple CRM for South African freelancers and small businesses. Track client history, organize invoices by company, and manage customer relationships.",
     keywords: ["simple CRM freelancers", "client history tracker", "customer management South Africa", "invoice client database", "small business CRM"],
+    alternates: {
+        canonical: "/features/clients",
+    },
 }
 
 const features = [

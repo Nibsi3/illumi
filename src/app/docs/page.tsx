@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     title: "Documentation & Help Center | Illumi",
     description: "Learn how to use Illumi for invoicing, expense tracking, and payment collection. Guides for South African freelancers and small businesses.",
     keywords: ["illumi help", "invoicing guide", "payfast setup", "expense tracking tutorial"],
+    alternates: {
+        canonical: "/docs",
+    },
 }
 
 export default function DocsPage() {

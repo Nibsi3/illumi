@@ -135,17 +135,11 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
 
                     <div className={cn(data.template === "Modern" && "p-12")}>
                         <div className="flex justify-between items-start mb-24">
-                            <div className={cn(
-                                "w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border",
-                                "bg-neutral-950 border-border"
-                            )}>
+                            <div className="w-24 h-24 rounded-3xl flex items-center justify-center overflow-hidden border bg-neutral-950 border-neutral-800">
                                 {data.logo ? (
                                     <img src={data.logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                 ) : (
-                                    <div className={cn(
-                                        "invoice-font-title font-black text-3xl",
-                                        "text-neutral-100"
-                                    )}>E.</div>
+                                    <img src="/logo.png" alt="Illumi" className="w-full h-full object-contain p-2" />
                                 )}
                             </div>
                             <div className="text-right">

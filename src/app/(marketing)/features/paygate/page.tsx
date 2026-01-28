@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     title: "PayGate for Invoice Payments | Illumi",
     description: "Accept online payments on your invoices using your preferred payment provider. Automatic payment tracking, client payment portal, and instant notifications for South African businesses.",
     keywords: ["invoice payment gateway", "accept payments South Africa", "online invoice payments ZAR", "PayGate", "payment provider integration"],
+    alternates: {
+        canonical: "/features/paygate",
+    },
 }
 
 const paymentProviders = [

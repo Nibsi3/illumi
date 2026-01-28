@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "South African payment gateway for invoices",
         "ZAR invoicing software",
     ],
+    alternates: {
+        canonical: "/integrations",
+    },
 }
 
 const INTEGRATIONS = [

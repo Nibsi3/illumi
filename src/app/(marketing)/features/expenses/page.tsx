@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     title: "Expense Tracking for South African SMEs | Illumi",
     description: "Track business expenses, calculate net profit, manage recurring costs, and export CSV reports for your accountant. Free expense tracker for South African small businesses.",
     keywords: ["business expense tracker", "net profit calculator", "small business bookkeeping SA", "expense tracking South Africa", "export expenses to CSV"],
+    alternates: {
+        canonical: "/features/expenses",
+    },
 }
 
 const features = [

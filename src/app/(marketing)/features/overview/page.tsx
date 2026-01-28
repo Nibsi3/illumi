@@ -7,6 +7,9 @@ export const metadata: Metadata = {
     title: "Financial Overview Dashboard | Illumi",
     description: "See income, expenses, and net position in one place. A simple financial overview dashboard built for South African small businesses.",
     keywords: ["financial overview", "business dashboard", "income and expenses", "net profit", "South Africa invoicing"],
+    alternates: {
+        canonical: "/features/overview",
+    },
 }
 
 export default function OverviewFeaturePage() {

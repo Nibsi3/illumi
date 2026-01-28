@@ -17,10 +17,12 @@ import {
     IconUsersGroup,
     IconChevronDown,
     IconPlus,
+    IconFolder,
 } from "@tabler/icons-react";
 // Lazy load NotificationDropdown - not critical for initial render
 const NotificationDropdown = lazy(() => import("@/components/notifications/notification-dropdown").then(m => ({ default: m.NotificationDropdown })));
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -161,6 +163,11 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             icon: <IconPackage className="h-5 w-5 shrink-0" />,
         },
         {
+            label: "Vault",
+            href: "/vault",
+            icon: <IconFolder className="h-5 w-5 shrink-0" />,
+        },
+        {
             label: "Settings",
             href: "/settings",
             icon: <IconSettings className="h-5 w-5 shrink-0" />,
@@ -194,7 +201,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     {/* Logo Section - Centered and Icon only */}
                     <div className="h-16 w-[72px] flex items-center justify-center shrink-0 relative overflow-hidden">
                         <Link href="/overview" className="flex items-center justify-center w-full">
-                            <img src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                            <Image src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" width={32} height={32} className="object-contain shrink-0" />
                         </Link>
                     </div>
 
@@ -475,7 +482,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-3">
                             <Link href="/overview" onClick={() => setMobileNavOpen(false)} className="flex items-center gap-3">
-                                <img src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+                                <Image src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Logo" width={32} height={32} className="object-contain shrink-0" />
                                 <span className="text-sm font-bold">Illumi</span>
                             </Link>
                         </div>

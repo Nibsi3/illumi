@@ -7,6 +7,9 @@ export const metadata: Metadata = {
     title: "Invoice File Vault for Clients | Illumi",
     description: "Store every client invoice and supporting file in one place. Keep invoices organised per customer so South African businesses can track clients easily.",
     keywords: ["invoice file storage", "client invoice vault", "invoice documents", "South Africa invoicing", "file organisation"],
+    alternates: {
+        canonical: "/features/vault",
+    },
 }
 
 const files = [

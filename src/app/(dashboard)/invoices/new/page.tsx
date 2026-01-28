@@ -1160,16 +1160,16 @@ export default function NewInvoicePage() {
                                         <div
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
-                                                "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden",
-                                                "bg-neutral-950 border-border hover:bg-neutral-900 hover:border-border"
+                                                "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden flex-col",
+                                                "bg-neutral-950 border-neutral-700 hover:bg-neutral-900 hover:border-neutral-600"
                                             )}
                                         >
                                             {logo ? (
                                                 <img src={logo} alt="Logo" className="w-full h-full object-contain p-2" />
                                             ) : (
                                                 <>
-                                                    <Plus className={cn("h-6 w-6 mb-1 group-hover:scale-110 transition-transform", "text-foreground")} />
-                                                    <span className={cn("text-[10px] font-bold uppercase tracking-widest", "text-foreground")}>Logo</span>
+                                                    <Plus className="h-6 w-6 mb-1 group-hover:scale-110 transition-transform text-neutral-400" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">Logo</span>
                                                 </>
                                             )}
                                             <input
@@ -1468,12 +1468,12 @@ export default function NewInvoicePage() {
                                                 <span className={cn("text-xs font-medium", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment method</span>
                                                 <Select value={paymentMethod} onValueChange={(v) => setPaymentMethod(v as any)}>
                                                     <SelectTrigger className={cn(
-                                                        "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs",
+                                                        "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs cursor-pointer",
                                                         invoiceMode === "light"
                                                             ? "bg-white border-neutral-200"
                                                             : "bg-neutral-900 border-neutral-700"
                                                     )}>
-                                                        <div className="flex items-center gap-3 min-w-0">
+                                                        <div className="flex items-center gap-3 min-w-0 pointer-events-none">
                                                             <div className={cn(
                                                                 "h-8 w-8 rounded-lg flex items-center justify-center border shrink-0",
                                                                 invoiceMode === "light" ? "bg-neutral-100 border-neutral-200" : "bg-neutral-950 border-neutral-700"
@@ -1501,6 +1501,7 @@ export default function NewInvoicePage() {
                                                         </div>
                                                     </SelectTrigger>
                                                     <SelectContent className={cn(
+                                                        "z-100",
                                                         invoiceMode === "light" ? "bg-white border-neutral-200 text-black" : "bg-neutral-950 border-neutral-700 text-neutral-100"
                                                     )}>
                                                         <SelectItem value="bank">Banking details (manual)</SelectItem>

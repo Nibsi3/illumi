@@ -48,6 +48,8 @@ export default function robots(): MetadataRoute.Robots {
           '/notifications/',
           '/products',
           '/products/',
+          '/vault',
+          '/vault/',
           '/recurring',
           '/recurring/',
           '/transactions',
