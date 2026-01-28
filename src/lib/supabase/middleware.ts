@@ -28,10 +28,8 @@ export async function updateSession(request: NextRequest) {
     ]
 
     const isPublicRoute = pathname === '/' || publicPrefixes.some((p) => pathname.startsWith(p))
-
-    if (isPublicRoute) {
-        return supabaseResponse
-    }
+    const isHomePage = pathname === '/'
+    const isLoginPage = pathname === '/login' || pathname.startsWith('/login')
 
     // Skip Supabase auth if credentials are not configured
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -76,6 +74,13 @@ export async function updateSession(request: NextRequest) {
         const {
             data: { user },
         } = await supabase.auth.getUser()
+
+        // Redirect logged-in users from home page or login page to dashboard
+        if (user && (isHomePage || isLoginPage)) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/overview'
+            return NextResponse.redirect(url)
+        }
 
         if (!user && !isPublicRoute) {
             const cookieNames = request.cookies.getAll().map((c) => c.name)
