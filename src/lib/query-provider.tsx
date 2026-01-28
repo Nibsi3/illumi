@@ -9,10 +9,10 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             new QueryClient({
                 defaultOptions: {
                     queries: {
-                        // Data is considered fresh for 5 minutes
-                        staleTime: 5 * 60 * 1000,
-                        // Keep unused data in cache for 30 minutes
-                        gcTime: 30 * 60 * 1000,
+                        // Data is considered fresh for 10 minutes (reduces refetches)
+                        staleTime: 10 * 60 * 1000,
+                        // Keep unused data in cache for 1 hour
+                        gcTime: 60 * 60 * 1000,
                         // Don't refetch on window focus by default (reduces API calls)
                         refetchOnWindowFocus: false,
                         // Retry failed requests once

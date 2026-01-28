@@ -65,33 +65,25 @@ export async function updateSession(request: NextRequest) {
             }
         )
 
-        // IMPORTANT: Avoid writing any logic between createServerClient and
-        // getUser(). A simple mistake can make it very hard to debug
-        // issues with users being randomly logged out.
+        // For public routes (home/login), use getSession() to check if user is logged in
+        // This reads from cookies without making a server call, reducing egress
+        // For protected routes, use getUser() which validates with the server
+        if (isHomePage || isLoginPage) {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (session?.user) {
+                const url = request.nextUrl.clone()
+                url.pathname = '/overview'
+                return NextResponse.redirect(url)
+            }
+            return supabaseResponse
+        }
 
-        // Use getUser() instead of getSession() for more reliable session validation
-        // getUser() validates the session with the server and refreshes if needed
+        // For protected routes, validate session with server
         const {
             data: { user },
         } = await supabase.auth.getUser()
 
-        // Redirect logged-in users from home page or login page to dashboard
-        if (user && (isHomePage || isLoginPage)) {
-            const url = request.nextUrl.clone()
-            url.pathname = '/overview'
-            return NextResponse.redirect(url)
-        }
-
         if (!user && !isPublicRoute) {
-            const cookieNames = request.cookies.getAll().map((c) => c.name)
-            const authCookieNames = cookieNames.filter((n) => n.startsWith('sb-') && n.includes('auth'))
-            const cookieHeaderLen = request.headers.get('cookie')?.length
-            console.log('Auth middleware: no user, redirecting to /login', {
-                pathname,
-                cookieHeaderLen,
-                authCookiesPresent: authCookieNames,
-            })
-            // no user, potentially respond by redirecting the user to the login page
             const url = request.nextUrl.clone()
             url.pathname = '/login'
             return NextResponse.redirect(url)

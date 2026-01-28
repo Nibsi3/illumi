@@ -77,7 +77,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
 
             // Use cached workspaces if available and not forcing refresh
             const CACHE_KEY = 'illumi_workspaces_cache'
-            const CACHE_TTL = 2 * 60 * 1000 // 2 minutes
+            const CACHE_TTL = 10 * 60 * 1000 // 10 minutes - reduces API calls
             let deduped: Workspace[] = []
 
             if (!forceRefresh) {
@@ -290,34 +290,17 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         refreshWorkspaces()
     }, [refreshWorkspaces])
 
-    useEffect(() => {
-        if (!userEmail) return
-
-        const channel = supabase
-            .channel(`workspace-membership:${userEmail}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'workspace_members',
-                    filter: `email=eq.${userEmail}`,
-                },
-                async () => {
-                    // Membership changed (removed/added/activated). Refresh workspace list.
-                    await refreshWorkspaces()
-                }
-            )
-            .subscribe()
-
-        return () => {
-            try {
-                supabase.removeChannel(channel)
-            } catch {
-                // ignore
-            }
-        }
-    }, [refreshWorkspaces, supabase, userEmail])
+    // Disabled realtime subscription to reduce Supabase egress costs
+    // Workspace membership changes are rare - users can refresh manually or we poll less frequently
+    // useEffect(() => {
+    //     if (!userEmail) return
+    //     const channel = supabase
+    //         .channel(`workspace-membership:${userEmail}`)
+    //         .on('postgres_changes', { event: '*', schema: 'public', table: 'workspace_members', filter: `email=eq.${userEmail}` },
+    //             async () => { await refreshWorkspaces() }
+    //         ).subscribe()
+    //     return () => { try { supabase.removeChannel(channel) } catch {} }
+    // }, [refreshWorkspaces, supabase, userEmail])
 
     const setActiveWorkspace = useCallback((workspace: Workspace) => {
         setActiveWorkspaceState(workspace)
