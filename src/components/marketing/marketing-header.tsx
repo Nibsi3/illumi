@@ -46,7 +46,7 @@ export function MarketingHeader() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
-                        src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'}
+                        src={theme === 'dark' ? '/logo.png' : '/logo_black.png'}
                         alt="Illumi Logo"
                         width={24}
                         height={24}

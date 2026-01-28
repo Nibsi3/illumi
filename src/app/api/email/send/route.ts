@@ -9,7 +9,7 @@ function getResendClient() {
 
 type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
 
-const ILLUMI_PUBLIC_LOGO = "https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo.png"
+const ILLUMI_PUBLIC_LOGO = "https://www.illumi.co.za/logo.png"
 
 interface InvoiceItem {
     description: string

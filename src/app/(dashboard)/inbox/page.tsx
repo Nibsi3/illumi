@@ -151,7 +151,7 @@ export default function InboxPage() {
                                 <div className="flex justify-between items-start mb-20">
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-16 bg-background rounded flex items-center justify-center p-2">
-                                            <img src={theme === 'dark' ? '/logo.png' : 'https://eagwfcctvfrvxgxaitbd.supabase.co/storage/v1/object/public/logo/logo_black.png'} alt="Company Logo" className="w-full h-full object-contain dark:invert" />
+                                            <img src={theme === 'dark' ? '/logo.png' : '/logo_black.png'} alt="Company Logo" className="w-full h-full object-contain dark:invert" />
                                         </div>
                                         <div>
                                             <h2 className="text-2xl font-bold uppercase tracking-tight">{selectedItem.title}</h2>
