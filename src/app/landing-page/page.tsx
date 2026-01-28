@@ -370,6 +370,73 @@ function TestimonialCarousel() {
 }
 
 /* =============================================================================
+   LANDING PAGE NAVIGATION
+============================================================================= */
+
+function LandingNavigation() {
+    return (
+        <nav className="bg-background border-b border-border sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo */}
+                    <Link href="/landing-page" className="flex items-center">
+                        <span className="font-serif font-bold text-xl italic text-foreground">Illumi</span>
+                    </Link>
+
+                    {/* Navigation Links - Desktop */}
+                    <div className="hidden md:flex items-center gap-8">
+                        <Link href="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Features
+                        </Link>
+                        <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Pricing
+                        </Link>
+                        <Link href="/integrations" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Integrations
+                        </Link>
+                        <Link href="/story" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Story
+                        </Link>
+                        <Link href="/contact" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Contact
+                        </Link>
+                    </div>
+
+                    {/* Sign In */}
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:block h-6 w-px bg-border" />
+                        <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                            Sign in
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden border-t border-border">
+                <div className="flex items-center justify-center gap-4 py-3 px-4 overflow-x-auto">
+                    <Link href="/features" className="text-xs font-medium text-muted-foreground hover:text-foreground whitespace-nowrap">
+                        Features
+                    </Link>
+                    <Link href="/pricing" className="text-xs font-medium text-muted-foreground hover:text-foreground whitespace-nowrap">
+                        Pricing
+                    </Link>
+                    <Link href="/integrations" className="text-xs font-medium text-muted-foreground hover:text-foreground whitespace-nowrap">
+                        Integrations
+                    </Link>
+                    <Link href="/story" className="text-xs font-medium text-muted-foreground hover:text-foreground whitespace-nowrap">
+                        Story
+                    </Link>
+                    <Link href="/contact" className="text-xs font-medium text-muted-foreground hover:text-foreground whitespace-nowrap">
+                        Contact
+                    </Link>
+                </div>
+            </div>
+        </nav>
+    )
+}
+
+/* =============================================================================
    MAIN COMPONENT
 ============================================================================= */
 
@@ -378,24 +445,8 @@ export default function GoogleAdsLandingPage() {
 
     return (
         <div className="min-h-screen bg-background text-foreground">
-            {/* Top Header Bar - Not Sticky */}
-            <div className="bg-primary text-primary-foreground py-3 px-4">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <span className="font-serif font-bold text-lg italic">Illumi</span>
-                        <span className="hidden sm:inline text-sm opacity-90">Free Invoicing for South African Businesses</span>
-                    </div>
-                    <Link href="/login">
-                        <HoverBorderGradient
-                            as="div"
-                            containerClassName=""
-                            className="bg-background text-foreground font-semibold text-sm px-4 py-2"
-                        >
-                            Start Free →
-                        </HoverBorderGradient>
-                    </Link>
-                </div>
-            </div>
+            {/* Custom Landing Page Navigation */}
+            <LandingNavigation />
 
             {/* Hero Section */}
             <section className="relative py-12 sm:py-16 md:py-24 overflow-hidden">
