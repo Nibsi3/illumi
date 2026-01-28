@@ -327,13 +327,15 @@ export async function POST(req: Request) {
                             </a>
                         </div>
                         <p style="color: #999; font-size: 12px; text-align: center;">
-                            Questions? Send an email to ${invoiceSupportEmail}
+                            Questions? Reply to this email or contact ${invoiceSupportEmail}
                         </p>
-                        ${invoiceHideIllumiBranding ? '' : `
                         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em;">Powered by <a href="${invoicePoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${invoicePoweredByName}</strong></a></p>
+                            ${invoiceHideIllumiBranding ? '' : `<p style="color: #999; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 12px;">Powered by <a href="${invoicePoweredByUrl}" style="color: #999; text-decoration: underline;"><strong>${invoicePoweredByName}</strong></a></p>`}
+                            <p style="color: #bbb; font-size: 10px; margin: 0;">
+                                This is a transactional email for invoice ${payload.invoiceNumber || ""}.<br/>
+                                ${invoiceCompanyName} • <a href="mailto:${invoiceSupportEmail}" style="color: #bbb;">Contact Us</a>
+                            </p>
                         </div>
-                        `}
                     </div>
                 `
                 break
@@ -476,6 +478,14 @@ export async function POST(req: Request) {
         const copyRecipients = requestedCopyRecipients
             .filter((addr) => addr && addr.toLowerCase() !== String(primaryTo).toLowerCase())
 
+        // Generate plain text version for better deliverability
+        const emailText = emailHtml
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+
         const { data, error } = await resend.emails.send({
             from: `Illumi <${fromAddress}>`,
             to: primaryTo,
@@ -483,6 +493,7 @@ export async function POST(req: Request) {
             replyTo: replyToAddress,
             subject: emailSubject,
             html: emailHtml,
+            text: emailText,
         })
 
         if (error) {
@@ -505,6 +516,7 @@ export async function POST(req: Request) {
                         replyTo: replyToAddress,
                         subject: emailSubject,
                         html: emailHtml,
+                        text: emailText,
                     })
 
                     if ((copyRes as any)?.error) {
