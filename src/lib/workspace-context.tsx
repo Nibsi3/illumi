@@ -158,6 +158,37 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
             }
 
+            // If user has no workspaces, create a default one based on their email
+            if (deduped.length === 0 && user.email) {
+                try {
+                    const emailName = user.email.split('@')[0] || 'user'
+                    const prefix = emailName.substring(0, 2).toUpperCase()
+                    const defaultName = `${prefix}'s Workspace`
+                    
+                    const res = await fetch('/api/workspaces', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            name: defaultName,
+                            slug: emailName.toLowerCase().replace(/[^a-z0-9]/g, ''),
+                        }),
+                    })
+                    const json = await res.json().catch(() => null)
+                    if (res.ok && json?.success && json?.workspace) {
+                        deduped = [json.workspace]
+                        // Update cache with new workspace
+                        try {
+                            localStorage.setItem(CACHE_KEY, JSON.stringify({ workspaces: deduped, timestamp: Date.now() }))
+                        } catch {
+                            // ignore
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to create default workspace:', e)
+                }
+            }
+
             setWorkspaces(deduped)
 
             if (deduped.length > 0) {
