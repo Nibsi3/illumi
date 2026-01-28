@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
 import { InvoiceDemo } from "@/components/marketing/invoice-demo"
 import { FloatingNav } from "@/components/ui/floating-navbar"
@@ -11,17 +12,11 @@ import {
     IconShieldCheck,
     IconCreditCard,
     IconReceipt,
-    IconRefresh,
-    IconChartBar,
-    IconFolder,
-    IconFileExport,
-    IconDeviceMobile,
     IconHeadset,
     IconStarFilled,
     IconPlayerPlay,
     IconChevronDown,
     IconX,
-    IconSparkles,
     IconCoin,
     IconPlugConnected,
     IconBook,
@@ -30,7 +25,6 @@ import {
 import { useState, useEffect, useRef } from "react"
 
 const navItems = [
-    { name: "Features", link: "/features", icon: <IconSparkles className="h-4 w-4 text-neutral-500 dark:text-white" /> },
     { name: "Pricing", link: "/pricing", icon: <IconCoin className="h-4 w-4 text-neutral-500 dark:text-white" /> },
     { name: "Integrations", link: "/integrations", icon: <IconPlugConnected className="h-4 w-4 text-neutral-500 dark:text-white" /> },
     { name: "Story", link: "/story", icon: <IconBook className="h-4 w-4 text-neutral-500 dark:text-white" /> },
@@ -55,17 +49,6 @@ const painPoints = [
     { problem: "VAT calculation headaches", solution: "Automatic VAT at 15% (or custom rate)" },
     { problem: "Late payments hurting cash flow", solution: "PayGate integration for instant online payments" },
     { problem: "Clients asking for invoice copies", solution: "Client portal keeps invoices accessible anytime" },
-]
-
-const features = [
-    { icon: IconMail, title: "Email Invoicing", description: "Send professional invoices by email in one click. Clients get a secure link to view and pay." },
-    { icon: IconCreditCard, title: "Online Payments", description: "Accept card, EFT, and SnapScan via PayFast, Yoco, or Ozow. Invoice status updates automatically." },
-    { icon: IconFolder, title: "Client Management", description: "Organize invoices by client with folder-style management. Track billing history effortlessly." },
-    { icon: IconChartBar, title: "Profit Tracking", description: "See your real profit after expenses. Track income vs expenses in ZAR on your dashboard." },
-    { icon: IconRefresh, title: "Recurring Invoices", description: "Set up recurring invoices for retainer clients. Bill monthly without lifting a finger." },
-    { icon: IconReceipt, title: "VAT Reports", description: "Export invoices and expenses for tax season. VAT-ready reporting for SARS compliance." },
-    { icon: IconFileExport, title: "PDF & CSV Export", description: "Download professional PDF invoices or export data as CSV for your accountant." },
-    { icon: IconDeviceMobile, title: "Mobile Friendly", description: "Create and send invoices from any device. Your clients can pay from their phones too." },
 ]
 
 const freeFeatures = [
@@ -393,13 +376,35 @@ export default function GoogleAdsLandingPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             {/* Floating Navigation - appears on scroll up */}
-            <FloatingNav navItems={navItems} />
+            <FloatingNav
+                brand={{
+                    href: '/',
+                    content: (
+                        <Image
+                            src="/logo.png"
+                            alt="Illumi"
+                            width={24}
+                            height={24}
+                            className="h-6 w-6 object-contain"
+                        />
+                    ),
+                }}
+                navItems={navItems}
+            />
 
             {/* Top Header Bar - Not Sticky */}
             <div className="bg-primary text-primary-foreground py-3 px-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <span className="font-serif font-bold text-lg italic">Illumi</span>
+                        <Link href="/" className="flex items-center">
+                            <Image
+                                src="/logo.png"
+                                alt="Illumi"
+                                width={24}
+                                height={24}
+                                className="h-6 w-6 object-contain"
+                            />
+                        </Link>
                         <span className="hidden sm:inline text-sm opacity-90">Free Invoicing for South African Businesses</span>
                     </div>
                     <Link href="/login">
@@ -519,30 +524,6 @@ export default function GoogleAdsLandingPage() {
                         </p>
                     </div>
                     <InvoiceDemo />
-                </div>
-            </section>
-
-            {/* Features Grid */}
-            <section className="py-12 sm:py-16 md:py-24 bg-muted/30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                            Everything You Need to Get Paid
-                        </h2>
-                        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Built specifically for South African freelancers, consultants, and small businesses.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                        {features.map((feature, i) => (
-                            <div key={i} className="p-6 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors">
-                                <feature.icon className="h-10 w-10 text-primary mb-4" />
-                                <h3 className="text-lg font-semibold text-foreground mb-2">{feature.title}</h3>
-                                <p className="text-sm text-muted-foreground">{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </section>
 
