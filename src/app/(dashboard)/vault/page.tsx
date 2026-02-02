@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -516,6 +517,9 @@ export default function VaultPage() {
                                 <FolderOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
                                 <p>No invoices yet</p>
                                 <p className="text-sm">Create your first invoice to see it here</p>
+                                <p className="text-sm mt-3">
+                                    <Link href="/features/invoicing" className="text-primary hover:underline" target="_blank">Learn how invoicing works →</Link>
+                                </p>
                             </div>
                         )}
                     </div>

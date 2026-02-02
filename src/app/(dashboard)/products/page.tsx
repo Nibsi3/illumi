@@ -255,8 +255,11 @@ export default function ProductsPage() {
             <Package className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">No products yet</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+          <p className="text-muted-foreground mb-4 max-w-md mx-auto">
             Create reusable products to quickly add them to your invoices.
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            <Link href="/features/invoicing" className="text-primary hover:underline" target="_blank">Learn how invoicing works →</Link>
           </p>
           <Link href="/products/new">
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">

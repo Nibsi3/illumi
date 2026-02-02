@@ -210,6 +210,9 @@ export default function RecurringInvoicesPage() {
                     <Clock className="h-12 w-12 text-muted-foreground/20 mb-4" />
                     <h2 className="text-xl font-serif">No recurring invoices yet</h2>
                     <p className="text-muted-foreground mt-2">Create a schedule to automate your monthly billing.</p>
+                    <p className="text-sm text-muted-foreground mt-3">
+                        <Link href="/features/automated-invoicing" className="text-primary hover:underline" target="_blank">Learn how automated invoicing works →</Link>
+                    </p>
                     <Button variant="outline" className="mt-6 rounded-full" onClick={() => setIsDialogOpen(true)}>
                         <Plus className="mr-2 h-4 w-4" />
                         Create your first schedule

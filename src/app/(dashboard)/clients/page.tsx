@@ -256,8 +256,11 @@ export default function ClientsPage() {
                         <Building2 className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-bold text-foreground mb-2">No clients yet</h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    <p className="text-muted-foreground mb-4 max-w-md mx-auto">
                         Start by adding your first client. You'll be able to send invoices and track payments.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-6">
+                        <Link href="/features/clients" className="text-primary hover:underline" target="_blank">Learn how client management works →</Link>
                     </p>
                     <Link href="/clients/new">
                         <Button className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold">
