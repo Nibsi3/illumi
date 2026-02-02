@@ -190,17 +190,16 @@ export async function POST(req: Request) {
             add('live', 'public_key', keys.livePublicKey)
             add('live', 'secret_key', keys.liveSecretKey || keys.liveSecret)
 
-            // PayFast: merchant id + merchant key + optional passphrase (shared credentials)
-            // We store them in *both* modes so other code that reads by mode still works.
+            // PayFast: separate test and live merchant id + merchant key + optional passphrase
             if (provider === 'payfast') {
-                add('test', 'merchant_id', keys.merchantId || keys.liveMerchantId || keys.testMerchantId)
-                add('live', 'merchant_id', keys.merchantId || keys.liveMerchantId || keys.testMerchantId)
+                add('test', 'merchant_id', keys.testMerchantId || keys.merchantId)
+                add('live', 'merchant_id', keys.liveMerchantId || keys.merchantId)
 
-                add('test', 'merchant_key', keys.merchantKey || keys.liveMerchantKey || keys.testMerchantKey)
-                add('live', 'merchant_key', keys.merchantKey || keys.liveMerchantKey || keys.testMerchantKey)
+                add('test', 'merchant_key', keys.testMerchantKey || keys.merchantKey)
+                add('live', 'merchant_key', keys.liveMerchantKey || keys.merchantKey)
 
-                add('test', 'passphrase', keys.passphrase || keys.livePassphrase || keys.testPassphrase)
-                add('live', 'passphrase', keys.passphrase || keys.livePassphrase || keys.testPassphrase)
+                add('test', 'passphrase', keys.passphrase || keys.testPassphrase)
+                add('live', 'passphrase', keys.passphrase || keys.livePassphrase)
             } else {
                 // Other providers that use merchant_key/passphrase per mode
                 add('test', 'merchant_key', keys.testMerchantKey)

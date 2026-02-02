@@ -275,13 +275,11 @@ export default function PayGatePage() {
             return
         }
         if (providerId === 'payfast') {
-            const merchantId = savedKeys.liveMerchantId || savedKeys.testMerchantId || ""
-            const merchantKey = savedKeys.liveMerchantKey || savedKeys.testMerchantKey || ""
-            setTestKey1(merchantId)
-            setTestKey2(merchantKey)
-            setLiveKey1(merchantId)
-            setLiveKey2(merchantKey)
-            setPassphrase(savedKeys.livePassphrase || savedKeys.testPassphrase || "")
+            setTestKey1(savedKeys.testMerchantId || savedKeys.merchantId || "")
+            setTestKey2(savedKeys.testMerchantKey || savedKeys.merchantKey || "")
+            setLiveKey1(savedKeys.liveMerchantId || "")
+            setLiveKey2(savedKeys.liveMerchantKey || "")
+            setPassphrase(savedKeys.passphrase || savedKeys.livePassphrase || savedKeys.testPassphrase || "")
             return
         }
 
@@ -320,8 +318,10 @@ export default function PayGatePage() {
         }
         if (providerId === 'payfast') {
             return {
-                merchantId: testKey1,
-                merchantKey: testKey2,
+                testMerchantId: testKey1,
+                testMerchantKey: testKey2,
+                liveMerchantId: liveKey1,
+                liveMerchantKey: liveKey2,
                 passphrase,
             }
         }
