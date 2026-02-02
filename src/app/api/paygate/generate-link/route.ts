@@ -209,6 +209,8 @@ export async function POST(req: Request) {
 
         // PayFast Implementation
         if (provider === 'payfast') {
+            console.log('[PayFast] testMode:', testMode, 'mode:', mode, 'settingsFound:', settingsFound)
+            
             const baseUrl = testMode 
                 ? "https://sandbox.payfast.co.za/eng/process"
                 : "https://www.payfast.co.za/eng/process"
@@ -219,11 +221,14 @@ export async function POST(req: Request) {
             
             if (resolvedWorkspaceId) {
                 const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'payfast', mode)
+                console.log('[PayFast] Keys from DB for mode', mode, ':', keys ? Object.keys(keys) : 'none')
                 if (keys) {
                     merchantId = keys.merchant_id || merchantId
                     merchantKey = keys.merchant_key || keys.secret_key || merchantKey
                 }
             }
+            
+            console.log('[PayFast] Using merchantId:', merchantId?.substring(0, 4) + '...', 'baseUrl:', baseUrl)
 
             if (!merchantId || !merchantKey) {
                 return NextResponse.json(
