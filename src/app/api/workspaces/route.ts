@@ -109,34 +109,48 @@ export async function POST(req: Request) {
         const service = getServiceClient()
 
         // Determine if user has any active Pro subscription.
+        // Subscriptions are stored per workspace_id, so check all workspaces the user owns.
         // If subscription table is missing/unavailable, treat as free.
         let hasActivePro = false
         try {
             const nowIso = new Date().toISOString()
-            const { data: subs, error: subsError } = await service
-                .from('subscriptions')
-                .select('tier, status, expires_at')
-                .eq('user_id', user.id)
 
-            const subsErrorCode = (subsError as any)?.code
-            const isExpectedSubsError =
-                subsErrorCode === 'PGRST205' ||
-                subsErrorCode === '42P01' ||
-                subsErrorCode === '42501'
+            // First get all workspace IDs the user owns
+            const { data: ownedWs } = await service
+                .from('workspaces')
+                .select('id')
+                .eq('owner_id', user.id)
 
-            if (subsError && !isExpectedSubsError) {
-                return NextResponse.json({ success: false, error: subsError.message }, { status: 500 })
+            const ownedWorkspaceIds = (ownedWs || []).map((w: any) => w.id).filter(Boolean)
+
+            if (ownedWorkspaceIds.length > 0) {
+                const { data: subs, error: subsError } = await service
+                    .from('subscriptions')
+                    .select('tier, status, expires_at, workspace_id')
+                    .in('workspace_id', ownedWorkspaceIds)
+
+                const subsErrorCode = (subsError as any)?.code
+                const isExpectedSubsError =
+                    subsErrorCode === 'PGRST205' ||
+                    subsErrorCode === '42P01' ||
+                    subsErrorCode === '42501' ||
+                    subsErrorCode === 'PGRST116'
+
+                if (subsError && !isExpectedSubsError) {
+                    console.error('[Workspaces POST] Subscription check error:', subsError)
+                }
+
+                hasActivePro = Boolean(
+                    (subs || []).some((s: any) => {
+                        const tier = (s?.tier || '').toString().toLowerCase()
+                        const status = (s?.status || '').toString().toLowerCase()
+                        const expiresAt = s?.expires_at ? new Date(s.expires_at).toISOString() : null
+                        return tier === 'pro' && status === 'active' && (!expiresAt || expiresAt > nowIso)
+                    })
+                )
             }
-
-            hasActivePro = Boolean(
-                (subs || []).some((s: any) => {
-                    const tier = (s?.tier || '').toString().toLowerCase()
-                    const status = (s?.status || '').toString().toLowerCase()
-                    const expiresAt = s?.expires_at ? new Date(s.expires_at).toISOString() : null
-                    return tier === 'pro' && status === 'active' && (!expiresAt || expiresAt > nowIso)
-                })
-            )
-        } catch {
+        } catch (err) {
+            console.error('[Workspaces POST] Subscription check failed:', err)
             hasActivePro = false
         }
 
