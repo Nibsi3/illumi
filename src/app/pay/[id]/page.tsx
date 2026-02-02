@@ -91,22 +91,16 @@ export default function PayInvoicePage() {
             }
 
             // Fallback: Update invoice status directly in case webhook didn't fire
-            // This handles cases where PayFast/Paystack can't reach our webhook
+            // This handles cases where PayFast can't reach our webhook (e.g., localhost)
             fetch('/api/invoices/mark-paid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ invoiceId: invoice.id })
-            }).then(async (res) => {
-                const json = await res.json().catch(() => null)
-                if (!res.ok) {
-                    console.error("Mark-paid failed:", res.status, json)
-                }
-                // Refresh the page data after updating (even if mark-paid failed, webhook might have worked)
+            }).then(() => {
+                // Refresh the page data after updating
                 window.location.href = window.location.pathname
             }).catch(err => {
                 console.error("Failed to update invoice status:", err)
-                // Still refresh to check if webhook updated the status
-                window.location.href = window.location.pathname
             })
         } else if (status === 'cancelled') {
             toast.warning("Payment Cancelled", {
