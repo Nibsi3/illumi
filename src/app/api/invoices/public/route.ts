@@ -1,6 +1,52 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient as createServiceClient } from "@supabase/supabase-js"
 
+type PublicInvoiceCustomer = {
+    name: string | null
+    email: string | null
+    address: string | null
+}
+
+type PublicInvoiceItem = {
+    description: string | null
+    quantity: number | null
+    unit_price: number | null
+    total: number | null
+}
+
+type PublicInvoiceRow = {
+    id: string
+    invoice_number: string | null
+    status: string | null
+    issue_date: string | null
+    due_date: string | null
+    currency: string | null
+    subtotal: number | null
+    tax_rate: number | null
+    tax_amount: number | null
+    total: number | null
+    notes: string | null
+    template: string | null
+    invoice_mode: string | null
+    logo_url: string | null
+    hide_illumi_branding: boolean | null
+    payment_provider: string | null
+    vat_rate: number | null
+    vat_amount: number | null
+    from_email: string | null
+    company_website: string | null
+    bank_name: string | null
+    account_name: string | null
+    account_number: string | null
+    branch_code: string | null
+    workspace_id: string | null
+    updated_at: string | null
+    viewed_at: string | null
+    paid_at: string | null
+    customers: PublicInvoiceCustomer | null
+    invoice_items: PublicInvoiceItem[] | null
+}
+
 function getServiceClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
     const serviceKey =
@@ -77,14 +123,16 @@ export async function GET(request: NextRequest) {
             query = query.eq("invoice_number", invoiceId)
         }
 
-        const { data, error } = await query.single()
+        const { data: rawData, error } = await query.single()
 
-        if (error || !data) {
+        if (error || !rawData) {
             return NextResponse.json(
                 { success: false, error: "Invoice not found" },
                 { status: 404 }
             )
         }
+
+        const data = rawData as unknown as PublicInvoiceRow
 
         let allowHideIllumiBranding = false
         try {
