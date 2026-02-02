@@ -32,12 +32,20 @@ const footerLinks = {
         { name: "Hotels", href: "/invoicing-software/hotels" },
     ],
     solutions: [
+        { name: "Invoice Software SA", href: "/invoice-software-south-africa" },
+        { name: "Online Invoicing", href: "/online-invoicing" },
+        { name: "Invoice Management", href: "/invoice-management-system" },
+        { name: "Billing Software", href: "/billing-invoicing-software" },
         { name: "For Businesses", href: "/for-business" },
         { name: "For Individuals", href: "/for-individuals" },
-        { name: "Features", href: "/features/overview" },
+    ],
+    features: [
+        { name: "All Features", href: "/features/overview" },
         { name: "Invoicing", href: "/features/invoicing" },
-        { name: "Client Portal", href: "/features/inbox" },
-        { name: "Vault", href: "/features/vault" },
+        { name: "Automated Invoicing", href: "/features/automated-invoicing" },
+        { name: "Invoice Tracking", href: "/features/invoice-tracking" },
+        { name: "Payment Reminders", href: "/features/payment-reminders" },
+        { name: "VAT Invoices", href: "/features/vat-invoices" },
     ],
     resources: [
         { name: "SME Resources", href: "/resources" },
@@ -67,7 +75,7 @@ export function MarketingFooter() {
             {/* Links Section */}
             <div className="border-t border-border py-16">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-8">
                         {/* Illumi */}
                         <div>
                             <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
@@ -113,6 +121,25 @@ export function MarketingFooter() {
                             </h3>
                             <ul className="space-y-3">
                                 {footerLinks.solutions.map((link) => (
+                                    <li key={link.name}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                        >
+                                            {link.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Features */}
+                        <div>
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                                Features
+                            </h3>
+                            <ul className="space-y-3">
+                                {footerLinks.features.map((link) => (
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}

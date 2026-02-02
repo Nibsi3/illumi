@@ -7,7 +7,7 @@ function getResendClient() {
     return new Resend(apiKey)
 }
 
-type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice"
+type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice" | "marketing_demo"
 
 const ILLUMI_PUBLIC_LOGO = "https://www.illumi.co.za/logo.png"
 
@@ -439,6 +439,141 @@ export async function POST(req: Request) {
                 `
                 break
 
+            case "marketing_demo":
+                const today = new Date()
+                const dueIn7Days = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+                const formatDate = (d: Date) => d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long', year: 'numeric' })
+                const invoiceNum = `INV-${String(Math.floor(Math.random() * 9000) + 1000)}`
+                
+                emailSubject = payload.subject || `Invoice ${invoiceNum} from Illumi`
+                emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background: #ffffff;">
+                        <!-- Invoice Header - Using Table for Email Compatibility -->
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 32px;">
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    <h1 style="color: #000; font-size: 32px; margin: 0 0 8px 0; font-weight: 800;">INVOICE</h1>
+                                    <p style="color: #666; font-size: 14px; margin: 0;">${invoiceNum}</p>
+                                </td>
+                                <td style="vertical-align: top; text-align: right;">
+                                    <img src="${ILLUMI_PUBLIC_LOGO}" alt="Illumi" width="40" height="40" style="display: inline-block; margin-bottom: 8px;" />
+                                    <p style="color: #333; font-size: 14px; margin: 0 0 4px 0; font-weight: 600;">Illumi</p>
+                                    <p style="color: #666; font-size: 12px; margin: 0;">Cape Town, South Africa</p>
+                                    <p style="color: #666; font-size: 12px; margin: 0;">www.illumi.co.za</p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Bill To -->
+                        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+                            <p style="color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 8px 0;">Bill To</p>
+                            <p style="color: #000; font-size: 16px; font-weight: 600; margin: 0 0 4px 0;">${payload.customerName || 'Your Company'}</p>
+                            <p style="color: #666; font-size: 14px; margin: 0;">${payload.to}</p>
+                        </div>
+
+                        <!-- Dates - Using Table for Email Compatibility -->
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                            <tr>
+                                <td style="width: 50%; vertical-align: top;">
+                                    <p style="color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 4px 0;">Invoice Date</p>
+                                    <p style="color: #000; font-size: 14px; margin: 0; font-weight: 500;">${formatDate(today)}</p>
+                                </td>
+                                <td style="width: 50%; vertical-align: top; text-align: right;">
+                                    <p style="color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 4px 0;">Pay By</p>
+                                    <p style="color: #000; font-size: 14px; margin: 0; font-weight: 500;">${formatDate(dueIn7Days)}</p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Features Table -->
+                        <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #000;">
+                                    <th style="padding: 12px 0; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">What You Get</th>
+                                    <th style="padding: 12px 0; text-align: right; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #666;">Included</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5;">
+                                        <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #000;">Automated Invoicing</p>
+                                        <p style="margin: 0; font-size: 12px; color: #666;">Create professional invoices in seconds, automatically branded with your company details.</p>
+                                    </td>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5; text-align: right; font-size: 14px; color: #22c55e;">✓</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5;">
+                                        <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #000;">Smart Payment Tracking</p>
+                                        <p style="margin: 0; font-size: 12px; color: #666;">Instantly see which invoices are paid, overdue, or pending — without manual checking.</p>
+                                    </td>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5; text-align: right; font-size: 14px; color: #22c55e;">✓</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5;">
+                                        <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #000;">Client Self-Service Portal</p>
+                                        <p style="margin: 0; font-size: 12px; color: #666;">Your clients can view invoices, download copies, and see payment status themselves.</p>
+                                    </td>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5; text-align: right; font-size: 14px; color: #22c55e;">✓</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5;">
+                                        <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #000;">Revenue Insights & Reports</p>
+                                        <p style="margin: 0; font-size: 12px; color: #666;">Simple dashboards showing income trends, unpaid invoices, and monthly totals.</p>
+                                    </td>
+                                    <td style="padding: 16px 0; border-bottom: 1px solid #e5e5e5; text-align: right; font-size: 14px; color: #22c55e;">✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Estimated Impact Section - Using Table for Email Compatibility -->
+                        <div style="background: #000; color: #fff; padding: 24px; border-radius: 12px; margin: 24px 0;">
+                            <p style="margin: 0 0 20px 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: #999;">Estimated Monthly Impact</p>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 33%; vertical-align: top; padding-right: 12px;">
+                                        <p style="margin: 0; font-size: 22px; font-weight: 700; color: #fff;">6–10 hrs</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">Time saved</p>
+                                    </td>
+                                    <td style="width: 34%; vertical-align: top; padding: 0 6px;">
+                                        <p style="margin: 0; font-size: 22px; font-weight: 700; color: #fff;">R1.5–3K</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">Admin cost reduced</p>
+                                    </td>
+                                    <td style="width: 33%; vertical-align: top; padding-left: 12px; text-align: right;">
+                                        <p style="margin: 0; font-size: 22px; font-weight: 700; color: #fff;">50%+</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">Faster payments</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div style="background: #f0fdf4; border: 1px solid #22c55e; padding: 16px; border-radius: 8px; margin: 24px 0;">
+                            <p style="margin: 0; font-size: 12px; color: #166534; line-height: 1.6;">
+                                <strong>Note:</strong> This is a sample invoice created to show how Illumi presents billing information and key insights for businesses like yours. It is not a real invoice, contains no charges, and requires no payment.
+                            </p>
+                        </div>
+
+                        <!-- CTA Button -->
+                        <div style="text-align: center; margin: 32px 0;">
+                            <a href="https://www.illumi.co.za" 
+                               style="background: #000; color: #fff; padding: 16px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; font-size: 16px;">
+                                Start Free Now
+                            </a>
+                        </div>
+
+                        <!-- Footer -->
+                        <div style="text-align: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid #eee;">
+                            <p style="color: #999; font-size: 12px; margin: 0 0 8px 0;">
+                                Questions? Reply to this email or visit <a href="https://www.illumi.co.za" style="color: #000;">www.illumi.co.za</a>
+                            </p>
+                            <p style="color: #bbb; font-size: 10px; margin: 0;">
+                                Illumi • Cape Town, South Africa • Free invoicing for SA businesses
+                            </p>
+                        </div>
+                    </div>
+                `
+                break
+
             default:
                 return NextResponse.json(
                     { success: false, error: "Invalid email type" },
@@ -448,25 +583,30 @@ export async function POST(req: Request) {
 
         const INVOICE_FROM = "invoice@illumi.co.za"
         const INVITE_FROM = "invite@illumi.co.za"
+        const MARKETING_FROM = "info@illumi.co.za"
         const isInvoiceLike = type === "invoice" || type === "payment_reminder" || type === "final_notice"
 
         // Determine the "from" address
         const fromAddress = (type === "support" || type === "contact")
             ? (type === "support" ? "support@illumi.co.za" : "info@illumi.co.za")
-            : isInvoiceLike
-                ? INVOICE_FROM
-                : type === "invite"
-                    ? INVITE_FROM
-                : "invoices@illumi.co.za"
-
-        const replyToAddress =
-            (type === "support" || type === "contact")
-                ? payload.userEmail
+            : type === "marketing_demo"
+                ? MARKETING_FROM
                 : isInvoiceLike
                     ? INVOICE_FROM
                     : type === "invite"
                         ? INVITE_FROM
-                    : (payload.fromEmail || undefined)
+                    : "invoices@illumi.co.za"
+
+        const replyToAddress =
+            (type === "support" || type === "contact")
+                ? payload.userEmail
+                : type === "marketing_demo"
+                    ? MARKETING_FROM
+                    : isInvoiceLike
+                        ? INVOICE_FROM
+                        : type === "invite"
+                            ? INVITE_FROM
+                        : (payload.fromEmail || undefined)
 
         const primaryTo = type === "support"
             ? "support@illumi.co.za"

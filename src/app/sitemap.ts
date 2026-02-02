@@ -123,6 +123,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isSeoContent = path === '/glossary' || path === '/what-is-an-invoice' || path === '/blog'
     const isSolutions = path === '/for-business' || path === '/for-individuals'
     const isComparison = path.startsWith('/compare/')
+    const isSeoLandingPage = path === '/invoice-software-south-africa' || path === '/online-invoicing' || path === '/invoice-management-system' || path === '/billing-invoicing-software'
+    const isBlogPost = path.startsWith('/blog/') && path !== '/blog'
 
     let changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']
     let priority: number
@@ -130,10 +132,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     if (isHome) {
       changeFrequency = 'daily'
       priority = 1.0
+    } else if (isSeoLandingPage) {
+      changeFrequency = 'weekly'
+      priority = 0.95
     } else if (isPricing) {
       changeFrequency = 'weekly'
       priority = 0.9
     } else if (isFreeTools) {
+      changeFrequency = 'weekly'
+      priority = 0.85
+    } else if (isComparison) {
       changeFrequency = 'weekly'
       priority = 0.85
     } else if (isInvoicingSoftware) {
@@ -142,18 +150,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (isSolutions) {
       changeFrequency = 'weekly'
       priority = 0.8
+    } else if (isFeatures) {
+      changeFrequency = 'weekly'
+      priority = 0.8
+    } else if (isBlogPost) {
+      changeFrequency = 'monthly'
+      priority = 0.75
     } else if (isCalculator) {
       changeFrequency = 'monthly'
       priority = 0.75
     } else if (isSeoContent) {
       changeFrequency = 'weekly'
       priority = 0.7
-    } else if (isComparison) {
-      changeFrequency = 'weekly'
-      priority = 0.85
-    } else if (isFeatures) {
-      changeFrequency = 'weekly'
-      priority = 0.8
     } else if (isDocs) {
       changeFrequency = 'weekly'
       priority = 0.7
