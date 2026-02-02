@@ -101,8 +101,6 @@ export async function GET(request: NextRequest) {
                     "invoice_mode",
                     "logo_url",
                     "payment_provider",
-                    "vat_rate",
-                    "vat_amount",
                     "from_email",
                     "company_website",
                     "bank_name",
