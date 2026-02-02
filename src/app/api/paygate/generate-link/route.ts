@@ -235,13 +235,23 @@ export async function POST(req: Request) {
                 )
             }
 
+            // PayFast requires amount in format "100.00" (2 decimal places)
+            const amountNum = Number(amount)
+            if (!Number.isFinite(amountNum) || amountNum <= 0) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid amount', provider: 'payfast' },
+                    { status: 400 }
+                )
+            }
+            const formattedAmount = amountNum.toFixed(2)
+
             const params = new URLSearchParams({
                 merchant_id: merchantId,
                 merchant_key: merchantKey,
                 return_url: `${domain}/pay/${invoiceId}?status=success`,
                 cancel_url: `${domain}/pay/${invoiceId}?status=cancelled`,
-                notify_url: `${domain}/api/webhooks/paygate`,
-                amount: amount.toString(),
+                notify_url: `${domain}/api/payfast/notify`,
+                amount: formattedAmount,
                 item_name: `Invoice ${invoiceNumber || invoiceId}`,
                 m_payment_id: invoiceId
             })

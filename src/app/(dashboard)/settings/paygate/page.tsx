@@ -628,12 +628,22 @@ export default function PayGatePage() {
                 </div>
                 <div className="flex items-center gap-6 w-full md:w-auto">
                     <div className="w-full md:w-auto flex items-center justify-between gap-3 bg-muted border border-border px-4 py-2 rounded-xl">
-                        <Label htmlFor="test-mode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Test Mode</Label>
+                        <div className="flex items-center gap-2">
+                            <span className={cn(
+                                "w-2 h-2 rounded-full",
+                                isTestMode ? "bg-orange-500" : "bg-green-500"
+                            )} />
+                            <Label htmlFor="test-mode" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                                {isTestMode ? "Test Mode" : "Live Mode"}
+                            </Label>
+                        </div>
                         <Switch
                             id="test-mode"
                             checked={isTestMode}
                             onCheckedChange={handleTestModeChange}
-                            className="data-[state=checked]:bg-white"
+                            className={cn(
+                                isTestMode ? "data-[state=checked]:bg-orange-500" : "data-[state=unchecked]:bg-green-500"
+                            )}
                         />
                     </div>
                 </div>
@@ -691,8 +701,22 @@ export default function PayGatePage() {
 
                                         <div className="space-y-4 flex-1 overflow-y-auto">
                                             <div className="flex items-center justify-between bg-muted p-3 rounded-xl border border-border">
-                                                <Label className="text-xs font-medium text-foreground">Test Mode</Label>
-                                                <Switch checked={isTestMode} onCheckedChange={handleTestModeChange} />
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn(
+                                                        "w-2 h-2 rounded-full",
+                                                        isTestMode ? "bg-orange-500" : "bg-green-500"
+                                                    )} />
+                                                    <Label className="text-xs font-medium text-foreground">
+                                                        {isTestMode ? "Test Mode" : "Live Mode"}
+                                                    </Label>
+                                                </div>
+                                                <Switch 
+                                                    checked={isTestMode} 
+                                                    onCheckedChange={handleTestModeChange}
+                                                    className={cn(
+                                                        isTestMode ? "data-[state=checked]:bg-orange-500" : "data-[state=unchecked]:bg-green-500"
+                                                    )}
+                                                />
                                             </div>
 
                                             {provider.id === 'payfast' ? (
