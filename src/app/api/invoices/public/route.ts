@@ -80,6 +80,8 @@ export async function GET(request: NextRequest) {
 
         const service = getServiceClient()
 
+        const lookupIsUuid = isUUID(invoiceId)
+
         let query = service
             .from("invoices")
             .select(
@@ -109,6 +111,7 @@ export async function GET(request: NextRequest) {
                     "account_number",
                     "branch_code",
                     "workspace_id",
+                    "created_at",
                     "updated_at",
                     "viewed_at",
                     "paid_at",
@@ -117,13 +120,15 @@ export async function GET(request: NextRequest) {
                 ].join(",")
             )
 
-        if (isUUID(invoiceId)) {
+        if (lookupIsUuid) {
             query = query.eq("id", invoiceId)
         } else {
-            query = query.eq("invoice_number", invoiceId)
+            // invoice_number is not guaranteed to be globally unique across workspaces.
+            // Use a deterministic pick to avoid .single() errors when duplicates exist.
+            query = query.eq("invoice_number", invoiceId).order("created_at", { ascending: false }).limit(1)
         }
 
-        const { data: rawData, error } = await query.single()
+        const { data: rawData, error } = await (lookupIsUuid ? query.maybeSingle() : query.maybeSingle())
 
         if (error || !rawData) {
             return NextResponse.json(
