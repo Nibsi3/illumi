@@ -19,6 +19,10 @@ const settingsNavItems = [
         href: "/settings",
     },
     {
+        title: "Workspaces",
+        href: "/settings/workspaces",
+    },
+    {
         title: "Billing",
         href: "/settings/billing",
     },

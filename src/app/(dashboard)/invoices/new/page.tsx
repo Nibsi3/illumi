@@ -691,7 +691,8 @@ export default function NewInvoicePage() {
                 })
 
                 // Invalidate invoices cache so the list refreshes
-                queryClient.invalidateQueries({ queryKey: ['invoices'] })
+                await queryClient.invalidateQueries({ queryKey: ['invoices'] })
+                await queryClient.refetchQueries({ queryKey: ['invoices'] })
 
                 setTimeout(() => {
                     router.push('/invoices')
