@@ -125,13 +125,25 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
         }
 
-        // Verify user is member of workspace
-        const { data: membership } = await supabase
-            .from('workspace_members')
+        // Verify user is owner or member of workspace
+        const { data: workspace } = await supabase
+            .from('workspaces')
             .select('id')
-            .eq('workspace_id', workspace_id)
-            .eq('user_id', user.id)
-            .single()
+            .eq('id', workspace_id)
+            .eq('owner_id', user.id)
+            .maybeSingle()
+
+        let membership = workspace
+        if (!membership && user.email) {
+            const { data: memberRow } = await supabase
+                .from('workspace_members')
+                .select('id')
+                .eq('workspace_id', workspace_id)
+                .eq('email', user.email)
+                .eq('status', 'active')
+                .maybeSingle()
+            membership = memberRow
+        }
 
         if (!membership) {
             return NextResponse.json({ success: false, error: "Not a member of this workspace" }, { status: 403 })
