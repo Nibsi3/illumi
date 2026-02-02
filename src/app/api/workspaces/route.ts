@@ -3,20 +3,17 @@ import { createClient as createServiceClient } from "@supabase/supabase-js"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 
 function getServiceClient() {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
-    const serviceKey =
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const serviceKey = (
         process.env.SUPABASE_SERVICE_ROLE_KEY ||
         process.env.SUPABASE_SERVICE_ROLE_SECRET ||
         process.env.SUPABASE_SERVICE_ROLE ||
         process.env.SUPABASE_SERVICE_KEY ||
         process.env.SERVICE_ROLE_KEY
-
-    if (!url || !serviceKey) {
-        throw new Error(
-            "Missing Supabase service role credentials. Set NEXT_PUBLIC_SUPABASE_URL (or SUPABASE_URL) and one of: SUPABASE_SERVICE_ROLE_KEY, SUPABASE_SERVICE_ROLE_SECRET, SUPABASE_SERVICE_ROLE, SUPABASE_SERVICE_KEY, SERVICE_ROLE_KEY"
-        )
+    )
+    if (!serviceKey) {
+        throw new Error("Missing Supabase service role key")
     }
-
     return createServiceClient(url, serviceKey)
 }
 
@@ -108,47 +105,26 @@ export async function POST(req: Request) {
 
         const service = getServiceClient()
 
-        // Determine if user has any active Pro subscription.
-        // Subscriptions are stored per workspace_id, so check all workspaces the user owns.
-        // If subscription table is missing/unavailable, treat as free.
+        // Check if user has an active Pro subscription on any owned workspace
         let hasActivePro = false
         try {
             const nowIso = new Date().toISOString()
 
-            // First get all workspace IDs the user owns
-            const { data: ownedWs } = await service
-                .from('workspaces')
-                .select('id')
-                .eq('owner_id', user.id)
+            // Query ALL subscriptions (service role bypasses RLS)
+            const { data: allSubs } = await service
+                .from('subscriptions')
+                .select('tier, status, expires_at, workspace_id, user_id')
 
-            const ownedWorkspaceIds = (ownedWs || []).map((w: any) => w.id).filter(Boolean)
-
-            if (ownedWorkspaceIds.length > 0) {
-                const { data: subs, error: subsError } = await service
-                    .from('subscriptions')
-                    .select('tier, status, expires_at, workspace_id')
-                    .in('workspace_id', ownedWorkspaceIds)
-
-                const subsErrorCode = (subsError as any)?.code
-                const isExpectedSubsError =
-                    subsErrorCode === 'PGRST205' ||
-                    subsErrorCode === '42P01' ||
-                    subsErrorCode === '42501' ||
-                    subsErrorCode === 'PGRST116'
-
-                if (subsError && !isExpectedSubsError) {
-                    console.error('[Workspaces POST] Subscription check error:', subsError)
-                }
-
-                hasActivePro = Boolean(
-                    (subs || []).some((s: any) => {
-                        const tier = (s?.tier || '').toString().toLowerCase()
-                        const status = (s?.status || '').toString().toLowerCase()
-                        const expiresAt = s?.expires_at ? new Date(s.expires_at).toISOString() : null
-                        return tier === 'pro' && status === 'active' && (!expiresAt || expiresAt > nowIso)
-                    })
-                )
-            }
+            // Check if any subscription belongs to this user and is active Pro
+            hasActivePro = Boolean(
+                (allSubs || []).some((s: any) => {
+                    const tier = (s?.tier || '').toString().toLowerCase()
+                    const status = (s?.status || '').toString().toLowerCase()
+                    const expiresAt = s?.expires_at ? new Date(s.expires_at).toISOString() : null
+                    const isUserSub = s.user_id === user.id
+                    return isUserSub && tier === 'pro' && status === 'active' && (!expiresAt || expiresAt > nowIso)
+                })
+            )
         } catch (err) {
             console.error('[Workspaces POST] Subscription check failed:', err)
             hasActivePro = false
@@ -185,17 +161,24 @@ export async function POST(req: Request) {
 
         // Add owner to workspace_members so membership checks work consistently
         if (created?.id && user.email) {
+            const ownerEmail = user.email.toLowerCase().trim()
+            console.log('[Workspaces POST] Adding owner to workspace_members:', { workspace_id: created.id, email: ownerEmail, user_id: user.id })
             try {
-                const { error: memberError } = await service
+                const { data: memberData, error: memberError } = await service
                     .from('workspace_members')
-                    .upsert({
+                    .insert({
                         workspace_id: created.id,
-                        email: user.email.toLowerCase().trim(),
+                        user_id: user.id,
+                        email: ownerEmail,
                         role: 'owner',
                         status: 'active',
-                    }, { onConflict: 'workspace_id,email' })
+                        joined_at: new Date().toISOString(),
+                    })
+                    .select()
                 if (memberError) {
                     console.error('[Workspaces POST] Failed to add owner to workspace_members:', memberError)
+                } else {
+                    console.log('[Workspaces POST] Successfully added owner to workspace_members:', memberData)
                 }
             } catch (err: any) {
                 console.error('[Workspaces POST] Failed to add owner to workspace_members:', err)

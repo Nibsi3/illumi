@@ -93,9 +93,11 @@ async function backfillOwners() {
             .from('workspace_members')
             .upsert({
                 workspace_id: ws.id,
+                user_id: ws.owner_id,
                 email: ownerEmail,
                 role: 'owner',
                 status: 'active',
+                joined_at: new Date().toISOString(),
             }, { onConflict: 'workspace_id,email' })
 
         if (insertError) {
