@@ -169,6 +169,25 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: createError.message }, { status: 500 })
         }
 
+        // Add owner to workspace_members so membership checks work consistently
+        if (created?.id && user.email) {
+            try {
+                const { error: memberError } = await service
+                    .from('workspace_members')
+                    .upsert({
+                        workspace_id: created.id,
+                        email: user.email.toLowerCase().trim(),
+                        role: 'owner',
+                        status: 'active',
+                    }, { onConflict: 'workspace_id,email' })
+                if (memberError) {
+                    console.error('[Workspaces POST] Failed to add owner to workspace_members:', memberError)
+                }
+            } catch (err: any) {
+                console.error('[Workspaces POST] Failed to add owner to workspace_members:', err)
+            }
+        }
+
         return NextResponse.json({ success: true, workspace: created }, { status: 200 })
     } catch (error: any) {
         return NextResponse.json(
