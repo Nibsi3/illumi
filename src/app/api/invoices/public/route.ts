@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
         if (error) {
             console.error("Public invoice fetch query error:", error)
             return NextResponse.json(
-                { success: false, error: "Failed to fetch invoice" },
+                { success: false, error: "Failed to fetch invoice", details: error.message || String(error) },
                 { status: 500 }
             )
         }
