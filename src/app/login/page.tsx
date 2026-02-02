@@ -45,7 +45,7 @@ export default function LoginPage() {
     const [verificationCode, setVerificationCode] = useState("")
     const [loading, setLoading] = useState(false)
     const [googleLoading, setGoogleLoading] = useState(false)
-    const supabase = createClient()
+    const supabase = typeof window === 'undefined' ? null : createClient()
     const [nextPath, setNextPath] = useState('/overview')
     const { theme } = useTheme()
 
@@ -65,6 +65,11 @@ export default function LoginPage() {
 
     const handleGoogleSignIn = async () => {
         setGoogleLoading(true)
+        if (!supabase) {
+            toast.error('Supabase client is not available')
+            setGoogleLoading(false)
+            return
+        }
         try {
             localStorage.setItem('illumi_auth_next', nextPath)
         } catch {
@@ -106,6 +111,11 @@ export default function LoginPage() {
         if (!email || !password) return
 
         setLoading(true)
+        if (!supabase) {
+            toast.error('Supabase client is not available')
+            setLoading(false)
+            return
+        }
         try {
             localStorage.setItem('illumi_auth_next', nextPath)
         } catch {
@@ -134,6 +144,11 @@ export default function LoginPage() {
         if (!email || !password) return
 
         setLoading(true)
+        if (!supabase) {
+            toast.error('Supabase client is not available')
+            setLoading(false)
+            return
+        }
         const normalizedEmail = email.toLowerCase().trim()
 
         const { error } = await supabase.auth.signUp({
@@ -161,6 +176,11 @@ export default function LoginPage() {
         if (!email || !verificationCode) return
 
         setLoading(true)
+        if (!supabase) {
+            toast.error('Supabase client is not available')
+            setLoading(false)
+            return
+        }
         const normalizedEmail = email.toLowerCase().trim()
 
         const { error } = await supabase.auth.verifyOtp({
@@ -314,6 +334,10 @@ export default function LoginPage() {
                                     type="button"
                                     className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
                                     onClick={async () => {
+                                        if (!supabase) {
+                                            toast.error('Supabase client is not available')
+                                            return
+                                        }
                                         if (!email) return
                                         const normalizedEmail = email.toLowerCase().trim()
                                         const { error } = await supabase.auth.resend({
