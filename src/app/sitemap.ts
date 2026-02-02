@@ -90,12 +90,23 @@ const discoverPublicRoutes = () => {
   return Array.from(new Set(results)).sort((a, b) => a.localeCompare(b))
 }
 
+// Static comparison pages (dynamic routes excluded from auto-discovery)
+const comparisonPages = [
+  '/compare/xero',
+  '/compare/sage',
+  '/compare/zoho-invoice',
+  '/compare/quickbooks',
+]
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
 
   const paths = discoverPublicRoutes()
 
-  return paths.map((path) => {
+  // Add comparison pages
+  const allPaths = [...paths, ...comparisonPages]
+
+  return allPaths.map((path) => {
     const url = `${baseUrl}${path === '/' ? '' : path}`
 
     const isHome = path === '/'
@@ -111,6 +122,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isFreeTools = path === '/invoice-generator' || path === '/receipt-maker'
     const isSeoContent = path === '/glossary' || path === '/what-is-an-invoice' || path === '/blog'
     const isSolutions = path === '/for-business' || path === '/for-individuals'
+    const isComparison = path.startsWith('/compare/')
 
     let changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']
     let priority: number
@@ -136,6 +148,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     } else if (isSeoContent) {
       changeFrequency = 'weekly'
       priority = 0.7
+    } else if (isComparison) {
+      changeFrequency = 'weekly'
+      priority = 0.85
     } else if (isFeatures) {
       changeFrequency = 'weekly'
       priority = 0.8
