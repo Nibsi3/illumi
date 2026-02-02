@@ -138,8 +138,15 @@ export async function GET(request: NextRequest) {
         }
 
         if (!rawData) {
+            // Debug: check if any invoice exists with similar number
+            const { data: debugData, error: debugError } = await service
+                .from("invoices")
+                .select("id, invoice_number")
+                .ilike("invoice_number", `%${invoiceId.slice(-4)}%`)
+                .limit(5)
+            console.error("Invoice not found. Lookup:", { invoiceId, lookupIsUuid, debugMatches: debugData, debugError })
             return NextResponse.json(
-                { success: false, error: "Invoice not found" },
+                { success: false, error: "Invoice not found", lookup: { id: invoiceId, isUuid: lookupIsUuid }, similar: debugData || [] },
                 { status: 404 }
             )
         }
