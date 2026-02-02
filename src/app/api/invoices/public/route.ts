@@ -100,7 +100,6 @@ export async function GET(request: NextRequest) {
                     "template",
                     "invoice_mode",
                     "logo_url",
-                    "hide_illumi_branding",
                     "payment_provider",
                     "vat_rate",
                     "vat_amount",
