@@ -31,6 +31,22 @@ export async function POST(request: NextRequest) {
 
         const service = getServiceClient()
 
+        // Fast path: if invoice is already viewed/paid, do nothing.
+        const { data: existing, error: existingError } = await service
+            .from("invoices")
+            .select("id,status,viewed_at")
+            .eq("id", invoiceId)
+            .maybeSingle()
+
+        if (!existingError && existing) {
+            const status = String(existing.status || "").toLowerCase()
+            if (status !== "sent" || existing.viewed_at) {
+                const res = NextResponse.json({ success: true })
+                res.headers.set("Cache-Control", "no-store")
+                return res
+            }
+        }
+
         // Only update if current status is 'sent'
         const { error } = await service
             .from("invoices")
@@ -49,7 +65,9 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        return NextResponse.json({ success: true })
+        const res = NextResponse.json({ success: true })
+        res.headers.set("Cache-Control", "no-store")
+        return res
     } catch (error: any) {
         console.error("Mark viewed error:", error)
         return NextResponse.json(

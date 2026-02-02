@@ -36,8 +36,40 @@ export async function GET(request: NextRequest) {
 
         let query = service
             .from("invoices")
-            .select("*, customers(*), invoice_items(*)")
-            .limit(1)
+            .select(
+                [
+                    "id",
+                    "invoice_number",
+                    "status",
+                    "issue_date",
+                    "due_date",
+                    "currency",
+                    "subtotal",
+                    "tax_rate",
+                    "tax_amount",
+                    "total",
+                    "notes",
+                    "template",
+                    "invoice_mode",
+                    "logo_url",
+                    "hide_illumi_branding",
+                    "payment_provider",
+                    "vat_rate",
+                    "vat_amount",
+                    "from_email",
+                    "company_website",
+                    "bank_name",
+                    "account_name",
+                    "account_number",
+                    "branch_code",
+                    "workspace_id",
+                    "updated_at",
+                    "viewed_at",
+                    "paid_at",
+                    "customers(name,email,address)",
+                    "invoice_items(description,quantity,unit_price,total)",
+                ].join(",")
+            )
 
         if (isUUID(invoiceId)) {
             query = query.eq("id", invoiceId)
@@ -102,6 +134,9 @@ export async function GET(request: NextRequest) {
             account_number: data.account_number,
             branch_code: data.branch_code,
             workspace_id: data.workspace_id,
+            updated_at: data.updated_at,
+            viewed_at: data.viewed_at,
+            paid_at: data.paid_at,
             customers: data.customers
                 ? {
                       name: data.customers.name,
@@ -117,7 +152,11 @@ export async function GET(request: NextRequest) {
             })),
         }
 
-        return NextResponse.json({ success: true, invoice: safeInvoice })
+        // Cache public invoice payload briefly to reduce repeated DB egress.
+        // Keep TTL short because invoices can change (viewed/paid).
+        const res = NextResponse.json({ success: true, invoice: safeInvoice })
+        res.headers.set("Cache-Control", "public, max-age=60, s-maxage=300, stale-while-revalidate=86400")
+        return res
     } catch (error: any) {
         console.error("Public invoice fetch error:", error)
         return NextResponse.json(
