@@ -111,7 +111,6 @@ export async function GET(request: NextRequest) {
                     "account_number",
                     "branch_code",
                     "workspace_id",
-                    "created_at",
                     "updated_at",
                     "viewed_at",
                     "paid_at",
@@ -125,12 +124,20 @@ export async function GET(request: NextRequest) {
         } else {
             // invoice_number is not guaranteed to be globally unique across workspaces.
             // Use a deterministic pick to avoid .single() errors when duplicates exist.
-            query = query.eq("invoice_number", invoiceId).order("created_at", { ascending: false }).limit(1)
+            query = query.eq("invoice_number", invoiceId).order("updated_at", { ascending: false }).limit(1)
         }
 
         const { data: rawData, error } = await (lookupIsUuid ? query.maybeSingle() : query.maybeSingle())
 
-        if (error || !rawData) {
+        if (error) {
+            console.error("Public invoice fetch query error:", error)
+            return NextResponse.json(
+                { success: false, error: "Failed to fetch invoice" },
+                { status: 500 }
+            )
+        }
+
+        if (!rawData) {
             return NextResponse.json(
                 { success: false, error: "Invoice not found" },
                 { status: 404 }
