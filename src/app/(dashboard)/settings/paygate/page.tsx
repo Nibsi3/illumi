@@ -722,13 +722,15 @@ export default function PayGatePage() {
                                             {provider.id === 'payfast' ? (
                                                 <>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant ID</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                                                            {isTestMode ? "Test" : "Live"} Merchant ID
+                                                        </Label>
                                                         <div className="relative">
                                                             <Input
                                                                 type={showKey1 ? "text" : "password"}
-                                                                value={testKey1}
-                                                                onChange={(e) => setTestKey1(e.target.value)}
-                                                                placeholder={getProviderPlaceholders(provider.id).test1}
+                                                                value={isTestMode ? testKey1 : liveKey1}
+                                                                onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
+                                                                placeholder={isTestMode ? "10000100" : "Your live merchant ID"}
                                                                 className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
                                                             />
                                                             <Button
@@ -744,13 +746,15 @@ export default function PayGatePage() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">Merchant Key</Label>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                                                            {isTestMode ? "Test" : "Live"} Merchant Key
+                                                        </Label>
                                                         <div className="relative">
                                                             <Input
                                                                 type={showKey2 ? "text" : "password"}
-                                                                value={testKey2}
-                                                                onChange={(e) => setTestKey2(e.target.value)}
-                                                                placeholder={getProviderPlaceholders(provider.id).test2}
+                                                                value={isTestMode ? testKey2 : liveKey2}
+                                                                onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
+                                                                placeholder={isTestMode ? "46f0cd694581a" : "Your live merchant key"}
                                                                 className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
                                                             />
                                                             <Button
