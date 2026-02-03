@@ -485,6 +485,125 @@ export async function POST(req: Request) {
             })
         }
 
+        // Stitch Implementation
+        if (provider === 'stitch') {
+            let stitchClientId = ''
+            let stitchClientSecret = ''
+
+            if (resolvedWorkspaceId) {
+                const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'stitch', mode)
+                if (keys) {
+                    stitchClientId = (keys.client_id || '').trim()
+                    stitchClientSecret = (keys.client_secret || '').trim()
+                }
+            }
+
+            if (!stitchClientId || !stitchClientSecret) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: 'Stitch credentials not configured. Add Stitch keys in Settings > PayGate.',
+                        provider: 'stitch',
+                    },
+                    { status: 500 }
+                )
+            }
+
+            // Step 1: Get access token using client credentials
+            const tokenRes = await fetch('https://secure.stitch.money/connect/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    grant_type: 'client_credentials',
+                    client_id: stitchClientId,
+                    client_secret: stitchClientSecret,
+                    scope: 'client_paymentrequest',
+                }).toString(),
+            })
+
+            const tokenData = await tokenRes.json().catch(() => null)
+            if (!tokenRes.ok || !tokenData?.access_token) {
+                const message = tokenData?.error_description || tokenData?.error || `Stitch auth failed (${tokenRes.status})`
+                return NextResponse.json(
+                    { success: false, error: message, provider: 'stitch' },
+                    { status: 502 }
+                )
+            }
+
+            const accessToken = tokenData.access_token
+
+            // Step 2: Create payment request via GraphQL
+            const amountCents = Math.round(Number(amount) * 100)
+            if (!Number.isFinite(amountCents) || amountCents <= 0) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid amount', provider: 'stitch' },
+                    { status: 400 }
+                )
+            }
+
+            const successUrl = `${domain}/pay/${invoiceId}?status=success&provider=stitch`
+            const cancelUrl = `${domain}/pay/${invoiceId}?status=cancelled&provider=stitch`
+
+            const graphqlQuery = `
+                mutation CreatePaymentRequest($input: PaymentRequestInput!) {
+                    clientPaymentInitiationRequestCreate(input: $input) {
+                        paymentInitiationRequest {
+                            id
+                            url
+                        }
+                    }
+                }
+            `
+
+            const graphqlVariables = {
+                input: {
+                    amount: {
+                        quantity: amountCents,
+                        currency: (currency || 'ZAR').toUpperCase(),
+                    },
+                    payerReference: invoiceNumber || invoiceId,
+                    beneficiaryReference: invoiceNumber || invoiceId,
+                    externalReference: invoiceId,
+                    merchant: {
+                        name: 'Invoice Payment',
+                    },
+                    paymentMethods: ['card', 'instantEft'],
+                },
+            }
+
+            const gqlRes = await fetch('https://api.stitch.money/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    query: graphqlQuery,
+                    variables: graphqlVariables,
+                }),
+            })
+
+            const gqlData = await gqlRes.json().catch(() => null)
+            const paymentRequest = gqlData?.data?.clientPaymentInitiationRequestCreate?.paymentInitiationRequest
+
+            if (!paymentRequest?.url) {
+                const errorMessage = gqlData?.errors?.[0]?.message || 'Stitch payment request creation failed'
+                return NextResponse.json(
+                    { success: false, error: errorMessage, provider: 'stitch' },
+                    { status: 502 }
+                )
+            }
+
+            return NextResponse.json({
+                success: true,
+                link: paymentRequest.url,
+                provider: 'stitch',
+                reference: paymentRequest.id,
+            })
+        }
+
         // Generic fallback for unknown providers
         const paymentLink = `https://pay.illumi.co.za/${provider}/${invoiceId}?amt=${amount}&cur=${currency}`
 

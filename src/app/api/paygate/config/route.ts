@@ -118,6 +118,8 @@ export async function GET(req: Request) {
                 if (keyName === 'entity_id') keys[`${prefix}EntityId`] = keyValue
                 if (keyName === 'access_token') keys[`${prefix}AccessToken`] = keyValue
                 if (keyName === 'publishable_key') keys[`${prefix}PublishableKey`] = keyValue
+                if (keyName === 'client_id') keys[`${prefix}ClientId`] = keyValue
+                if (keyName === 'client_secret') keys[`${prefix}ClientSecret`] = keyValue
             }
         }
 
@@ -258,6 +260,12 @@ export async function POST(req: Request) {
             add('test', 'secret_key', keys.testSecretKey)
             add('live', 'publishable_key', keys.livePublishableKey)
             add('live', 'secret_key', keys.liveSecretKey)
+
+            // Stitch: test/live client_id + client_secret
+            add('test', 'client_id', keys.testClientId)
+            add('test', 'client_secret', keys.testClientSecret)
+            add('live', 'client_id', keys.liveClientId)
+            add('live', 'client_secret', keys.liveClientSecret)
 
             for (const entry of keyEntries) {
                 const { error: keyError } = await serviceClient

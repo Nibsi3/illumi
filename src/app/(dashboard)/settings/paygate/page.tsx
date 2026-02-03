@@ -59,6 +59,13 @@ const providers = [
         logo: "https://stripe.com/img/v3/home/social.png",
         connected: false,
     },
+    {
+        id: "stitch",
+        name: "Stitch",
+        description: "Pay by bank, card, wallets (Apple Pay, Google Pay) and more. Fast, secure South African payments.",
+        logo: "https://stitch.money/images/stitch-logo.svg",
+        connected: false,
+    },
 ]
 
 export default function PayGatePage() {
@@ -182,6 +189,13 @@ export default function PayGatePage() {
                     live1: 'Live publishable key',
                     live2: 'Live secret key',
                 }
+            case 'stitch':
+                return {
+                    test1: 'Test client ID',
+                    test2: 'Test client secret',
+                    live1: 'Live client ID',
+                    live2: 'Live client secret',
+                }
             default:
                 return {
                     test1: 'Test key 1',
@@ -236,6 +250,13 @@ export default function PayGatePage() {
                     live1: 'pk_live_...',
                     live2: 'sk_live_...',
                 }
+            case 'stitch':
+                return {
+                    test1: 'test-client-id-...',
+                    test2: 'test-client-secret-...',
+                    live1: 'client-id-...',
+                    live2: 'client-secret-...',
+                }
             default:
                 return {
                     test1: 'test-...',
@@ -262,6 +283,15 @@ export default function PayGatePage() {
             setTestKey2(savedKeys.testSecretKey || "")
             setLiveKey1(savedKeys.livePublishableKey || "")
             setLiveKey2(savedKeys.liveSecretKey || "")
+            setPassphrase("")
+            return
+        }
+
+        if (providerId === 'stitch') {
+            setTestKey1(savedKeys.testClientId || "")
+            setTestKey2(savedKeys.testClientSecret || "")
+            setLiveKey1(savedKeys.liveClientId || "")
+            setLiveKey2(savedKeys.liveClientSecret || "")
             setPassphrase("")
             return
         }
@@ -348,6 +378,15 @@ export default function PayGatePage() {
                 testSecretKey: testKey2,
                 livePublishableKey: liveKey1,
                 liveSecretKey: liveKey2,
+            }
+        }
+
+        if (providerId === 'stitch') {
+            return {
+                testClientId: testKey1,
+                testClientSecret: testKey2,
+                liveClientId: liveKey1,
+                liveClientSecret: liveKey2,
             }
         }
 
@@ -445,6 +484,18 @@ export default function PayGatePage() {
                 }
                 if (key2.length < 20) {
                     return { valid: false, error: "Peach Payments Access Token seems too short" }
+                }
+                break
+                
+            case 'stitch':
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Client ID and Client Secret are required" }
+                }
+                if (key1.length < 10) {
+                    return { valid: false, error: "Stitch Client ID seems too short" }
+                }
+                if (key2.length < 10) {
+                    return { valid: false, error: "Stitch Client Secret seems too short" }
                 }
                 break
         }
