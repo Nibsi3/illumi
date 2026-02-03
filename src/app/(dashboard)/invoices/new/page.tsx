@@ -1459,10 +1459,9 @@ export default function NewInvoicePage() {
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment Info</span>
-                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-center">
+                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                                 <span className={cn("text-xs font-medium", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment method</span>
-                                                <div className="sm:col-start-2 sm:justify-self-center">
-                                                    <DropdownMenu>
+                                                <DropdownMenu>
                                                         <DropdownMenuTrigger asChild>
                                                             <button className={cn(
                                                                 "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs cursor-pointer flex items-center justify-between",
@@ -1525,10 +1524,8 @@ export default function NewInvoicePage() {
                                                                     PayGate (Pay now link)
                                                                 </DropdownMenuItem>
                                                             )}
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </div>
-                                                <div className="hidden sm:block" />
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
 
                                             {paymentMethod === 'paygate' ? (
