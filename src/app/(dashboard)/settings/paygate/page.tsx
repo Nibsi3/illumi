@@ -407,27 +407,44 @@ export default function PayGatePage() {
     const validateProviderKeys = (providerId: string): { valid: boolean; error?: string } => {
         const key1 = (isTestMode ? testKey1 : liveKey1).trim()
         const key2 = (isTestMode ? testKey2 : liveKey2).trim()
+        const mode = isTestMode ? 'test' : 'live'
+        
+        // If keys are already saved and user hasn't entered new values, that's valid
+        const key1Saved = hasKeySaved(providerId, 'key1', mode)
+        const key2Saved = hasKeySaved(providerId, 'key2', mode)
 
         switch (providerId) {
             case 'payfast':
-                if (!key1 || !key2) {
-                    return { valid: false, error: "Merchant ID and Merchant Key are required" }
+                // Only require keys if not already saved
+                if (!key1 && !key1Saved) {
+                    return { valid: false, error: "Merchant ID is required" }
                 }
-                if (!/^\d+$/.test(key1)) {
+                if (!key2 && !key2Saved) {
+                    return { valid: false, error: "Merchant Key is required" }
+                }
+                // Validate format only if new key is entered
+                if (key1 && !/^\d+$/.test(key1)) {
                     return { valid: false, error: "PayFast Merchant ID must be numeric (e.g., 10000100)" }
                 }
-                if (key1.length < 5) {
+                if (key1 && key1.length < 5) {
                     return { valid: false, error: "PayFast Merchant ID seems too short" }
                 }
                 break
                 
             case 'yoco':
-                if (!key1 || !key2) {
-                    return { valid: false, error: "Public Key and Secret Key are required" }
+                // Only require keys if not already saved
+                if (!key1 && !key1Saved) {
+                    return { valid: false, error: "Public Key is required" }
                 }
-                const yocoPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
-                if (!key2.startsWith(yocoPrefix)) {
-                    return { valid: false, error: `Yoco ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${yocoPrefix}"` }
+                if (!key2 && !key2Saved) {
+                    return { valid: false, error: "Secret Key is required" }
+                }
+                // Validate format only if new key is entered
+                if (key2) {
+                    const yocoPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
+                    if (!key2.startsWith(yocoPrefix)) {
+                        return { valid: false, error: `Yoco ${isTestMode ? 'Test' : 'Live'} Secret Key must start with "${yocoPrefix}"` }
+                    }
                 }
                 break
                 
