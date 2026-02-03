@@ -239,7 +239,7 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
-                heading: "Recurring invoices (retainters & subscriptions)",
+                heading: "Recurring invoices (retainers & subscriptions)",
                 body: [
                     "Use recurring invoices when you want Illumi to generate new invoices on a schedule.",
                     "A recurring invoice is ideal for monthly retainers, service subscriptions, and maintenance plans.",
