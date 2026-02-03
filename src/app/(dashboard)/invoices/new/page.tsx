@@ -1265,46 +1265,6 @@ export default function NewInvoicePage() {
                                     </div>
                                 </div>
 
-                                {paymentMethod === 'paygate' && (
-                                    <div className="flex justify-center mt-16">
-                                        <div className="bg-card border border-border p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all w-full max-w-[560px]">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-muted blur-[50px] -mr-16 -mt-16" />
-                                            <div className="flex items-center gap-4 relative z-10">
-                                                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
-                                                    <CreditCard className="h-5 w-5 text-foreground" />
-                                                </div>
-                                                <div className="flex flex-col min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-xs font-black text-foreground uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                                                            <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{isPaygateTestMode ? 'Test' : 'Live'}</span>
-                                                        </div>
-                                                        <div className="flex items-center px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
-                                                            <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{paygateLabel}</span>
-                                                        </div>
-                                                    </div>
-                                                    <span className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                variant="ghost"
-                                                className="w-full mt-4 h-auto py-3 text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-muted border border-border gap-2 whitespace-normal text-center leading-relaxed"
-                                                onClick={() => {
-                                                    import('sonner').then(({ toast }) => {
-                                                        toast.success("Payment Link Generated", {
-                                                            description: "The customer portal link has been attached to this invoice."
-                                                        })
-                                                    })
-                                                }}
-                                            >
-                                                <Globe className="h-3 w-3 shrink-0" />
-                                                Pay with Paygate (Customer Preview)
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
-
                                 {/* Meta Details */}
                                 <div id="invoice-details" />
                                 {!canSchedule && (
@@ -1569,7 +1529,43 @@ export default function NewInvoicePage() {
                                             </div>
 
                                             {paymentMethod === 'paygate' ? (
-                                                <div />
+                                                <div className="flex justify-center">
+                                                    <div className="bg-card border border-border p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all w-full max-w-[560px]">
+                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-muted blur-[50px] -mr-16 -mt-16" />
+                                                        <div className="flex items-center gap-4 relative z-10">
+                                                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
+                                                                <CreditCard className="h-5 w-5 text-foreground" />
+                                                            </div>
+                                                            <div className="flex flex-col min-w-0 flex-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs font-black text-foreground uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
+                                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
+                                                                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                                                                        <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{isPaygateTestMode ? 'Test' : 'Live'}</span>
+                                                                    </div>
+                                                                    <div className="flex items-center px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
+                                                                        <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{paygateLabel}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <span className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="w-full mt-4 h-auto py-3 text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-muted border border-border gap-2 whitespace-normal text-center leading-relaxed"
+                                                            onClick={() => {
+                                                                import('sonner').then(({ toast }) => {
+                                                                    toast.success("Payment Link Generated", {
+                                                                        description: "The customer portal link has been attached to this invoice."
+                                                                    })
+                                                                })
+                                                            }}
+                                                        >
+                                                            <Globe className="h-3 w-3 shrink-0" />
+                                                            Pay with Paygate (Customer Preview)
+                                                        </Button>
+                                                    </div>
+                                                </div>
                                             ) : (
                                                 <div className={cn("space-y-1 text-sm font-medium", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}>
                                                     {settings.accountName && <p>Account name: {settings.accountName}</p>}
