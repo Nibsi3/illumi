@@ -86,7 +86,7 @@ export default function PayGatePage() {
         async function loadSettings() {
             setIsLoadingSettings(true)
             try {
-                const res = await fetch(`/api/paygate/config?workspace_id=${activeWorkspace.id}`)
+                const res = await fetch(`/api/paygate/config?workspace_id=${activeWorkspace!.id}`)
                 const data = await res.json()
                 
                 if (cancelled) return
