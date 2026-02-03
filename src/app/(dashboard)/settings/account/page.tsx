@@ -1,17 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSettings } from "@/lib/settings-context"
+import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 export default function AccountPage() {
     const { logo, setLogo } = useSettings()
-    const [name, setName] = useState("Cameron Falck")
-    const [email, setEmail] = useState("cameronfalck03@gmail.com")
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [isLoading, setIsLoading] = useState(true)
+    const [isSaving, setIsSaving] = useState(false)
+    const supabase = createClient()
+
+    useEffect(() => {
+        async function loadUser() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (user) {
+                    setName(user.user_metadata?.full_name || user.email?.split('@')[0] || '')
+                    setEmail(user.email || '')
+                }
+            } catch (err) {
+                console.error('Failed to load user:', err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        loadUser()
+    }, [supabase])
 
     const handleImageUpload = () => {
         const input = document.createElement('input')
@@ -109,8 +131,25 @@ export default function AccountPage() {
 
             {/* Footer Actions */}
             <div className="flex justify-end pt-10 border-t border-border mt-12">
-                <Button className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 font-semibold rounded-lg">
-                    Save changes
+                <Button 
+                    onClick={async () => {
+                        setIsSaving(true)
+                        try {
+                            const { error } = await supabase.auth.updateUser({
+                                data: { full_name: name }
+                            })
+                            if (error) throw error
+                            toast.success("Profile updated successfully")
+                        } catch (err: any) {
+                            toast.error("Failed to update profile", { description: err?.message })
+                        } finally {
+                            setIsSaving(false)
+                        }
+                    }}
+                    disabled={isSaving || isLoading}
+                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 font-semibold rounded-lg"
+                >
+                    {isSaving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</> : "Save changes"}
                 </Button>
             </div>
         </div>

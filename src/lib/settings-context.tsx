@@ -133,7 +133,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.hideIllumiBranding !== undefined) {
                         setHideIllumiBranding(parsed.hideIllumiBranding === true || parsed.hideIllumiBranding === 'true')
                     }
-                    if (parsed.logo) setLogo(parsed.logo)
                     if (parsed.companyName) setCompanyName(parsed.companyName)
                     if (parsed.companyWebsite !== undefined) setCompanyWebsite(parsed.companyWebsite)
                     if (parsed.companyAddress) setCompanyNameAddress(parsed.companyAddress)
@@ -148,7 +147,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     // Migrate legacy (non-workspace) settings into workspace-scoped storage.
                     // This prevents losing preferences when the workspace loads after settings were saved.
                     if (storageKey !== legacyKey && !localStorage.getItem(storageKey)) {
-                        localStorage.setItem(storageKey, storedSettings)
+                        try {
+                            const migrated = { ...parsed }
+                            delete (migrated as any).logo
+                            localStorage.setItem(storageKey, JSON.stringify(migrated))
+                        } catch {
+                            // ignore
+                        }
                     }
                 }
             } catch (e) {
@@ -186,7 +191,6 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             fromEmail,
             sendInvoiceCopyToSelf,
             hideIllumiBranding,
-            logo,
             companyName,
             companyWebsite,
             companyAddress,
@@ -198,12 +202,20 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             activePaymentProvider,
             connectedProviders,
         }
-        localStorage.setItem(storageKey, JSON.stringify(settings))
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(settings))
+        } catch (e) {
+            console.error('Failed to persist settings', e)
+        }
     }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, bankName, accountName, accountNumber, branchCode, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
 
     useEffect(() => {
         if (!isBillingLoaded) return
-        localStorage.setItem("illumi_billing", JSON.stringify({ billingMethods }))
+        try {
+            localStorage.setItem("illumi_billing", JSON.stringify({ billingMethods }))
+        } catch (e) {
+            console.error('Failed to persist billing', e)
+        }
     }, [billingMethods, isBillingLoaded])
 
     return (

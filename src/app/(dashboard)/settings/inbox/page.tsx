@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,8 +20,19 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
 
 export default function InboxSettings() {
+    const [userEmail, setUserEmail] = useState<string | null>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        async function loadUser() {
+            const { data: { user } } = await supabase.auth.getUser()
+            setUserEmail(user?.email || null)
+        }
+        loadUser()
+    }, [supabase])
     return (
         <div className="space-y-12 pb-32">
             <div>
@@ -44,8 +55,8 @@ export default function InboxSettings() {
                             <img src="https://www.google.com/favicon.ico" className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" alt="Gmail" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-sm font-medium text-foreground">cameronfalck03@gmail.com</span>
-                            <span className="text-[11px] text-muted-foreground">Last accessed about 5 hours ago</span>
+                            <span className="text-sm font-medium text-foreground">{userEmail || 'No email connected'}</span>
+                            <span className="text-[11px] text-muted-foreground">Connected via Google</span>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">

@@ -149,8 +149,8 @@ export default function GeneralSettings() {
             }
 
             toast.success("Settings saved successfully")
-        } catch {
-            toast.success("Settings saved successfully")
+        } catch (err: any) {
+            toast.error("Failed to save settings", { description: err?.message || "Please try again." })
         }
     }
 
