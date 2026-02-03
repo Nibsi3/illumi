@@ -74,21 +74,29 @@ export default function PayGatePage() {
     const [isTestMode, setIsTestMode] = useState(true)
     const [isLoadingSettings, setIsLoadingSettings] = useState(true)
     
-    // Load settings from Supabase on mount
+    // Load settings from Supabase on mount and when workspace changes
     useEffect(() => {
+        // Don't set loading to false if we don't have a workspace yet - wait for it
+        if (!activeWorkspace?.id) {
+            return
+        }
+        
+        let cancelled = false
+        
         async function loadSettings() {
-            if (!activeWorkspace?.id) {
-                setIsLoadingSettings(false)
-                return
-            }
+            setIsLoadingSettings(true)
             try {
                 const res = await fetch(`/api/paygate/config?workspace_id=${activeWorkspace.id}`)
                 const data = await res.json()
+                
+                if (cancelled) return
+                
                 if (data.success && data.settings) {
                     setActivePaymentProvider(data.settings.active_provider || null)
                     setConnectedProviders(data.settings.connected_providers || [])
-                    setIsTestMode(data.settings.test_mode ?? true)
-                    // Load masked keys for display
+                    // Explicitly handle boolean - don't use nullish coalescing which treats false as falsy
+                    const loadedTestMode = typeof data.settings.test_mode === 'boolean' ? data.settings.test_mode : true
+                    setIsTestMode(loadedTestMode)
                     if (data.providerKeys) {
                         setProviderKeys(data.providerKeys)
                     }
@@ -96,10 +104,17 @@ export default function PayGatePage() {
             } catch (err) {
                 console.error('Failed to load paygate settings:', err)
             } finally {
-                setIsLoadingSettings(false)
+                if (!cancelled) {
+                    setIsLoadingSettings(false)
+                }
             }
         }
+        
         loadSettings()
+        
+        return () => {
+            cancelled = true
+        }
     }, [activeWorkspace?.id, setActivePaymentProvider, setConnectedProviders, setProviderKeys])
     
     // Disconnect all paygates for free users

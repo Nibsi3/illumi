@@ -45,8 +45,9 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
         }
 
-        // Fetch settings (RLS will enforce membership)
-        const { data: settings, error } = await supabase
+        // Use service role to fetch settings (bypasses RLS issues)
+        const serviceClient = getServiceClient()
+        const { data: settings, error } = await serviceClient
             .from('workspace_paygate_settings')
             .select('*')
             .eq('workspace_id', workspaceId)
@@ -60,7 +61,6 @@ export async function GET(req: Request) {
         }
 
         // Fetch keys using service role (masked for display)
-        const serviceClient = getServiceClient()
         const providerKeys: Record<string, any> = {}
         
         if (serviceClient && settings?.connected_providers?.length) {
