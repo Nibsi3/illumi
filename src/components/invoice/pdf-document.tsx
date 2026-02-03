@@ -1,11 +1,5 @@
-import { Document, Page, Text, View, StyleSheet, Font, Image } from "@react-pdf/renderer"
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer"
 import { TemplateId } from "@/lib/invoice/templates"
-
-// Register fonts
-Font.register({
-    family: "Inter",
-    src: "https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2",
-})
 
 const createStyles = (template: TemplateId = 'classic', brandColor: string = '#121212') => {
     const isNoir = template === 'noir'
@@ -16,7 +10,7 @@ const createStyles = (template: TemplateId = 'classic', brandColor: string = '#1
             padding: 40,
             backgroundColor: isNoir ? "#121212" : "#FFFFFF",
             color: isNoir ? "#FBFBFB" : "#121212",
-            fontFamily: "Inter",
+            fontFamily: "Helvetica",
         },
         header: {
             flexDirection: "row",

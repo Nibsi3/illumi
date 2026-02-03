@@ -60,6 +60,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     
     const [invoice, setInvoice] = useState<Invoice | null>(null)
     const [loading, setLoading] = useState(true)
+    const [isDownloading, setIsDownloading] = useState(false)
 
     useEffect(() => {
         async function fetchInvoice() {
@@ -131,6 +132,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     }
 
     const handleDownloadPdf = async () => {
+        if (isDownloading) return
+        setIsDownloading(true)
         try {
             const templateMap: Record<string, TemplateId> = {
                 Classic: 'classic',
@@ -174,6 +177,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             URL.revokeObjectURL(url)
         } catch (e) {
             console.error('PDF download error:', e)
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -213,9 +218,10 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     <Button
                         className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6"
                         onClick={handleDownloadPdf}
+                        disabled={isDownloading}
                     >
                         <Download className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">Download PDF</span>
+                        <span className="hidden sm:inline">{isDownloading ? 'Generating…' : 'Download PDF'}</span>
                     </Button>
                 </div>
             </header>

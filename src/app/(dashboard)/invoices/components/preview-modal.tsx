@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { X, Download, Printer, Share2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -47,6 +47,7 @@ interface PreviewModalProps {
 export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     if (!isOpen) return null
     const { activePaymentProvider } = useSettings()
+    const [isDownloading, setIsDownloading] = useState(false)
 
     const isBankingMode = !data.paymentProvider
 
@@ -79,6 +80,8 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     const total = subtotal + tax
 
     const handleDownloadPdf = async () => {
+        if (isDownloading) return
+        setIsDownloading(true)
         try {
             const templateMap: Record<string, TemplateId> = {
                 Classic: 'classic',
@@ -121,6 +124,8 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
             URL.revokeObjectURL(url)
         } catch (e: any) {
             toast.error('Failed to download PDF', { description: e?.message || 'Please try again.' })
+        } finally {
+            setIsDownloading(false)
         }
     }
 
@@ -165,9 +170,10 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     <Button
                         className="h-9 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-black uppercase tracking-tighter px-3 sm:px-6"
                         onClick={handleDownloadPdf}
+                        disabled={isDownloading}
                     >
                         <Download className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">Download PDF</span>
+                        <span className="hidden sm:inline">{isDownloading ? 'Generating…' : 'Download PDF'}</span>
                     </Button>
                 </div>
             </header>
