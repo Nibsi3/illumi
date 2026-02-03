@@ -76,6 +76,24 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "Your first 30-minute setup checklist",
+                body: [
+                    "Workspace: name, email, address, and logo uploaded.",
+                    "Invoice defaults: currency (ZAR), VAT/tax rate (if applicable), invoice numbering, and any template preferences.",
+                    "Client: name + billing email.",
+                    "Invoice: at least 1–3 line items with correct quantities and prices.",
+                    "Payment info: either bank details are filled in, or PayGate is enabled.",
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "If you’re going to use PayGate, set it up before sending invoices. It’s easier than retrofitting payment links later.",
+                        ],
+                    },
+                ],
+            },
+            {
                 heading: "Test your end-to-end flow",
                 body: [
                     "Send yourself a test invoice and open it in an incognito/private window to see what your client sees.",
@@ -85,6 +103,19 @@ const DOCS: Record<string, DocArticle> = {
                 links: [
                     { title: "Client portal links", href: "/docs/client-portal", description: "What clients see and how the secure link works." },
                     { title: "Troubleshooting", href: "/docs/troubleshooting", description: "If links, emails or payments fail." },
+                ],
+            },
+            {
+                heading: "Common beginner mistakes",
+                body: [
+                    "Mixing up Test vs Live keys in PayGate (causes authentication errors).",
+                    "Forgetting to add the client email (prevents sending).",
+                    "Not checking the PDF/print layout before sending (logo or bottom section might not look right).",
+                    "Using unclear line item descriptions (leads to delayed approvals).",
+                ],
+                links: [
+                    { title: "PayGate", href: "/docs/paygate", description: "Test vs Live mode and provider keys." },
+                    { title: "Invoices", href: "/docs/invoicing", description: "Preview, PDF and printing." },
                 ],
             },
         ],
@@ -108,10 +139,30 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "What workspace settings affect invoices",
+                body: [
+                    "Your logo and business details appear on invoice previews, PDFs and public client links.",
+                    "Your PayGate configuration is workspace-specific, so each workspace can use a different provider.",
+                    "Your invoice defaults (tax/VAT rate, currency, date format) help keep your invoices consistent.",
+                ],
+                links: [
+                    { title: "Invoices", href: "/docs/invoicing", description: "Preview/PDF and invoice consistency." },
+                    { title: "PayGate", href: "/docs/paygate", description: "Payment provider configuration." },
+                ],
+            },
+            {
                 heading: "Branding that shows on invoices",
                 body: [
                     "Your workspace logo and business details are used across invoices and public client links.",
                     "If you operate multiple brands, keep branding separated by workspace.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "If you update your logo, regenerate/download a PDF to verify the new branding is reflected exactly how you expect.",
+                        ],
+                    },
                 ],
             },
             {
@@ -133,6 +184,21 @@ const DOCS: Record<string, DocArticle> = {
                 links: [
                     { title: "PayGate", href: "/docs/paygate", description: "Connect a provider and verify payments." },
                     { title: "Invoices", href: "/docs/invoicing", description: "Create, send and track invoices." },
+                ],
+            },
+            {
+                heading: "Teams (Pro)",
+                body: [
+                    "If you have team members, keep one person responsible for PayGate credentials (to reduce accidental key changes).",
+                    "Use workspaces to separate access across different businesses or departments.",
+                ],
+                callouts: [
+                    {
+                        variant: "warning",
+                        body: [
+                            "Treat payment provider credentials like passwords. Only share them with trusted admins.",
+                        ],
+                    },
                 ],
             },
             {
@@ -173,11 +239,47 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "Recurring invoices (retainters & subscriptions)",
+                body: [
+                    "Use recurring invoices when you want Illumi to generate new invoices on a schedule.",
+                    "A recurring invoice is ideal for monthly retainers, service subscriptions, and maintenance plans.",
+                    "Pair recurring invoices with PayGate providers that support recurring collections when you need automatic recurring payments.",
+                ],
+                links: [
+                    { title: "PayGate", href: "/docs/paygate", description: "Provider setup and payment options." },
+                    { title: "PayGate & payments", href: "/docs/payments", description: "Choosing the right provider." },
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "Start by creating a normal invoice and perfecting your template, totals and payment flow. Then convert to recurring once you’re happy.",
+                        ],
+                    },
+                ],
+            },
+            {
                 heading: "Line items, tax, and discounts",
                 body: [
                     "Use clear line descriptions so clients know what they’re paying for.",
                     "If you apply discounts, use the line discount percentage (Disc %) so totals remain transparent.",
                     "If you’re VAT registered, confirm your VAT rate and ensure the correct amounts show on the preview and PDF.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "Line discounts are applied per item. This makes it easy to discount only certain services while keeping others full price.",
+                        ],
+                    },
+                ],
+            },
+            {
+                heading: "Due dates and payment terms",
+                body: [
+                    "Pick a due date your client understands (e.g. 7 days, 14 days, end-of-month).",
+                    "For retainer clients, use consistent billing dates to reduce payment delays.",
+                    "If you accept online payments, include PayGate links so the client can pay immediately without doing a manual EFT.",
                 ],
             },
             {
@@ -194,6 +296,26 @@ const DOCS: Record<string, DocArticle> = {
                     "Use Preview to confirm layout before sending.",
                     "Download PDF for sending outside of Illumi (or for your records).",
                     "When printing, always check the bottom of the invoice and page breaks to ensure nothing is clipped.",
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "If you change invoice mode (dark/light), always re-check the PDF output so colours and contrast remain readable.",
+                        ],
+                    },
+                ],
+            },
+            {
+                heading: "Getting paid faster",
+                body: [
+                    "Send invoices as soon as work is approved (same-day invoicing tends to get paid faster).",
+                    "Use clear line items and attach any supporting documents if your client requires them.",
+                    "Enable PayGate so clients can pay immediately by card or Pay by Bank (provider dependent).",
+                ],
+                links: [
+                    { title: "PayGate", href: "/docs/paygate", description: "Enable Pay Now links." },
+                    { title: "Client portal links", href: "/docs/client-portal", description: "What clients see." },
                 ],
             },
             {
@@ -231,6 +353,33 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "Vault", href: "/docs/vault", description: "Store receipts and documents." },
                 ],
             },
+            {
+                heading: "Recurring expenses",
+                body: [
+                    "Use recurring expenses for subscriptions like Adobe, Google Workspace, hosting, rent, and insurance.",
+                    "Recurring expenses reduce manual admin and improve month-to-month reporting consistency.",
+                    "If you cancel a subscription, update or disable the recurring expense so reports stay accurate.",
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "If you’re unsure how to categorise an expense, use a simple category now and refine later — consistency matters more than perfection.",
+                        ],
+                    },
+                ],
+            },
+            {
+                heading: "Exporting for your accountant",
+                body: [
+                    "Export CSV regularly (monthly is common).",
+                    "Make sure each expense has a clear description that matches the receipt/vendor.",
+                    "Keep supporting receipts in Vault and use consistent naming so you can find them quickly during reconciliations.",
+                ],
+                links: [
+                    { title: "Vault", href: "/docs/vault", description: "Store receipts and documents." },
+                ],
+            },
         ],
         next: [
             { title: "Vault", href: "/docs/vault", description: "Store receipts and key documents." },
@@ -250,6 +399,22 @@ const DOCS: Record<string, DocArticle> = {
                     "Adds a Pay Now button to invoices.",
                     "Connects to your payment provider (PayFast, Yoco, PayStack, and more).",
                     "Auto-updates invoice status when webhooks confirm payment.",
+                ],
+            },
+            {
+                heading: "Payment links vs webhooks",
+                body: [
+                    "Payment link generation creates a hosted checkout page for the client.",
+                    "Webhooks are optional server callbacks that can mark invoices paid automatically after payment completes.",
+                    "Some providers support webhooks in Illumi today; others may still be link-only.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "If your provider is link-only, you can still use PayGate to collect payment — you’ll just mark invoices paid manually or rely on provider reconciliation.",
+                        ],
+                    },
                 ],
             },
             {
@@ -485,6 +650,23 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "Integrations", href: "/integrations", description: "Compare providers and credential requirements." },
                 ],
             },
+            {
+                heading: "Recurring collections (important)",
+                body: [
+                    "Recurring invoicing and recurring payments are related but not the same.",
+                    "Recurring invoices: Illumi automatically generates new invoices on a schedule.",
+                    "Recurring payments: the payment provider charges the customer automatically (token/subscription).",
+                    "If you need automatic recurring payments, choose a provider that supports tokenization/subscriptions and complete their setup steps.",
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "Start with recurring invoices first. Once that’s stable, add provider-level subscriptions if your business requires it.",
+                        ],
+                    },
+                ],
+            },
         ],
     },
     clients: {
@@ -508,6 +690,22 @@ const DOCS: Record<string, DocArticle> = {
                     "Use the billing contact email your client expects invoices from.",
                     "Store a correct VAT number (if applicable) so VAT invoices are valid.",
                     "If you bill different departments, create separate client entries so sending is always accurate.",
+                ],
+            },
+            {
+                heading: "Client billing workflow",
+                body: [
+                    "Create the client once and keep their billing details up to date.",
+                    "When creating invoices, always select the client from your client list so details auto-fill correctly.",
+                    "If a client changes their billing contact, update the client record before sending the next invoice.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "If you bill multiple contacts at the same company, separate client records per contact is often simpler than trying to manage multiple billing emails on one record.",
+                        ],
+                    },
                 ],
             },
             {
@@ -543,6 +741,14 @@ const DOCS: Record<string, DocArticle> = {
                 links: [
                     { title: "Sending invoices by email", href: "/docs/send-invoices-by-email" },
                     { title: "PayGate", href: "/docs/paygate" },
+                ],
+            },
+            {
+                heading: "What your client can do",
+                body: [
+                    "View invoice details and totals.",
+                    "Download a PDF copy.",
+                    "Pay online when PayGate is enabled (provider dependent).",
                 ],
             },
             {
@@ -588,6 +794,22 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "Troubleshooting", href: "/docs/troubleshooting", description: "If billing or payments look incorrect." },
                 ],
             },
+            {
+                heading: "Security best practices",
+                body: [
+                    "Only admins should manage PayGate provider keys.",
+                    "Never share provider secret keys in emails, invoices, or support tickets.",
+                    "Rotate provider keys if you suspect they were exposed.",
+                ],
+                callouts: [
+                    {
+                        variant: "warning",
+                        body: [
+                            "Treat payment provider credentials like passwords. Anyone with your secret keys can potentially create charges or payment requests in your name.",
+                        ],
+                    },
+                ],
+            },
         ],
     },
     "send-invoices-by-email": {
@@ -615,6 +837,18 @@ const DOCS: Record<string, DocArticle> = {
                 ],
                 links: [
                     { title: "Troubleshooting", href: "/docs/troubleshooting", description: "Email delivery + link issues." },
+                ],
+            },
+            {
+                heading: "What the client receives",
+                body: [
+                    "A professional email with a secure link to view the invoice.",
+                    "From the client portal, they can download the PDF.",
+                    "If PayGate is enabled, they can pay online via the Pay Now button (provider dependent).",
+                ],
+                links: [
+                    { title: "Client portal links", href: "/docs/client-portal", description: "What clients see and can do." },
+                    { title: "PayGate", href: "/docs/paygate", description: "Enable Pay Now links." },
                 ],
             },
         ],
@@ -702,6 +936,14 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "Recommended structure",
+                body: [
+                    "Use consistent naming so searching is fast.",
+                    "Group by vendor + month, or client + project if you store client-related docs.",
+                    "Attach receipts to expenses where possible to simplify audits and bookkeeping.",
+                ],
+            },
+            {
                 heading: "UI preview",
                 mock: "vault_upload",
             },
@@ -745,6 +987,13 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "PDF / printing problems",
+                body: [
+                    "If a PDF looks blank: try downloading again and confirm your browser isn’t blocking it.",
+                    "If the printed invoice is clipped: use the Preview/PDF layout and avoid browser scaling that cuts off the bottom.",
+                ],
+            },
+            {
                 heading: "Checklist",
                 mock: "troubleshooting_checklist",
             },
@@ -754,6 +1003,23 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "PayGate", href: "/docs/paygate", description: "If payments don’t sync." },
                     { title: "Sending invoices by email", href: "/docs/send-invoices-by-email", description: "If emails fail to send." },
                     { title: "Contact support", href: "/contact", description: "If you’re still stuck." },
+                ],
+            },
+            {
+                heading: "What to send support",
+                body: [
+                    "Invoice number and workspace name.",
+                    "Which provider you used (PayFast/Stripe/Stitch/etc).",
+                    "Screenshot of the error + the time it occurred.",
+                    "Whether PayGate was set to Test or Live mode.",
+                ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        body: [
+                            "If the issue is payment-related, include whether you clicked Pay Now from Preview, from an emailed link, or from the public pay page.",
+                        ],
+                    },
                 ],
             },
         ],
