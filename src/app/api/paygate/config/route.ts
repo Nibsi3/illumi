@@ -60,7 +60,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: error.message }, { status: 500 })
         }
 
-        // Fetch keys using service role (masked for display)
+        // Fetch keys using service role (return actual keys so users can see/edit them)
         const providerKeys: Record<string, any> = {}
         
         if (serviceClient && settings?.connected_providers?.length) {
@@ -81,16 +81,17 @@ export async function GET(req: Request) {
                 const keys = (providerKeys[provider] ||= {})
                 const prefix = mode === 'test' ? 'test' : 'live'
 
-                if (keyName === 'merchant_id') keys[`${prefix}MerchantId`] = maskKey(keyValue)
-                if (keyName === 'secret_key') keys[`${prefix}SecretKey`] = maskKey(keyValue)
-                if (keyName === 'merchant_key') keys[`${prefix}MerchantKey`] = maskKey(keyValue)
-                if (keyName === 'passphrase') keys[`${prefix}Passphrase`] = maskKey(keyValue)
-                if (keyName === 'public_key') keys[`${prefix}PublicKey`] = maskKey(keyValue)
-                if (keyName === 'site_code') keys[`${prefix}SiteCode`] = maskKey(keyValue)
-                if (keyName === 'private_key') keys[`${prefix}PrivateKey`] = maskKey(keyValue)
-                if (keyName === 'entity_id') keys[`${prefix}EntityId`] = maskKey(keyValue)
-                if (keyName === 'access_token') keys[`${prefix}AccessToken`] = maskKey(keyValue)
-                if (keyName === 'publishable_key') keys[`${prefix}PublishableKey`] = maskKey(keyValue)
+                // Return actual keys (not masked) so users can see and edit them
+                if (keyName === 'merchant_id') keys[`${prefix}MerchantId`] = keyValue
+                if (keyName === 'secret_key') keys[`${prefix}SecretKey`] = keyValue
+                if (keyName === 'merchant_key') keys[`${prefix}MerchantKey`] = keyValue
+                if (keyName === 'passphrase') keys[`${prefix}Passphrase`] = keyValue
+                if (keyName === 'public_key') keys[`${prefix}PublicKey`] = keyValue
+                if (keyName === 'site_code') keys[`${prefix}SiteCode`] = keyValue
+                if (keyName === 'private_key') keys[`${prefix}PrivateKey`] = keyValue
+                if (keyName === 'entity_id') keys[`${prefix}EntityId`] = keyValue
+                if (keyName === 'access_token') keys[`${prefix}AccessToken`] = keyValue
+                if (keyName === 'publishable_key') keys[`${prefix}PublishableKey`] = keyValue
             }
         }
 

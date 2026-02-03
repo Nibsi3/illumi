@@ -246,33 +246,8 @@ export default function PayGatePage() {
         }
     }
 
-    // Helper to check if a value is a masked key (contains •)
-    const isMaskedKey = (val: string | undefined) => val && val.includes('•')
-    
-    // Helper to get unmasked value or empty string (don't load masked keys into inputs)
-    const unmasked = (val: string | undefined) => isMaskedKey(val) ? "" : (val || "")
-    
-    // Check if keys are saved for a provider (masked keys indicate saved keys)
-    const hasKeySaved = (providerId: string, keyType: 'key1' | 'key2' | 'passphrase', mode: 'test' | 'live') => {
-        const savedKeys = providerKeys[providerId]
-        if (!savedKeys) return false
-        
-        const prefix = mode === 'test' ? 'test' : 'live'
-        if (providerId === 'payfast') {
-            if (keyType === 'key1') return isMaskedKey(savedKeys[`${prefix}MerchantId`])
-            if (keyType === 'key2') return isMaskedKey(savedKeys[`${prefix}MerchantKey`])
-            if (keyType === 'passphrase') return isMaskedKey(savedKeys[`${prefix}Passphrase`]) || isMaskedKey(savedKeys.passphrase)
-        }
-        if (providerId === 'yoco') {
-            if (keyType === 'key1') return isMaskedKey(savedKeys[`${prefix}PublicKey`])
-            if (keyType === 'key2') return isMaskedKey(savedKeys[`${prefix}SecretKey`])
-        }
-        return false
-    }
-
     const mapProviderKeysToState = (providerId: string, savedKeys: any) => {
-        // Don't load masked keys into input fields - they should be empty for re-entry
-        // Masked keys look like "pk_live_••••••••e484" and can't be edited
+        // Load actual keys into input fields so users can see and edit them
         if (!savedKeys) {
             setTestKey1("")
             setTestKey2("")
@@ -283,53 +258,53 @@ export default function PayGatePage() {
         }
 
         if (providerId === 'stripe') {
-            setTestKey1(unmasked(savedKeys.testPublishableKey))
-            setTestKey2(unmasked(savedKeys.testSecretKey))
-            setLiveKey1(unmasked(savedKeys.livePublishableKey))
-            setLiveKey2(unmasked(savedKeys.liveSecretKey))
+            setTestKey1(savedKeys.testPublishableKey || "")
+            setTestKey2(savedKeys.testSecretKey || "")
+            setLiveKey1(savedKeys.livePublishableKey || "")
+            setLiveKey2(savedKeys.liveSecretKey || "")
             setPassphrase("")
             return
         }
 
         if (providerId === 'yoco') {
-            setTestKey1(unmasked(savedKeys.testPublicKey))
-            setTestKey2(unmasked(savedKeys.testSecretKey))
-            setLiveKey1(unmasked(savedKeys.livePublicKey))
-            setLiveKey2(unmasked(savedKeys.liveSecretKey))
+            setTestKey1(savedKeys.testPublicKey || "")
+            setTestKey2(savedKeys.testSecretKey || "")
+            setLiveKey1(savedKeys.livePublicKey || "")
+            setLiveKey2(savedKeys.liveSecretKey || "")
             setPassphrase("")
             return
         }
         if (providerId === 'ozow') {
-            setTestKey1(unmasked(savedKeys.testSiteCode))
-            setTestKey2(unmasked(savedKeys.testPrivateKey))
-            setLiveKey1(unmasked(savedKeys.liveSiteCode))
-            setLiveKey2(unmasked(savedKeys.livePrivateKey))
+            setTestKey1(savedKeys.testSiteCode || "")
+            setTestKey2(savedKeys.testPrivateKey || "")
+            setLiveKey1(savedKeys.liveSiteCode || "")
+            setLiveKey2(savedKeys.livePrivateKey || "")
             setPassphrase("")
             return
         }
         if (providerId === 'peach') {
-            setTestKey1(unmasked(savedKeys.testEntityId))
-            setTestKey2(unmasked(savedKeys.testAccessToken))
-            setLiveKey1(unmasked(savedKeys.liveEntityId))
-            setLiveKey2(unmasked(savedKeys.liveAccessToken))
+            setTestKey1(savedKeys.testEntityId || "")
+            setTestKey2(savedKeys.testAccessToken || "")
+            setLiveKey1(savedKeys.liveEntityId || "")
+            setLiveKey2(savedKeys.liveAccessToken || "")
             setPassphrase("")
             return
         }
         if (providerId === 'payfast') {
-            setTestKey1(unmasked(savedKeys.testMerchantId) || unmasked(savedKeys.merchantId))
-            setTestKey2(unmasked(savedKeys.testMerchantKey) || unmasked(savedKeys.merchantKey))
-            setLiveKey1(unmasked(savedKeys.liveMerchantId))
-            setLiveKey2(unmasked(savedKeys.liveMerchantKey))
-            setPassphrase(unmasked(savedKeys.passphrase) || unmasked(savedKeys.livePassphrase) || unmasked(savedKeys.testPassphrase))
+            setTestKey1(savedKeys.testMerchantId || savedKeys.merchantId || "")
+            setTestKey2(savedKeys.testMerchantKey || savedKeys.merchantKey || "")
+            setLiveKey1(savedKeys.liveMerchantId || "")
+            setLiveKey2(savedKeys.liveMerchantKey || "")
+            setPassphrase(savedKeys.passphrase || savedKeys.livePassphrase || savedKeys.testPassphrase || "")
             return
         }
 
         // Generic fallback (legacy)
-        setTestKey1(unmasked(savedKeys.testMerchantId))
-        setTestKey2(unmasked(savedKeys.testSecretKey))
-        setLiveKey1(unmasked(savedKeys.liveMerchantId))
-        setLiveKey2(unmasked(savedKeys.liveSecretKey))
-        setPassphrase(unmasked(savedKeys.passphrase) || unmasked(savedKeys.livePassphrase) || unmasked(savedKeys.testPassphrase))
+        setTestKey1(savedKeys.testMerchantId || "")
+        setTestKey2(savedKeys.testSecretKey || "")
+        setLiveKey1(savedKeys.liveMerchantId || "")
+        setLiveKey2(savedKeys.liveSecretKey || "")
+        setPassphrase(savedKeys.passphrase || savedKeys.livePassphrase || savedKeys.testPassphrase || "")
     }
 
     const buildKeysPayload = (providerId: string) => {
@@ -407,39 +382,30 @@ export default function PayGatePage() {
     const validateProviderKeys = (providerId: string): { valid: boolean; error?: string } => {
         const key1 = (isTestMode ? testKey1 : liveKey1).trim()
         const key2 = (isTestMode ? testKey2 : liveKey2).trim()
-        const mode = isTestMode ? 'test' : 'live'
-        
-        // If keys are already saved and user hasn't entered new values, that's valid
-        const key1Saved = hasKeySaved(providerId, 'key1', mode)
-        const key2Saved = hasKeySaved(providerId, 'key2', mode)
 
         switch (providerId) {
             case 'payfast':
-                // Only require keys if not already saved
-                if (!key1 && !key1Saved) {
+                if (!key1) {
                     return { valid: false, error: "Merchant ID is required" }
                 }
-                if (!key2 && !key2Saved) {
+                if (!key2) {
                     return { valid: false, error: "Merchant Key is required" }
                 }
-                // Validate format only if new key is entered
-                if (key1 && !/^\d+$/.test(key1)) {
+                if (!/^\d+$/.test(key1)) {
                     return { valid: false, error: "PayFast Merchant ID must be numeric (e.g., 10000100)" }
                 }
-                if (key1 && key1.length < 5) {
+                if (key1.length < 5) {
                     return { valid: false, error: "PayFast Merchant ID seems too short" }
                 }
                 break
                 
             case 'yoco':
-                // Only require keys if not already saved
-                if (!key1 && !key1Saved) {
+                if (!key1) {
                     return { valid: false, error: "Public Key is required" }
                 }
-                if (!key2 && !key2Saved) {
+                if (!key2) {
                     return { valid: false, error: "Secret Key is required" }
                 }
-                // Validate format only if new key is entered
                 if (key2) {
                     const yocoPrefix = isTestMode ? 'sk_test_' : 'sk_live_'
                     if (!key2.startsWith(yocoPrefix)) {
@@ -784,22 +750,15 @@ export default function PayGatePage() {
                                             {provider.id === 'payfast' ? (
                                                 <>
                                                     <div className="space-y-1.5">
-                                                        <div className="flex items-center gap-2">
-                                                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">
-                                                                {isTestMode ? "Test" : "Live"} Merchant ID
-                                                            </Label>
-                                                            {hasKeySaved(provider.id, 'key1', isTestMode ? 'test' : 'live') && (
-                                                                <span className="text-[9px] text-green-500 font-medium flex items-center gap-1">
-                                                                    <IconCheck className="h-3 w-3" /> Saved
-                                                                </span>
-                                                            )}
-                                                        </div>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                                                            {isTestMode ? "Test" : "Live"} Merchant ID
+                                                        </Label>
                                                         <div className="relative">
                                                             <Input
                                                                 type={showKey1 ? "text" : "password"}
                                                                 value={isTestMode ? testKey1 : liveKey1}
                                                                 onChange={(e) => isTestMode ? setTestKey1(e.target.value) : setLiveKey1(e.target.value)}
-                                                                placeholder={hasKeySaved(provider.id, 'key1', isTestMode ? 'test' : 'live') ? "••••••• (leave empty to keep)" : (isTestMode ? "10000100" : "Your live merchant ID")}
+                                                                placeholder={isTestMode ? "10000100" : "Your live merchant ID"}
                                                                 className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
                                                             />
                                                             <Button
@@ -815,22 +774,15 @@ export default function PayGatePage() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-1.5">
-                                                        <div className="flex items-center gap-2">
-                                                            <Label className="text-[10px] uppercase font-bold text-muted-foreground">
-                                                                {isTestMode ? "Test" : "Live"} Merchant Key
-                                                            </Label>
-                                                            {hasKeySaved(provider.id, 'key2', isTestMode ? 'test' : 'live') && (
-                                                                <span className="text-[9px] text-green-500 font-medium flex items-center gap-1">
-                                                                    <IconCheck className="h-3 w-3" /> Saved
-                                                                </span>
-                                                            )}
-                                                        </div>
+                                                        <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                                                            {isTestMode ? "Test" : "Live"} Merchant Key
+                                                        </Label>
                                                         <div className="relative">
                                                             <Input
                                                                 type={showKey2 ? "text" : "password"}
                                                                 value={isTestMode ? testKey2 : liveKey2}
                                                                 onChange={(e) => isTestMode ? setTestKey2(e.target.value) : setLiveKey2(e.target.value)}
-                                                                placeholder={hasKeySaved(provider.id, 'key2', isTestMode ? 'test' : 'live') ? "••••••• (leave empty to keep)" : (isTestMode ? "46f0cd694581a" : "Your live merchant key")}
+                                                                placeholder={isTestMode ? "46f0cd694581a" : "Your live merchant key"}
                                                                 className="h-9 bg-muted border-border text-xs rounded-lg focus:ring-white/10 pr-10"
                                                             />
                                                             <Button
