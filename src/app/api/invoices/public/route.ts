@@ -54,6 +54,27 @@ export async function GET(request: NextRequest) {
             )
         }
 
+        // Workspace branding (name + logo)
+        let workspaceBrand: { name: string | null; logo_url: string | null } | null = null
+        try {
+            if (data.workspace_id) {
+                const { data: ws } = await service
+                    .from('workspaces')
+                    .select('name, logo_url')
+                    .eq('id', data.workspace_id)
+                    .maybeSingle()
+
+                if (ws) {
+                    workspaceBrand = {
+                        name: (ws as any).name ?? null,
+                        logo_url: (ws as any).logo_url ?? null,
+                    }
+                }
+            }
+        } catch {
+            workspaceBrand = null
+        }
+
         let allowHideIllumiBranding = false
         try {
             if (data.workspace_id) {
@@ -89,7 +110,8 @@ export async function GET(request: NextRequest) {
             notes: data.notes,
             template: data.template,
             invoice_mode: data.invoice_mode,
-            logo_url: data.logo_url,
+            logo_url: data.logo_url || workspaceBrand?.logo_url || null,
+            workspace: workspaceBrand,
             hide_illumi_branding: Boolean(data.hide_illumi_branding && allowHideIllumiBranding),
             is_pro_workspace: Boolean(allowHideIllumiBranding),
             payment_provider: data.payment_provider || null,

@@ -113,13 +113,20 @@ export default function PublicInvoicePage() {
 
     const isBankingMode = !invoice.payment_provider
 
+    const senderName = (invoice as any)?.workspace?.name || 'Business'
+    const senderLogo = (invoice as any)?.logo_url || (invoice as any)?.workspace?.logo_url || null
+
     return (
         <div className="min-h-screen bg-muted/5 font-sans pb-20">
             <div className="bg-background border-b py-4">
                 <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <img src="/logo.png" alt="Illumi" className="w-8 h-8 object-contain" />
-                        <span className="font-serif text-lg font-bold tracking-tight">Illumi</span>
+                        {senderLogo ? (
+                            <img src={senderLogo} alt={senderName} className="w-8 h-8 object-contain" />
+                        ) : (
+                            <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+                        )}
+                        <span className="font-serif text-lg font-bold tracking-tight">{senderName}</span>
                     </div>
                     <div className="text-sm text-muted-foreground flex items-center gap-2">
                         <ShieldCheck className="h-4 w-4 text-green-500" />

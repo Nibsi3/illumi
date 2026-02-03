@@ -36,7 +36,7 @@ import { toast } from "sonner"
 export default function GeneralSettings() {
     const { isPro } = useSubscription()
     const router = useRouter()
-    const { activeWorkspace } = useWorkspace()
+    const { activeWorkspace, refreshWorkspaces } = useWorkspace()
     const {
         logo, setLogo,
         hideIllumiBranding, setHideIllumiBranding,
@@ -70,44 +70,44 @@ export default function GeneralSettings() {
                 setIsUploadingLogo(true)
                 try {
                     const supabase = createClient()
-                    
-                    // Upload to Supabase Storage
-                    const fileExt = file.name.split('.').pop()
-                    const fileName = `${activeWorkspace.id}/logo.${fileExt}`
-                    
-                    const { error: uploadError } = await supabase.storage
-                        .from('logos')
-                        .upload(fileName, file, { upsert: true })
-                    
-                    if (uploadError) {
-                        // If bucket doesn't exist, fall back to base64
-                        console.warn('Storage upload failed, using base64:', uploadError)
-                        const reader = new FileReader()
-                        reader.onload = (event) => {
-                            if (event.target?.result) {
-                                setLogo(event.target.result as string)
-                            }
-                        }
-                        reader.readAsDataURL(file)
-                        return
+
+                    const formData = new FormData()
+                    formData.append('file', file)
+                    formData.append('workspaceId', activeWorkspace.id)
+                    formData.append('folder', 'logos')
+
+                    const uploadRes = await fetch('/api/storage/upload', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include',
+                    })
+
+                    const uploadJson = await uploadRes.json().catch(() => null)
+                    if (!uploadRes.ok || !uploadJson?.success || !uploadJson?.url) {
+                        throw new Error(uploadJson?.error || 'Logo upload failed')
                     }
-                    
-                    // Get public URL
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('logos')
-                        .getPublicUrl(fileName)
-                    
-                    // Update workspace with logo URL
-                    await supabase
+
+                    const logoUrl = uploadJson.url as string
+
+                    const { error: wsError } = await supabase
                         .from('workspaces')
-                        .update({ logo_url: publicUrl })
+                        .update({ logo_url: logoUrl })
                         .eq('id', activeWorkspace.id)
-                    
-                    setLogo(publicUrl)
+
+                    if (wsError) {
+                        throw new Error(wsError.message)
+                    }
+
+                    setLogo(logoUrl)
+                    try {
+                        await refreshWorkspaces(true)
+                    } catch {
+                        // ignore
+                    }
                     toast.success('Logo uploaded successfully')
                 } catch (err: any) {
                     console.error('Logo upload error:', err)
-                    toast.error('Failed to upload logo')
+                    toast.error('Failed to upload logo', { description: err?.message || 'Please try again.' })
                 } finally {
                     setIsUploadingLogo(false)
                 }

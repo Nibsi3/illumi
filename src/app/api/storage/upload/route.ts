@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: "No workspace ID provided" }, { status: 400 })
         }
 
+        const userEmail = (user.email || '').toLowerCase().trim()
+
         // Verify user has access to this workspace
         const { data: membership } = await supabase
             .from("workspace_members")
             .select("id")
             .eq("workspace_id", workspaceId)
-            .eq("email", user.email)
+            .eq("email", userEmail)
             .single()
 
         const { data: workspace } = await supabase

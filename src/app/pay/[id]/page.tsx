@@ -217,6 +217,8 @@ export default function PayInvoicePage() {
         }
     }
 
+    const senderName = invoice?.workspace?.name || 'Business'
+
     return (
         <div className="min-h-screen bg-background py-16 px-4 sm:px-6 lg:px-8 font-sans selection:bg-white selection:text-black">
             <div className="max-w-6xl mx-auto space-y-12">
@@ -319,7 +321,7 @@ export default function PayInvoicePage() {
                                             mode === "light" ? "text-neutral-600" : "text-muted-foreground"
                                         )}>From</span>
                                         <div className="space-y-1 invoice-font-from">
-                                            <p className="text-lg font-bold">Illumi Professional</p>
+                                            <p className="text-lg font-bold">{senderName}</p>
                                             {invoice.from_email && <p className="text-xs font-medium opacity-60">{invoice.from_email}</p>}
                                             {invoice.company_website && (
                                                 <a
@@ -334,13 +336,6 @@ export default function PayInvoicePage() {
                                                     {invoice.company_website}
                                                 </a>
                                             )}
-                                            <p className={cn(
-                                                "text-xs leading-relaxed",
-                                                mode === "light" ? "text-neutral-500" : "text-neutral-400"
-                                            )}>
-                                                123 Business Avenue<br />
-                                                Cape Town, 8001
-                                            </p>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-4 text-right">

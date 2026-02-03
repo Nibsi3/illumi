@@ -8,6 +8,7 @@ interface Workspace {
     name: string
     slug: string
     owner_id: string
+    logo_url?: string | null
     created_at: string
 }
 
