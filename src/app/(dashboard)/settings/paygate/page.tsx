@@ -508,6 +508,10 @@ export default function PayGatePage() {
                 : [...connectedProviders, id]
             const newActiveProvider = activeProvider || id
             
+            const keysPayload = buildKeysPayload(id)
+            console.log('[PayGate Save] Saving keys for', id, ':', keysPayload)
+            console.log('[PayGate Save] Current state - testKey1:', testKey1, 'testKey2:', testKey2, 'liveKey1:', liveKey1, 'liveKey2:', liveKey2)
+            
             const res = await fetch('/api/paygate/config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -517,7 +521,7 @@ export default function PayGatePage() {
                     active_provider: newActiveProvider,
                     test_mode: isTestMode,
                     connected_providers: newConnectedProviders,
-                    keys: buildKeysPayload(id)
+                    keys: keysPayload
                 })
             })
             
