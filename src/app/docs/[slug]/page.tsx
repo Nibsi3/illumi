@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { MarketingHeader } from "@/components/marketing/marketing-header"
 import { MarketingFooter } from "@/components/marketing/marketing-footer"
 import { DocsSidebar } from "@/components/docs/docs-sidebar"
+import { DocsCallout } from "@/components/docs/docs-callout"
+import { DocsCopySnippet } from "@/components/docs/docs-copy-snippet"
 
 type DocLink = { title: string; href: string; description?: string }
 
@@ -13,6 +15,8 @@ type DocSection = {
     body?: string[]
     steps?: { title: string; detail?: string; href?: string }[]
     links?: DocLink[]
+    callouts?: { variant: "tip" | "note" | "warning"; title?: string; body: string[] }[]
+    snippets?: { label: string; value: string; description?: string }[]
     mock?: "workspace_switcher" | "client_create" | "invoice_editor" | "paygate_settings" | "vault_upload" | "troubleshooting_checklist"
 }
 
@@ -21,6 +25,7 @@ type DocArticle = {
     description: string
     summary?: string
     readingTime?: string
+    lastUpdated?: string
     sections: DocSection[]
     next?: DocLink[]
 }
@@ -39,6 +44,7 @@ const DOCS: Record<string, DocArticle> = {
         description: "Create your workspace, add your business details, and send your first invoice.",
         summary: "Follow this quick path to set up Illumi end-to-end.",
         readingTime: "6 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What you’ll set up",
@@ -92,6 +98,7 @@ const DOCS: Record<string, DocArticle> = {
         description: "Set up your workspace profile, invoice defaults, and team access.",
         summary: "Your workspace is the foundation for invoices, PayGate, and reporting.",
         readingTime: "7 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Workspace essentials",
@@ -143,6 +150,7 @@ const DOCS: Record<string, DocArticle> = {
         description: "Create professional invoices, track status, and get paid faster.",
         summary: "This guide covers drafting, sending, scheduled/recurring invoices, and client links.",
         readingTime: "9 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Create an invoice",
@@ -202,6 +210,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Expenses",
         description: "Track expenses, recurring costs, and export reports.",
         readingTime: "6 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Add expenses",
@@ -233,6 +242,7 @@ const DOCS: Record<string, DocArticle> = {
         description: "Enable online invoice payments, connect providers, and automate reconciliation.",
         summary: "PayGate adds a Pay Now button and keeps invoice status in sync when payments clear.",
         readingTime: "8 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What PayGate does",
@@ -249,6 +259,16 @@ const DOCS: Record<string, DocArticle> = {
                     "Use Live mode when you’re ready to take real payments.",
                     "If you see authentication errors (e.g. invalid_client), the most common cause is a mismatch between selected mode and the credentials you entered.",
                 ],
+                callouts: [
+                    {
+                        variant: "tip",
+                        title: "Fast check",
+                        body: [
+                            "If PayGate is set to Live mode, make sure you’ve entered Live keys (not test keys).",
+                            "If PayGate is set to Test mode, make sure you’ve entered test/sandbox keys.",
+                        ],
+                    },
+                ],
             },
             {
                 heading: "Which credentials do I paste into PayGate?",
@@ -259,6 +279,14 @@ const DOCS: Record<string, DocArticle> = {
                 ],
                 links: [
                     { title: "Browse integrations", href: "/integrations", description: "Provider-specific key lists + official docs." },
+                ],
+                callouts: [
+                    {
+                        variant: "warning",
+                        body: [
+                            "Never paste provider secret keys into invoices, emails, or client notes. Only paste them into Settings → PayGate.",
+                        ],
+                    },
                 ],
             },
             {
@@ -272,6 +300,13 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "Connect PayFast", href: "/docs/payfast-online-payments", description: "Step-by-step provider setup." },
                     { title: "Connect Stitch", href: "/docs/stitch-online-payments", description: "Client ID + Client Secret setup." },
                     { title: "Connect Netcash", href: "/docs/netcash-online-payments", description: "Service Key + API Key setup." },
+                ],
+                snippets: [
+                    {
+                        label: "Pay page URL format",
+                        value: "https://www.illumi.co.za/pay/<INVOICE_NUMBER>?provider=<provider>",
+                        description: "Use this format to share a direct pay link (provider is optional if you set a primary provider).",
+                    },
                 ],
             },
             {
@@ -288,6 +323,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Connecting Stitch",
         description: "Use Stitch as your PayGate provider (Pay by Bank + card payments).",
         readingTime: "6 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What you’ll need",
@@ -295,6 +331,14 @@ const DOCS: Record<string, DocArticle> = {
                     "Stitch Client ID.",
                     "Stitch Client Secret.",
                     "Choose Test vs Live mode based on your Stitch environment.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "If you get invalid_client, it’s almost always because the selected mode (Test/Live) doesn’t match the keys you pasted.",
+                        ],
+                    },
                 ],
                 links: [
                     { title: "Stitch payment products", href: "https://docs.stitch.money/payment-products", description: "Official docs" },
@@ -332,6 +376,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Connecting Netcash",
         description: "Use Netcash as your PayGate provider (payment links + subscriptions).",
         readingTime: "6 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What you’ll need",
@@ -375,6 +420,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "PayGate & payments",
         description: "A quick overview of PayGate and payment provider connections.",
         readingTime: "3 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Start here",
@@ -392,6 +438,7 @@ const DOCS: Record<string, DocArticle> = {
         description: "Create clients, store billing details, and reuse them across invoices.",
         summary: "Good client data makes invoicing faster and reduces mistakes.",
         readingTime: "6 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What to store",
@@ -431,6 +478,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Client portal links",
         description: "Send secure invoice links so clients can view, download, and pay online.",
         readingTime: "4 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "How it works",
@@ -456,6 +504,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Settings & billing",
         description: "Manage your workspace profile, PayGate, members, and subscription.",
         readingTime: "5 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Where to change what",
@@ -481,6 +530,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Sending invoices by email",
         description: "Send professional invoice emails with a secure view/pay link.",
         readingTime: "4 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Send an invoice",
@@ -509,6 +559,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Connecting PayFast",
         description: "Use PayFast as your payment provider through PayGate.",
         readingTime: "5 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Setup",
@@ -538,6 +589,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Vault",
         description: "Store receipts and key business documents securely.",
         readingTime: "5 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "What to store",
@@ -577,6 +629,7 @@ const DOCS: Record<string, DocArticle> = {
         title: "Troubleshooting",
         description: "Quick fixes for common issues (payments, email sending, and loading problems).",
         readingTime: "7 min",
+        lastUpdated: "2026-02-03",
         sections: [
             {
                 heading: "Before you do anything",
@@ -823,18 +876,20 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                                 <h1 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">{doc.title}</h1>
                                 <p className="text-muted-foreground text-lg leading-relaxed mb-10">{doc.description}</p>
 
+                                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8">
+                                    {doc.readingTime && (
+                                        <div>{doc.readingTime} read</div>
+                                    )}
+                                    {doc.lastUpdated && (
+                                        <div>Last updated {doc.lastUpdated}</div>
+                                    )}
+                                </div>
+
                                 {doc.summary && (
                                     <div className="mb-10 rounded-3xl border border-border bg-card p-7">
-                                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                            <div>
-                                                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Overview</div>
-                                                <div className="text-foreground/80 mt-2 leading-relaxed">{doc.summary}</div>
-                                            </div>
-                                            {doc.readingTime && (
-                                                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                                                    {doc.readingTime} read
-                                                </div>
-                                            )}
+                                        <div>
+                                            <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Overview</div>
+                                            <div className="text-foreground/80 mt-2 leading-relaxed">{doc.summary}</div>
                                         </div>
                                     </div>
                                 )}
@@ -870,6 +925,32 @@ export default async function DocsArticlePage({ params }: { params: Promise<{ sl
                                                                 )}
                                                             </div>
                                                         </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {section.callouts && section.callouts.length > 0 && (
+                                                <div className="space-y-3">
+                                                    {section.callouts.map((c, idx) => (
+                                                        <DocsCallout
+                                                            key={idx}
+                                                            variant={c.variant}
+                                                            title={c.title}
+                                                            body={c.body}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {section.snippets && section.snippets.length > 0 && (
+                                                <div className="space-y-3">
+                                                    {section.snippets.map((s, idx) => (
+                                                        <DocsCopySnippet
+                                                            key={idx}
+                                                            label={s.label}
+                                                            value={s.value}
+                                                            description={s.description}
+                                                        />
                                                     ))}
                                                 </div>
                                             )}
