@@ -485,6 +485,75 @@ export async function POST(req: Request) {
             })
         }
 
+        // Netcash Implementation
+        if (provider === 'netcash') {
+            let netcashServiceKey = ''
+            let netcashApiKey = ''
+
+            if (resolvedWorkspaceId) {
+                const keys = await getWorkspaceKeys(resolvedWorkspaceId, 'netcash', mode)
+                if (keys) {
+                    netcashServiceKey = (keys.service_key || '').trim()
+                    netcashApiKey = (keys.api_key || '').trim()
+                }
+            }
+
+            if (!netcashServiceKey || !netcashApiKey) {
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: 'Netcash credentials not configured. Add Netcash keys in Settings > PayGate.',
+                        provider: 'netcash',
+                    },
+                    { status: 500 }
+                )
+            }
+
+            const amountCents = Math.round(Number(amount) * 100)
+            if (!Number.isFinite(amountCents) || amountCents <= 0) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid amount', provider: 'netcash' },
+                    { status: 400 }
+                )
+            }
+
+            const successUrl = `${domain}/pay/${invoiceId}?status=success&provider=netcash`
+            const cancelUrl = `${domain}/pay/${invoiceId}?status=cancelled&provider=netcash`
+
+            // Netcash Pay Now API
+            const netcashRes = await fetch('https://paynow.netcash.co.za/site/paynow.aspx', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    m1: netcashServiceKey,
+                    m2: netcashApiKey,
+                    p2: invoiceNumber || invoiceId,
+                    p3: `Invoice ${invoiceNumber || invoiceId}`,
+                    p4: String(amount),
+                    Budget: 'N',
+                    m4: invoiceId,
+                    m5: successUrl,
+                    m6: cancelUrl,
+                    m9: email || '',
+                }).toString(),
+            })
+
+            // Netcash returns a redirect URL or payment key
+            const netcashText = await netcashRes.text().catch(() => '')
+            
+            // For now, construct the payment URL directly
+            const paymentUrl = `https://paynow.netcash.co.za/site/paynow.aspx?m1=${encodeURIComponent(netcashServiceKey)}&m2=${encodeURIComponent(netcashApiKey)}&p2=${encodeURIComponent(invoiceNumber || invoiceId)}&p3=${encodeURIComponent(`Invoice ${invoiceNumber || invoiceId}`)}&p4=${amount}&Budget=N&m4=${encodeURIComponent(invoiceId)}&m5=${encodeURIComponent(successUrl)}&m6=${encodeURIComponent(cancelUrl)}&m9=${encodeURIComponent(email || '')}`
+
+            return NextResponse.json({
+                success: true,
+                link: paymentUrl,
+                provider: 'netcash',
+                reference: invoiceNumber || invoiceId,
+            })
+        }
+
         // Stitch Implementation
         if (provider === 'stitch') {
             let stitchClientId = ''

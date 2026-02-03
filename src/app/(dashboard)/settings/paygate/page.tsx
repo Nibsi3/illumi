@@ -66,6 +66,13 @@ const providers = [
         logo: "https://stitch.money/images/stitch-logo.svg",
         connected: false,
     },
+    {
+        id: "netcash",
+        name: "Netcash",
+        description: "Trusted SA payment gateway with cards, EFT, debit orders, and recurring subscriptions.",
+        logo: "https://netcash.co.za/wp-content/uploads/2023/03/netcash-logo.svg",
+        connected: false,
+    },
 ]
 
 export default function PayGatePage() {
@@ -196,6 +203,13 @@ export default function PayGatePage() {
                     live1: 'Live client ID',
                     live2: 'Live client secret',
                 }
+            case 'netcash':
+                return {
+                    test1: 'Test service key',
+                    test2: 'Test API key',
+                    live1: 'Live service key',
+                    live2: 'Live API key',
+                }
             default:
                 return {
                     test1: 'Test key 1',
@@ -257,6 +271,13 @@ export default function PayGatePage() {
                     live1: 'client-id-...',
                     live2: 'client-secret-...',
                 }
+            case 'netcash':
+                return {
+                    test1: 'service-key-...',
+                    test2: 'api-key-...',
+                    live1: 'service-key-...',
+                    live2: 'api-key-...',
+                }
             default:
                 return {
                     test1: 'test-...',
@@ -292,6 +313,15 @@ export default function PayGatePage() {
             setTestKey2(savedKeys.testClientSecret || "")
             setLiveKey1(savedKeys.liveClientId || "")
             setLiveKey2(savedKeys.liveClientSecret || "")
+            setPassphrase("")
+            return
+        }
+
+        if (providerId === 'netcash') {
+            setTestKey1(savedKeys.testServiceKey || "")
+            setTestKey2(savedKeys.testApiKey || "")
+            setLiveKey1(savedKeys.liveServiceKey || "")
+            setLiveKey2(savedKeys.liveApiKey || "")
             setPassphrase("")
             return
         }
@@ -387,6 +417,15 @@ export default function PayGatePage() {
                 testClientSecret: testKey2,
                 liveClientId: liveKey1,
                 liveClientSecret: liveKey2,
+            }
+        }
+
+        if (providerId === 'netcash') {
+            return {
+                testServiceKey: testKey1,
+                testApiKey: testKey2,
+                liveServiceKey: liveKey1,
+                liveApiKey: liveKey2,
             }
         }
 
@@ -496,6 +535,18 @@ export default function PayGatePage() {
                 }
                 if (key2.length < 10) {
                     return { valid: false, error: "Stitch Client Secret seems too short" }
+                }
+                break
+                
+            case 'netcash':
+                if (!key1 || !key2) {
+                    return { valid: false, error: "Service Key and API Key are required" }
+                }
+                if (key1.length < 5) {
+                    return { valid: false, error: "Netcash Service Key seems too short" }
+                }
+                if (key2.length < 5) {
+                    return { valid: false, error: "Netcash API Key seems too short" }
                 }
                 break
         }

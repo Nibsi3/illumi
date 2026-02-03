@@ -13,8 +13,8 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-    theme: 'dark',
-    themePreference: 'system',
+    theme: 'light',
+    themePreference: 'light',
     setTheme: () => {},
     toggleTheme: () => {},
 })
@@ -24,14 +24,14 @@ export function useTheme() {
 }
 
 function getSystemTheme(): Theme {
-    if (typeof window === 'undefined') return 'dark'
+    if (typeof window === 'undefined') return 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const storageKey = 'illumi_theme'
-    const [themePreference, setThemePreference] = useState<ThemePreference>('system')
-    const [resolvedTheme, setResolvedTheme] = useState<Theme>('dark')
+    const [themePreference, setThemePreference] = useState<ThemePreference>('light')
+    const [resolvedTheme, setResolvedTheme] = useState<Theme>('light')
 
     const applyThemeClass = useCallback((nextTheme: Theme) => {
         if (nextTheme === 'dark') {

@@ -120,6 +120,8 @@ export async function GET(req: Request) {
                 if (keyName === 'publishable_key') keys[`${prefix}PublishableKey`] = keyValue
                 if (keyName === 'client_id') keys[`${prefix}ClientId`] = keyValue
                 if (keyName === 'client_secret') keys[`${prefix}ClientSecret`] = keyValue
+                if (keyName === 'service_key') keys[`${prefix}ServiceKey`] = keyValue
+                if (keyName === 'api_key') keys[`${prefix}ApiKey`] = keyValue
             }
         }
 
@@ -266,6 +268,12 @@ export async function POST(req: Request) {
             add('test', 'client_secret', keys.testClientSecret)
             add('live', 'client_id', keys.liveClientId)
             add('live', 'client_secret', keys.liveClientSecret)
+
+            // Netcash: test/live service_key + api_key
+            add('test', 'service_key', keys.testServiceKey)
+            add('test', 'api_key', keys.testApiKey)
+            add('live', 'service_key', keys.liveServiceKey)
+            add('live', 'api_key', keys.liveApiKey)
 
             for (const entry of keyEntries) {
                 const { error: keyError } = await serviceClient
