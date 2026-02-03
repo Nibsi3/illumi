@@ -93,12 +93,26 @@ export async function POST(request: NextRequest) {
                 const fileExt = (file.name.split('.').pop() || 'png').toLowerCase()
                 const objectPath = `${workspaceId}/logo.${fileExt}`
 
-                const { error: uploadError } = await service.storage
-                    .from('logos')
-                    .upload(objectPath, buffer, {
-                        contentType: file.type || 'application/octet-stream',
-                        upsert: true,
-                    })
+                const uploadToSupabase = async () => {
+                    return service.storage
+                        .from('logos')
+                        .upload(objectPath, buffer, {
+                            contentType: file.type || 'application/octet-stream',
+                            upsert: true,
+                        })
+                }
+
+                let { error: uploadError } = await uploadToSupabase()
+
+                // Auto-create bucket if missing (common in new envs)
+                if (uploadError && (uploadError.message || '').toLowerCase().includes('bucket not found')) {
+                    try {
+                        await service.storage.createBucket('logos', { public: true })
+                    } catch {
+                        // ignore (may already exist or be restricted)
+                    }
+                    ;({ error: uploadError } = await uploadToSupabase())
+                }
 
                 if (uploadError) {
                     return NextResponse.json(
