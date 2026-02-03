@@ -82,7 +82,7 @@ export default function EditInvoicePage() {
 
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
-        { id: 1, description: "", price: 0, qty: 1 }
+        { id: 1, description: "", price: 0, qty: 1, discount: 0 }
     ])
 
     // Invoice Settings State
@@ -139,7 +139,7 @@ export default function EditInvoicePage() {
 
     // Helper functions
     const addTask = () => {
-        setTasks([...tasks, { id: Date.now(), description: "", price: 0, qty: 1 }])
+        setTasks([...tasks, { id: Date.now(), description: "", price: 0, qty: 1, discount: 0 }])
     }
 
     const removeTask = (id: number) => {
@@ -148,8 +148,13 @@ export default function EditInvoicePage() {
         }
     }
 
+    const calculateLineTotal = (task: { price: number; qty: number; discount?: number }) => {
+        const discount = Math.min(100, Math.max(0, Number(task.discount) || 0))
+        return task.price * task.qty * (1 - discount / 100)
+    }
+
     const calculateSubtotal = () => {
-        return tasks.reduce((acc, task) => acc + (task.price * task.qty), 0)
+        return tasks.reduce((acc, task) => acc + calculateLineTotal(task), 0)
     }
 
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -221,7 +226,8 @@ export default function EditInvoicePage() {
                                 id: item.id,
                                 description: item.description,
                                 price: item.unit_price,
-                                qty: item.quantity
+                                qty: item.quantity,
+                                discount: Number(item.discount_rate) || 0,
                             })))
                         }
                     }
@@ -243,7 +249,7 @@ export default function EditInvoicePage() {
             const { data: { user } } = await supabase.auth.getUser()
             if (!user) throw new Error("Session expired")
 
-            const subtotal = tasks.reduce((acc, t) => acc + (t.price * t.qty), 0)
+            const subtotal = tasks.reduce((acc, t) => acc + calculateLineTotal(t), 0)
             const taxAmount = subtotal * (taxRate / 100)
             const total = subtotal + taxAmount
 
@@ -309,7 +315,8 @@ export default function EditInvoicePage() {
                 description: task.description,
                 quantity: task.qty,
                 unit_price: task.price,
-                total: task.price * task.qty,
+                discount_rate: Math.min(100, Math.max(0, Number((task as any).discount) || 0)),
+                total: calculateLineTotal(task),
                 sort_order: index
             }))
 
@@ -346,7 +353,8 @@ export default function EditInvoicePage() {
                             items: tasks.map(t => ({
                                 description: t.description,
                                 quantity: t.qty,
-                                unit_price: t.price
+                                unit_price: t.price,
+                                discount_rate: Math.min(100, Math.max(0, Number((t as any).discount) || 0)),
                             })),
                         })
                     })
@@ -762,6 +770,7 @@ export default function EditInvoicePage() {
                                                     <th className="py-4 text-left">Description</th>
                                                     <th className="py-4 text-right w-32">Price</th>
                                                     <th className="py-4 text-right w-24">Qty</th>
+                                                    <th className="py-4 text-right w-24">Disc</th>
                                                     <th className="py-4 text-right w-32">Total</th>
                                                     <th className="w-8"></th>
                                                 </tr>
@@ -803,8 +812,19 @@ export default function EditInvoicePage() {
                                                                 }}
                                                             />
                                                         </td>
+                                                        <td className="py-4 px-2 text-right font-mono text-sm w-24">
+                                                            <NumberInput
+                                                                value={(task as any).discount || 0}
+                                                                onChange={(val) => {
+                                                                    const newTasks = [...tasks]
+                                                                    const idx = newTasks.findIndex(t => t.id === task.id)
+                                                                    ;(newTasks[idx] as any).discount = val
+                                                                    setTasks(newTasks)
+                                                                }}
+                                                            />
+                                                        </td>
                                                         <td className={cn("py-4 text-right font-bold text-sm font-mono w-32", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
-                                                            {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
+                                                            {calculateLineTotal(task).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                         </td>
                                                         <td className="py-4 text-right">
                                                             <button onClick={() => removeTask(task.id)} className="text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
@@ -952,7 +972,7 @@ export default function EditInvoicePage() {
                     newTasks[lastIdx].description = p.name;
                     newTasks[lastIdx].price = typeof p.price === 'string' ? parseFloat(p.price.replace(/[^0-9.]/g, '')) : p.price;
                 } else {
-                    newTasks.push({ id: Date.now(), description: p.name, price: typeof p.price === 'string' ? parseFloat(p.price.replace(/[^0-9.]/g, '')) : p.price, qty: 1 });
+                    newTasks.push({ id: Date.now(), description: p.name, price: typeof p.price === 'string' ? parseFloat(p.price.replace(/[^0-9.]/g, '')) : p.price, qty: 1, discount: 0 });
                 }
                 setTasks(newTasks);
             }} />

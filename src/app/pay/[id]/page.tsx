@@ -388,6 +388,7 @@ export default function PayInvoicePage() {
                                             <th className="py-4 text-left">Description</th>
                                             <th className="py-4 text-right">Price</th>
                                             <th className="py-4 text-right">Qty</th>
+                                            <th className="py-4 text-right">Disc</th>
                                             <th className="py-4 text-right pr-6">Total</th>
                                         </tr>
                                     </thead>
@@ -400,7 +401,8 @@ export default function PayInvoicePage() {
                                                 <td className="py-6 font-medium invoice-font-item">{item.description}</td>
                                                 <td className="py-6 text-right invoice-font-amount">{item.unit_price.toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
                                                 <td className="py-6 text-right invoice-font-amount">{item.quantity}</td>
-                                                <td className="py-6 text-right font-bold invoice-font-amount pr-6">{(item.unit_price * item.quantity).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
+                                                <td className="py-6 text-right invoice-font-amount">{(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%</td>
+                                                <td className="py-6 text-right font-bold invoice-font-amount pr-6">{(Number(item.total) || (item.unit_price * item.quantity)).toLocaleString('en-ZA', { style: 'currency', currency: invoice.currency })}</td>
                                             </tr>
                                         ))}
                                     </tbody>

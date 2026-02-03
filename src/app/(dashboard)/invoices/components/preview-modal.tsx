@@ -14,7 +14,7 @@ interface PreviewModalProps {
     data: {
         template: string
         logo: string | null
-        tasks: { description: string; price: number; qty: number }[]
+        tasks: { description: string; price: number; qty: number; discount?: number }[]
         currency: string
         taxRate: number
         dateFormat: string
@@ -62,8 +62,13 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
         }
     }
 
+    const calculateLineTotal = (task: { price: number; qty: number; discount?: number }) => {
+        const discount = Math.min(100, Math.max(0, Number(task.discount) || 0))
+        return task.price * task.qty * (1 - discount / 100)
+    }
+
     const calculateSubtotal = () => {
-        return data.tasks.reduce((acc, task) => acc + (task.price * task.qty), 0)
+        return data.tasks.reduce((acc, task) => acc + calculateLineTotal(task), 0)
     }
 
     const subtotal = calculateSubtotal()
@@ -223,6 +228,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     <th className="py-4 text-left">Description</th>
                                     <th className="py-4 text-right">Price</th>
                                     <th className="py-4 text-right">Qty</th>
+                                    <th className="py-4 text-right">Disc</th>
                                     <th className="py-4 text-right pr-6">Total</th>
                                 </tr>
                             </thead>
@@ -235,7 +241,8 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                         <td className="py-6 font-medium invoice-font-item">{task.description || "No description"}</td>
                                         <td className="py-6 text-right invoice-font-amount">{task.price.toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
                                         <td className="py-6 text-right invoice-font-amount">{task.qty}</td>
-                                        <td className="py-6 text-right font-bold invoice-font-amount pr-6">{(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
+                                        <td className="py-6 text-right invoice-font-amount">{(Number(task.discount) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%</td>
+                                        <td className="py-6 text-right font-bold invoice-font-amount pr-6">{calculateLineTotal(task).toLocaleString('en-ZA', { style: 'currency', currency: data.currency })}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -356,12 +363,17 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
             <style jsx global>{`
                 @media print {
                     header { display: none !important; }
-                    .printable-area { 
-                        box-shadow: none !important; 
-                        margin: 0 !important; 
-                        padding: 0 !important; 
-                        width: 100% !important;
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    body * { visibility: hidden; }
+                    .printable-area, .printable-area * { visibility: visible; }
+                    .printable-area {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        box-shadow: none !important;
+                        margin: 0 !important;
                     }
+                    @page { size: A4; margin: 12mm; }
                 }
             `}</style>
         </div>

@@ -1,0 +1,2 @@
+ALTER TABLE public.invoice_items
+ADD COLUMN IF NOT EXISTS discount_rate DECIMAL(5, 2) NOT NULL DEFAULT 0;

@@ -135,6 +135,7 @@ export async function GET(request: NextRequest) {
                 description: item.description,
                 quantity: item.quantity,
                 unit_price: item.unit_price,
+                discount_rate: item.discount_rate ?? 0,
                 total: item.total,
             })),
         }

@@ -15,6 +15,7 @@ interface InvoiceItem {
     description: string
     quantity: number
     unit_price: number
+    discount_rate?: number | null
     total: number
 }
 
@@ -161,6 +162,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </Button>
                     <Button
                         className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6"
+                        onClick={() => window.print()}
                     >
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
@@ -257,6 +259,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 <th className="py-4 text-left">Description</th>
                                 <th className="py-4 text-right">Price</th>
                                 <th className="py-4 text-right">Qty</th>
+                                <th className="py-4 text-right">Disc</th>
                                 <th className="py-4 text-right">Total</th>
                             </tr>
                         </thead>
@@ -269,12 +272,13 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                     <td className="py-6 font-medium invoice-font-item">{item.description}</td>
                                     <td className="py-6 text-right invoice-font-amount">{formatCurrency(item.unit_price)}</td>
                                     <td className="py-6 text-right">{item.quantity}</td>
+                                    <td className="py-6 text-right invoice-font-amount">{(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%</td>
                                     <td className="py-6 text-right font-bold invoice-font-amount">{formatCurrency(item.total)}</td>
                                 </tr>
                             ))}
                             {invoice.items.length === 0 && (
                                 <tr className="text-sm">
-                                    <td colSpan={4} className="py-6 text-center text-muted-foreground">No items</td>
+                                    <td colSpan={5} className="py-6 text-center text-muted-foreground">No items</td>
                                 </tr>
                             )}
                         </tbody>
@@ -353,13 +357,17 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             <style jsx global>{`
                 @media print {
                     header { display: none !important; }
-                    body { background: white !important; }
-                    .printable-area { 
-                        box-shadow: none !important; 
-                        margin: 0 !important; 
-                        padding: 0 !important; 
-                        width: 100% !important;
+                    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                    body * { visibility: hidden; }
+                    .printable-area, .printable-area * { visibility: visible; }
+                    .printable-area {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        box-shadow: none !important;
+                        margin: 0 !important;
                     }
+                    @page { size: A4; margin: 12mm; }
                 }
             `}</style>
         </div>

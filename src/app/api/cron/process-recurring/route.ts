@@ -355,6 +355,7 @@ export async function GET(req: Request) {
                         description: item.description,
                         quantity: item.quantity,
                         unit_price: item.unit_price,
+                        discount_rate: item.discount_rate ?? 0,
                         total: item.total,
                         sort_order: item.sort_order,
                     }))

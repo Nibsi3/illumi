@@ -34,6 +34,7 @@ type InvoiceItem = {
     description: string
     quantity: number
     unit_price: number
+    discount_rate?: number | null
     total: number
 }
 
@@ -167,16 +168,20 @@ export default function PublicInvoicePage() {
 
                             <div className="space-y-6">
                                 <div className="grid grid-cols-12 gap-4 pb-4 border-b text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                                    <div className="col-span-8">Description</div>
+                                    <div className="col-span-7">Description</div>
                                     <div className="col-span-1 text-right">Qty</div>
-                                    <div className="col-span-3 text-right">Price</div>
+                                    <div className="col-span-2 text-right">Disc</div>
+                                    <div className="col-span-2 text-right">Total</div>
                                 </div>
                                 {items.map((item, i) => (
                                     <div key={item.id || i} className="grid grid-cols-12 gap-4 text-sm items-center">
-                                        <div className="col-span-8 font-medium">{item.description}</div>
+                                        <div className="col-span-7 font-medium">{item.description}</div>
                                         <div className="col-span-1 text-right text-muted-foreground">{item.quantity}</div>
-                                        <div className="col-span-3 text-right font-mono">
-                                            {formatCurrency(item.unit_price, invoice.currency)}
+                                        <div className="col-span-2 text-right text-muted-foreground">
+                                            {(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%
+                                        </div>
+                                        <div className="col-span-2 text-right font-mono">
+                                            {formatCurrency(Number(item.total) || (item.unit_price * item.quantity), invoice.currency)}
                                         </div>
                                     </div>
                                 ))}

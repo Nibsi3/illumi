@@ -153,7 +153,7 @@ export default function NewInvoicePage() {
 
     const [template, setTemplate] = useState<TemplateType>("Classic")
     const [tasks, setTasks] = useState([
-        { id: 1, description: "", price: 0, qty: 1 }
+        { id: 1, description: "", price: 0, qty: 1, discount: 0 }
     ])
 
     // Invoice Settings State
@@ -234,7 +234,7 @@ export default function NewInvoicePage() {
 
     // Helper functions restored
     const addTask = () => {
-        setTasks([...tasks, { id: Date.now(), description: "", price: 0, qty: 1 }])
+        setTasks([...tasks, { id: Date.now(), description: "", price: 0, qty: 1, discount: 0 }])
     }
 
     const removeTask = (id: number) => {
@@ -244,7 +244,12 @@ export default function NewInvoicePage() {
     }
 
     const calculateSubtotal = () => {
-        return tasks.reduce((acc, task) => acc + (task.price * task.qty), 0)
+        return tasks.reduce((acc, task) => acc + calculateLineTotal(task), 0)
+    }
+
+    const calculateLineTotal = (task: { price: number; qty: number; discount?: number }) => {
+        const discount = Math.min(100, Math.max(0, Number(task.discount) || 0))
+        return task.price * task.qty * (1 - discount / 100)
     }
 
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -356,7 +361,7 @@ export default function NewInvoicePage() {
             }
 
             // Calculate totals
-            const subtotal = tasks.reduce((acc, t) => acc + (t.price * t.qty), 0)
+            const subtotal = tasks.reduce((acc, t) => acc + calculateLineTotal(t), 0)
             const taxAmount = subtotal * (taxRate / 100)
             const total = subtotal + taxAmount
             debugLog('[Invoice Save] Calculated totals:', { subtotal, taxAmount, total })
@@ -618,7 +623,8 @@ export default function NewInvoicePage() {
                     description: task.description || 'Untitled Item',
                     quantity: task.qty,
                     unit_price: task.price,
-                    total: task.price * task.qty,
+                    discount_rate: Math.min(100, Math.max(0, Number((task as any).discount) || 0)),
+                    total: calculateLineTotal(task),
                     sort_order: index
                 }))
 
@@ -667,7 +673,8 @@ export default function NewInvoicePage() {
                             items: tasks.map(t => ({
                                 description: t.description,
                                 quantity: t.qty,
-                                unit_price: t.price
+                                unit_price: t.price,
+                                discount_rate: Math.min(100, Math.max(0, Number((t as any).discount) || 0)),
                             })),
                         })
                     }).then(res => res.json()).then(emailData => {
@@ -1339,6 +1346,7 @@ export default function NewInvoicePage() {
 
                                                 <th className="py-4 text-right font-medium w-32">Price</th>
                                                 <th className="py-4 text-right font-medium w-24">Qty</th>
+                                                <th className="py-4 text-right font-medium w-24">Disc</th>
                                                 <th className="py-4 text-right font-medium w-32">Total</th>
                                                 <th className="w-8"></th>
                                             </tr>
@@ -1396,8 +1404,21 @@ export default function NewInvoicePage() {
                                                             className="h-10 w-full"
                                                         />
                                                     </td>
+                                                    <td className="py-4 px-2 w-24">
+                                                        <NumberInput
+                                                            value={(task as any).discount || 0}
+                                                            onChange={(val) => {
+                                                                const newTasks = [...tasks]
+                                                                const idx = newTasks.findIndex(t => t.id === task.id)
+                                                                ;(newTasks[idx] as any).discount = val
+                                                                setTasks(newTasks)
+                                                            }}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
+                                                        />
+                                                    </td>
                                                     <td className={cn("py-4 text-right font-bold text-sm invoice-font-amount w-32", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
-                                                        {(task.price * task.qty).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
+                                                        {calculateLineTotal(task).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
                                                     </td>
                                                     <td className="py-4 text-right pl-2">
                                                         <button
@@ -1711,7 +1732,8 @@ export default function NewInvoicePage() {
                         id: newId,
                         description: product.name,
                         price: product.price,
-                        qty: 1
+                        qty: 1,
+                        discount: 0,
                     }])
                 }}
             />

@@ -15,6 +15,8 @@ interface InvoiceItem {
     description: string
     quantity: number
     unit_price: number
+    discount_rate?: number
+    total?: number
 }
 
 interface EmailPayload {
@@ -60,7 +62,15 @@ interface EmailPayload {
 function generateTotalsSummary(items: InvoiceItem[], currency: string = 'ZAR', totalRaw?: string): string {
     if (!items || items.length === 0) return ''
 
-    const subtotal = (items || []).reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.unit_price) || 0), 0)
+    const subtotal = (items || []).reduce((acc, item) => {
+        const qty = Number(item.quantity) || 0
+        const unit = Number(item.unit_price) || 0
+        const discount = Math.min(100, Math.max(0, Number(item.discount_rate) || 0))
+        const rowTotal = Number(item.total)
+        const computed = qty * unit * (1 - discount / 100)
+        const lineTotal = Number.isFinite(rowTotal) ? rowTotal : computed
+        return acc + lineTotal
+    }, 0)
     const totalNumber = extractAmountNumber(totalRaw)
     const total = totalNumber !== null ? totalNumber : subtotal
     const vat = total - subtotal
@@ -101,7 +111,15 @@ function generateItemsTable(items: InvoiceItem[], currency: string = 'ZAR'): str
             <td style="padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #333;">${item.description}</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #666; text-align: center;">${item.quantity}</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #333; text-align: right;">${formatter.format(item.unit_price)}</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #333; text-align: right; font-weight: 600;">${formatter.format(item.quantity * item.unit_price)}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e5e5e5; font-size: 14px; color: #333; text-align: right; font-weight: 600;">${(() => {
+                const qty = Number(item.quantity) || 0
+                const unit = Number(item.unit_price) || 0
+                const discount = Math.min(100, Math.max(0, Number(item.discount_rate) || 0))
+                const rowTotal = Number(item.total)
+                const computed = qty * unit * (1 - discount / 100)
+                const lineTotal = Number.isFinite(rowTotal) ? rowTotal : computed
+                return formatter.format(lineTotal)
+            })()}</td>
         </tr>
     `).join('')
 
