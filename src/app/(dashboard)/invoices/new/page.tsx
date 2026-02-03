@@ -1459,16 +1459,17 @@ export default function NewInvoicePage() {
                                         </div>
                                         <div className="flex flex-col gap-4">
                                             <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment Info</span>
-                                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-center">
                                                 <span className={cn("text-xs font-medium", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Payment method</span>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <button className={cn(
-                                                            "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs cursor-pointer flex items-center justify-between",
-                                                            invoiceMode === "light"
-                                                                ? "bg-white border-neutral-200"
-                                                                : "bg-neutral-900 border-neutral-700"
-                                                        )}>
+                                                <div className="sm:col-start-2 sm:justify-self-center">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <button className={cn(
+                                                                "h-auto min-h-11 w-full sm:w-[280px] rounded-xl px-4 py-2 border shadow-xs cursor-pointer flex items-center justify-between",
+                                                                invoiceMode === "light"
+                                                                    ? "bg-white border-neutral-200"
+                                                                    : "bg-neutral-900 border-neutral-700"
+                                                            )}>
                                                             <div className="flex items-center gap-3 min-w-0">
                                                                 <div className={cn(
                                                                     "h-8 w-8 rounded-lg flex items-center justify-center border shrink-0",
@@ -1496,36 +1497,38 @@ export default function NewInvoicePage() {
                                                                 </div>
                                                             </div>
                                                             <ChevronDown className={cn("h-4 w-4 shrink-0", invoiceMode === "light" ? "text-neutral-400" : "text-neutral-500")} />
-                                                        </button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className={cn(
-                                                        "w-[280px]",
-                                                        invoiceMode === "light" ? "bg-white border-neutral-200" : "bg-neutral-950 border-neutral-700"
-                                                    )}>
-                                                        <DropdownMenuItem 
-                                                            onClick={() => setPaymentMethod('bank')}
-                                                            className={cn(
-                                                                "cursor-pointer",
-                                                                paymentMethod === 'bank' && "bg-accent"
-                                                            )}
-                                                        >
-                                                            <Banknote className="h-4 w-4 mr-2" />
-                                                            Banking details (manual)
-                                                        </DropdownMenuItem>
-                                                        {isPro && (
+                                                            </button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className={cn(
+                                                            "w-[280px]",
+                                                            invoiceMode === "light" ? "bg-white border-neutral-200" : "bg-neutral-950 border-neutral-700"
+                                                        )}>
                                                             <DropdownMenuItem 
-                                                                onClick={() => setPaymentMethod('paygate')}
+                                                                onClick={() => setPaymentMethod('bank')}
                                                                 className={cn(
                                                                     "cursor-pointer",
-                                                                    paymentMethod === 'paygate' && "bg-accent"
+                                                                    paymentMethod === 'bank' && "bg-accent"
                                                                 )}
                                                             >
-                                                                <CreditCard className="h-4 w-4 mr-2" />
-                                                                PayGate (Pay now link)
+                                                                <Banknote className="h-4 w-4 mr-2" />
+                                                                Banking details (manual)
                                                             </DropdownMenuItem>
-                                                        )}
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                            {isPro && (
+                                                                <DropdownMenuItem 
+                                                                    onClick={() => setPaymentMethod('paygate')}
+                                                                    className={cn(
+                                                                        "cursor-pointer",
+                                                                        paymentMethod === 'paygate' && "bg-accent"
+                                                                    )}
+                                                                >
+                                                                    <CreditCard className="h-4 w-4 mr-2" />
+                                                                    PayGate (Pay now link)
+                                                                </DropdownMenuItem>
+                                                            )}
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                                <div className="hidden sm:block" />
                                             </div>
 
                                             {paymentMethod === 'paygate' ? (
