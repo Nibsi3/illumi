@@ -1346,7 +1346,7 @@ export default function NewInvoicePage() {
 
                                                 <th className="py-4 text-right font-medium w-32">Price</th>
                                                 <th className="py-4 text-right font-medium w-24">Qty</th>
-                                                <th className="py-4 text-right font-medium w-24">Disc</th>
+                                                <th className="py-4 text-right font-medium w-24">Disc %</th>
                                                 <th className="py-4 text-right font-medium w-32">Total</th>
                                                 <th className="w-8"></th>
                                             </tr>

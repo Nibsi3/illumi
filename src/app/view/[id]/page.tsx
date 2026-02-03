@@ -170,7 +170,7 @@ export default function PublicInvoicePage() {
                                 <div className="grid grid-cols-12 gap-4 pb-4 border-b text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                     <div className="col-span-7">Description</div>
                                     <div className="col-span-1 text-right">Qty</div>
-                                    <div className="col-span-2 text-right">Disc</div>
+                                    <div className="col-span-2 text-right">Disc %</div>
                                     <div className="col-span-2 text-right">Total</div>
                                 </div>
                                 {items.map((item, i) => (

@@ -388,7 +388,7 @@ export default function PayInvoicePage() {
                                             <th className="py-4 text-left">Description</th>
                                             <th className="py-4 text-right">Price</th>
                                             <th className="py-4 text-right">Qty</th>
-                                            <th className="py-4 text-right">Disc</th>
+                                            <th className="py-4 text-right">Disc %</th>
                                             <th className="py-4 text-right pr-6">Total</th>
                                         </tr>
                                     </thead>

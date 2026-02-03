@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils"
 import { useSettings } from "@/lib/settings-context"
 import { format, parseISO } from "date-fns"
 import { toast } from "sonner"
+import { pdf } from "@react-pdf/renderer"
+import { InvoicePDF } from "@/components/invoice/pdf-document"
+import type { TemplateId } from "@/lib/invoice/templates"
 
 interface PreviewModalProps {
     isOpen: boolean
@@ -75,6 +78,52 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
     const tax = subtotal * (data.taxRate / 100)
     const total = subtotal + tax
 
+    const handleDownloadPdf = async () => {
+        try {
+            const templateMap: Record<string, TemplateId> = {
+                Classic: 'classic',
+                Minimal: 'minimal',
+                Modern: 'modern',
+            }
+
+            const templateId: TemplateId = data.invoiceMode === 'dark'
+                ? 'noir'
+                : (templateMap[data.template] || 'classic')
+
+            const blob = await pdf(
+                <InvoicePDF
+                    data={{
+                        number: data.invoiceNumber || '',
+                        date: formatDate(data.issueDate),
+                        customerName: data.clientName || '',
+                        customerEmail: data.clientEmail || '',
+                        currency: data.currency,
+                        items: (data.tasks || []).map((t) => ({
+                            description: t.description || '',
+                            quantity: Number(t.qty) || 0,
+                            price: Number(t.price) || 0,
+                            discount_rate: Math.min(100, Math.max(0, Number(t.discount) || 0)),
+                        })),
+                        notes: data.note || '',
+                        template: templateId,
+                        logo: data.logo || undefined,
+                    }}
+                />
+            ).toBlob()
+
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${data.invoiceNumber || 'invoice'}.pdf`
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(url)
+        } catch (e: any) {
+            toast.error('Failed to download PDF', { description: e?.message || 'Please try again.' })
+        }
+    }
+
     return (
         <div className="fixed inset-0 z-100 flex flex-col bg-background/90 backdrop-blur-xl animate-in fade-in duration-300">
             {/* Header */}
@@ -115,7 +164,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                     </Button>
                     <Button
                         className="h-9 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-black uppercase tracking-tighter px-3 sm:px-6"
-                        onClick={() => window.print()}
+                        onClick={handleDownloadPdf}
                     >
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
@@ -228,7 +277,7 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                                     <th className="py-4 text-left">Description</th>
                                     <th className="py-4 text-right">Price</th>
                                     <th className="py-4 text-right">Qty</th>
-                                    <th className="py-4 text-right">Disc</th>
+                                    <th className="py-4 text-right">Disc %</th>
                                     <th className="py-4 text-right pr-6">Total</th>
                                 </tr>
                             </thead>
@@ -370,10 +419,16 @@ export function PreviewModal({ isOpen, onClose, data }: PreviewModalProps) {
                         position: absolute;
                         left: 0;
                         top: 0;
+                        transform: scale(0.7);
+                        transform-origin: top left;
+                        width: calc(100% / 0.7);
+                        min-height: auto !important;
+                        height: auto !important;
+                        overflow: visible !important;
                         box-shadow: none !important;
                         margin: 0 !important;
                     }
-                    @page { size: A4; margin: 12mm; }
+                    @page { size: A4; margin: 6mm; }
                 }
             `}</style>
         </div>

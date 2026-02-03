@@ -770,7 +770,7 @@ export default function EditInvoicePage() {
                                                     <th className="py-4 text-left">Description</th>
                                                     <th className="py-4 text-right w-32">Price</th>
                                                     <th className="py-4 text-right w-24">Qty</th>
-                                                    <th className="py-4 text-right w-24">Disc</th>
+                                                    <th className="py-4 text-right w-24">Disc %</th>
                                                     <th className="py-4 text-right w-32">Total</th>
                                                     <th className="w-8"></th>
                                                 </tr>

@@ -9,6 +9,9 @@ import { createClient } from "@/lib/supabase/client"
 import { useSettings } from "@/lib/settings-context"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { cn } from "@/lib/utils"
+import { pdf } from "@react-pdf/renderer"
+import { InvoicePDF } from "@/components/invoice/pdf-document"
+import type { TemplateId } from "@/lib/invoice/templates"
 
 interface InvoiceItem {
     id: string
@@ -127,6 +130,53 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
         })
     }
 
+    const handleDownloadPdf = async () => {
+        try {
+            const templateMap: Record<string, TemplateId> = {
+                Classic: 'classic',
+                Minimal: 'minimal',
+                Modern: 'modern',
+            }
+            const mode = ((invoice as any)?.invoice_mode || 'dark') as 'light' | 'dark'
+            const templateRaw = (invoice as any)?.template
+            const templateId: TemplateId = mode === 'dark'
+                ? 'noir'
+                : (templateMap[templateRaw] || 'classic')
+
+            const blob = await pdf(
+                <InvoicePDF
+                    data={{
+                        number: invoice.invoice_number,
+                        date: formatDate(invoice.issue_date),
+                        customerName: invoice.customer?.name || '',
+                        customerEmail: invoice.customer?.email || '',
+                        currency: invoice.currency,
+                        items: (invoice.items || []).map((i) => ({
+                            description: i.description || '',
+                            quantity: Number(i.quantity) || 0,
+                            price: Number(i.unit_price) || 0,
+                            discount_rate: Math.min(100, Math.max(0, Number(i.discount_rate) || 0)),
+                        })),
+                        notes: invoice.notes || '',
+                        template: templateId,
+                        logo: (invoice as any).logo_url || undefined,
+                    }}
+                />
+            ).toBlob()
+
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${invoice.invoice_number || 'invoice'}.pdf`
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(url)
+        } catch (e) {
+            console.error('PDF download error:', e)
+        }
+    }
+
     return (
         <div className="min-h-screen bg-background text-foreground font-sans pb-20">
             {/* Action Header */}
@@ -162,7 +212,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </Button>
                     <Button
                         className="h-10 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-3 sm:px-6"
-                        onClick={() => window.print()}
+                        onClick={handleDownloadPdf}
                     >
                         <Download className="mr-2 h-4 w-4" />
                         <span className="hidden sm:inline">Download PDF</span>
@@ -259,7 +309,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 <th className="py-4 text-left">Description</th>
                                 <th className="py-4 text-right">Price</th>
                                 <th className="py-4 text-right">Qty</th>
-                                <th className="py-4 text-right">Disc</th>
+                                <th className="py-4 text-right">Disc %</th>
                                 <th className="py-4 text-right">Total</th>
                             </tr>
                         </thead>
@@ -364,10 +414,16 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                         position: absolute;
                         left: 0;
                         top: 0;
+                        transform: scale(0.7);
+                        transform-origin: top left;
+                        width: calc(100% / 0.7);
+                        min-height: auto !important;
+                        height: auto !important;
+                        overflow: visible !important;
                         box-shadow: none !important;
                         margin: 0 !important;
                     }
-                    @page { size: A4; margin: 12mm; }
+                    @page { size: A4; margin: 6mm; }
                 }
             `}</style>
         </div>

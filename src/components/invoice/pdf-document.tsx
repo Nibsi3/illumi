@@ -103,10 +103,12 @@ interface InvoicePDFProps {
         date: string
         customerName: string
         customerEmail: string
+        currency?: string
         items: Array<{
             description: string
             quantity: number
             price: number
+            discount_rate?: number
         }>
         notes: string
         template?: TemplateId
@@ -117,7 +119,15 @@ interface InvoicePDFProps {
 
 export const InvoicePDF = ({ data }: InvoicePDFProps) => {
     const styles = createStyles(data.template, data.brandColor)
-    const subtotal = data.items.reduce((acc, item) => acc + item.quantity * item.price, 0)
+    const currency = (data.currency || 'ZAR').toUpperCase()
+    const formatter = new Intl.NumberFormat('en-ZA', { style: 'currency', currency })
+    const lineTotal = (item: { quantity: number; price: number; discount_rate?: number }) => {
+        const qty = Number(item.quantity) || 0
+        const price = Number(item.price) || 0
+        const discount = Math.min(100, Math.max(0, Number(item.discount_rate) || 0))
+        return qty * price * (1 - discount / 100)
+    }
+    const subtotal = data.items.reduce((acc, item) => acc + lineTotal(item), 0)
 
     return (
         <Document>
@@ -144,6 +154,7 @@ export const InvoicePDF = ({ data }: InvoicePDFProps) => {
                     <Text style={{ flex: 4, fontSize: 10, fontWeight: "bold" }}>Description</Text>
                     <Text style={{ flex: 1, fontSize: 10, fontWeight: "bold", textAlign: "right" }}>Qty</Text>
                     <Text style={{ flex: 1, fontSize: 10, fontWeight: "bold", textAlign: "right" }}>Price</Text>
+                    <Text style={{ flex: 1, fontSize: 10, fontWeight: "bold", textAlign: "right" }}>Disc %</Text>
                     <Text style={{ flex: 1, fontSize: 10, fontWeight: "bold", textAlign: "right" }}>Total</Text>
                 </View>
 
@@ -151,9 +162,10 @@ export const InvoicePDF = ({ data }: InvoicePDFProps) => {
                     <View key={i} style={styles.tableRow}>
                         <Text style={{ flex: 4, fontSize: 12 }}>{item.description}</Text>
                         <Text style={{ flex: 1, fontSize: 12, textAlign: "right" }}>{item.quantity}</Text>
-                        <Text style={{ flex: 1, fontSize: 12, textAlign: "right" }}>${item.price.toFixed(2)}</Text>
+                        <Text style={{ flex: 1, fontSize: 12, textAlign: "right" }}>{formatter.format(item.price)}</Text>
+                        <Text style={{ flex: 1, fontSize: 12, textAlign: "right" }}>{(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%</Text>
                         <Text style={{ flex: 1, fontSize: 12, textAlign: "right" }}>
-                            ${(item.quantity * item.price).toFixed(2)}
+                            {formatter.format(lineTotal(item))}
                         </Text>
                     </View>
                 ))}
@@ -161,7 +173,7 @@ export const InvoicePDF = ({ data }: InvoicePDFProps) => {
                 <View style={styles.totalSection}>
                     <View style={styles.totalRow}>
                         <Text style={styles.totalLabel}>Total</Text>
-                        <Text style={styles.totalValue}>${subtotal.toFixed(2)}</Text>
+                        <Text style={styles.totalValue}>{formatter.format(subtotal)}</Text>
                     </View>
                 </View>
 
