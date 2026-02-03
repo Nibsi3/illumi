@@ -540,8 +540,7 @@ export async function POST(req: Request) {
                 }).toString(),
             })
 
-            // Netcash returns a redirect URL or payment key
-            const netcashText = await netcashRes.text().catch(() => '')
+            await netcashRes.text().catch(() => '')
             
             // For now, construct the payment URL directly
             const paymentUrl = `https://paynow.netcash.co.za/site/paynow.aspx?m1=${encodeURIComponent(netcashServiceKey)}&m2=${encodeURIComponent(netcashApiKey)}&p2=${encodeURIComponent(invoiceNumber || invoiceId)}&p3=${encodeURIComponent(`Invoice ${invoiceNumber || invoiceId}`)}&p4=${amount}&Budget=N&m4=${encodeURIComponent(invoiceId)}&m5=${encodeURIComponent(successUrl)}&m6=${encodeURIComponent(cancelUrl)}&m9=${encodeURIComponent(email || '')}`

@@ -192,6 +192,8 @@ export default function DocsPage() {
                                     <h2 className="text-2xl font-bold mb-8 text-center">Popular Articles</h2>
                                     <div className="space-y-4">
                                         <ArticleRow href="/docs/payfast-online-payments" title="How to connect PayFast for online payments" category="Payments" time="3 min read" />
+                                        <ArticleRow href="/docs/stitch-online-payments" title="How to connect Stitch for Pay by Bank + card" category="Payments" time="4 min read" />
+                                        <ArticleRow href="/docs/netcash-online-payments" title="How to connect Netcash for payment links" category="Payments" time="4 min read" />
                                         <ArticleRow href="/docs/invoicing" title="Setting up recurring invoices for retainer clients" category="Invoicing" time="5 min read" />
                                         <ArticleRow href="/docs/send-invoices-by-email" title="Sending invoices by email" category="Invoicing" time="2 min read" />
                                         <ArticleRow href="/docs/expenses" title="Tracking expenses and calculating net profit" category="Expenses" time="4 min read" />

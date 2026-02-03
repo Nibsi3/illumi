@@ -4,7 +4,7 @@ import { IconArrowRight, IconPlugConnected, IconShieldCheck, IconCurrencyDollar 
 
 export const metadata: Metadata = {
     title: "Integrations | Illumi (South Africa)",
-    description: "Connect your preferred South African payment gateway for online invoice payments. PayFast, Yoco, Ozow, PayStack, Peach Payments and more.",
+    description: "Integrations + documentation for connecting South African payment gateways to Illumi PayGate. PayFast, Yoco, Ozow, PayStack, Stripe, Stitch, Netcash and more.",
     keywords: [
         "invoicing app integrations South Africa",
         "PayFast invoicing integration",
@@ -45,6 +45,21 @@ const INTEGRATIONS = [
         blurb: "Enterprise-ready card payments for higher-volume businesses.",
     },
     {
+        slug: "stripe",
+        name: "Stripe",
+        blurb: "Global card + wallet payments with subscriptions and Checkout.",
+    },
+    {
+        slug: "stitch",
+        name: "Stitch",
+        blurb: "Pay by bank (Instant EFT) + card payments, with modern SA rails.",
+    },
+    {
+        slug: "netcash",
+        name: "Netcash",
+        blurb: "Trusted SA gateway with payment links and subscription billing.",
+    },
+    {
         slug: "snapscan",
         name: "SnapScan",
         blurb: "Enable QR-based payments where supported by your provider.",
@@ -68,7 +83,7 @@ export default function IntegrationsIndexPage() {
                             Connect the payment provider you already use
                         </h1>
                         <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
-                            Illumi connects your preferred South African payment gateway via PayGate so clients can pay online and you can get paid in ZAR.
+                            Illumi connects your payment gateway via PayGate so clients can pay online and you can get paid in ZAR. Use this page to browse integrations and read setup docs.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
@@ -77,6 +92,12 @@ export default function IntegrationsIndexPage() {
                             >
                                 Learn about PayGate
                                 <IconArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                            <Link
+                                href="/docs/paygate"
+                                className="inline-flex items-center justify-center px-8 h-12 border border-border text-foreground hover:bg-muted text-sm font-semibold"
+                            >
+                                PayGate setup docs
                             </Link>
                             <Link
                                 href="/pricing"

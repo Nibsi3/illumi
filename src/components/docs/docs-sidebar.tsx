@@ -38,6 +38,8 @@ const NAV: DocsNavGroup[] = [
             { title: "PayGate", href: "/docs/paygate", description: "Online payments" },
             { title: "PayGate & payments", href: "/docs/payments", description: "Overview" },
             { title: "Connecting PayFast", href: "/docs/payfast-online-payments", description: "Provider setup" },
+            { title: "Connecting Stitch", href: "/docs/stitch-online-payments", description: "Provider setup" },
+            { title: "Connecting Netcash", href: "/docs/netcash-online-payments", description: "Provider setup" },
         ],
     },
     {

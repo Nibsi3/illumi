@@ -165,6 +165,8 @@ const DOCS: Record<string, DocArticle> = {
                 ],
                 links: [
                     { title: "Connect PayFast", href: "/docs/payfast-online-payments", description: "Step-by-step provider setup." },
+                    { title: "Connect Stitch", href: "/docs/stitch-online-payments", description: "Client ID + Client Secret setup." },
+                    { title: "Connect Netcash", href: "/docs/netcash-online-payments", description: "Service Key + API Key setup." },
                 ],
             },
             {
@@ -175,6 +177,93 @@ const DOCS: Record<string, DocArticle> = {
         next: [
             { title: "Invoices", href: "/docs/invoicing", description: "Use PayGate on every invoice." },
             { title: "Troubleshooting", href: "/docs/troubleshooting", description: "If payments don’t sync." },
+        ],
+    },
+    "stitch-online-payments": {
+        title: "Connecting Stitch",
+        description: "Use Stitch as your PayGate provider (Pay by Bank + card payments).",
+        readingTime: "6 min",
+        sections: [
+            {
+                heading: "What you’ll need",
+                body: [
+                    "Stitch Client ID.",
+                    "Stitch Client Secret.",
+                    "Choose Test vs Live mode based on your Stitch environment.",
+                ],
+                links: [
+                    { title: "Stitch payment products", href: "https://docs.stitch.money/payment-products", description: "Official docs" },
+                    { title: "Stitch client tokens", href: "https://docs.stitch.money/authentication/client-tokens", description: "Official docs" },
+                ],
+            },
+            {
+                heading: "Step-by-step",
+                steps: [
+                    { title: "Open Illumi Settings → PayGate", detail: "In your dashboard, go to Settings and open PayGate." },
+                    { title: "Select Stitch", detail: "Choose Stitch as your provider and click Connect." },
+                    { title: "Paste your Client ID + Client Secret", detail: "Add credentials for Test mode or Live mode (depending on your environment)." },
+                    { title: "Save and set as primary (optional)", detail: "If you use multiple providers, set Stitch as your primary provider." },
+                    { title: "Send a test invoice", detail: "Open an invoice preview and click Pay Now to verify the payment link flow." },
+                ],
+            },
+            {
+                heading: "Common issues",
+                body: [
+                    "If you see invalid_client: confirm Test vs Live mode matches your Stitch credentials.",
+                    "If payments don’t update status: confirm your PayGate webhook settings and provider callbacks.",
+                ],
+                links: [
+                    { title: "PayGate", href: "/docs/paygate", description: "Overview + troubleshooting" },
+                    { title: "Troubleshooting", href: "/docs/troubleshooting", description: "Quick checks" },
+                ],
+            },
+        ],
+        next: [
+            { title: "PayGate", href: "/docs/paygate", description: "Overview" },
+            { title: "Invoices", href: "/docs/invoicing", description: "Create and send invoices" },
+        ],
+    },
+    "netcash-online-payments": {
+        title: "Connecting Netcash",
+        description: "Use Netcash as your PayGate provider (payment links + subscriptions).",
+        readingTime: "6 min",
+        sections: [
+            {
+                heading: "What you’ll need",
+                body: [
+                    "Netcash Service Key.",
+                    "Netcash API Key.",
+                    "Choose Test vs Live mode based on your Netcash environment.",
+                ],
+                links: [
+                    { title: "Netcash payment gateway", href: "https://netcash.co.za/services/payment-gateway/", description: "Official overview" },
+                    { title: "Netcash subscriptions", href: "https://netcash.co.za/services/payment-gateway/subscription-billing/", description: "Official overview" },
+                ],
+            },
+            {
+                heading: "Step-by-step",
+                steps: [
+                    { title: "Open Illumi Settings → PayGate", detail: "In your dashboard, go to Settings and open PayGate." },
+                    { title: "Select Netcash", detail: "Choose Netcash as your provider and click Connect." },
+                    { title: "Paste your Service Key + API Key", detail: "Add credentials for Test mode or Live mode (depending on your environment)." },
+                    { title: "Save and set as primary (optional)", detail: "If you use multiple providers, set Netcash as your primary provider." },
+                    { title: "Send a test invoice", detail: "Open an invoice preview and click Pay Now to verify the payment link flow." },
+                ],
+            },
+            {
+                heading: "Common issues",
+                body: [
+                    "If the payment link fails: confirm your keys are correct and match the selected mode (Test vs Live).",
+                ],
+                links: [
+                    { title: "PayGate", href: "/docs/paygate", description: "Overview + troubleshooting" },
+                    { title: "Troubleshooting", href: "/docs/troubleshooting", description: "Quick checks" },
+                ],
+            },
+        ],
+        next: [
+            { title: "PayGate", href: "/docs/paygate", description: "Overview" },
+            { title: "Invoices", href: "/docs/invoicing", description: "Create and send invoices" },
         ],
     },
     payments: {

@@ -13,6 +13,9 @@ type Provider = {
     description: string
     bullets: string[]
     faq: { q: string; a: string }[]
+    illumiDocsHref?: string
+    officialDocs?: { title: string; href: string }[]
+    credentials?: string[]
 }
 
 const PROVIDERS: Record<string, Provider> = {
@@ -46,6 +49,15 @@ const PROVIDERS: Record<string, Provider> = {
                 a: "No. Illumi sends invoices by email. The payment button/link is included so clients can pay online.",
             },
         ],
+        illumiDocsHref: "/docs/payfast-online-payments",
+        officialDocs: [
+            { title: "PayFast docs", href: "https://developers.payfast.co.za/" },
+        ],
+        credentials: [
+            "Merchant ID",
+            "Merchant Key",
+            "(Optional) Passphrase",
+        ],
     },
     yoco: {
         slug: "yoco",
@@ -72,6 +84,14 @@ const PROVIDERS: Record<string, Provider> = {
                 q: "Can clients pay from their phone?",
                 a: "Yes. The invoice link opens the client portal where they can view and pay (when PayGate is enabled).",
             },
+        ],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "Yoco API docs", href: "https://developer.yoco.com/" },
+        ],
+        credentials: [
+            "Public key",
+            "Secret key",
         ],
     },
     ozow: {
@@ -100,6 +120,14 @@ const PROVIDERS: Record<string, Provider> = {
                 a: "No. Illumi supports multiple providers via PayGate. Choose the one you already use.",
             },
         ],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "Ozow docs", href: "https://ozow.com/developers/" },
+        ],
+        credentials: [
+            "Site code",
+            "Private key",
+        ],
     },
     paystack: {
         slug: "paystack",
@@ -120,6 +148,14 @@ const PROVIDERS: Record<string, Provider> = {
             "Centralised payment records",
         ],
         faq: [],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "Paystack docs", href: "https://paystack.com/docs/" },
+        ],
+        credentials: [
+            "Secret key",
+            "(Optional) Public key",
+        ],
     },
     "peach-payments": {
         slug: "peach-payments",
@@ -140,6 +176,104 @@ const PROVIDERS: Record<string, Provider> = {
             "Payment records for bookkeeping and reporting",
         ],
         faq: [],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "Peach Payments docs", href: "https://developer.peachpayments.com/" },
+        ],
+        credentials: [
+            "Entity ID",
+            "Access token",
+        ],
+    },
+    stripe: {
+        slug: "stripe",
+        name: "Stripe",
+        short: "Stripe",
+        keywords: [
+            "Stripe invoice payments",
+            "online invoicing with Stripe",
+            "Stripe Checkout invoice payment link",
+            "subscription billing South Africa",
+        ],
+        headline: "Stripe integration for invoice payments",
+        description:
+            "Connect Stripe through Illumi PayGate to accept card and wallet payments through Stripe Checkout. Great for global clients paying invoices in ZAR.",
+        bullets: [
+            "Stripe Checkout payment links",
+            "Optional customer email prefill",
+            "Automatic payment status updates (provider dependent)",
+        ],
+        faq: [],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "Stripe API docs", href: "https://docs.stripe.com/" },
+        ],
+        credentials: [
+            "Secret key",
+            "Publishable key",
+        ],
+    },
+    stitch: {
+        slug: "stitch",
+        name: "Stitch",
+        short: "Stitch",
+        keywords: [
+            "Stitch money invoice payments",
+            "pay by bank invoice payments",
+            "Instant EFT Stitch integration",
+            "South Africa payment gateway Stitch",
+        ],
+        headline: "Stitch integration for Pay by Bank + card invoice payments",
+        description:
+            "Connect Stitch through Illumi PayGate to accept Pay by Bank (Instant EFT) and card payments on invoices. Ideal for modern SA payments and higher approval rates.",
+        bullets: [
+            "Pay by bank (Instant EFT) and card (provider dependent)",
+            "Hosted payment page experience",
+            "Automatic payment status updates (provider dependent)",
+        ],
+        faq: [
+            {
+                q: "Why does Stitch ask for client credentials?",
+                a: "Illumi uses your Stitch client credentials to create payment requests and generate payment links securely through PayGate.",
+            },
+        ],
+        illumiDocsHref: "/docs/stitch-online-payments",
+        officialDocs: [
+            { title: "Stitch payment products", href: "https://docs.stitch.money/payment-products" },
+            { title: "Stitch client tokens", href: "https://docs.stitch.money/authentication/client-tokens" },
+        ],
+        credentials: [
+            "Client ID",
+            "Client secret",
+        ],
+    },
+    netcash: {
+        slug: "netcash",
+        name: "Netcash",
+        short: "Netcash",
+        keywords: [
+            "Netcash payment gateway invoice payments",
+            "Netcash subscription billing",
+            "South Africa payment gateway recurring",
+        ],
+        headline: "Netcash integration for invoice payments and subscriptions",
+        description:
+            "Connect Netcash through Illumi PayGate to generate payment links for invoices and support recurring subscription billing (provider dependent).",
+        bullets: [
+            "Payment links for invoices",
+            "Subscription billing options (provider dependent)",
+            "Automatic payment status updates (provider dependent)",
+        ],
+        faq: [],
+        illumiDocsHref: "/docs/netcash-online-payments",
+        officialDocs: [
+            { title: "Netcash payment gateway", href: "https://netcash.co.za/services/payment-gateway/" },
+            { title: "Netcash subscriptions", href: "https://netcash.co.za/services/payment-gateway/subscription-billing/" },
+        ],
+        credentials: [
+            "Service key",
+            "API key",
+        ],
     },
     snapscan: {
         slug: "snapscan",
@@ -160,6 +294,13 @@ const PROVIDERS: Record<string, Provider> = {
             "Automatic payment tracking",
         ],
         faq: [],
+        illumiDocsHref: "/docs/paygate",
+        officialDocs: [
+            { title: "SnapScan", href: "https://snapscan.co.za/" },
+        ],
+        credentials: [
+            "Provider dependent",
+        ],
     },
 }
 
@@ -280,6 +421,65 @@ export default async function IntegrationProviderPage({ params }: { params: Prom
                                     <div>Clients pay online and invoice status updates automatically (provider dependent).</div>
                                 </li>
                             </ol>
+                        </div>
+                    </div>
+
+                    <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div className="rounded-3xl border border-border bg-card p-8">
+                            <h2 className="text-xl font-semibold text-foreground">Credentials you’ll need</h2>
+                            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                                You can find these in your provider dashboard. In Illumi, go to Settings → PayGate, select {p.short}, and paste the keys into Test or Live mode.
+                            </p>
+                            {p.credentials && p.credentials.length > 0 && (
+                                <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {p.credentials.map((c) => (
+                                        <div key={c} className="rounded-2xl border border-border bg-background p-4">
+                                            <div className="text-sm font-medium text-foreground">{c}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="rounded-3xl border border-border bg-card p-8">
+                            <h2 className="text-xl font-semibold text-foreground">Documentation</h2>
+                            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                                Use the Illumi guide for the exact fields to paste into PayGate. Use the official provider docs for where to find your keys and how their payment flow works.
+                            </p>
+                            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {p.illumiDocsHref && (
+                                    <Link
+                                        href={p.illumiDocsHref}
+                                        className="rounded-2xl border border-border bg-background hover:bg-accent transition-colors p-5"
+                                    >
+                                        <div className="text-sm font-semibold text-foreground">Illumi setup guide</div>
+                                        <div className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Read</div>
+                                    </Link>
+                                )}
+                                <Link
+                                    href="/docs/paygate"
+                                    className="rounded-2xl border border-border bg-background hover:bg-accent transition-colors p-5"
+                                >
+                                    <div className="text-sm font-semibold text-foreground">PayGate overview</div>
+                                    <div className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Read</div>
+                                </Link>
+                            </div>
+                            {p.officialDocs && p.officialDocs.length > 0 && (
+                                <div className="mt-6 space-y-2">
+                                    {p.officialDocs.map((l) => (
+                                        <a
+                                            key={l.href}
+                                            href={l.href}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="block rounded-2xl border border-border bg-background hover:bg-accent transition-colors p-5"
+                                        >
+                                            <div className="text-sm font-semibold text-foreground">{l.title}</div>
+                                            <div className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Open official docs</div>
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 
