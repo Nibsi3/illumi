@@ -589,6 +589,7 @@ export async function POST(req: Request) {
                     client_id: stitchClientId,
                     client_secret: stitchClientSecret,
                     scope: 'client_paymentrequest',
+                    audience: 'https://secure.stitch.money/connect/token',
                 }).toString(),
             })
 
