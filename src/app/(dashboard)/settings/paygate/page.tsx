@@ -358,7 +358,7 @@ export default function PayGatePage() {
         // Reset inputs on fresh connect
         const savedKeys = providerKeys[id] || {}
         mapProviderKeysToState(id, savedKeys)
-        setIsTestMode(savedKeys.isTestMode !== undefined ? savedKeys.isTestMode : true)
+        // Don't reset isTestMode here - it should persist from the loaded settings
         setConfiguringProvider(id)
     }
 

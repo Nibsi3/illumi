@@ -52,6 +52,8 @@ export async function GET(req: Request) {
             .eq('workspace_id', workspaceId)
             .single()
 
+        console.log('[Paygate Config GET] workspaceId:', workspaceId, 'settings:', settings, 'test_mode:', settings?.test_mode)
+
         if (error && error.code !== 'PGRST116') {
             console.error('[Paygate Config GET] Error:', error)
             return NextResponse.json({ success: false, error: error.message }, { status: 500 })
@@ -153,12 +155,14 @@ export async function POST(req: Request) {
         const serviceClient = getServiceClient()
 
         // Upsert settings
+        console.log('[Paygate Config POST] Saving settings:', { workspace_id, active_provider, test_mode, connected_providers })
+        
         const { error: settingsError } = await serviceClient
             .from('workspace_paygate_settings')
             .upsert({
                 workspace_id,
                 active_provider: active_provider || provider || 'payfast',
-                test_mode: test_mode ?? true,
+                test_mode: test_mode === false ? false : (test_mode === true ? true : true),
                 connected_providers: connected_providers || [],
                 updated_at: new Date().toISOString()
             }, { onConflict: 'workspace_id' })
@@ -167,6 +171,8 @@ export async function POST(req: Request) {
             console.error('[Paygate Config POST] Settings error:', settingsError)
             return NextResponse.json({ success: false, error: settingsError.message }, { status: 500 })
         }
+        
+        console.log('[Paygate Config POST] Settings saved successfully, test_mode:', test_mode)
 
         // Upsert keys if provided
         if (keys && provider) {
