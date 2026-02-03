@@ -310,6 +310,33 @@ const DOCS: Record<string, DocArticle> = {
                 ],
             },
             {
+                heading: "Webhooks (payment status updates)",
+                body: [
+                    "Some providers send a server-to-server webhook after payment completes so Illumi can automatically mark the invoice paid.",
+                    "Only configure webhook endpoints that match your connected provider. If you’re unsure, start by testing Pay Now links first.",
+                ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "Stripe uses a webhook secret (STRIPE_WEBHOOK_SECRET) to verify events. If you set up Stripe webhooks, you must set that secret on the server.",
+                        ],
+                    },
+                ],
+                snippets: [
+                    {
+                        label: "Stripe webhook endpoint",
+                        value: "https://www.illumi.co.za/api/webhooks/paygate",
+                        description: "Use this endpoint when configuring Stripe webhooks (Checkout Session Completed).",
+                    },
+                    {
+                        label: "PayFast ITN endpoint (subscription / server notifications)",
+                        value: "https://www.illumi.co.za/api/payfast/notify",
+                        description: "Use this endpoint if your PayFast flow requires ITN/notify callbacks (provider dependent).",
+                    },
+                ],
+            },
+            {
                 heading: "UI preview",
                 mock: "paygate_settings",
             },
@@ -365,6 +392,14 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "PayGate", href: "/docs/paygate", description: "Overview + troubleshooting" },
                     { title: "Troubleshooting", href: "/docs/troubleshooting", description: "Quick checks" },
                 ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "Stitch payment link generation is supported through PayGate. Automatic invoice status updates may be provider/webhook dependent and can vary by setup.",
+                        ],
+                    },
+                ],
             },
         ],
         next: [
@@ -409,6 +444,14 @@ const DOCS: Record<string, DocArticle> = {
                     { title: "PayGate", href: "/docs/paygate", description: "Overview + troubleshooting" },
                     { title: "Troubleshooting", href: "/docs/troubleshooting", description: "Quick checks" },
                 ],
+                callouts: [
+                    {
+                        variant: "note",
+                        body: [
+                            "Netcash payment link generation is supported through PayGate. If you need automatic status updates, your provider/webhook setup may require additional configuration.",
+                        ],
+                    },
+                ],
             },
         ],
         next: [
@@ -429,6 +472,17 @@ const DOCS: Record<string, DocArticle> = {
                 ],
                 links: [
                     { title: "PayGate", href: "/docs/paygate", description: "Full setup and best practices." },
+                ],
+            },
+            {
+                heading: "Choosing a provider",
+                body: [
+                    "If most of your clients are in South Africa, Instant EFT / Pay by Bank can reduce friction.",
+                    "If you have international clients, card-based providers can be easier for them.",
+                    "If you want recurring collections, choose a provider that supports tokens/subscriptions and complete their onboarding steps.",
+                ],
+                links: [
+                    { title: "Integrations", href: "/integrations", description: "Compare providers and credential requirements." },
                 ],
             },
         ],
@@ -524,6 +578,16 @@ const DOCS: Record<string, DocArticle> = {
                     "4) Add clients.",
                 ],
             },
+            {
+                heading: "Pro billing & recurring charges",
+                body: [
+                    "Your subscription provider (e.g. PayFast) can send recurring payment notifications to Illumi.",
+                    "If a charge fails, your Pro access may lapse when the current period expires.",
+                ],
+                links: [
+                    { title: "Troubleshooting", href: "/docs/troubleshooting", description: "If billing or payments look incorrect." },
+                ],
+            },
         ],
     },
     "send-invoices-by-email": {
@@ -570,6 +634,28 @@ const DOCS: Record<string, DocArticle> = {
                 ],
                 links: [
                     { title: "PayGate", href: "/docs/paygate", description: "Full PayGate guide." },
+                ],
+            },
+            {
+                heading: "PayFast ITN / notify URL",
+                body: [
+                    "PayFast can send server notifications (ITN) for subscription/recurring events.",
+                    "Illumi listens for those notifications at the endpoint below.",
+                ],
+                snippets: [
+                    {
+                        label: "PayFast notify URL",
+                        value: "https://www.illumi.co.za/api/payfast/notify",
+                        description: "Use this as the notify/ITN callback URL when required by your PayFast setup.",
+                    },
+                ],
+                callouts: [
+                    {
+                        variant: "warning",
+                        body: [
+                            "Keep your PayFast passphrase consistent between PayFast and Illumi server settings. Signature validation is a primary security control.",
+                        ],
+                    },
                 ],
             },
             {
@@ -649,6 +735,13 @@ const DOCS: Record<string, DocArticle> = {
                 links: [
                     { title: "PayGate", href: "/docs/paygate", description: "Provider setup + verification" },
                     { title: "Integrations", href: "/integrations", description: "Provider-specific docs" },
+                ],
+                snippets: [
+                    {
+                        label: "PayGate webhook endpoint (Stripe / generic)",
+                        value: "https://www.illumi.co.za/api/webhooks/paygate",
+                        description: "If you’re setting up Stripe webhooks, point Stripe to this endpoint.",
+                    },
                 ],
             },
             {
