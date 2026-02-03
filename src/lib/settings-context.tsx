@@ -112,6 +112,30 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
+    // Load logo from workspace when workspace changes
+    useEffect(() => {
+        if (activeWorkspace?.id) {
+            // Fetch workspace logo_url from database
+            const fetchLogo = async () => {
+                try {
+                    const { createClient } = await import('@/lib/supabase/client')
+                    const supabase = createClient()
+                    const { data } = await supabase
+                        .from('workspaces')
+                        .select('logo_url')
+                        .eq('id', activeWorkspace.id)
+                        .single()
+                    if (data?.logo_url) {
+                        setLogo(data.logo_url)
+                    }
+                } catch (e) {
+                    console.error('Failed to load workspace logo:', e)
+                }
+            }
+            fetchLogo()
+        }
+    }, [activeWorkspace?.id])
+
     // Load settings from localStorage on mount
     useEffect(() => {
         const loadSettings = () => {

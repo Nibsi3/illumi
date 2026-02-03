@@ -58,13 +58,61 @@ export default function GeneralSettings() {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+
     const handleLogoUpload = () => {
         const input = document.createElement('input')
         input.type = 'file'
         input.accept = 'image/*'
-        input.onchange = (e: any) => {
+        input.onchange = async (e: any) => {
             const file = e.target.files[0]
-            if (file) {
+            if (file && activeWorkspace?.id) {
+                setIsUploadingLogo(true)
+                try {
+                    const supabase = createClient()
+                    
+                    // Upload to Supabase Storage
+                    const fileExt = file.name.split('.').pop()
+                    const fileName = `${activeWorkspace.id}/logo.${fileExt}`
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('logos')
+                        .upload(fileName, file, { upsert: true })
+                    
+                    if (uploadError) {
+                        // If bucket doesn't exist, fall back to base64
+                        console.warn('Storage upload failed, using base64:', uploadError)
+                        const reader = new FileReader()
+                        reader.onload = (event) => {
+                            if (event.target?.result) {
+                                setLogo(event.target.result as string)
+                            }
+                        }
+                        reader.readAsDataURL(file)
+                        return
+                    }
+                    
+                    // Get public URL
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('logos')
+                        .getPublicUrl(fileName)
+                    
+                    // Update workspace with logo URL
+                    await supabase
+                        .from('workspaces')
+                        .update({ logo_url: publicUrl })
+                        .eq('id', activeWorkspace.id)
+                    
+                    setLogo(publicUrl)
+                    toast.success('Logo uploaded successfully')
+                } catch (err: any) {
+                    console.error('Logo upload error:', err)
+                    toast.error('Failed to upload logo')
+                } finally {
+                    setIsUploadingLogo(false)
+                }
+            } else if (file) {
+                // No workspace, use base64 (temporary)
                 const reader = new FileReader()
                 reader.onload = (event) => {
                     if (event.target?.result) {
@@ -169,10 +217,12 @@ export default function GeneralSettings() {
 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
                     <div
-                        onClick={handleLogoUpload}
-                        className="w-32 h-32 rounded-2xl border-2 border-dashed border-border bg-background hover:border-border transition-all cursor-pointer flex flex-col items-center justify-center group overflow-hidden"
+                        onClick={isUploadingLogo ? undefined : handleLogoUpload}
+                        className={`w-32 h-32 rounded-2xl border-2 border-dashed border-border bg-background hover:border-border transition-all flex flex-col items-center justify-center group overflow-hidden ${isUploadingLogo ? 'opacity-50' : 'cursor-pointer'}`}
                     >
-                        {logo ? (
+                        {isUploadingLogo ? (
+                            <div className="animate-spin h-6 w-6 border-2 border-muted-foreground border-t-transparent rounded-full" />
+                        ) : logo ? (
                             <img src={logo} alt="Logo" className="w-full h-full object-contain p-4" />
                         ) : (
                             <>
@@ -186,10 +236,11 @@ export default function GeneralSettings() {
                             variant="outline"
                             className="h-9 border-border bg-muted hover:bg-accent"
                             onClick={handleLogoUpload}
+                            disabled={isUploadingLogo}
                         >
-                            Replace Logo
+                            {isUploadingLogo ? 'Uploading...' : 'Replace Logo'}
                         </Button>
-                        <Button variant="ghost" className="h-9 text-muted-foreground hover:text-red-500" onClick={() => setLogo(null)}>
+                        <Button variant="ghost" className="h-9 text-muted-foreground hover:text-red-500" onClick={() => setLogo(null)} disabled={isUploadingLogo}>
                             Remove
                         </Button>
                     </div>
