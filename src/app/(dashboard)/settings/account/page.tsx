@@ -74,7 +74,7 @@ export default function AccountPage() {
                     <Avatar className="h-24 w-24 border-2 border-border">
                         <AvatarImage src={logo || undefined} />
                         <AvatarFallback className="bg-gradient-to-tr from-purple-500 to-blue-500 text-foreground text-xl font-bold">
-                            CF
+                            {name ? name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase() : ""}
                         </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-2">

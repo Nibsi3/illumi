@@ -41,6 +41,7 @@ export default function LoginPage() {
     const [currentTestimonial, setCurrentTestimonial] = useState(0)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [fullName, setFullName] = useState("")
     const [mode, setMode] = useState<"sign_in" | "sign_up" | "verify">("sign_in")
     const [verificationCode, setVerificationCode] = useState("")
     const [loading, setLoading] = useState(false)
@@ -141,6 +142,9 @@ export default function LoginPage() {
             password,
             options: {
                 emailRedirectTo: `${getURL()}/auth/callback`,
+                data: {
+                    full_name: fullName.trim() || normalizedEmail.split("@")[0],
+                },
             },
         })
 
@@ -329,6 +333,15 @@ export default function LoginPage() {
                             </form>
                         ) : (
                             <form onSubmit={mode === "sign_up" ? handleEmailSignUp : handleEmailSignIn} className="space-y-4">
+                                {mode === "sign_up" && (
+                                    <Input
+                                        type="text"
+                                        placeholder="Full name"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                        className="h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground rounded-lg"
+                                    />
+                                )}
                                 <Input
                                     type="email"
                                     placeholder="name@example.com"

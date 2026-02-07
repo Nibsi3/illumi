@@ -635,7 +635,7 @@ export default function DashboardPage() {
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
-                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">{greetingPrefix} <span className="text-muted-foreground not-italic">{userFirstName ? `${userFirstName},` : ""}</span></h1>
+                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">{greetingPrefix} <span className="text-muted-foreground not-italic ml-1">{userFirstName ? `${userFirstName},` : ""}</span></h1>
                     <p className="text-muted-foreground text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
                 </div>
 
