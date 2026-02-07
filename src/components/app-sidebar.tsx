@@ -175,7 +175,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     ];
 
 
-    const userEmail = user?.email || "cameronfalck03@gmail.com";
+    const userEmail = user?.email || "";
     const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0];
     const initials = userName.substring(0, 2).toUpperCase();
     const headerLogo = logo || "/logo.png";

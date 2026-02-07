@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
     Search,
@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { useTheme } from "@/lib/theme-context"
+import { createClient } from "@/lib/supabase/client"
 
 interface InboxItem {
     id: string
@@ -54,6 +55,19 @@ export default function InboxPage() {
     const [selectedId, setSelectedId] = useState<string | null>(mockItems[0].id)
     const [searchQuery, setSearchQuery] = useState("")
     const { theme } = useTheme()
+    const [user, setUser] = useState<any>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: sessionData } = await supabase.auth.getSession()
+            setUser(sessionData?.session?.user || null)
+        }
+        getUser()
+    }, [supabase])
+
+    const userEmail = user?.email || ""
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0] || ""
 
     const selectedItem = mockItems.find(item => item.id === selectedId)
 
@@ -168,8 +182,8 @@ export default function InboxPage() {
                                     <div className="flex justify-between border-b pb-8">
                                         <div>
                                             <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Invoiced To</h4>
-                                            <p className="text-sm font-bold">Cameron Falck</p>
-                                            <p className="text-xs text-muted-foreground mt-1">cameronfalck03@gmail.com</p>
+                                            <p className="text-sm font-bold">{userName}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">{userEmail}</p>
                                         </div>
                                         <div className="text-right">
                                             <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">Invoice #65289</h4>

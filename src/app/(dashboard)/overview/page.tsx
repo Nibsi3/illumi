@@ -9,7 +9,7 @@ import {
     IconChevronDown,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import {
@@ -40,6 +40,30 @@ export default function DashboardPage() {
     const [view, setView] = useState<"overview" | "metrics">("overview");
     const [period, setPeriod] = useState<"Day" | "Week" | "Month" | "Year">("Week");
     const [hoveredBucketIndex, setHoveredBucketIndex] = useState<number | null>(null)
+    const [user, setUser] = useState<any>(null)
+
+    const supabase = createClient()
+    const { activeWorkspace } = useWorkspace()
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: sessionData } = await supabase.auth.getSession()
+            setUser(sessionData?.session?.user || null)
+        }
+        getUser()
+    }, [supabase])
+
+    const userFirstName = user?.user_metadata?.full_name?.split(" ")[0]
+        || user?.user_metadata?.name?.split(" ")[0]
+        || user?.email?.split("@")[0]
+        || ""
+
+    const greetingPrefix = (() => {
+        const h = new Date().getHours()
+        if (h < 12) return "Morning"
+        if (h < 18) return "Afternoon"
+        return "Evening"
+    })()
 
     const defaultMetrics = useMemo(() => ({
         revenue: 0,
@@ -58,9 +82,6 @@ export default function DashboardPage() {
         projectedRevenue: 0,
         topClients: [] as { name: string; total: number; count: number }[],
     }), [])
-
-    const supabase = createClient()
-    const { activeWorkspace } = useWorkspace()
 
     // Use React Query for cached data fetching
     const { data: dashboardData, isLoading } = useQuery({
@@ -614,7 +635,7 @@ export default function DashboardPage() {
             {/* Header: Greeting (Left) & Controls (Right) */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-1 px-4 md:px-0">
                 <div className="flex flex-col gap-y-1">
-                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">Morning <span className="text-muted-foreground not-italic">Cameron,</span></h1>
+                    <h1 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight italic">{greetingPrefix} <span className="text-muted-foreground not-italic">{userFirstName ? `${userFirstName},` : ""}</span></h1>
                     <p className="text-muted-foreground text-xs font-sans tracking-wide">here's a quick look at how things are going.</p>
                 </div>
 

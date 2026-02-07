@@ -1,9 +1,11 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { IconCheck } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 const freeFeatures = [
     "Send up to 10 invoices per month",
@@ -36,6 +38,21 @@ const proFeatures = [
 
 export default function PricingPage() {
     const router = useRouter()
+    const [user, setUser] = useState<any>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: sessionData } = await supabase.auth.getSession()
+            setUser(sessionData?.session?.user || null)
+        }
+        getUser()
+    }, [supabase])
+
+    const userFirstName = user?.user_metadata?.full_name?.split(" ")[0]
+        || user?.user_metadata?.name?.split(" ")[0]
+        || user?.email?.split("@")[0]
+        || ""
 
     return (
         <div className="max-w-7xl mx-auto py-12 px-6 pb-32">
@@ -45,7 +62,7 @@ export default function PricingPage() {
                     Secure your 50% discount before trial ends
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Hi Cameron, Your trial ends in 11 days. Choose a plan now to continue using all of Illumi's features and secure our limited-time discount—save 50% on the Pro plan.
+                    {userFirstName ? `Hi ${userFirstName}, your` : "Your"} trial ends in 11 days. Choose a plan now to continue using all of Illumi's features and secure our limited-time discount—save 50% on the Pro plan.
                 </p>
             </div>
 

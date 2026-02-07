@@ -1,11 +1,26 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Copy, Plus, RefreshCcw, Trash2 } from "lucide-react"
 import { IconBrandGoogle } from "@tabler/icons-react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function InboxSettingsPage() {
+    const [user, setUser] = useState<any>(null)
+    const supabase = createClient()
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: sessionData } = await supabase.auth.getSession()
+            setUser(sessionData?.session?.user || null)
+        }
+        getUser()
+    }, [supabase])
+
+    const userEmail = user?.email || ""
+
     return (
         <div className="max-w-4xl mx-auto flex flex-col gap-8 pb-32">
             <div>
@@ -76,7 +91,7 @@ export default function InboxSettingsPage() {
                                 <IconBrandGoogle className="h-4 w-4 text-red-500" />
                             </div>
                             <div>
-                                <div className="text-sm font-medium">cameronfalck03@gmail.com</div>
+                                <div className="text-sm font-medium">{userEmail || "No email connected"}</div>
                                 <div className="text-xs text-muted-foreground">Last accessed 2 minutes ago</div>
                             </div>
                         </div>
