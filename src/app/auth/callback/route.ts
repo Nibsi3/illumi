@@ -128,6 +128,20 @@ export async function GET(request: NextRequest) {
         }
         console.error('Auth code exchange error:', error)
 
+        // If the error is PKCE-related (code verifier not found on the server),
+        // fall back to a client-side exchange page where the browser has access
+        // to the code verifier in cookies/localStorage. The PKCE error is thrown
+        // before any network request, so the auth code is still valid.
+        const errorMsg = (error.message || '').toLowerCase()
+        const isPKCEError = errorMsg.includes('code verifier') || errorMsg.includes('pkce')
+        if (isPKCEError) {
+            console.log('Auth callback: PKCE error detected, falling back to client-side exchange')
+            const confirmUrl = new URL(`${origin}/auth/confirm`)
+            confirmUrl.searchParams.set('code', code)
+            confirmUrl.searchParams.set('next', nextPath)
+            return NextResponse.redirect(confirmUrl, 302)
+        }
+
         const errorUrl = new URL(`${origin}/auth/auth-code-error`)
         errorUrl.searchParams.set('error', error.message)
         return NextResponse.redirect(errorUrl, 302)
@@ -137,7 +151,4 @@ export async function GET(request: NextRequest) {
     const missingCodeUrl = new URL(`${origin}/auth/auth-code-error`)
     missingCodeUrl.searchParams.set('error', 'missing_code')
     return NextResponse.redirect(missingCodeUrl, 302)
-
-    // Return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`)
 }
