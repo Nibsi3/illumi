@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 
 interface Workspace {
@@ -45,6 +46,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const [userEmail, setUserEmail] = useState<string | null>(null)
     const [userId, setUserId] = useState<string | null>(null)
     const supabase = createClient()
+    const queryClient = useQueryClient()
 
     const SIGNED_IN_AT_KEY = 'illumi_auth_signed_in_at'
     const MAX_SESSION_AGE_MS = 7 * 24 * 60 * 60 * 1000
@@ -77,9 +79,13 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             setUserEmail((user.email || '').toLowerCase().trim() || null)
 
             // Use cached workspaces if available and not forcing refresh
-            const CACHE_KEY = 'illumi_workspaces_cache'
+            // Cache is scoped by user ID to prevent cross-user data leaking
+            const CACHE_KEY = `illumi_workspaces_cache_${user.id}`
             const CACHE_TTL = 10 * 60 * 1000 // 10 minutes - reduces API calls
             let deduped: Workspace[] = []
+
+            // Remove legacy non-user-scoped cache to prevent cross-user data leaking
+            try { localStorage.removeItem('illumi_workspaces_cache') } catch { /* ignore */ }
 
             if (!forceRefresh) {
                 try {
@@ -306,7 +312,10 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     const setActiveWorkspace = useCallback((workspace: Workspace) => {
         setActiveWorkspaceState(workspace)
         localStorage.setItem('activeWorkspaceId', workspace.id)
-    }, [])
+        // Clear all React Query data when switching workspaces to prevent
+        // stale data from another workspace showing up
+        queryClient.removeQueries()
+    }, [queryClient])
 
     return (
         <WorkspaceContext.Provider value={{

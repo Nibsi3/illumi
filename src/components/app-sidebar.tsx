@@ -88,7 +88,23 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
     const handleSignOut = async () => {
         await supabase.auth.signOut();
         try {
+            // Clear all cached data to prevent leaking between sessions
             localStorage.removeItem('illumi_auth_signed_in_at')
+            localStorage.removeItem('activeWorkspaceId')
+            // Clear all workspace caches (user-scoped keys)
+            const keysToRemove: string[] = []
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i)
+                if (key && (
+                    key.startsWith('illumi_workspaces_cache') ||
+                    key.startsWith('illumi_settings') ||
+                    key.startsWith('illumi_sub_') ||
+                    key === 'illumi_billing'
+                )) {
+                    keysToRemove.push(key)
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k))
         } catch {
             // ignore
         }
