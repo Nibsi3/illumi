@@ -74,5 +74,7 @@ export const config = {
         '/settings/:path*',
         '/transactions/:path*',
         '/upgrade/:path*',
+        '/vault/:path*',
+        '/admin/:path*',
     ],
 }

@@ -202,6 +202,7 @@ export default function AdminPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [summary, setSummary] = useState<Summary | null>(null)
     const [users, setUsers] = useState<UserAccount[]>([])
+    const [adminAccount, setAdminAccount] = useState<{ email: string; workspaceCount: number; workspaces: { id: string; name: string }[]; tier: string } | null>(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [filterTier, setFilterTier] = useState<"all" | "pro" | "free">("all")
     const [sortBy, setSortBy] = useState<"recent" | "invoices" | "revenue">("recent")
@@ -227,6 +228,7 @@ export default function AdminPage() {
                 if (json.success) {
                     setSummary(json.summary)
                     setUsers(json.users || [])
+                    setAdminAccount(json.adminAccount || null)
                 }
             } catch (err) {
                 console.error("Failed to load admin stats:", err)
@@ -268,8 +270,33 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto pb-32 animate-in fade-in duration-500">
             <div className="mb-8">
                 <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Admin Dashboard</h1>
-                <p className="text-muted-foreground text-sm">Platform statistics across all user accounts (excluding admin).</p>
+                <p className="text-muted-foreground text-sm">Platform statistics across all user accounts.</p>
             </div>
+
+            {/* Admin's own account */}
+            {adminAccount && (
+                <div className="rounded-xl border border-border bg-card p-5 mb-8">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="text-sm font-medium">{adminAccount.email}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/20 flex items-center gap-1">
+                                    <Crown className="h-3 w-3" /> {adminAccount.tier === "pro" ? "Pro" : "Free"}
+                                </span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-blue-500/10 text-blue-400 border-blue-500/20">
+                                    Admin
+                                </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                {adminAccount.workspaceCount} workspace{adminAccount.workspaceCount !== 1 ? "s" : ""}
+                                {adminAccount.workspaces.length > 0 && (
+                                    <span> — {adminAccount.workspaces.map(w => w.name).join(", ")}</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Summary Cards */}
             {summary && (

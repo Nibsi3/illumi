@@ -170,8 +170,21 @@ export async function GET() {
         const totalRevenue = allInvoices.reduce((s: number, i: any) => s + (Number(i.total) || 0), 0)
         const paidRevenue = allInvoices.filter(i => i.status === "paid").reduce((s: number, i: any) => s + (Number(i.total) || 0), 0)
 
+        // Admin's own account info
+        const adminWorkspaces = (workspaces || []).filter(ws => adminWorkspaceIds.has(ws.id))
+        const adminSub = subscriptions?.find((s: any) =>
+            adminWorkspaces.some(aw => aw.id === s.workspace_id) && s.tier === "pro" && s.status === "active"
+        )
+        const adminAccount = {
+            email: (user.email || "").toLowerCase(),
+            workspaceCount: adminWorkspaces.length,
+            workspaces: adminWorkspaces.map(ws => ({ id: ws.id, name: ws.name })),
+            tier: ADMIN_EMAILS.includes((user.email || "").toLowerCase()) ? "pro" : (adminSub ? "pro" : "free"),
+        }
+
         return NextResponse.json({
             success: true,
+            adminAccount,
             summary: {
                 totalUsers,
                 proUsers,

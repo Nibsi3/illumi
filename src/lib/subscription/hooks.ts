@@ -93,6 +93,17 @@ export function useSubscription() {
                 }
             }
 
+            // Check forced Pro emails BEFORE workspace check so Pro shows even while loading
+            const forcedProEmails = ['cameronfalck03@gmail.com']
+            const earlyEmail = (userEmail || '').toLowerCase()
+            if (earlyEmail && forcedProEmails.includes(earlyEmail)) {
+                setTier("pro")
+                setIsSubscribed(true)
+                setDaysRemaining(null)
+                setIsLoading(false)
+                return
+            }
+
             if (!activeWorkspace) {
                 setIsLoading(false)
                 return
@@ -104,12 +115,11 @@ export function useSubscription() {
 
             const tFetchStart = perfEnabled ? markStart() : 0
             try {
-                // First check if user is in the forced Pro list
+                // Also check forced Pro with session email as fallback
                 const tSessionStart = perfEnabled ? markStart() : 0
                 const { data: sessionData } = await supabase.auth.getSession()
                 if (perfEnabled) console.log(`subscription:auth.getSession: ${markEnd(tSessionStart)} ms`)
                 const user = sessionData?.session?.user || null
-                const forcedProEmails = ['cameronfalck03@gmail.com']
                 
                 const emailForForcedCheck = (userEmail || user?.email || '').toLowerCase()
                 if (emailForForcedCheck && forcedProEmails.includes(emailForForcedCheck)) {

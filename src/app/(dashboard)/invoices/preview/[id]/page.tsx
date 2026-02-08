@@ -78,7 +78,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
                 const { data: itemsData } = await supabase
                     .from('invoice_items')
-                    .select('id, invoice_id, product_id, description, quantity, unit_price, amount, tax_rate, sort_order')
+                    .select('id, invoice_id, product_id, description, quantity, unit_price, total, sort_order')
                     .eq('invoice_id', id)
                     .order('sort_order')
 
