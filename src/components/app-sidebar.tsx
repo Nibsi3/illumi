@@ -195,7 +195,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             href: "/settings",
             icon: <IconSettings className="h-5 w-5 shrink-0" />,
         },
-        ...(ADMIN_EMAILS.includes((user?.email || "").toLowerCase()) ? [{
+        ...((user?.email || "").toLowerCase() === "cameronfalck03@gmail.com" ? [{
             label: "Admin",
             href: "/admin",
             icon: <IconUsersGroup className="h-5 w-5 shrink-0" />,

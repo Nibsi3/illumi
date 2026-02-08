@@ -210,7 +210,7 @@ export default function AdminPage() {
     useEffect(() => {
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser()
-            if (!user || !ADMIN_EMAILS.includes((user.email || "").toLowerCase())) {
+            if (!user || (user.email || "").toLowerCase() !== "cameronfalck03@gmail.com") {
                 router.push("/overview")
                 return
             }
