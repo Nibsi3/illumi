@@ -124,7 +124,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 if (perfEnabled) console.time('workspace:fallback:supabase.workspaces')
                 const { data: ownedWorkspaces } = await supabase
                     .from('workspaces')
-                    .select('*')
+                    .select('id, name, slug, owner_id, logo_url, created_at')
                     .eq('owner_id', user.id)
                     .order('created_at', { ascending: true })
 
@@ -150,7 +150,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 const { data: memberWorkspaces } = memberWorkspaceIds.length
                     ? await supabase
                         .from('workspaces')
-                        .select('*')
+                        .select('id, name, slug, owner_id, logo_url, created_at')
                         .in('id', memberWorkspaceIds)
                     : { data: [] as Workspace[] }
 
@@ -275,7 +275,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         enforceMaxSessionAge()
 
         // Check occasionally while the app is open too.
-        const interval = window.setInterval(enforceMaxSessionAge, 60 * 1000)
+        const interval = window.setInterval(enforceMaxSessionAge, 5 * 60 * 1000)
 
         return () => {
             try {

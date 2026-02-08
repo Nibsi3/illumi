@@ -75,7 +75,7 @@ export async function GET(req: Request) {
         const serviceClient = getServiceClient()
         const { data: settings, error } = await serviceClient
             .from('workspace_paygate_settings')
-            .select('*')
+            .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
             .eq('workspace_id', workspaceId)
             .single()
 
@@ -324,7 +324,7 @@ export async function getWorkspacePaygateSettings(workspaceId: string) {
 
     const { data, error } = await serviceClient
         .from('workspace_paygate_settings')
-        .select('*')
+        .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
         .eq('workspace_id', workspaceId)
         .single()
 

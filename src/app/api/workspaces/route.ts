@@ -38,7 +38,7 @@ export async function GET() {
         const [ownedRes, memberRes] = await Promise.all([
             service
                 .from("workspaces")
-                .select("*")
+                .select("id, name, slug, owner_id, logo_url, created_at")
                 .eq("owner_id", user.id)
                 .order("created_at", { ascending: true }),
             service
@@ -63,7 +63,7 @@ export async function GET() {
         const { data: memberWorkspaces, error: memberWsError } = memberWorkspaceIds.length
             ? await service
                 .from("workspaces")
-                .select("*")
+                .select("id, name, slug, owner_id, logo_url, created_at")
                 .in("id", memberWorkspaceIds)
             : { data: [], error: null }
 
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
         const { data: created, error: createError } = await service
             .from('workspaces')
             .insert([{ name, owner_id: user.id, slug: safeSlug }])
-            .select('*')
+            .select('id, name, slug, owner_id, logo_url, created_at')
             .single()
 
         if (createError) {

@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         // Get all subscriptions
         const { data: allSubs, error: allError } = await service
             .from('subscriptions')
-            .select('*')
+            .select('id, workspace_id, user_id, tier, status, started_at, expires_at')
             .limit(10)
 
         // Get specific subscription if workspace_id provided
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
         if (workspaceId) {
             const { data } = await service
                 .from('subscriptions')
-                .select('*')
+                .select('id, workspace_id, user_id, tier, status, started_at, expires_at')
                 .eq('workspace_id', workspaceId)
                 .single()
             specificSub = data

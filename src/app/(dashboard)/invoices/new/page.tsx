@@ -284,7 +284,7 @@ export default function NewInvoicePage() {
             if (!activeWorkspace) return
             const { data } = await supabase
                 .from('customers')
-                .select('*')
+                .select('id, name, email, billing_email, phone, address, country, workspace_id')
                 .eq('workspace_id', activeWorkspace.id)
             if (data) setCustomers(data)
         }
@@ -293,7 +293,7 @@ export default function NewInvoicePage() {
             if (!activeWorkspace) return
             const { data } = await supabase
                 .from('products')
-                .select('*')
+                .select('id, name, sku, description, price, currency, billing_type, status, workspace_id')
                 .eq('workspace_id', activeWorkspace.id)
                 .eq('status', 'active')
             if (data) setProducts(data)

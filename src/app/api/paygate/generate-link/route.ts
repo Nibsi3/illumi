@@ -96,7 +96,7 @@ async function getWorkspaceSettings(workspaceId: string) {
 
     const { data } = await client
         .from('workspace_paygate_settings')
-        .select('*')
+        .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
         .eq('workspace_id', workspaceId)
         .single()
 

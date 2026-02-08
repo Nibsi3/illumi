@@ -142,7 +142,7 @@ export function useSubscription() {
 
                 const { data, error } = await supabase
                     .from('subscriptions')
-                    .select('*')
+                    .select('id, workspace_id, user_id, tier, status, started_at, expires_at')
                     .eq('workspace_id', activeWorkspace.id)
                     .single()
 

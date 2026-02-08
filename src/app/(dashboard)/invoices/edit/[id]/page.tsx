@@ -187,7 +187,7 @@ export default function EditInvoicePage() {
                 }
 
                 // Fetch customers
-                const { data: customersData } = await supabase.from('customers').select('*')
+                const { data: customersData } = await supabase.from('customers').select('id, name, email, billing_email, phone, address, country, workspace_id')
                 if (customersData) setCustomers(customersData)
 
                 // Fetch invoice

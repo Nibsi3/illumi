@@ -6,6 +6,9 @@ import { useWorkspace } from "@/lib/workspace-context"
 
 const supabase = createClient()
 
+// Shared stale time to reduce Supabase egress
+const DEFAULT_STALE_TIME = 5 * 60 * 1000 // 5 minutes
+
 // Query keys for cache invalidation
 export const queryKeys = {
     invoices: (workspaceId: string) => ["invoices", workspaceId] as const,
@@ -32,13 +35,14 @@ export function useInvoices() {
             if (!workspaceId) return []
             const { data, error } = await supabase
                 .from("invoices")
-                .select("*")
+                .select("id, invoice_number, customer_id, total, tax_amount, status, issue_date, due_date, paid_at, currency, notes, workspace_id, created_at")
                 .eq("workspace_id", workspaceId)
                 .order("created_at", { ascending: false })
             if (error) throw error
             return data || []
         },
         enabled: !!workspaceId,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -55,6 +59,7 @@ export function useInvoice(id: string) {
             return data
         },
         enabled: !!id,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -69,13 +74,14 @@ export function useCustomers() {
             if (!workspaceId) return []
             const { data, error } = await supabase
                 .from("customers")
-                .select("*")
+                .select("id, name, email, billing_email, phone, address, status, industry, country, created_at, workspace_id")
                 .eq("workspace_id", workspaceId)
                 .order("created_at", { ascending: false })
             if (error) throw error
             return data || []
         },
         enabled: !!workspaceId,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -85,13 +91,14 @@ export function useCustomer(id: string) {
         queryFn: async () => {
             const { data, error } = await supabase
                 .from("customers")
-                .select("*")
+                .select("id, name, email, billing_email, phone, address, status, industry, country, created_at, workspace_id")
                 .eq("id", id)
                 .single()
             if (error) throw error
             return data
         },
         enabled: !!id,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -106,13 +113,14 @@ export function useProducts() {
             if (!workspaceId) return []
             const { data, error } = await supabase
                 .from("products")
-                .select("*")
+                .select("id, name, sku, description, price, currency, billing_type, status, created_at, workspace_id")
                 .eq("workspace_id", workspaceId)
                 .order("created_at", { ascending: false })
             if (error) throw error
             return data || []
         },
         enabled: !!workspaceId,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -135,6 +143,7 @@ export function useRecentPayments(limit = 10) {
             return data || []
         },
         enabled: !!workspaceId,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 
@@ -156,6 +165,7 @@ export function useSettings() {
             return data
         },
         enabled: !!workspaceId,
+        staleTime: DEFAULT_STALE_TIME,
     })
 }
 

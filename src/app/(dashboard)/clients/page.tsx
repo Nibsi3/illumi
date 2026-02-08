@@ -79,7 +79,7 @@ export default function ClientsPage() {
             if (!activeWorkspace) return []
             const { data, error } = await supabase
                 .from('customers')
-                .select('*')
+                .select('id, name, email, billing_email, phone, address, status, industry, country, created_at, workspace_id')
                 .eq('workspace_id', activeWorkspace.id)
                 .order('created_at', { ascending: false })
             if (error) throw error
