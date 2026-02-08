@@ -136,6 +136,13 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const ADMIN_EMAILS = [
+        "cameronfalck03@gmail.com",
+        "sweedienibs@gmail.com",
+        "anchenfalck@gmail.com",
+        "anchenhohls@gmail.com",
+    ];
+
     const links = [
         {
             label: "Overview",
@@ -172,8 +179,12 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             href: "/settings",
             icon: <IconSettings className="h-5 w-5 shrink-0" />,
         },
+        ...(ADMIN_EMAILS.includes((user?.email || "").toLowerCase()) ? [{
+            label: "Admin",
+            href: "/admin",
+            icon: <IconUsersGroup className="h-5 w-5 shrink-0" />,
+        }] : []),
     ];
-
 
     const userEmail = user?.email || "";
     const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split("@")[0];
