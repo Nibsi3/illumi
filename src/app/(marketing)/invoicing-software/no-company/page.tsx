@@ -86,11 +86,11 @@ export default function NoCompanyPage() {
                             Invoice Without a Registered Company
                         </h1>
                         <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                            You don't need a PTY LTD to invoice professionally. Create invoices as an individual, 
+                            Start invoicing before you register your business. Perfect for freelancers, 
                             sole proprietor, or side hustler. Start earning and formalize later.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Invoicing Now
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -193,7 +193,7 @@ export default function NoCompanyPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Every business starts somewhere. Begin invoicing professionally without the paperwork.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Your First Invoice
                         </Button>

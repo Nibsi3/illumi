@@ -42,7 +42,7 @@ export default function ProformaInvoiceTemplatePage() {
     return (
         <div className="min-h-screen bg-background">
             <section className="relative overflow-hidden py-20 md:py-32">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-primary/5" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
@@ -55,7 +55,7 @@ export default function ProformaInvoiceTemplatePage() {
                         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                             Create professional proforma invoices to outline costs before delivery. Set validity periods, list detailed line items, and convert to a tax invoice with one click when the deal is confirmed.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="text-lg px-8 py-6">
                                 Create Proforma Invoice — Free
                                 <IconArrowRight className="ml-2 w-5 h-5" />
@@ -122,7 +122,7 @@ export default function ProformaInvoiceTemplatePage() {
                             <li>VAT information (if applicable)</li>
                         </ul>
 
-                        <p>Illumi makes it easy to create proforma invoices that include all of these details. Once your client approves, convert to a full tax invoice with a single click. <Link href="/login" className="text-primary font-semibold">Try it free today</Link>.</p>
+                        <p>Illumi makes it easy to create proforma invoices that include all of these details. Once your client approves, convert to a full tax invoice with a single click. <Link href="/invoices/new" className="text-primary font-semibold">Try it free today</Link>.</p>
                     </div>
                 </div>
             </section>
@@ -131,7 +131,7 @@ export default function ProformaInvoiceTemplatePage() {
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Create Your Proforma Invoice Now</h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">Free forever. No credit card required.</p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Create My First Invoice <IconArrowRight className="ml-2 w-5 h-5" />
                         </Button>

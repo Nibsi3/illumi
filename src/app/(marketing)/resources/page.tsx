@@ -278,12 +278,17 @@ export default function ResourcesPage() {
                         Use Illumi to create professional invoices, track expenses, and monitor your cash flow in real-time. 
                         Compare your performance against these benchmarks automatically.
                     </p>
-                    <Link
-                        href="/login"
-                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
-                    >
-                        Create My First Invoice
-                    </Link>
+                    <div className="mt-12 text-center">
+                        <p className="text-muted-foreground mb-4">
+                            Compare your performance against these benchmarks automatically.
+                        </p>
+                        <Link
+                            href="/invoices/new"
+                            className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
+                        >
+                            Create My First Invoice
+                        </Link>
+                    </div>
                 </div>
             </section>
 

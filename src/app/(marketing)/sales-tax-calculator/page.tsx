@@ -159,7 +159,7 @@ export default function SalesTaxCalculatorPage() {
                             </div>
 
                             <div className="mt-6 pt-6 border-t border-border">
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                                         Create Invoice with This Amount
                                         <IconArrowRight className="ml-2 h-4 w-4" />
@@ -276,7 +276,7 @@ export default function SalesTaxCalculatorPage() {
                         Illumi automatically calculates VAT on all your invoices. Set your tax rate once 
                         and never worry about manual calculations again.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                         </Button>

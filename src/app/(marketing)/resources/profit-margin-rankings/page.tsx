@@ -313,8 +313,7 @@ export default function ProfitMarginRankingsPage() {
                         </div>
                     </div>
                     <p className="text-sm text-muted-foreground mt-6">
-                        Note: Solopreneurs have highest margins due to zero employee costs. Margins compress as businesses 
-                        scale and add overhead, then improve again at enterprise scale through efficiency.
+                        Note: Solopreneurs have highest margins due to zero employee costs. Margins compress as businesses scale due to employee and operational overhead.
                     </p>
                 </div>
 
@@ -322,7 +321,7 @@ export default function ProfitMarginRankingsPage() {
                 <div className="mt-12 text-center">
                     <p className="text-muted-foreground mb-4">Track your profit margins and compare against benchmarks with Illumi</p>
                     <Link
-                        href="/login"
+                        href="/invoices/new"
                         className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Create My First Invoice
@@ -333,4 +332,5 @@ export default function ProfitMarginRankingsPage() {
             <MarketingFooter />
         </div>
     )
+
 }

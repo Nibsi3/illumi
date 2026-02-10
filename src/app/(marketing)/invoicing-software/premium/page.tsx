@@ -131,7 +131,7 @@ export default function PremiumPage() {
                                         <IconArrowRight className="ml-2 h-5 w-5" />
                                     </Button>
                                 </Link>
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button size="lg" variant="outline">
                                         Create an Invoice — Free
                                     </Button>
@@ -298,7 +298,7 @@ export default function PremiumPage() {
                         Try Illumi free forever. Upgrade to Premium when you need advanced features.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create an Invoice — Free
                             </Button>

@@ -134,7 +134,7 @@ export default function FreelancersPage() {
                             Stop chasing payments. Send clearer invoices, automate reminders, and get paid faster—without spending hours on admin.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Invoicing Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -263,7 +263,7 @@ export default function FreelancersPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Free forever. No credit card required. Start invoicing in 60 seconds.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

@@ -105,7 +105,7 @@ export default function PricingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
-                            <Link href="/login">Create My First Invoice</Link>
+                            <Link href="/invoices/new">Create My First Invoice</Link>
                         </Button>
                         <Button asChild variant="outline" className="rounded-full px-8 h-12 border-border text-foreground hover:bg-muted">
                             <Link href="/features/paygate">Explore PayGate</Link>
@@ -143,7 +143,7 @@ export default function PricingPage() {
                                 variant="outline"
                                 className="w-full rounded-full h-12 border-border text-foreground hover:bg-muted"
                             >
-                                <Link href="/login">Create My First Invoice</Link>
+                                <Link href="/invoices/new">Create My First Invoice</Link>
                             </Button>
                         </div>
 
@@ -175,7 +175,7 @@ export default function PricingPage() {
                                 asChild
                                 className="w-full rounded-full h-12 bg-background text-foreground hover:bg-accent dark:hover:bg-black/90"
                             >
-                                <Link href="/login">Start free trial</Link>
+                                <Link href="/invoices/new">Start free trial</Link>
                             </Button>
                         </div>
                     </div>

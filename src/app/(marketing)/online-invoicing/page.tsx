@@ -179,7 +179,7 @@ export default function OnlineInvoicingPage() {
                             No software to install — invoice from any device, anywhere in South Africa.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Invoicing Online
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -402,7 +402,7 @@ export default function OnlineInvoicingPage() {
                         Create your first invoice in under 2 minutes.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Create Free Account
                                 <IconArrowRight className="ml-2 h-5 w-5" />

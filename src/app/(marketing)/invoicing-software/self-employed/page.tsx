@@ -47,7 +47,7 @@ export default function SelfEmployedPage() {
                             Run your solo business like a pro. Create invoices, manage clients, track expenses, 
                             and stay on top of your finances - all in one place.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create My First Invoice
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function SelfEmployedPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Focus on your work, not paperwork. Free invoicing for self-employed South Africans.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                         </Button>

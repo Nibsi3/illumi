@@ -282,23 +282,99 @@ export default function PricingBenchmarksPage() {
                             <p className="text-sm text-muted-foreground mb-2">
                                 Add 50-100% premium for urgent projects with tight deadlines. Your time is valuable.
                             </p>
-                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">Retainers provide stability</h3>
+                        <p className="text-muted-foreground leading-relaxed">
+                            Marketing agencies and accountants favor monthly retainers (75-85% adoption). Retainers provide 
+                            predictable recurring revenue and deeper client relationships. Average retainer: R 15,000/month.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">Specialists command premium rates</h3>
+                        <p className="text-muted-foreground leading-relaxed">
+                            Specialists charge 40-60% more than generalists. React developers earn R 1,200/hour vs R 450 for 
+                            general web developers. Strategy consultants earn R 2,500/hour vs R 800 for general consultants.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">Experience drives pricing power</h3>
+                        <p className="text-muted-foreground leading-relaxed">
+                            Providers with 5+ years experience charge 2x more than beginners. A senior graphic designer 
+                            averages R 850/hour vs R 350/hour for juniors. Build your portfolio and raise rates annually.
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                {/* CTA */}
-                <div className="mt-12 text-center">
-                    <p className="text-muted-foreground mb-4">Create professional invoices with your pricing using Illumi</p>
-                    <Link
-                        href="/login"
-                        className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
-                    >
-                        Create My First Invoice
-                    </Link>
+            {/* Pricing Tips */}
+            <div className="rounded-2xl border border-border bg-card p-8">
+                <h2 className="text-2xl font-semibold mb-6">How to Price Your Services</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">1. Calculate Your Minimum Rate</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            (Monthly expenses + desired profit) ÷ billable hours = minimum hourly rate
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Example: (R 40,000 + R 20,000) ÷ 120 hours = R 500/hour minimum
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">2. Research Market Rates</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Use these benchmarks to position yourself. Beginners: lower 25%, experienced: upper 25%.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">3. Add Value-Based Pricing</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Price based on client value, not just time. A logo worth R 100k to the client justifies R 15k fee.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">4. Raise Rates Annually</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Increase rates 10-15% per year for existing clients, 20-30% for new clients as you gain experience.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">5. Package Your Services</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Create tiered packages (Basic/Pro/Premium) to increase average deal size and simplify sales.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-2 text-foreground">6. Charge for Rush Work</h3>
+                        <p className="text-sm text-muted-foreground mb-2">
+                            Add 50-100% premium for urgent projects with tight deadlines. Your time is valuable.
+                        </p>
+                    </div>
                 </div>
-            </main>
+            </div>
 
-            <MarketingFooter />
-        </div>
-    )
+            {/* CTA */}
+            <div className="mt-12 text-center">
+                <p className="text-muted-foreground mb-4">Create professional invoices with your pricing using Illumi</p>
+                <Link
+                    href="/invoices/new"
+                    className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
+                >
+                    Create My First Invoice
+                </Link>
+            </div>
+        </main>
+
+        <MarketingFooter />
+    </div>
+)
+
 }

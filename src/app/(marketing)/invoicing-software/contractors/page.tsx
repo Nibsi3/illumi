@@ -119,7 +119,7 @@ export default function ContractorsPage() {
                             Create invoices on-site, track project payments, and get paid faster.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Free Today
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -199,7 +199,7 @@ export default function ContractorsPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Free forever for contractors. Create invoices from the job site with your phone.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

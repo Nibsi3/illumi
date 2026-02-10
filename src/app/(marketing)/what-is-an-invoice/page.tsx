@@ -195,7 +195,7 @@ export default function WhatIsAnInvoicePage() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Illumi makes invoicing simple. Create professional, SARS-compliant invoices in minutes.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Free Invoice
                             <IconArrowRight className="ml-2 h-5 w-5" />

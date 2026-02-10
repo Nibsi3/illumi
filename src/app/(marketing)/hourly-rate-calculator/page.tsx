@@ -359,7 +359,7 @@ export default function HourlyRateCalculatorPage() {
                         Create professional invoices with Illumi. Track your hours, set your rates, 
                         and get paid faster with online payments.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

@@ -329,7 +329,7 @@ export default function TemplateAnalyzerPage() {
                 <div className="mt-12 text-center">
                     <p className="text-muted-foreground mb-4">Use professional invoice templates automatically with Illumi</p>
                     <Link
-                        href="/login"
+                        href="/invoices/new"
                         className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Create My First Invoice

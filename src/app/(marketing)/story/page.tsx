@@ -33,7 +33,7 @@ export default function StoryPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 Create My First Invoice
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
@@ -120,7 +120,7 @@ export default function StoryPage() {
                             asChild
                             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 Create an Invoice — Free
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>

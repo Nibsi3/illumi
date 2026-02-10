@@ -47,7 +47,7 @@ export default function RestaurantsPage() {
                             From catering invoices to supplier management, handle all your restaurant's billing needs. 
                             Perfect for cafes, caterers, food trucks, and hospitality businesses.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create an Invoice — Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function RestaurantsPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Free invoicing for restaurants and food businesses across South Africa.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

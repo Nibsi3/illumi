@@ -47,7 +47,7 @@ export default function HotelsPage() {
                             Professional invoicing for the hospitality industry. Manage guest billing, corporate accounts, 
                             and event invoicing. Perfect for hotels, B&Bs, lodges, and guesthouses.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create an Invoice — Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function HotelsPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Professional invoicing that matches your hospitality standards. Free to start.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

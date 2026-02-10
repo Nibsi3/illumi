@@ -344,7 +344,7 @@ export default function AutomationROIPage() {
                 <div className="mt-12 text-center">
                     <p className="text-muted-foreground mb-4">Start saving time and money with automated invoicing</p>
                     <Link
-                        href="/login"
+                        href="/invoices/new"
                         className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
                         Create My First Invoice
@@ -355,4 +355,5 @@ export default function AutomationROIPage() {
             <MarketingFooter />
         </div>
     )
+
 }

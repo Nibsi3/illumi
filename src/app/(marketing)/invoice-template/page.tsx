@@ -123,7 +123,7 @@ export default function InvoiceTemplatePage() {
         <div className="min-h-screen bg-background">
             {/* Hero */}
             <section className="relative overflow-hidden py-20 md:py-32">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-primary/5" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center">
                         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
@@ -133,11 +133,11 @@ export default function InvoiceTemplatePage() {
                         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
                             Professional Invoice Templates for Every Business
                         </h1>
-                        <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                        <p className="text-lg text-muted-foreground mb-8">
                             Create beautiful, professional invoices in minutes. Choose from industry-specific templates, customise with your branding, and send to clients instantly. Free forever.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="text-lg px-8 py-6">
                                     Create Your First Invoice
                                     <IconArrowRight className="ml-2 w-5 h-5" />
@@ -186,7 +186,7 @@ export default function InvoiceTemplatePage() {
                         ))}
                     </div>
                     <div className="text-center mt-10">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg">
                                 Use a Template Now — It&apos;s Free
                                 <IconArrowRight className="ml-2 w-5 h-5" />
@@ -354,7 +354,7 @@ export default function InvoiceTemplatePage() {
                         <p className="text-lg text-muted-foreground mb-8">
                             Join thousands of businesses using Illumi to create professional invoices, track payments, and grow their revenue. Free forever.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="text-lg px-8 py-6">
                                 Create Your Free Invoice Now
                                 <IconArrowRight className="ml-2 w-5 h-5" />

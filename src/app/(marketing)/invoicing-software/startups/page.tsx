@@ -47,7 +47,7 @@ export default function StartupsPage() {
                             Launch with professional invoicing from day one. Free to start, scales with your growth. 
                             Focus on building your product while we handle the billing.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create an Invoice — Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function StartupsPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Professional invoicing without the enterprise price tag. Free forever on our starter plan.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

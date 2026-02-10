@@ -47,7 +47,7 @@ export default function SolopreneursPage() {
                             You're the CEO, CFO, and everything in between. Illumi handles your invoicing so you 
                             can focus on what you do best. Professional tools for one-person powerhouses.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Start Free Today
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function SolopreneursPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Free invoicing that makes your solo business look like a million bucks.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

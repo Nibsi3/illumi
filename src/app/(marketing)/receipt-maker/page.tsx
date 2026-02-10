@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import Link from "next/link"
+import { MarketingHeader } from "@/components/marketing/marketing-header"
 import { Button } from "@/components/ui/button"
 import {
     IconReceipt,
@@ -123,7 +124,8 @@ const receiptVsInvoice = [
 
 export default function ReceiptMakerPage() {
     return (
-        <>
+        <div className="min-h-screen bg-background text-foreground grainy-gradient">
+            <MarketingHeader />
             {/* Hero Section */}
             <section className="relative pt-24 md:pt-32 pb-16 px-6 border-b border-border overflow-hidden">
                 <div className="absolute inset-0 z-0">
@@ -397,6 +399,6 @@ export default function ReceiptMakerPage() {
                     </Link>
                 </div>
             </section>
-        </>
+        </div>
     )
 }

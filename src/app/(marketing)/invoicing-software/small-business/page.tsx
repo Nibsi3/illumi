@@ -47,7 +47,7 @@ export default function SmallBusinessPage() {
                             Professional invoicing that grows with your business. Manage clients, collaborate with 
                             your team, and get paid faster with integrated online payments.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Start Free Today
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ export default function SmallBusinessPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Free to start, scales as you grow. No credit card required.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                         </Button>

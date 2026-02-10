@@ -342,7 +342,7 @@ export default function PercentageCalculatorPage() {
                         Illumi automatically calculates discounts, taxes, and markups on your invoices. 
                         Create professional invoices with accurate calculations every time.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                         </Button>
