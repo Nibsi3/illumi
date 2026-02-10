@@ -324,7 +324,7 @@ export default function LandingPage() {
             </section>
 
             {/* Interactive Demo Section */}
-            <section className="py-24 border-t border-border">
+            <section className="hidden md:block py-24 border-t border-border">
                 <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6">

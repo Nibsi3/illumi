@@ -135,16 +135,16 @@ export function InvoiceDemo() {
                 </div>
             </div>
 
-            {/* Demo viewport - taller aspect ratio on mobile for better visibility */}
-            <div className="relative aspect-3/4 sm:aspect-4/3 md:aspect-video rounded-2xl border border-border bg-card overflow-hidden shadow-2xl">
+            {/* Demo viewport */}
+            <div className="relative aspect-video rounded-2xl border border-border bg-card overflow-hidden shadow-2xl">
                 {/* Browser chrome - more realistic */}
-                <div className="h-8 sm:h-11 bg-muted/80 border-b border-border flex items-center px-2 sm:px-4 gap-2 sm:gap-3">
-                    <div className="flex gap-1.5 sm:gap-2">
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500" />
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500" />
-                        <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500" />
+                <div className="h-11 bg-muted/80 border-b border-border flex items-center px-4 gap-3">
+                    <div className="flex gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors" />
+                        <div className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors" />
+                        <div className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors" />
                     </div>
-                    <div className="hidden sm:flex items-center gap-1.5 ml-2">
+                    <div className="flex items-center gap-1.5 ml-2">
                         <div className="p-1 rounded hover:bg-accent transition-colors">
                             <IconArrowRight className="w-3.5 h-3.5 text-muted-foreground rotate-180" />
                         </div>
@@ -169,7 +169,7 @@ export function InvoiceDemo() {
                 </div>
 
                 {/* Content area */}
-                <div className="relative h-[calc(100%-2rem)] sm:h-[calc(100%-2.75rem)] overflow-hidden bg-background">
+                <div className="relative h-[calc(100%-2.75rem)] overflow-hidden bg-background">
                     {/* Step 1: Dashboard */}
                     <DemoScreen active={currentStep === 1}>
                         <DashboardView />
