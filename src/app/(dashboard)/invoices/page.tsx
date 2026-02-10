@@ -846,7 +846,7 @@ export default function InvoicesPage() {
                 </div>
 
                 {/* Filter & Actions Bar */}
-                <div className="md:static md:bg-transparent md:border-0 sticky top-16 z-20 bg-background/95 backdrop-blur border-y border-border py-3 md:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div className="py-3 md:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
                         <div className="relative w-full sm:max-w-sm group">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors" />

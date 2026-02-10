@@ -1,10 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Loader2, Users, FileText, DollarSign, Crown, ChevronDown, ChevronUp } from "lucide-react"
+import { 
+    Loader2, Users, FileText, DollarSign, Crown, ChevronDown, ChevronUp, 
+    TrendingUp, Activity, Zap, Mail, Settings, Download, RefreshCw,
+    UserPlus, Shield, Calendar, Clock, ExternalLink, Copy, Check
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 const ADMIN_EMAILS = [
     "cameronfalck03@gmail.com",
@@ -80,9 +86,20 @@ function StatusBadge({ status }: { status: string }) {
     )
 }
 
-function UserRow({ user }: { user: UserAccount }) {
+function UserRow({ user, onGrantPro, onRefresh }: { user: UserAccount; onGrantPro: (workspaceId: string) => void; onRefresh: () => void }) {
     const [expanded, setExpanded] = useState(false)
+    const [copied, setCopied] = useState(false)
     const stats = user.invoiceStats
+
+    const copyEmail = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        await navigator.clipboard.writeText(user.ownerEmail)
+        setCopied(true)
+        toast.success("Email copied!")
+        setTimeout(() => setCopied(false), 2000)
+    }
+
+    const daysSinceJoined = Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24))
 
     return (
         <div className="border border-border rounded-xl bg-card overflow-hidden">
@@ -93,8 +110,15 @@ function UserRow({ user }: { user: UserAccount }) {
             >
                 <div className="flex items-center gap-4 min-w-0">
                     <div className="min-w-0">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-medium text-sm truncate">{user.ownerEmail}</span>
+                            <button
+                                type="button"
+                                onClick={copyEmail}
+                                className="p-1 hover:bg-accent rounded transition-colors"
+                            >
+                                {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                            </button>
                             {user.tier === "pro" ? (
                                 <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-violet-500/10 text-violet-400 border-violet-500/20 flex items-center gap-1">
                                     <Crown className="h-3 w-3" /> Pro
@@ -104,9 +128,20 @@ function UserRow({ user }: { user: UserAccount }) {
                                     Free
                                 </span>
                             )}
+                            {daysSinceJoined <= 7 && (
+                                <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                                    New
+                                </span>
+                            )}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-0.5">
-                            {user.workspaceName} &middot; Joined {new Date(user.createdAt).toLocaleDateString("en-ZA")}
+                        <div className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+                            <span>{user.workspaceName}</span>
+                            <span>&middot;</span>
+                            <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {new Date(user.createdAt).toLocaleDateString("en-ZA")}
+                            </span>
+                            <span className="text-muted-foreground/60">({daysSinceJoined}d ago)</span>
                         </div>
                     </div>
                 </div>
@@ -127,6 +162,37 @@ function UserRow({ user }: { user: UserAccount }) {
 
             {expanded && (
                 <div className="border-t border-border">
+                    {/* Quick Actions */}
+                    <div className="flex flex-wrap items-center gap-2 p-4 bg-muted/20 border-b border-border">
+                        {user.tier !== "pro" && (
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 text-xs gap-1.5 bg-violet-500/10 border-violet-500/30 text-violet-400 hover:bg-violet-500/20"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    onGrantPro(user.workspaceId)
+                                }}
+                            >
+                                <Crown className="h-3 w-3" /> Grant Pro
+                            </Button>
+                        )}
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 text-xs gap-1.5"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                window.open(`mailto:${user.ownerEmail}`, '_blank')
+                            }}
+                        >
+                            <Mail className="h-3 w-3" /> Email User
+                        </Button>
+                        <span className="text-[10px] text-muted-foreground ml-auto">
+                            Workspace ID: <code className="bg-muted px-1 py-0.5 rounded text-[9px]">{user.workspaceId}</code>
+                        </span>
+                    </div>
+
                     {/* Stats bar */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4 p-5 bg-muted/30">
                         <div>
@@ -206,6 +272,48 @@ export default function AdminPage() {
     const [searchQuery, setSearchQuery] = useState("")
     const [filterTier, setFilterTier] = useState<"all" | "pro" | "free">("all")
     const [sortBy, setSortBy] = useState<"recent" | "invoices" | "revenue">("recent")
+    const [isRefreshing, setIsRefreshing] = useState(false)
+
+    const fetchStats = async () => {
+        try {
+            const res = await fetch("/api/admin/stats", { credentials: "include" })
+            const json = await res.json()
+            if (json.success) {
+                setSummary(json.summary)
+                setUsers(json.users || [])
+                setAdminAccount(json.adminAccount || null)
+            }
+        } catch (err) {
+            console.error("Failed to load admin stats:", err)
+        }
+    }
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true)
+        await fetchStats()
+        setIsRefreshing(false)
+        toast.success("Data refreshed")
+    }
+
+    const handleGrantPro = async (workspaceId: string) => {
+        try {
+            const res = await fetch("/api/admin/add-pro", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ workspace_id: workspaceId }),
+                credentials: "include",
+            })
+            const json = await res.json()
+            if (json.success) {
+                toast.success("Pro subscription granted!")
+                await fetchStats()
+            } else {
+                toast.error("Failed to grant Pro", { description: json.error })
+            }
+        } catch (err: any) {
+            toast.error("Failed to grant Pro", { description: err.message })
+        }
+    }
 
     useEffect(() => {
         async function checkAuth() {
@@ -221,22 +329,11 @@ export default function AdminPage() {
 
     useEffect(() => {
         if (!isAuthorized) return
-        async function fetchStats() {
-            try {
-                const res = await fetch("/api/admin/stats", { credentials: "include" })
-                const json = await res.json()
-                if (json.success) {
-                    setSummary(json.summary)
-                    setUsers(json.users || [])
-                    setAdminAccount(json.adminAccount || null)
-                }
-            } catch (err) {
-                console.error("Failed to load admin stats:", err)
-            } finally {
-                setIsLoading(false)
-            }
+        const loadData = async () => {
+            await fetchStats()
+            setIsLoading(false)
         }
-        fetchStats()
+        loadData()
     }, [isAuthorized])
 
     if (!isAuthorized || isLoading) {
@@ -246,6 +343,13 @@ export default function AdminPage() {
             </div>
         )
     }
+
+    // Computed stats
+    const now = Date.now()
+    const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000
+    const newUsersThisWeek = users.filter(u => new Date(u.createdAt).getTime() > oneWeekAgo).length
+    const activeUsers = users.filter(u => u.invoiceStats.total > 0).length
+    const avgInvoicesPerUser = users.length > 0 ? Math.round(users.reduce((sum, u) => sum + u.invoiceStats.total, 0) / users.length * 10) / 10 : 0
 
     const filteredUsers = users
         .filter(u => {
@@ -268,9 +372,23 @@ export default function AdminPage() {
 
     return (
         <div className="max-w-7xl mx-auto pb-32 animate-in fade-in duration-500">
-            <div className="mb-8">
-                <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Admin Dashboard</h1>
-                <p className="text-muted-foreground text-sm">Platform statistics across all user accounts.</p>
+            <div className="flex items-start justify-between mb-8">
+                <div>
+                    <h1 className="text-2xl sm:text-4xl font-serif font-medium mb-1">Admin Dashboard</h1>
+                    <p className="text-muted-foreground text-sm">Platform statistics across all user accounts.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2"
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                    >
+                        <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+                        {isRefreshing ? "Refreshing..." : "Refresh"}
+                    </Button>
+                </div>
             </div>
 
             {/* Admin's own account */}
@@ -349,6 +467,52 @@ export default function AdminPage() {
                             Free → Pro conversion rate
                         </div>
                     </div>
+
+                    <div className="rounded-xl border border-border bg-card p-5">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                            <UserPlus className="h-4 w-4" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">New This Week</span>
+                        </div>
+                        <div className="text-3xl font-bold text-emerald-500">{newUsersThisWeek}</div>
+                        <div className="text-xs text-muted-foreground mt-2">
+                            Users joined in last 7 days
+                        </div>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-5">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                            <Activity className="h-4 w-4" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Active Users</span>
+                        </div>
+                        <div className="text-3xl font-bold">{activeUsers}</div>
+                        <div className="text-xs text-muted-foreground mt-2">
+                            Users with at least 1 invoice
+                        </div>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-5">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                            <TrendingUp className="h-4 w-4" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Avg Invoices</span>
+                        </div>
+                        <div className="text-3xl font-bold">{avgInvoicesPerUser}</div>
+                        <div className="text-xs text-muted-foreground mt-2">
+                            Per user average
+                        </div>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-card p-5">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                            <Zap className="h-4 w-4" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Activation</span>
+                        </div>
+                        <div className="text-3xl font-bold">
+                            {summary.totalUsers > 0 ? Math.round((activeUsers / summary.totalUsers) * 100) : 0}%
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-2">
+                            Users who created invoices
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -409,7 +573,7 @@ export default function AdminPage() {
             {/* User list */}
             <div className="space-y-3">
                 {filteredUsers.map(user => (
-                    <UserRow key={user.workspaceId} user={user} />
+                    <UserRow key={user.workspaceId} user={user} onGrantPro={handleGrantPro} onRefresh={handleRefresh} />
                 ))}
                 {filteredUsers.length === 0 && (
                     <div className="text-center text-muted-foreground py-12">

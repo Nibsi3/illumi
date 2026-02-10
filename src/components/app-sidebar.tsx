@@ -410,7 +410,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                 className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
                             >
                                 <IconSearch className="h-4 w-4" />
-                                <span className="text-sm font-medium">Search anything...</span>
+                                <span className="text-sm font-medium hidden sm:inline">Search anything...</span>
                             </button>
                         </div>
 
