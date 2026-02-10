@@ -270,7 +270,9 @@ function AnimatedCursor({ step, isClicking }: { step: number; isClicking: boolea
             style={{ 
                 left: pos.x, 
                 top: pos.y,
-                transform: `translate(-50%, -50%)`
+                // Position (left/top) should represent the cursor *tip*, not the center of the SVG.
+                // The SVG tip is roughly at (5.5, 3.2) in a 24x24 viewBox.
+                transform: `translate(-23%, -13%)`
             }}
         >
             <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 drop-shadow-xl">
