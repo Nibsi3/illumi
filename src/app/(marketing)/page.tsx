@@ -222,7 +222,7 @@ export default function LandingPage() {
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full sm:w-auto"
-                                        className="bg-primary text-primary-foreground font-sans font-medium px-6 sm:px-8 h-11 sm:h-12 flex items-center justify-center text-sm sm:text-base"
+                                        className="w-full bg-primary text-primary-foreground font-sans font-medium px-6 sm:px-8 h-11 sm:h-12 flex items-center justify-center text-sm sm:text-base"
                                     >
                                         Create Invoice →
                                     </HoverBorderGradient>
