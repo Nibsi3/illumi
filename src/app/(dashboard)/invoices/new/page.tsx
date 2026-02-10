@@ -1046,7 +1046,7 @@ export default function NewInvoicePage() {
 
 
                 {/* SCROLLABLE EDITOR AREA */}
-                <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
+                <div className="flex-1 overflow-y-auto pb-12 no-scrollbar">
                     <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-12">
 
                         {/* Mobile section tabs */}
@@ -1693,16 +1693,16 @@ export default function NewInvoicePage() {
                                     </div>
 
                                     {paymentMethod === 'paygate' && (
-                                        <div className="col-span-12 flex justify-center mt-6">
-                                            <div className="bg-card border border-border p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all w-full max-w-[560px]">
+                                        <div className="md:col-span-12 flex justify-center mt-4 sm:mt-6">
+                                            <div className="bg-card border border-border p-4 sm:p-6 rounded-2xl relative overflow-hidden group hover:border-border transition-all w-full max-w-[560px]">
                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-muted blur-[50px] -mr-16 -mt-16" />
-                                                <div className="flex items-center gap-4 relative z-10">
-                                                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
-                                                        <CreditCard className="h-5 w-5 text-foreground" />
+                                                <div className="flex items-start sm:items-center gap-3 sm:gap-4 relative z-10">
+                                                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-muted flex items-center justify-center border border-border shrink-0">
+                                                        <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-foreground" />
                                                     </div>
                                                     <div className="flex flex-col min-w-0 flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-xs font-black text-foreground uppercase tracking-widest whitespace-nowrap">PayGate Active</span>
+                                                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                            <span className="text-[10px] sm:text-xs font-black text-foreground uppercase tracking-widest">PayGate Active</span>
                                                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-muted rounded-full border border-border shrink-0">
                                                                 <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                                                                 <span className="text-[8px] font-black text-foreground uppercase tracking-widest">{isPaygateTestMode ? 'Test' : 'Live'}</span>
@@ -1714,20 +1714,6 @@ export default function NewInvoicePage() {
                                                         <span className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter truncate">Clients can pay via card / Instant EFT</span>
                                                     </div>
                                                 </div>
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full mt-4 h-auto py-3 text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-muted border border-border gap-2 whitespace-normal text-center leading-relaxed"
-                                                    onClick={() => {
-                                                        import('sonner').then(({ toast }) => {
-                                                            toast.success("Payment Link Generated", {
-                                                                description: "The customer portal link has been attached to this invoice."
-                                                            })
-                                                        })
-                                                    }}
-                                                >
-                                                    <Globe className="h-3 w-3 shrink-0" />
-                                                    Pay with Paygate (Customer Preview)
-                                                </Button>
                                             </div>
                                         </div>
                                     )}
@@ -1775,28 +1761,6 @@ export default function NewInvoicePage() {
 
             </div>
 
-            {/* Mobile sticky actions */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur p-3">
-                <div className="max-w-5xl mx-auto flex items-center gap-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="h-11 flex-1"
-                        onClick={() => setIsPreviewOpen(true)}
-                    >
-                        <Eye className="h-4 w-4 mr-2" /> Preview
-                    </Button>
-
-                    <Button
-                        type="button"
-                        className="h-11 flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
-                        disabled={isSaving}
-                        onClick={() => handleCreate(canSchedule ? 'schedule' : 'send')}
-                    >
-                        {isSaving ? 'Saving...' : (canSchedule ? 'Schedule' : 'Send')}
-                    </Button>
-                </div>
-            </div>
 
             {isPreviewOpen && (
                 <Suspense fallback={null}>
