@@ -1080,9 +1080,9 @@ export default function NewInvoicePage() {
 
                             <div className={cn(template === "Modern" && "p-6 sm:p-12")}>
                                 {/* Header: Logo & Title */}
-                                <div className="flex flex-col gap-8 mb-16">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
+                                <div className="flex flex-col gap-6 sm:gap-8 mb-8 sm:mb-16">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                                             {/* Moved Settings Icons Here */}
                                             <div className="flex items-center gap-2">
                                                 <Popover>
@@ -1121,8 +1121,8 @@ export default function NewInvoicePage() {
 
                                             </div>
 
-                                            <div className={cn("h-px w-8", "bg-muted/500")} />
-                                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Draft Invoice</span>
+                                            <div className={cn("h-px w-4 sm:w-8", "bg-muted/500")} />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.4em] text-muted-foreground hidden xs:inline">Draft Invoice</span>
                                         </div>
                                         <div className="flex items-center p-0.5 rounded-full border transition-all bg-card border-border">
                                             <button
@@ -1147,11 +1147,11 @@ export default function NewInvoicePage() {
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start">
+                                    <div className="flex justify-between items-start gap-4">
                                         <div
                                             onClick={() => fileInputRef.current?.click()}
                                             className={cn(
-                                                "w-32 h-32 border border-dashed rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden flex-col",
+                                                "w-20 h-20 sm:w-32 sm:h-32 border border-dashed rounded-2xl sm:rounded-3xl flex items-center justify-center transition-all cursor-pointer group relative overflow-hidden flex-col shrink-0",
                                                 "bg-neutral-950 border-neutral-700 hover:bg-neutral-900 hover:border-neutral-600"
                                             )}
                                         >
@@ -1177,25 +1177,22 @@ export default function NewInvoicePage() {
                                             template === "Minimal" && "text-center"
                                         )}>
                                             <h2 className={cn(
-                                                "text-5xl invoice-font-title font-bold mb-2",
+                                                "text-3xl sm:text-5xl invoice-font-title font-bold mb-1 sm:mb-2",
                                                 invoiceMode === "light" ? "text-black" : "text-neutral-100",
                                                 template === "Minimal" && "font-sans uppercase tracking-[0.3em] font-normal",
-                                                template === "Modern" && "font-sans font-black tracking-tighter text-6xl uppercase"
+                                                template === "Modern" && "font-sans font-black tracking-tighter sm:text-6xl uppercase"
                                             )}>Invoice</h2>
-                                            <p className={cn("invoice-font-id text-sm tracking-widest h-5", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>{invoiceNumber}</p>
+                                            <p className={cn("invoice-font-id text-xs sm:text-sm tracking-widest h-5 truncate", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>{invoiceNumber}</p>
                                         </div>
                                     </div>
 
                                     {/* From / To Section (Cleaned up) */}
                                     <div className={cn(
-                                        "grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-20 mb-16",
-                                        template === "Modern" && "bg-muted p-8 rounded-xl"
+                                        "grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-20 mb-8 sm:mb-16",
+                                        template === "Modern" && "bg-muted p-4 sm:p-8 rounded-xl"
                                     )}>
-                                        <div className="col-span-2 flex items-center justify-between mb-2">
-                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>From</span>
-                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>To</span>
-                                        </div>
                                         <div className="flex flex-col gap-4">
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em]", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>From</span>
                                             <div className="space-y-2">
                                                 <Input
                                                     value={fromName}
@@ -1221,12 +1218,13 @@ export default function NewInvoicePage() {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="flex flex-col gap-4 text-right">
-                                            <div className="flex justify-end">
+                                        <div className="flex flex-col gap-4 sm:text-right">
+                                            <div className="flex items-center justify-between sm:justify-end">
+                                                <span className={cn("text-[10px] font-bold uppercase tracking-[0.2em] sm:hidden", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>To</span>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className={cn("h-6 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800")}
+                                                    className={cn("h-7 text-[10px] px-2 gap-1", invoiceMode === "light" ? "text-neutral-500 hover:text-black hover:bg-neutral-100" : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800")}
                                                     onClick={() => setIsClientModalOpen(true)}
                                                 >
                                                     <Plus className="h-3 w-3" /> New Client
@@ -1239,7 +1237,7 @@ export default function NewInvoicePage() {
                                                         list="client-suggestions"
                                                         spellCheck={false}
                                                         value={clientName}
-                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 text-right", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
+                                                        className={cn("invoice-font-from bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground text-lg font-bold focus-visible:ring-0 sm:text-right", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
                                                         onChange={(e) => {
                                                             const val = e.target.value;
                                                             setClientName(val)
@@ -1263,10 +1261,10 @@ export default function NewInvoicePage() {
 
                                                     {/* Read-only client details display if selected */}
                                                     {(clientEmail || clientAddress) && (
-                                                        <div className={cn("invoice-font-from flex flex-col items-end gap-1 text-xs", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>
+                                                        <div className={cn("invoice-font-from flex flex-col sm:items-end gap-1 text-xs", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>
                                                             {clientEmail && <span>{clientEmail}</span>}
                                                             {clientPhone && <span>{clientPhone}</span>}
-                                                            {clientAddress && <span className="whitespace-pre-wrap text-right">{clientAddress}</span>}
+                                                            {clientAddress && <span className="whitespace-pre-wrap sm:text-right">{clientAddress}</span>}
                                                         </div>
                                                     )}
                                                 </div>
@@ -1278,7 +1276,7 @@ export default function NewInvoicePage() {
                                 {/* Meta Details */}
                                 <div id="invoice-details" />
                                 {!canSchedule && (
-                                    <div className={cn("flex flex-wrap gap-12 mb-16 pb-12 border-b", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
+                                    <div className={cn("flex flex-wrap gap-6 sm:gap-12 mb-8 sm:mb-16 pb-8 sm:pb-12 border-b", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
                                         <div className="flex flex-col gap-2">
                                             <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Issue Date</span>
                                             <div className="relative">
@@ -1338,8 +1336,9 @@ export default function NewInvoicePage() {
 
                                 {/* Tasks Table (Refined) */}
                                 <div id="invoice-items" />
-                                <div className="mb-12">
-                                    <table className="w-full border-collapse">
+                                <div className="mb-8 sm:mb-12">
+                                    {/* Desktop table */}
+                                    <table className="w-full border-collapse hidden md:table">
                                         <thead>
                                             <tr className={cn("border-b text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "border-neutral-200 text-neutral-500" : "border-neutral-700 text-neutral-400")}>
                                                 <th className="py-4 text-left font-medium">
@@ -1433,7 +1432,7 @@ export default function NewInvoicePage() {
                                                     <td className="py-4 text-right pl-2">
                                                         <button
                                                             onClick={() => removeTask(task.id)}
-                                                            className="text-muted-foreground hover:text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all outline-none"
+                                                            className="text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all outline-none"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
                                                         </button>
@@ -1443,9 +1442,104 @@ export default function NewInvoicePage() {
                                         </tbody>
                                     </table>
 
+                                    {/* Mobile card layout */}
+                                    <div className="md:hidden space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Products</span>
+                                            <button
+                                                onClick={() => setIsProductModalOpen(true)}
+                                                className={cn("flex items-center gap-1 text-[9px] transition-colors px-2 py-1 rounded cursor-pointer", invoiceMode === "light" ? "bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-black" : "bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-neutral-100")}
+                                            >
+                                                <Plus className="h-2.5 w-2.5" /> New
+                                            </button>
+                                        </div>
+                                        {tasks.map((task) => (
+                                            <div key={task.id} className={cn("rounded-xl border p-4 space-y-3", invoiceMode === "light" ? "border-neutral-200 bg-neutral-50" : "border-neutral-800 bg-neutral-900/50")}>
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <Input
+                                                        placeholder="Enter Product"
+                                                        spellCheck={false}
+                                                        className={cn("invoice-font-item bg-transparent border-none p-0 h-auto placeholder:text-muted-foreground focus-visible:ring-0 text-sm font-medium flex-1", invoiceMode === "light" ? "text-black" : "text-neutral-100")}
+                                                        value={task.description}
+                                                        list="product-suggestions-mobile"
+                                                        onChange={(e) => {
+                                                            const newTasks = [...tasks]
+                                                            const idx = newTasks.findIndex(t => t.id === task.id)
+                                                            newTasks[idx].description = e.target.value
+                                                            const product = products.find(p => p.name === e.target.value)
+                                                            if (product) {
+                                                                newTasks[idx].price = typeof product.price === 'string' ? parseFloat(product.price.replace(/[^0-9.]/g, '')) : product.price
+                                                            }
+                                                            setTasks(newTasks)
+                                                        }}
+                                                    />
+                                                    <button
+                                                        onClick={() => removeTask(task.id)}
+                                                        className="text-muted-foreground hover:text-red-500 transition-all outline-none p-1 shrink-0"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                                <datalist id="product-suggestions-mobile">
+                                                    {products.map(p => <option key={p.id} value={p.name} />)}
+                                                </datalist>
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    <div>
+                                                        <span className={cn("text-[9px] font-bold uppercase tracking-widest block mb-1", invoiceMode === "light" ? "text-neutral-400" : "text-neutral-500")}>Price</span>
+                                                        <NumberInput
+                                                            value={task.price}
+                                                            onChange={(val) => {
+                                                                const newTasks = [...tasks]
+                                                                const idx = newTasks.findIndex(t => t.id === task.id)
+                                                                newTasks[idx].price = val
+                                                                setTasks(newTasks)
+                                                            }}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <span className={cn("text-[9px] font-bold uppercase tracking-widest block mb-1", invoiceMode === "light" ? "text-neutral-400" : "text-neutral-500")}>Qty</span>
+                                                        <NumberInput
+                                                            value={task.qty}
+                                                            onChange={(val) => {
+                                                                const newTasks = [...tasks]
+                                                                const idx = newTasks.findIndex(t => t.id === task.id)
+                                                                newTasks[idx].qty = val
+                                                                setTasks(newTasks)
+                                                            }}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <span className={cn("text-[9px] font-bold uppercase tracking-widest block mb-1", invoiceMode === "light" ? "text-neutral-400" : "text-neutral-500")}>Disc %</span>
+                                                        <NumberInput
+                                                            value={(task as any).discount || 0}
+                                                            onChange={(val) => {
+                                                                const newTasks = [...tasks]
+                                                                const idx = newTasks.findIndex(t => t.id === task.id)
+                                                                ;(newTasks[idx] as any).discount = val
+                                                                setTasks(newTasks)
+                                                            }}
+                                                            variant={invoiceMode}
+                                                            className="h-10 w-full"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between pt-2 border-t border-dashed" style={{ borderColor: invoiceMode === "light" ? "#e5e5e5" : "#404040" }}>
+                                                    <span className={cn("text-[9px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-400" : "text-neutral-500")}>Line Total</span>
+                                                    <span className={cn("text-sm font-bold invoice-font-amount", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>
+                                                        {calculateLineTotal(task).toLocaleString('en-ZA', { style: 'currency', currency: currency })}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
                                     <Button
                                         variant="ghost"
-                                        className="mt-8 text-muted-foreground hover:text-foreground gap-2 px-0 hover:bg-transparent border border-dashed border-border hover:border-border w-full h-12 rounded-xl group transition-all"
+                                        className="mt-6 sm:mt-8 text-muted-foreground hover:text-foreground gap-2 px-0 hover:bg-transparent border border-dashed border-border hover:border-border w-full h-12 rounded-xl group transition-all"
                                         onClick={addTask}
                                     >
                                         <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
