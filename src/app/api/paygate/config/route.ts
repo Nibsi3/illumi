@@ -83,7 +83,7 @@ export async function GET(req: Request) {
         step = 'fetch_settings'
         const { data: settings, error } = await serviceClient
             .from('workspace_paygate_settings')
-            .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
+            .select('workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
             .eq('workspace_id', workspaceId)
             .maybeSingle()
 
@@ -201,7 +201,7 @@ export async function POST(req: Request) {
         // This avoids all partial-upsert ambiguity that was causing data loss.
         const { data: existingRow } = await serviceClient
             .from('workspace_paygate_settings')
-            .select('id, workspace_id, active_provider, test_mode, connected_providers')
+            .select('workspace_id, active_provider, test_mode, connected_providers')
             .eq('workspace_id', workspace_id)
             .maybeSingle()
 
@@ -235,9 +235,9 @@ export async function POST(req: Request) {
         // Re-read saved row to confirm and return to client
         const { data: savedRow } = await serviceClient
             .from('workspace_paygate_settings')
-            .select('id, workspace_id, active_provider, test_mode, connected_providers')
+            .select('workspace_id, active_provider, test_mode, connected_providers')
             .eq('workspace_id', workspace_id)
-            .single()
+            .maybeSingle()
 
         console.log('[Paygate Config POST] Verified saved row:', savedRow)
 
@@ -354,11 +354,11 @@ export async function getWorkspacePaygateSettings(workspaceId: string) {
 
     const { data, error } = await serviceClient
         .from('workspace_paygate_settings')
-        .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
+        .select('workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
         .eq('workspace_id', workspaceId)
-        .single()
+        .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
         console.error('[getWorkspacePaygateSettings] Error:', error)
         return null
     }
