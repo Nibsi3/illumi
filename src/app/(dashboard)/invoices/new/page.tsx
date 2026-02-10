@@ -735,7 +735,7 @@ export default function NewInvoicePage() {
             {/* MAIN CONTENT WRAPPER */}
             <div className="flex-1 flex flex-col relative h-full bg-background">
                 {/* STATIC TOP ACTION BAR */}
-                <div className="h-20 px-4 sm:px-6 md:px-8 flex justify-end items-center border-b border-border bg-background z-20 shrink-0">
+                <div className="h-20 px-4 sm:px-6 md:px-8 hidden md:flex justify-end items-center border-b border-border bg-background z-20 shrink-0">
                     <div className="flex items-center gap-3 overflow-x-auto no-scrollbar max-w-full">
                         <Button
                             variant="ghost"
@@ -1049,8 +1049,8 @@ export default function NewInvoicePage() {
                 <div className="flex-1 overflow-y-auto pb-12 no-scrollbar">
                     <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-12">
 
-                        {/* Mobile section tabs */}
-                        <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-border">
+                        {/* Mobile section tabs + actions */}
+                        <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-border space-y-2">
                             <div className="grid grid-cols-3 gap-2">
                                 <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-details')}>
                                     Details
@@ -1060,6 +1060,19 @@ export default function NewInvoicePage() {
                                 </Button>
                                 <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => scrollToSection('invoice-summary')}>
                                     Summary
+                                </Button>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button type="button" variant="outline" className="h-9 text-xs" onClick={() => setIsPreviewOpen(true)}>
+                                    <Eye className="h-3.5 w-3.5 mr-1.5" /> Preview
+                                </Button>
+                                <Button
+                                    type="button"
+                                    className="h-9 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+                                    disabled={isSaving}
+                                    onClick={() => handleCreate(canSchedule ? 'schedule' : 'send')}
+                                >
+                                    {isSaving ? 'Saving...' : (canSchedule ? 'Schedule' : 'Send')}
                                 </Button>
                             </div>
                         </div>

@@ -90,7 +90,7 @@ export function CreateClientModal({ isOpen, onClose, onSuccess }: CreateCustomer
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-card border-border text-foreground sm:max-w-[425px]">
+            <DialogContent className="bg-card border-border text-foreground sm:max-w-[425px] max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Create New Client</DialogTitle>
                 </DialogHeader>
