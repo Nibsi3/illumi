@@ -3,9 +3,10 @@
 import Link from "next/link"
 import Image from "next/image"
 import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { useTheme } from "@/lib/theme-context"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { Button } from "@/components/ui/button"
 
 const featureDropdownItems = [
     { name: "Financial Overview", href: "/features/overview" },
@@ -41,8 +42,31 @@ export function MarketingHeader() {
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4">
-            {/* Wider navigation with reduced height */}
-            <nav className="mx-auto max-w-4xl flex items-center justify-center gap-6 px-6 py-1.5 bg-white/80 dark:bg-background/60 backdrop-blur-xl rounded-lg border border-border">
+            {/* Mobile Header - Logo left, Hamburger right */}
+            <div className="md:hidden flex items-center justify-between px-2 py-3 bg-white/80 dark:bg-background/60 backdrop-blur-xl rounded-lg border border-border">
+                <Link href="/" className="flex items-center gap-2">
+                    <Image
+                        src={theme === 'dark' ? '/logo.png' : '/logo_black.png'}
+                        alt="Illumi Logo"
+                        width={28}
+                        height={28}
+                        className="w-7 h-7"
+                    />
+                    <span className="text-sm font-bold text-foreground">Illumi</span>
+                </Link>
+                <button
+                    type="button"
+                    aria-label="Open menu"
+                    aria-expanded={mobileMenuOpen}
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="p-3 text-foreground"
+                >
+                    <IconMenu2 className="h-6 w-6" />
+                </button>
+            </div>
+
+            {/* Desktop navigation */}
+            <nav className="hidden md:flex mx-auto max-w-4xl items-center justify-center gap-6 px-6 py-1.5 bg-white/80 dark:bg-background/60 backdrop-blur-xl rounded-lg border border-border">
                 {/* Logo */}
                 <Link href="/" className="flex items-center">
                     <Image
@@ -50,7 +74,7 @@ export function MarketingHeader() {
                         alt="Illumi Logo"
                         width={24}
                         height={24}
-                        className={theme === 'dark' ? 'w-6 h-6' : 'w-6 h-6 scale-[0.75] origin-center'}
+                        className={theme === 'dark' ? 'w-6 h-6' : 'w-6 h-6 scale-75 origin-center'}
                     />
                 </Link>
 
@@ -88,7 +112,7 @@ export function MarketingHeader() {
                 </div>
 
                 {/* Separator and Sign in */}
-                <div className="hidden md:flex items-center gap-4">
+                <div className="flex items-center gap-4">
                     <span className="text-muted-foreground/30">|</span>
                     <Link
                         href="/login"
@@ -98,17 +122,6 @@ export function MarketingHeader() {
                     </Link>
                     <ThemeToggle theme={theme} onToggle={toggleTheme} shimmer />
                 </div>
-
-                {/* Mobile menu */}
-                <button
-                    type="button"
-                    aria-label="Open menu"
-                    aria-expanded={mobileMenuOpen}
-                    onClick={() => setMobileMenuOpen(true)}
-                    className="md:hidden text-foreground"
-                >
-                    <IconMenu2 className="h-4 w-4" />
-                </button>
             </nav>
 
             {mobileMenuOpen && (
@@ -159,7 +172,7 @@ export function MarketingHeader() {
                                 ))}
                             </div>
 
-                            <div className="pt-3 border-t border-border space-y-2">
+                            <div className="pt-3 border-t border-border space-y-3">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -170,13 +183,20 @@ export function MarketingHeader() {
                                     {theme === 'dark' ? <IconSun className="h-4 w-4" /> : <IconMoon className="h-4 w-4" />}
                                     <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
                                 </button>
-                                <Link
-                                    href="/login"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="block text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    Sign in
-                                </Link>
+
+                                {/* Auth buttons */}
+                                <div className="grid grid-cols-2 gap-3 pt-2">
+                                    <Link href="/login?mode=sign_in" onClick={() => setMobileMenuOpen(false)}>
+                                        <Button variant="outline" className="w-full h-10 text-sm">
+                                            Log in
+                                        </Button>
+                                    </Link>
+                                    <Link href="/login?mode=sign_up" onClick={() => setMobileMenuOpen(false)}>
+                                        <Button className="w-full h-10 text-sm bg-primary text-primary-foreground">
+                                            Sign up
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

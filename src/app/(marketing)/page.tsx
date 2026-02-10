@@ -217,20 +217,20 @@ export default function LandingPage() {
                                 Stop chasing payments with messy spreadsheets. Illumi lets freelancers and small businesses create polished invoices in ZAR, send them instantly, and get paid online — free.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                                <Link href="/invoices/new">
+                            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                                <Link href="/invoices/new" className="w-full sm:w-auto">
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full sm:w-auto"
-                                        className="bg-primary text-primary-foreground font-sans font-medium px-8 h-12 flex items-center justify-center"
+                                        className="bg-primary text-primary-foreground font-sans font-medium px-6 sm:px-8 h-11 sm:h-12 flex items-center justify-center text-sm sm:text-base"
                                     >
-                                        Create My First Invoice →
+                                        Create Invoice →
                                     </HoverBorderGradient>
                                 </Link>
                                 <Button
                                     asChild
                                     variant="outline"
-                                    className="px-8 h-12 border-border text-foreground hover:bg-accent font-sans"
+                                    className="w-full sm:w-auto px-6 sm:px-8 h-11 sm:h-12 border-border text-foreground hover:bg-accent font-sans text-sm sm:text-base"
                                 >
                                     <Link href="/login">I Have an Account</Link>
                                 </Button>
