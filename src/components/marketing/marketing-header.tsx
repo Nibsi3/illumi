@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon, IconDeviceMobile } from "@tabler/icons-react"
+import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { useTheme } from "@/lib/theme-context"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -184,28 +184,18 @@ export function MarketingHeader() {
                                         aria-label="Toggle theme"
                                     >
                                         <span
-                                            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform flex items-center justify-center ${
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background border border-border shadow-sm transition-transform flex items-center justify-center ${
                                                 theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
                                             }`}
                                         >
                                             {theme === 'dark' ? (
-                                                <IconMoon className="w-3 h-3 text-primary" />
+                                                <IconMoon className="w-3.5 h-3.5 text-foreground" />
                                             ) : (
-                                                <IconSun className="w-3 h-3 text-amber-500" />
+                                                <IconSun className="w-3.5 h-3.5 text-foreground" />
                                             )}
                                         </span>
                                     </button>
                                 </div>
-
-                                {/* Get the App button */}
-                                <Link
-                                    href="/mobile-app"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                                >
-                                    <IconDeviceMobile className="h-4 w-4" />
-                                    <span>Get the App</span>
-                                </Link>
 
                                 {/* Auth buttons */}
                                 <div className="grid grid-cols-2 gap-3 pt-2">
