@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -87,6 +87,24 @@ export default function PayGatePage() {
     const activeProvider = activePaymentProvider
     const [isTestMode, setIsTestMode] = useState(true)
     const [isLoadingSettings, setIsLoadingSettings] = useState(true)
+
+    // Mutex to serialize all paygate POST requests — prevents concurrent
+    // saves from racing and overwriting each other's data
+    const saveQueue = useRef<Promise<any>>(Promise.resolve())
+    const serializedPost = useCallback(async (body: Record<string, any>) => {
+        const job = saveQueue.current.then(async () => {
+            const res = await fetch('/api/paygate/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+            const data = await res.json()
+            if (!data.success) throw new Error(data.error || 'Failed to save')
+            return data
+        })
+        saveQueue.current = job.catch(() => {}) // prevent chain breakage
+        return job
+    }, [])
     
     // Load settings from Supabase on mount and when workspace changes
     useEffect(() => {
@@ -588,23 +606,13 @@ export default function PayGatePage() {
             console.log('[PayGate Save] Saving keys for', id, ':', keysPayload)
             console.log('[PayGate Save] Current state - testKey1:', testKey1, 'testKey2:', testKey2, 'liveKey1:', liveKey1, 'liveKey2:', liveKey2)
             
-            const res = await fetch('/api/paygate/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    workspace_id: activeWorkspace.id,
-                    provider: id,
-                    active_provider: newActiveProvider,
-                    connected_providers: newConnectedProviders,
-                    keys: keysPayload
-                })
+            const data = await serializedPost({
+                workspace_id: activeWorkspace.id,
+                provider: id,
+                active_provider: newActiveProvider,
+                connected_providers: newConnectedProviders,
+                keys: keysPayload
             })
-            
-            const data = await res.json()
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Failed to save')
-            }
             
             // Update local state from confirmed Supabase data
             if (data.savedSettings) {
@@ -649,17 +657,8 @@ export default function PayGatePage() {
 
         console.log('[PayGate persistSettings] sending:', payload)
 
-        const res = await fetch('/api/paygate/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-
-        const data = await res.json().catch(() => null)
+        const data = await serializedPost(payload)
         console.log('[PayGate persistSettings] response:', data)
-        if (!data?.success) {
-            throw new Error(data?.error || 'Failed to save paygate settings')
-        }
 
         // Sync local state from confirmed Supabase data
         if (data.savedSettings) {
@@ -705,18 +704,19 @@ export default function PayGatePage() {
         const newActiveProvider = activeProvider === id ? (newConnectedProviders[0] || null) : activeProvider
         
         try {
-            await fetch('/api/paygate/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    workspace_id: activeWorkspace.id,
-                    active_provider: newActiveProvider,
-                    connected_providers: newConnectedProviders
-                })
+            const data = await serializedPost({
+                workspace_id: activeWorkspace.id,
+                active_provider: newActiveProvider,
+                connected_providers: newConnectedProviders
             })
             
-            setConnectedProviders(newConnectedProviders)
-            if (activeProvider === id) setActivePaymentProvider(newActiveProvider)
+            if (data.savedSettings) {
+                setConnectedProviders(data.savedSettings.connected_providers || [])
+                setActivePaymentProvider(data.savedSettings.active_provider || null)
+            } else {
+                setConnectedProviders(newConnectedProviders)
+                if (activeProvider === id) setActivePaymentProvider(newActiveProvider)
+            }
             
             toast.success("Disconnected", {
                 description: `Successfully disconnected from ${providers.find(p => p.id === id)?.name}.`

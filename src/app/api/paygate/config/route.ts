@@ -214,26 +214,11 @@ export async function POST(req: Request) {
 
         console.log('[Paygate Config POST] existing:', existingRow, 'merged:', mergedRow, 'incoming test_mode:', test_mode)
 
-        let settingsError: any = null
-        if (existingRow) {
-            // UPDATE existing row by id
-            const { error } = await serviceClient
-                .from('workspace_paygate_settings')
-                .update({
-                    active_provider: mergedRow.active_provider,
-                    test_mode: mergedRow.test_mode,
-                    connected_providers: mergedRow.connected_providers,
-                    updated_at: mergedRow.updated_at,
-                })
-                .eq('id', existingRow.id)
-            settingsError = error
-        } else {
-            // INSERT new row
-            const { error } = await serviceClient
-                .from('workspace_paygate_settings')
-                .insert(mergedRow)
-            settingsError = error
-        }
+        // Atomic upsert of the COMPLETE merged row — handles concurrent requests
+        // gracefully via ON CONFLICT instead of separate INSERT/UPDATE branches
+        const { error: settingsError } = await serviceClient
+            .from('workspace_paygate_settings')
+            .upsert(mergedRow, { onConflict: 'workspace_id' })
 
         if (settingsError) {
             console.error('[Paygate Config POST] Settings error:', settingsError)
