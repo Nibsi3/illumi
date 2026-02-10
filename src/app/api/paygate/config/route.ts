@@ -26,9 +26,11 @@ function maskKey(key: string): string {
     return key.substring(0, 8) + '••••••••' + key.substring(key.length - 4)
 }
 
-// GET: Fetch paygate settings for a workspace (includes masked keys for display)
+// GET: Fetch paygate settings for a workspace (includes keys for display)
 export async function GET(req: Request) {
+    let step = 'init'
     try {
+        step = 'parse_url'
         const { searchParams } = new URL(req.url)
         const workspaceId = searchParams.get('workspace_id')
 
@@ -36,13 +38,18 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: "Missing workspace_id" }, { status: 400 })
         }
 
-        // Use user's auth to verify access
+        // ── Auth ──
+        step = 'create_server_client'
         const supabase = await createServerClient()
+
+        step = 'get_user'
         const { data: { user }, error: authError } = await supabase.auth.getUser()
         if (authError || !user) {
-            console.error('[Paygate Config GET] Auth error:', authError)
-            return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+            return NextResponse.json({ success: false, error: `Auth: ${authError?.message || 'no user'}` }, { status: 401 })
         }
+
+        // ── Membership check ──
+        step = 'check_owner'
         const { data: workspace } = await supabase
             .from('workspaces')
             .select('id')
@@ -52,6 +59,7 @@ export async function GET(req: Request) {
 
         let membership = workspace
         if (!membership && user.email) {
+            step = 'check_member'
             const userEmail = (user.email || '').toLowerCase().trim()
             const { data: memberRow } = await supabase
                 .from('workspace_members')
@@ -67,37 +75,41 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: 'Not a member of this workspace' }, { status: 403 })
         }
 
-        // Use service role to fetch settings (bypasses RLS issues)
+        // ── Service client ──
+        step = 'get_service_client'
         const serviceClient = getServiceClient()
+
+        // ── Fetch settings ──
+        step = 'fetch_settings'
         const { data: settings, error } = await serviceClient
             .from('workspace_paygate_settings')
             .select('id, workspace_id, active_provider, connected_providers, test_mode, created_at, updated_at')
             .eq('workspace_id', workspaceId)
-            .single()
+            .maybeSingle()
 
-        console.log('[Paygate Config GET] workspaceId:', workspaceId, 'settings:', settings, 'test_mode:', settings?.test_mode)
-
-        if (error && error.code !== 'PGRST116') {
-            console.error('[Paygate Config GET] Error:', error)
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+        if (error) {
+            return NextResponse.json({ success: false, error: `DB settings: ${error.message}`, step }, { status: 500 })
         }
 
-        // Fetch keys using service role (return actual keys so users can see/edit them)
+        // ── Fetch keys ──
+        step = 'fetch_keys'
         const providerKeys: Record<string, any> = {}
-        
-        // Fetch keys for all connected providers AND active_provider as safety net
         const providersToFetch = new Set<string>([
             ...(settings?.connected_providers || []),
             ...(settings?.active_provider ? [settings.active_provider] : []),
         ])
-        if (serviceClient && providersToFetch.size > 0) {
+        if (providersToFetch.size > 0) {
             const providers = Array.from(providersToFetch)
-            const { data: allKeys } = await serviceClient
+            const { data: allKeys, error: keysError } = await serviceClient
                 .from('workspace_paygate_keys')
                 .select('provider, mode, key_name, key_value')
                 .eq('workspace_id', workspaceId)
                 .in('provider', providers)
                 .in('mode', ['test', 'live'])
+
+            if (keysError) {
+                return NextResponse.json({ success: false, error: `DB keys: ${keysError.message}`, step }, { status: 500 })
+            }
 
             for (const row of allKeys || []) {
                 const provider = (row as any).provider as string
@@ -108,7 +120,6 @@ export async function GET(req: Request) {
                 const keys = (providerKeys[provider] ||= {})
                 const prefix = mode === 'test' ? 'test' : 'live'
 
-                // Return actual keys (not masked) so users can see and edit them
                 if (keyName === 'merchant_id') keys[`${prefix}MerchantId`] = keyValue
                 if (keyName === 'secret_key') keys[`${prefix}SecretKey`] = keyValue
                 if (keyName === 'merchant_key') keys[`${prefix}MerchantKey`] = keyValue
@@ -137,8 +148,8 @@ export async function GET(req: Request) {
             providerKeys
         })
     } catch (error: any) {
-        console.error('[Paygate Config GET] Error:', error)
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 })
+        console.error(`[Paygate Config GET] FAILED at step="${step}":`, error)
+        return NextResponse.json({ success: false, error: error.message, step }, { status: 500 })
     }
 }
 
