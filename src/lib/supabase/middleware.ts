@@ -94,24 +94,20 @@ export async function updateSession(request: NextRequest) {
             }
         )
 
-        // For public routes (home/login), use getSession() to check if user is logged in
-        // This reads from cookies without making a server call, reducing egress
-        // For protected routes, use getUser() which validates with the server
-        if (isHomePage || isLoginPage) {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (session?.user) {
-                const url = request.nextUrl.clone()
-                url.pathname = '/invoices/new'
-                return NextResponse.redirect(url)
-            }
-            return supabaseResponse
-        }
-
-        // For protected routes, validate session with server
+        // Validate session with server for all routes to avoid redirect loops
+        // (getSession only reads cookies; getUser validates with Supabase)
         const {
             data: { user },
         } = await supabase.auth.getUser()
 
+        // Redirect authenticated users away from home/login to dashboard
+        if ((isHomePage || isLoginPage) && user) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/invoices/new'
+            return NextResponse.redirect(url)
+        }
+
+        // Redirect unauthenticated users to login for protected routes
         if (!user && !isPublicRoute) {
             const url = request.nextUrl.clone()
             url.pathname = '/login'
