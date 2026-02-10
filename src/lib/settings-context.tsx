@@ -147,8 +147,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                     if (parsed.accountNumber !== undefined) setAccountNumber(parsed.accountNumber)
                     if (parsed.branchCode !== undefined) setBranchCode(parsed.branchCode)
                     if (parsed.country) setCountry(parsed.country)
-                    if (parsed.activePaymentProvider) setActivePaymentProvider(parsed.activePaymentProvider)
-                    if (parsed.connectedProviders) setConnectedProviders(parsed.connectedProviders)
+                    // activePaymentProvider and connectedProviders are loaded
+                    // exclusively from Supabase via the paygate page — not localStorage
 
                     // Migrate legacy (non-workspace) settings into workspace-scoped storage.
                     // This prevents losing preferences when the workspace loads after settings were saved.
@@ -205,15 +205,15 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             accountNumber,
             branchCode,
             country,
-            activePaymentProvider,
-            connectedProviders,
+            // activePaymentProvider and connectedProviders excluded —
+            // Supabase is the sole source of truth for paygate settings
         }
         try {
             localStorage.setItem(storageKey, JSON.stringify(settings))
         } catch (e) {
             console.error('Failed to persist settings', e)
         }
-    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, bankName, accountName, accountNumber, branchCode, country, activePaymentProvider, connectedProviders, isLoaded, storageKey])
+    }, [currency, taxRate, dateFormat, fromEmail, sendInvoiceCopyToSelf, hideIllumiBranding, logo, companyName, companyWebsite, companyAddress, bankName, accountName, accountNumber, branchCode, country, isLoaded, storageKey])
 
     useEffect(() => {
         if (!isBillingLoaded) return

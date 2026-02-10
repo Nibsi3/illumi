@@ -6,6 +6,7 @@
 -- INVOICES: Remove "Anyone can view" policy
 -- ============================================
 DROP POLICY IF EXISTS "Anyone can view invoices by id for payment" ON public.invoices;
+DROP POLICY IF EXISTS "Workspace members can view workspace invoices" ON public.invoices;
 
 -- Replace with workspace-member-scoped policy so team members can
 -- view invoices within their workspace, but NOT invoices from other workspaces.
@@ -24,6 +25,7 @@ CREATE POLICY "Workspace members can view workspace invoices" ON public.invoices
 -- INVOICE ITEMS: Remove "Anyone can view" policy
 -- ============================================
 DROP POLICY IF EXISTS "Anyone can view invoice items for payment" ON public.invoice_items;
+DROP POLICY IF EXISTS "Workspace members can view workspace invoice items" ON public.invoice_items;
 
 -- Replace with workspace-member-scoped policy
 CREATE POLICY "Workspace members can view workspace invoice items" ON public.invoice_items

@@ -588,7 +588,6 @@ export default function PayGatePage() {
                     workspace_id: activeWorkspace.id,
                     provider: id,
                     active_provider: newActiveProvider,
-                    test_mode: isTestMode,
                     connected_providers: newConnectedProviders,
                     keys: keysPayload
                 })
@@ -612,7 +611,6 @@ export default function PayGatePage() {
                     liveKey1,
                     liveKey2,
                     passphrase,
-                    isTestMode
                 }
             })
             if (!activeProvider) setActivePaymentProvider(id)
@@ -687,7 +685,6 @@ export default function PayGatePage() {
                 body: JSON.stringify({
                     workspace_id: activeWorkspace.id,
                     active_provider: newActiveProvider,
-                    test_mode: isTestMode,
                     connected_providers: newConnectedProviders
                 })
             })
