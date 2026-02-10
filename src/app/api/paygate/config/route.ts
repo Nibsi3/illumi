@@ -38,15 +38,11 @@ export async function GET(req: Request) {
 
         // Use user's auth to verify access
         const supabase = await createServerClient()
-        const {
-            data: { session },
-        } = await supabase.auth.getSession()
-        if (!session?.user) {
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) {
+            console.error('[Paygate Config GET] Auth error:', authError)
             return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
         }
-
-        // Verify user is owner or active member of workspace
-        const user = session.user
         const { data: workspace } = await supabase
             .from('workspaces')
             .select('id')
