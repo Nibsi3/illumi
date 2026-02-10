@@ -190,28 +190,64 @@ export async function POST(req: Request) {
         // Use service role for writing (bypasses RLS for keys table)
         const serviceClient = getServiceClient()
 
-        // Build partial update — only include fields explicitly sent in the request
-        // to avoid overwriting Supabase with stale/default values from the client
-        const settingsPayload: Record<string, any> = {
-            workspace_id,
-            updated_at: new Date().toISOString()
-        }
-        if (active_provider !== undefined) settingsPayload.active_provider = active_provider || provider || 'payfast'
-        if (test_mode !== undefined) settingsPayload.test_mode = test_mode === false ? false : true
-        if (connected_providers !== undefined) settingsPayload.connected_providers = connected_providers || []
-
-        console.log('[Paygate Config POST] Saving settings:', settingsPayload)
-        
-        const { error: settingsError } = await serviceClient
+        // ── Read-merge-write: read current row, merge changes, write complete row ──
+        // This avoids all partial-upsert ambiguity that was causing data loss.
+        const { data: existingRow } = await serviceClient
             .from('workspace_paygate_settings')
-            .upsert(settingsPayload, { onConflict: 'workspace_id' })
+            .select('id, workspace_id, active_provider, test_mode, connected_providers')
+            .eq('workspace_id', workspace_id)
+            .maybeSingle()
+
+        const mergedRow = {
+            workspace_id,
+            active_provider: active_provider !== undefined
+                ? (active_provider || provider || 'payfast')
+                : (existingRow?.active_provider || provider || 'payfast'),
+            test_mode: test_mode !== undefined
+                ? (test_mode === false ? false : true)
+                : (existingRow?.test_mode ?? true),
+            connected_providers: connected_providers !== undefined
+                ? (connected_providers || [])
+                : (existingRow?.connected_providers || []),
+            updated_at: new Date().toISOString(),
+        }
+
+        console.log('[Paygate Config POST] existing:', existingRow, 'merged:', mergedRow, 'incoming test_mode:', test_mode)
+
+        let settingsError: any = null
+        if (existingRow) {
+            // UPDATE existing row by id
+            const { error } = await serviceClient
+                .from('workspace_paygate_settings')
+                .update({
+                    active_provider: mergedRow.active_provider,
+                    test_mode: mergedRow.test_mode,
+                    connected_providers: mergedRow.connected_providers,
+                    updated_at: mergedRow.updated_at,
+                })
+                .eq('id', existingRow.id)
+            settingsError = error
+        } else {
+            // INSERT new row
+            const { error } = await serviceClient
+                .from('workspace_paygate_settings')
+                .insert(mergedRow)
+            settingsError = error
+        }
 
         if (settingsError) {
             console.error('[Paygate Config POST] Settings error:', settingsError)
             return NextResponse.json({ success: false, error: settingsError.message }, { status: 500 })
         }
-        
-        console.log('[Paygate Config POST] Settings saved successfully, test_mode:', test_mode)
+
+        // Re-read saved row to confirm and return to client
+        const { data: savedRow } = await serviceClient
+            .from('workspace_paygate_settings')
+            .select('id, workspace_id, active_provider, test_mode, connected_providers')
+            .eq('workspace_id', workspace_id)
+            .single()
+
+        console.log('[Paygate Config POST] Verified saved row:', savedRow)
 
         // Upsert keys if provided
         if (keys && provider) {
@@ -289,7 +325,7 @@ export async function POST(req: Request) {
             }
         }
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true, savedSettings: savedRow })
     } catch (error: any) {
         console.error('[Paygate Config POST] Error:', error)
         return NextResponse.json({ success: false, error: error.message }, { status: 500 })

@@ -105,11 +105,18 @@ export default function PayGatePage() {
                 
                 if (cancelled) return
                 
+                console.log('[PayGate loadSettings] API response:', JSON.stringify(data))
                 if (data.success && data.settings) {
+                    const loadedTestMode = typeof data.settings.test_mode === 'boolean' ? data.settings.test_mode : true
+                    console.log('[PayGate loadSettings] Setting state:', {
+                        active_provider: data.settings.active_provider,
+                        connected_providers: data.settings.connected_providers,
+                        test_mode: data.settings.test_mode,
+                        loadedTestMode,
+                        keyProviders: data.providerKeys ? Object.keys(data.providerKeys) : [],
+                    })
                     setActivePaymentProvider(data.settings.active_provider || null)
                     setConnectedProviders(data.settings.connected_providers || [])
-                    // Explicitly handle boolean - don't use nullish coalescing which treats false as falsy
-                    const loadedTestMode = typeof data.settings.test_mode === 'boolean' ? data.settings.test_mode : true
                     setIsTestMode(loadedTestMode)
                     if (data.providerKeys) {
                         setProviderKeys(data.providerKeys)
@@ -599,13 +606,19 @@ export default function PayGatePage() {
                 throw new Error(data.error || 'Failed to save')
             }
             
-            // Update local state
-            setConnectedProviders(newConnectedProviders)
+            // Update local state from confirmed Supabase data
+            if (data.savedSettings) {
+                setConnectedProviders(data.savedSettings.connected_providers || [])
+                setActivePaymentProvider(data.savedSettings.active_provider || null)
+                // Do NOT touch isTestMode here — only handleTestModeChange should
+            } else {
+                setConnectedProviders(newConnectedProviders)
+                if (!activeProvider) setActivePaymentProvider(id)
+            }
             setProviderKeys({
                 ...providerKeys,
                 [id]: {
                     ...buildKeysPayload(id),
-                    // Also keep the raw fields for local edits in the dialog.
                     testKey1,
                     testKey2,
                     liveKey1,
@@ -613,7 +626,6 @@ export default function PayGatePage() {
                     passphrase,
                 }
             })
-            if (!activeProvider) setActivePaymentProvider(id)
             
             setConfiguringProvider(null)
             toast.success("Connected", {
@@ -630,12 +642,12 @@ export default function PayGatePage() {
     const persistSettings = async (patch: { active_provider?: string | null; test_mode?: boolean; connected_providers?: string[] }) => {
         if (!activeWorkspace?.id) return
 
-        // Only send fields that are explicitly being changed to avoid
-        // overwriting Supabase with stale React state (root cause of keys reverting)
         const payload: Record<string, any> = { workspace_id: activeWorkspace.id }
         if (patch.active_provider !== undefined) payload.active_provider = patch.active_provider
         if (patch.test_mode !== undefined) payload.test_mode = patch.test_mode
         if (patch.connected_providers !== undefined) payload.connected_providers = patch.connected_providers
+
+        console.log('[PayGate persistSettings] sending:', payload)
 
         const res = await fetch('/api/paygate/config', {
             method: 'POST',
@@ -644,8 +656,22 @@ export default function PayGatePage() {
         })
 
         const data = await res.json().catch(() => null)
+        console.log('[PayGate persistSettings] response:', data)
         if (!data?.success) {
             throw new Error(data?.error || 'Failed to save paygate settings')
+        }
+
+        // Sync local state from confirmed Supabase data
+        if (data.savedSettings) {
+            if (patch.test_mode !== undefined) {
+                setIsTestMode(data.savedSettings.test_mode)
+            }
+            if (patch.active_provider !== undefined) {
+                setActivePaymentProvider(data.savedSettings.active_provider || null)
+            }
+            if (patch.connected_providers !== undefined) {
+                setConnectedProviders(data.savedSettings.connected_providers || [])
+            }
         }
     }
 
