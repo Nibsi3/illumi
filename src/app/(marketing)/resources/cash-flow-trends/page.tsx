@@ -323,7 +323,7 @@ export default function CashFlowTrendsPage() {
                         href="/login"
                         className="inline-flex items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 px-8 h-12 text-sm font-semibold transition-colors"
                     >
-                        Get Started Free
+                        Create My First Invoice
                     </Link>
                 </div>
             </main>

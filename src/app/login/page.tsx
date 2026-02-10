@@ -47,7 +47,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false)
     const [googleLoading, setGoogleLoading] = useState(false)
     const supabase = createClient()
-    const [nextPath, setNextPath] = useState('/overview')
+    const [nextPath, setNextPath] = useState('/invoices/new')
     const { theme } = useTheme()
 
     useEffect(() => {

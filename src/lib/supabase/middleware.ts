@@ -52,6 +52,7 @@ export async function updateSession(request: NextRequest) {
         '/site-map',
         '/sitemap.xml',
         '/robots.txt',
+        '/try',
     ]
 
     const isPublicRoute = pathname === '/' || publicPrefixes.some((p) => pathname.startsWith(p))
@@ -99,7 +100,7 @@ export async function updateSession(request: NextRequest) {
             const { data: { session } } = await supabase.auth.getSession()
             if (session?.user) {
                 const url = request.nextUrl.clone()
-                url.pathname = '/overview'
+                url.pathname = '/invoices/new'
                 return NextResponse.redirect(url)
             }
             return supabaseResponse

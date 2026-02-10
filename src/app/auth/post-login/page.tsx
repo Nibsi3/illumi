@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client"
 export default function PostLoginRedirectPage() {
     useEffect(() => {
         const run = async () => {
-            let nextPath = '/overview'
+            let nextPath = '/invoices/new'
             try {
                 const stored = localStorage.getItem('illumi_auth_next')
                 if (stored && stored.startsWith('/')) {

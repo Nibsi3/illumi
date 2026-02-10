@@ -154,7 +154,7 @@ export default function InvoiceMakerPage() {
                                 <p className="text-muted-foreground mb-4">{uc.description}</p>
                                 <Link href="/login">
                                     <Button variant="outline" size="sm">
-                                        Get Started Free <IconArrowRight className="ml-1 w-4 h-4" />
+                                        Create My First Invoice <IconArrowRight className="ml-1 w-4 h-4" />
                                     </Button>
                                 </Link>
                             </div>

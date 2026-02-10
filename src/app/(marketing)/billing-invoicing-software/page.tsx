@@ -414,7 +414,7 @@ export default function BillingInvoicingSoftwarePage() {
                                 </li>
                             </ul>
                             <Link href="/login">
-                                <Button variant="outline" className="w-full">Start Free</Button>
+                                <Button variant="outline" className="w-full">Create an Invoice — Free</Button>
                             </Link>
                         </div>
                         <div className="border-2 border-primary rounded-2xl p-8 bg-card relative">

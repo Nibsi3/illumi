@@ -133,7 +133,7 @@ export default function PremiumPage() {
                                 </Link>
                                 <Link href="/login">
                                     <Button size="lg" variant="outline">
-                                        Start Free
+                                        Create an Invoice — Free
                                     </Button>
                                 </Link>
                             </div>
@@ -254,7 +254,7 @@ export default function PremiumPage() {
                                     </div>
                                     <div>
                                         <div className="text-sm text-muted-foreground">If you’re still early</div>
-                                        <div className="text-xl font-semibold">Start Free</div>
+                                        <div className="text-xl font-semibold">Create an Invoice — Free</div>
                                         <p className="text-sm text-muted-foreground mt-2">
                                             You can upgrade later—your invoices and clients carry over.
                                         </p>
@@ -300,7 +300,7 @@ export default function PremiumPage() {
                     <div className="flex flex-wrap justify-center gap-4">
                         <Link href="/login">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                Start Free
+                                Create an Invoice — Free
                             </Button>
                         </Link>
                         <Link href="/pricing">

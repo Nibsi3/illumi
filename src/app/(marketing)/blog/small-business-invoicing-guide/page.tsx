@@ -135,7 +135,7 @@ export default function SmallBusinessInvoicingGuidePage() {
                     <p className="text-muted-foreground mb-6">Illumi is built for SA small businesses. ZAR default, SARS-compliant, PayFast & Yoco integrated.</p>
                     <Link href="/login">
                         <Button size="lg">
-                            Get Started Free <IconArrowRight className="ml-2 w-5 h-5" />
+                            Create My First Invoice <IconArrowRight className="ml-2 w-5 h-5" />
                         </Button>
                     </Link>
                 </div>

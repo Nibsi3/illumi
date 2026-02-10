@@ -124,7 +124,7 @@ export default function InvoiceExamplesPage() {
                         <p className="text-muted-foreground mb-6">All 8 invoice formats available as customisable templates in Illumi.</p>
                         <Link href="/login">
                             <Button size="lg">
-                                Start Free <IconArrowRight className="ml-2 w-5 h-5" />
+                                Create an Invoice — Free <IconArrowRight className="ml-2 w-5 h-5" />
                             </Button>
                         </Link>
                     </div>

@@ -145,7 +145,7 @@ export default function FreeInvoiceGeneratorPage() {
                             </table>
                         </div>
                         <div className="flex gap-4 justify-center mt-8">
-                            <Link href="/login"><Button size="lg">Start Free</Button></Link>
+                            <Link href="/login"><Button size="lg">Create an Invoice — Free</Button></Link>
                             <Link href="/pricing"><Button size="lg" variant="outline">Compare Plans</Button></Link>
                         </div>
                     </div>

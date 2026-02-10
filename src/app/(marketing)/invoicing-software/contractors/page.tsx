@@ -201,7 +201,7 @@ export default function ContractorsPage() {
                     </p>
                     <Link href="/login">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                            Get Started Free
+                            Create My First Invoice
                         </Button>
                     </Link>
                 </div>

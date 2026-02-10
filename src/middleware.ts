@@ -60,6 +60,7 @@ export async function middleware(request: NextRequest) {
         '/hourly-rate-calculator',
         '/percentage-calculator',
         '/sales-tax-calculator',
+        '/try',
     ]
 
     const isMarketingPath = marketingPrefixes.some((p) => (p === '/' ? url.pathname === '/' : url.pathname.startsWith(p)))

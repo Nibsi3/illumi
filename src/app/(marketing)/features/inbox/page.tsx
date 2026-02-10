@@ -79,7 +79,7 @@ export default function ClientPortalFeaturePage() {
                             className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12"
                         >
                             <Link href="/login">
-                                Get Started Free
+                                Create My First Invoice
                                 <IconArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>

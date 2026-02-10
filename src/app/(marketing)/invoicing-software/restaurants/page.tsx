@@ -49,7 +49,7 @@ export default function RestaurantsPage() {
                         </p>
                         <Link href="/login">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                Start Free
+                                Create an Invoice — Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
                             </Button>
                         </Link>
@@ -79,7 +79,7 @@ export default function RestaurantsPage() {
                     </p>
                     <Link href="/login">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                            Get Started Free
+                            Create My First Invoice
                         </Button>
                     </Link>
                 </div>

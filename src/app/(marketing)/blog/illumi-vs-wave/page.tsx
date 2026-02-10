@@ -346,7 +346,7 @@ export default function IllumiVsWavePost() {
                     </p>
                     <Link href="/login">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                            Get Started for Free
+                            Create My First Invoice
                             <IconArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                     </Link>

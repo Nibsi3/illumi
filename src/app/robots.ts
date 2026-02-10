@@ -61,6 +61,7 @@ export default function robots(): MetadataRoute.Robots {
           '/proforma-invoice-template',
           '/freelance-invoice-template',
           '/landing-page',
+          '/try',
           '/privacy',
           '/terms',
           '/terms-and-conditions',

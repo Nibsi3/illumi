@@ -203,27 +203,48 @@ export default function LandingPage() {
                 <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div>
-                            <div className="inline-flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
-                                <span className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground">Built for South Africa</span>
-                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">ZAR-first invoicing</span>
-                                <span className="px-3 py-1 rounded-full bg-muted text-muted-foreground">PayGate-ready</span>
+                            <div className="inline-flex items-center gap-2 text-sm text-muted-foreground mb-6">
+                                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary font-medium">No signup needed to try</span>
                             </div>
 
                             <h1 className="text-4xl md:text-5xl lg:text-6xl leading-[1.05] text-foreground mb-6 font-serif font-medium tracking-tight">
-                                Professional Invoicing
+                                Create a Professional Invoice
                                 <br className="hidden md:block" />
-                                <span className="text-muted-foreground">for South African Businesses</span>
+                                <span className="text-muted-foreground">in 60 Seconds</span>
                             </h1>
 
                             <p className="text-lg text-muted-foreground mb-7 max-w-xl leading-relaxed">
-                                Create professional invoices in ZAR with optional VAT. Perfect for VAT and non-VAT registered businesses. Get paid online with PayFast, Yoco, Ozow. Free forever.
+                                Stop chasing payments with messy spreadsheets. Illumi lets freelancers and small businesses create polished invoices in ZAR, send them instantly, and get paid online — free.
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                                <Link href="/try">
+                                    <HoverBorderGradient
+                                        as="div"
+                                        containerClassName="w-full sm:w-auto"
+                                        className="bg-primary text-primary-foreground font-sans font-medium px-8 h-12 flex items-center justify-center"
+                                    >
+                                        Create My First Invoice →
+                                    </HoverBorderGradient>
+                                </Link>
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    className="px-8 h-12 border-border text-foreground hover:bg-accent font-sans"
+                                >
+                                    <Link href="/login">I Have an Account</Link>
+                                </Button>
+                            </div>
+
+                            <p className="text-sm text-muted-foreground mb-12 font-sans">
+                                No signup required • Takes 60 seconds • Free forever
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">
                                 {[
-                                    { title: "Unlimited invoices", meta: "Free plan" },
-                                    { title: "Client folders", meta: "Organised" },
-                                    { title: "Recurring & scheduled", meta: "Automated" },
+                                    { title: "60-second invoices", meta: "No setup" },
+                                    { title: "Get paid online", meta: "PayFast · Yoco · Ozow" },
+                                    { title: "Built for SA", meta: "ZAR · VAT · SARS-ready" },
                                 ].map((item) => (
                                     <div key={item.title} className="rounded-2xl border border-border bg-card p-4">
                                         <div className="text-sm font-semibold text-card-foreground">{item.title}</div>
@@ -232,31 +253,7 @@ export default function LandingPage() {
                                 ))}
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                                <Link href="/login">
-                                    <HoverBorderGradient
-                                        as="div"
-                                        containerClassName="w-full sm:w-auto"
-                                        className="bg-primary text-primary-foreground font-sans font-medium px-8 h-12 flex items-center justify-center"
-                                    >
-                                        Get Started for Free
-                                    </HoverBorderGradient>
-                                </Link>
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    className="px-8 h-12 border-border text-foreground hover:bg-accent font-sans"
-                                >
-                                    <Link href="/pricing">View Pricing</Link>
-                                </Button>
-                            </div>
-
-                            <p className="text-sm text-muted-foreground mb-12 font-sans">
-                                Free forever • No credit card required
-                            </p>
-
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-border">
-
                                 {stats.map((stat, i) => (
                                     <div key={i}>
                                         <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1 font-sans">
@@ -282,42 +279,41 @@ export default function LandingPage() {
                                     <div className="absolute inset-0 bg-linear-to-br from-foreground/5 via-transparent to-transparent pointer-events-none" />
                                     <div className="p-6 border-b border-border flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-muted" />
-                                            <div className="text-sm text-muted-foreground">
-                                                Overview <span className="text-muted-foreground/50">•</span> <span className="font-serif italic text-foreground">Net Profit</span>
+                                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <IconFileInvoice className="w-4 h-4 text-primary" />
+                                            </div>
+                                            <div className="text-sm text-foreground font-medium">
+                                                New Invoice <span className="text-muted-foreground/50">•</span> <span className="text-muted-foreground font-normal">INV-001</span>
                                             </div>
                                         </div>
+                                        <div className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">Draft</div>
                                     </div>
                                     <div className="p-8">
-                                        <div className="text-4xl font-serif text-foreground mb-8">R 5,278.50</div>
-                                        <div className="h-32 flex items-end gap-1.5 mb-8">
-                                            {[20, 35, 25, 50, 30, 45, 40, 60, 50, 65, 40, 75, 55, 70, 60, 80].map((h, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="flex-1 bg-primary/20 dark:bg-primary/10 rounded-t hover:bg-primary/30 transition-colors"
-                                                    style={{ height: `${h}%` }}
-                                                />
-                                            ))}
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div>
+                                                <div className="text-xs text-muted-foreground mb-1">Bill To</div>
+                                                <div className="text-sm font-medium text-foreground">Acme Corp</div>
+                                                <div className="text-xs text-muted-foreground">john@acme.co.za</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-xs text-muted-foreground mb-1">Amount Due</div>
+                                                <div className="text-2xl font-serif text-foreground">R 4,500.00</div>
+                                            </div>
                                         </div>
-                                        <div className="space-y-3">
+                                        <div className="space-y-2 mb-6">
                                             {[
-                                                { client: "Acme Corp", amount: "R 2,500.00", status: "Paid" },
-                                                { client: "TechStart", amount: "R 1,800.00", status: "Pending" },
-                                            ].map((invoice, i) => (
-                                                <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
-                                                    <span className="text-sm text-muted-foreground">{invoice.client}</span>
-                                                    <div className="flex items-center gap-4">
-                                                        <span className="text-sm text-foreground">{invoice.amount}</span>
-                                                        <span
-                                                            className={`text-[10px] px-2 py-0.5 rounded uppercase tracking-wider ${
-                                                                invoice.status === "Paid" ? "bg-success/20 text-success dark:bg-success/10" : "bg-muted text-muted-foreground"
-                                                            }`}
-                                                        >
-                                                            {invoice.status}
-                                                        </span>
-                                                    </div>
+                                                { item: "Website Design", qty: "1", rate: "R 3,000.00", amount: "R 3,000.00" },
+                                                { item: "Logo Design", qty: "1", rate: "R 1,500.00", amount: "R 1,500.00" },
+                                            ].map((line, i) => (
+                                                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border text-sm">
+                                                    <span className="text-foreground">{line.item}</span>
+                                                    <span className="text-foreground font-medium">{line.amount}</span>
                                                 </div>
                                             ))}
+                                        </div>
+                                        <div className="flex justify-between items-center pt-4 border-t border-border">
+                                            <span className="text-sm text-muted-foreground">Total (incl. VAT)</span>
+                                            <span className="text-lg font-semibold text-foreground">R 4,500.00</span>
                                         </div>
                                     </div>
                                 </div>
@@ -442,7 +438,7 @@ export default function LandingPage() {
                         {/* Free */}
                         <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
                             <div className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium mb-6">Free Forever</div>
-                            <h3 className="text-2xl font-medium text-foreground mb-6">Get started for free</h3>
+                            <h3 className="text-2xl font-medium text-foreground mb-6">Make your first invoice — free</h3>
                             <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
                                 Everything you need to create and send professional invoices. No credit card required.
                             </p>
@@ -454,8 +450,8 @@ export default function LandingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/login" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                Start for free
+                            <Link href="/try" className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
+                                Create an Invoice Now
                                 <IconArrowRight className="h-4 w-4" />
                             </Link>
                         </div>

@@ -190,7 +190,7 @@ export default function ClientPortalPost() {
                             </Button>
                         </Link>
                         <Link href="/login">
-                            <Button variant="outline">Try Illumi Free</Button>
+                            <Button variant="outline">Create an Invoice Now</Button>
                         </Link>
                     </div>
                 </div>
@@ -205,7 +205,7 @@ export default function ClientPortalPost() {
                     </p>
                     <Link href="/login">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                            Get Started Free
+                            Create My First Invoice
                             <IconArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                     </Link>
