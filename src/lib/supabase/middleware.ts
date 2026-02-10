@@ -15,6 +15,7 @@ export async function updateSession(request: NextRequest) {
         '/auth',
         '/view',
         '/pay',
+        '/landing-page',
         '/contact',
         '/pricing',
         '/privacy',

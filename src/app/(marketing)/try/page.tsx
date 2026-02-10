@@ -105,7 +105,7 @@ export default function TryInvoicePage() {
 
             {/* Signup prompt modal */}
             {showSignupPrompt && (
-                <div className="fixed inset-0 z-[100] bg-black/60 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-100 bg-black/60 flex items-center justify-center p-4">
                     <div className="bg-card border border-border rounded-2xl p-8 max-w-md w-full text-center">
                         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
                             <IconCheck className="w-8 h-8 text-primary" />

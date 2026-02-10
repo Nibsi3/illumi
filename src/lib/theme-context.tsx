@@ -13,8 +13,8 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-    theme: 'light',
-    themePreference: 'light',
+    theme: 'dark',
+    themePreference: 'dark',
     setTheme: () => {},
     toggleTheme: () => {},
 })
@@ -30,8 +30,8 @@ function getSystemTheme(): Theme {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const storageKey = 'illumi_theme'
-    const [themePreference, setThemePreference] = useState<ThemePreference>('light')
-    const [resolvedTheme, setResolvedTheme] = useState<Theme>('light')
+    const [themePreference, setThemePreference] = useState<ThemePreference>('dark')
+    const [resolvedTheme, setResolvedTheme] = useState<Theme>('dark')
 
     const applyThemeClass = useCallback((nextTheme: Theme) => {
         if (nextTheme === 'dark') {
@@ -55,13 +55,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             const stored = window.localStorage.getItem(storageKey) as ThemePreference | null
             const preference: ThemePreference = stored === 'light' || stored === 'dark' || stored === 'system' 
                 ? stored 
-                : 'system'
+                : 'dark'
             setThemePreference(preference)
             const resolved = resolveTheme(preference)
             setResolvedTheme(resolved)
             applyThemeClass(resolved)
         } catch {
-            const resolved = resolveTheme('system')
+            const resolved = resolveTheme('dark')
             setResolvedTheme(resolved)
             applyThemeClass(resolved)
         }
