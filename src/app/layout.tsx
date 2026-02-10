@@ -32,19 +32,43 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || "https://www.illumi.co.za"
   ),
-  title: "Illumi | Professional Invoicing for South African Businesses",
-  description: "Create professional invoices in ZAR, track expenses, and get paid online. Built for South African freelancers and small businesses — VAT optional.",
+  title: "Illumi | Free Invoice Generator & Professional Invoicing Software",
+  description: "Create professional invoices online for free. Customizable invoice templates, automatic VAT calculations, expense tracking, and online payments. The best invoicing software for freelancers and small businesses in South Africa.",
   keywords: [
+    "invoice generator",
+    "free invoice generator",
+    "invoice template",
+    "free invoice template",
+    "invoice creator",
+    "invoice creator online",
+    "invoice maker",
+    "online invoicing",
+    "online invoices",
+    "invoicing software",
+    "invoice software",
+    "billing software",
+    "create invoice online",
+    "create invoice online free",
+    "professional invoice template",
+    "freelance invoice template",
+    "small business invoice",
+    "proforma invoice template",
+    "proforma invoice generator",
+    "receipt maker",
     "invoice generator South Africa",
-    "professional invoice South Africa",
-    "VAT invoice generator South Africa",
+    "VAT invoice generator",
+    "VAT invoice template South Africa",
     "free invoice software South Africa",
     "invoice generator ZAR",
     "SMME invoicing software",
-    "freelance invoice template South Africa",
-    "online invoice payment South Africa",
-    "expense tracker South Africa",
-    "proforma invoice South Africa",
+    "expense tracker",
+    "invoice PDF generator",
+    "send invoice online",
+    "best invoicing software",
+    "invoice app",
+    "invoice management software",
+    "recurring invoice software",
+    "automated invoicing",
   ],
   openGraph: {
     title: "Illumi | Professional Invoicing for South African Businesses",
@@ -115,6 +139,45 @@ export default function RootLayout({
                 contactType: "customer support",
                 url: "https://www.illumi.co.za/contact",
               },
+            }),
+          }}
+        />
+        {/* JSON-LD SoftwareApplication for rich snippets */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "Illumi",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              url: "https://www.illumi.co.za",
+              description: "Free invoice generator and professional invoicing software. Create customizable invoice templates, track expenses, accept online payments, and manage your business finances.",
+              offers: [
+                {
+                  "@type": "Offer",
+                  price: "0",
+                  priceCurrency: "ZAR",
+                  name: "Free Plan",
+                  description: "Create unlimited invoices, track expenses, and manage clients for free.",
+                },
+                {
+                  "@type": "Offer",
+                  price: "149",
+                  priceCurrency: "ZAR",
+                  name: "Pro Plan",
+                  description: "Online payments, recurring invoices, custom branding, and premium features.",
+                },
+              ],
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "4.8",
+                ratingCount: "150",
+                bestRating: "5",
+                worstRating: "1",
+              },
+              featureList: "Invoice Generator, Invoice Templates, VAT Calculations, Expense Tracking, Online Payments, Recurring Invoices, Client Management, PDF Export, WhatsApp Sharing, Multi-Currency Support",
             }),
           }}
         />

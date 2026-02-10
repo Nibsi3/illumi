@@ -123,7 +123,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const isSeoContent = path === '/glossary' || path === '/what-is-an-invoice' || path === '/blog'
     const isSolutions = path === '/for-business' || path === '/for-individuals'
     const isComparison = path.startsWith('/compare/')
-    const isSeoLandingPage = path === '/invoice-software-south-africa' || path === '/online-invoicing' || path === '/invoice-management-system' || path === '/billing-invoicing-software'
+    const isSeoLandingPage = path === '/invoice-software-south-africa' || path === '/online-invoicing' || path === '/invoice-management-system' || path === '/billing-invoicing-software' || path === '/invoice-template' || path === '/invoice-creator' || path === '/invoice-maker' || path === '/free-invoice-generator' || path === '/proforma-invoice-template' || path === '/freelance-invoice-template'
     const isBlogPost = path.startsWith('/blog/') && path !== '/blog'
 
     let changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']
