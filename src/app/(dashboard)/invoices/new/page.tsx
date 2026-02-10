@@ -68,6 +68,7 @@ import { Switch } from "@/components/ui/switch"
 import { format, parseISO } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient"
+import type { User } from "@supabase/supabase-js"
 
 import { CreateClientModal } from "../components/create-client-modal"
 import { CreateProductModal } from "../components/create-product-modal"
@@ -240,7 +241,12 @@ export default function NewInvoicePage() {
     const [products, setProducts] = useState<any[]>([])
     const [customerId, setCustomerId] = useState<string | null>(null)
     const [isSaving, setIsSaving] = useState(false)
+    const [currentUser, setCurrentUser] = useState<User | null>(null)
+    const [showSignupModal, setShowSignupModal] = useState(false)
     const supabase = createClient()
+
+    // LocalStorage key for draft invoice
+    const DRAFT_KEY = "illumi_invoice_draft"
 
     // Helper functions restored
     const addTask = () => {
@@ -281,12 +287,85 @@ export default function NewInvoicePage() {
         }
     }
 
+    // Save draft to localStorage
+    const saveDraftToLocalStorage = () => {
+        const draft = {
+            invoiceNumber,
+            clientName,
+            clientAddress,
+            clientEmail,
+            clientPhone,
+            customerId,
+            fromName,
+            fromEmail,
+            fromAddress,
+            issueDate,
+            dueDate,
+            tasks,
+            invoiceNote,
+            bankName,
+            accountName,
+            accountNumber,
+            branchCode,
+            paymentMethod,
+            template,
+            invoiceMode,
+            logo,
+            savedAt: Date.now(),
+        }
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(draft))
+    }
+
+    // Restore draft from localStorage
+    const restoreDraftFromLocalStorage = () => {
+        try {
+            const saved = localStorage.getItem(DRAFT_KEY)
+            if (!saved) return false
+            const draft = JSON.parse(saved)
+            // Only restore if saved within last 24 hours
+            if (Date.now() - draft.savedAt > 24 * 60 * 60 * 1000) {
+                localStorage.removeItem(DRAFT_KEY)
+                return false
+            }
+            if (draft.invoiceNumber) setInvoiceNumber(draft.invoiceNumber)
+            if (draft.clientName) setClientName(draft.clientName)
+            if (draft.clientAddress) setClientAddress(draft.clientAddress)
+            if (draft.clientEmail) setClientEmail(draft.clientEmail)
+            if (draft.clientPhone) setClientPhone(draft.clientPhone)
+            if (draft.customerId) setCustomerId(draft.customerId)
+            if (draft.fromName) setFromName(draft.fromName)
+            if (draft.fromEmail) setFromEmail(draft.fromEmail)
+            if (draft.fromAddress) setFromAddress(draft.fromAddress)
+            if (draft.issueDate) setIssueDate(draft.issueDate)
+            if (draft.dueDate) setDueDate(draft.dueDate)
+            if (draft.tasks?.length) setTasks(draft.tasks)
+            if (draft.invoiceNote) setInvoiceNote(draft.invoiceNote)
+            if (draft.bankName) setBankName(draft.bankName)
+            if (draft.accountName) setAccountName(draft.accountName)
+            if (draft.accountNumber) setAccountNumber(draft.accountNumber)
+            if (draft.branchCode) setBranchCode(draft.branchCode)
+            if (draft.paymentMethod) setPaymentMethod(draft.paymentMethod)
+            if (draft.template) setTemplate(draft.template)
+            if (draft.invoiceMode) setInvoiceMode(draft.invoiceMode)
+            if (draft.logo) setLogo(draft.logo)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    // Clear draft from localStorage
+    const clearDraftFromLocalStorage = () => {
+        localStorage.removeItem(DRAFT_KEY)
+    }
+
     useEffect(() => {
         const checkAuth = async () => {
             const { data: { user } } = await supabase.auth.getUser()
-            if (!user) {
-                router.push('/login')
-                return
+            setCurrentUser(user)
+            // Restore draft if user just logged in
+            if (user) {
+                restoreDraftFromLocalStorage()
             }
         }
 
@@ -313,12 +392,22 @@ export default function NewInvoicePage() {
             setInvoiceNumber(generateUniqueInvoiceNumber())
         }
 
+        // Restore draft on initial load (for guests returning after browsing)
+        restoreDraftFromLocalStorage()
+
         checkAuth()
         fetchCustomers()
         fetchProducts()
     }, [router, supabase, activeWorkspace, invoiceNumber])
 
     const handleCreate = async (type: string) => {
+        // Check if user is authenticated before any save action
+        if (!currentUser) {
+            saveDraftToLocalStorage()
+            setShowSignupModal(true)
+            return
+        }
+
         if (type === 'create') {
             if (!canDraft) {
                 toast.error("Draft not available", { description: "Only standard invoices can be saved as a draft." })
@@ -365,8 +454,10 @@ export default function NewInvoicePage() {
             debugLog('[Invoice Save] Auth check:', { userId: user?.id, userError })
 
             if (userError || !user) {
-                toast.error("Session expired. Please log in again.")
-                router.push('/login')
+                // User not logged in - save draft and show signup modal
+                saveDraftToLocalStorage()
+                setShowSignupModal(true)
+                setIsSaving(false)
                 return
             }
 
@@ -702,6 +793,9 @@ export default function NewInvoicePage() {
                 }
 
                 debugLog('[Invoice Save] SUCCESS! Invoice created:', invoice?.id)
+
+                // Clear draft from localStorage after successful save
+                clearDraftFromLocalStorage()
 
                 toast.success("Invoice saved successfully", {
                     description: `Invoice ${invoiceNumber} has been created.`
@@ -1812,6 +1906,43 @@ export default function NewInvoicePage() {
                 </Suspense>
             )}
 
+
+            {/* Signup Modal - shown when unauthenticated user tries to send/save */}
+            {showSignupModal && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-card border border-border rounded-2xl p-8 max-w-md w-full text-center shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                            <Check className="w-8 h-8 text-primary" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-foreground mb-2">Your invoice looks great!</h2>
+                        <p className="text-muted-foreground mb-6">
+                            Create a free account to save this invoice, send it to your client, and get paid online. Your invoice will be waiting for you.
+                        </p>
+                        <div className="space-y-3">
+                            <Link href="/login?mode=sign_up&next=/invoices/new" className="block">
+                                <Button className="w-full h-12 bg-primary text-primary-foreground text-sm font-medium">
+                                    <Send className="w-4 h-4 mr-2" />
+                                    Create Free Account & Send Invoice
+                                </Button>
+                            </Link>
+                            <Link href="/login?mode=sign_in&next=/invoices/new" className="block">
+                                <Button variant="outline" className="w-full h-10 text-sm">
+                                    I already have an account
+                                </Button>
+                            </Link>
+                            <button
+                                onClick={() => setShowSignupModal(false)}
+                                className="text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
+                            >
+                                Keep editing
+                            </button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-6">
+                            Free forever • No credit card • Takes 10 seconds with Google
+                        </p>
+                    </div>
+                </div>
+            )}
 
             <CreateClientModal
                 isOpen={isClientModalOpen}

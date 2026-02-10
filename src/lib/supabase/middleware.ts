@@ -18,6 +18,7 @@ export async function updateSession(request: NextRequest) {
         '/landing-page',
         '/contact',
         '/pricing',
+        '/invoices/new',
         '/privacy',
         '/terms',
         '/terms-and-conditions',

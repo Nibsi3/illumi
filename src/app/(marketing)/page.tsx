@@ -218,7 +218,7 @@ export default function LandingPage() {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                                <Link href="/try">
+                                <Link href="/invoices/new">
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full sm:w-auto"
@@ -450,7 +450,7 @@ export default function LandingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/try" className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
+                            <Link href="/invoices/new" className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors">
                                 Create an Invoice Now
                                 <IconArrowRight className="h-4 w-4" />
                             </Link>
