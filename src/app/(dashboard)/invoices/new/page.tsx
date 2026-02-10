@@ -215,6 +215,12 @@ export default function NewInvoicePage() {
     // Note
     const [invoiceNote, setInvoiceNote] = useState("")
 
+    // Banking details (editable per-invoice, initialized from settings)
+    const [bankName, setBankName] = useState(settings.bankName ?? "")
+    const [accountName, setAccountName] = useState(settings.accountName ?? "")
+    const [accountNumber, setAccountNumber] = useState(settings.accountNumber ?? "")
+    const [branchCode, setBranchCode] = useState(settings.branchCode ?? "")
+
     // Logo
     const [logo, setLogo] = useState<string | null>(settings.logo ?? null)
 
@@ -224,7 +230,11 @@ export default function NewInvoicePage() {
         if (settings.fromEmail && fromEmail === "hello@illumi.co.za") setFromEmail(settings.fromEmail)
         if (settings.companyName && fromName === defaultFromName) setFromName(settings.companyName)
         if (settings.companyAddress && fromAddress === defaultFromAddress) setFromAddress(settings.companyAddress)
-    }, [settings.logo, settings.fromEmail, settings.companyName, settings.companyAddress])
+        if (settings.bankName && !bankName) setBankName(settings.bankName)
+        if (settings.accountName && !accountName) setAccountName(settings.accountName)
+        if (settings.accountNumber && !accountNumber) setAccountNumber(settings.accountNumber)
+        if (settings.branchCode && !branchCode) setBranchCode(settings.branchCode)
+    }, [settings.logo, settings.fromEmail, settings.companyName, settings.companyAddress, settings.bankName, settings.accountName, settings.accountNumber, settings.branchCode])
 
     const [customers, setCustomers] = useState<any[]>([])
     const [products, setProducts] = useState<any[]>([])
@@ -432,10 +442,10 @@ export default function NewInvoicePage() {
                 invoice_mode: invoiceMode,
                 from_email: fromEmail,
                 company_website: settings.companyWebsite || null,
-                bank_name: settings.bankName || null,
-                account_name: settings.accountName || null,
-                account_number: settings.accountNumber || null,
-                branch_code: settings.branchCode || null,
+                bank_name: bankName || null,
+                account_name: accountName || null,
+                account_number: accountNumber || null,
+                branch_code: branchCode || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 is_recurring: Boolean(isRecurring),
                 recurring_interval: isRecurring ? recurringIntervalForDb : null,
@@ -463,10 +473,10 @@ export default function NewInvoicePage() {
                 payment_provider: resolvedPaymentProvider,
                 from_email: fromEmail,
                 company_website: settings.companyWebsite || null,
-                bank_name: settings.bankName || null,
-                account_name: settings.accountName || null,
-                account_number: settings.accountNumber || null,
-                branch_code: settings.branchCode || null,
+                bank_name: bankName || null,
+                account_name: accountName || null,
+                account_number: accountNumber || null,
+                branch_code: branchCode || null,
                 send_copy_to_self: Boolean(settings.sendInvoiceCopyToSelf),
                 hide_illumi_branding: Boolean(isPro && settings.hideIllumiBranding),
             }
@@ -1446,8 +1456,8 @@ export default function NewInvoicePage() {
                                 {/* Summary & Totals */}
                                 {/* Summary & Totals */}
                                 <div id="invoice-summary" />
-                                <div className={cn("grid grid-cols-12 gap-8 mt-20 pt-12 border-t", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
-                                    <div className="col-span-8 flex flex-col gap-6">
+                                <div className={cn("grid grid-cols-1 md:grid-cols-12 gap-8 mt-12 sm:mt-20 pt-8 sm:pt-12 border-t", invoiceMode === "light" ? "border-neutral-200" : "border-neutral-700")}>
+                                    <div className="md:col-span-8 flex flex-col gap-6">
                                         <div className="flex flex-col gap-4">
                                             <span className={cn("text-[10px] font-bold uppercase tracking-widest", invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Note</span>
                                             <textarea
@@ -1529,22 +1539,47 @@ export default function NewInvoicePage() {
                                             </div>
 
                                             {paymentMethod !== 'paygate' && (
-                                                <div className={cn("space-y-1 text-sm font-medium", invoiceMode === "light" ? "text-neutral-600" : "text-neutral-400")}>
-                                                    {settings.accountName && <p>Account name: {settings.accountName}</p>}
-                                                    {settings.accountNumber && <p>Account number: {settings.accountNumber}</p>}
-                                                    {settings.bankName && <p>Bank: {settings.bankName}</p>}
-                                                    {settings.branchCode && <p>Branch code: {settings.branchCode}</p>}
-                                                    {!settings.accountName && !settings.accountNumber && !settings.bankName && !settings.branchCode && (
-                                                        <p>
-                                                            Enter your banking details in <Link href="/settings/bank" className="underline underline-offset-4">Settings</Link> to show them on invoices.
-                                                        </p>
-                                                    )}
+                                                <div className="space-y-3 mt-2">
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                        <div>
+                                                            <Input
+                                                                value={bankName}
+                                                                onChange={(e) => setBankName(e.target.value)}
+                                                                placeholder="Bank name"
+                                                                className={cn("h-9 text-sm bg-transparent border-none p-0 placeholder:text-neutral-500 focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-300")}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Input
+                                                                value={accountName}
+                                                                onChange={(e) => setAccountName(e.target.value)}
+                                                                placeholder="Account name"
+                                                                className={cn("h-9 text-sm bg-transparent border-none p-0 placeholder:text-neutral-500 focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-300")}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Input
+                                                                value={accountNumber}
+                                                                onChange={(e) => setAccountNumber(e.target.value)}
+                                                                placeholder="Account number"
+                                                                className={cn("h-9 text-sm bg-transparent border-none p-0 placeholder:text-neutral-500 focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-300")}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Input
+                                                                value={branchCode}
+                                                                onChange={(e) => setBranchCode(e.target.value)}
+                                                                placeholder="Branch code"
+                                                                className={cn("h-9 text-sm bg-transparent border-none p-0 placeholder:text-neutral-500 focus-visible:ring-0", invoiceMode === "light" ? "text-neutral-700" : "text-neutral-300")}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
 
-                                    <div className="col-span-4 flex flex-col gap-6">
+                                    <div className="md:col-span-4 flex flex-col gap-6">
                                         <div className="flex justify-between items-center text-sm">
                                             <span className={cn(invoiceMode === "light" ? "text-neutral-500" : "text-neutral-400")}>Subtotal</span>
                                             <span className={cn("invoice-font-amount", invoiceMode === "light" ? "text-black" : "text-neutral-100")}>{calculateSubtotal().toLocaleString('en-ZA', { style: 'currency', currency: currency })}</span>
@@ -1686,10 +1721,10 @@ export default function NewInvoicePage() {
                             hideIllumiBranding: Boolean(isPro && settings.hideIllumiBranding),
                             companyWebsite: settings.companyWebsite,
                             paymentProvider: isPro && paymentMethod === 'paygate' ? (activePaymentProvider || 'payfast') : null,
-                            bankName: settings.bankName,
-                            accountName: settings.accountName,
-                            accountNumber: settings.accountNumber,
-                            branchCode: settings.branchCode,
+                            bankName: bankName,
+                            accountName: accountName,
+                            accountNumber: accountNumber,
+                            branchCode: branchCode,
                             fromName,
                             fromAddress,
                             clientName,
