@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { AnalyticsTracker } from "@/components/analytics-tracker"
-import { MobileAppPrompt } from "@/components/mobile-app-prompt"
 import { SettingsProvider } from "@/lib/settings-context"
 import { WorkspaceProvider } from "@/lib/workspace-context"
 import { QueryProvider } from "@/lib/query-provider"
@@ -18,7 +17,6 @@ export default function DashboardLayout({
                 <SettingsProvider>
                     <AppSidebar>
                         <AnalyticsTracker />
-                        <MobileAppPrompt />
                         {children}
                     </AppSidebar>
                 </SettingsProvider>
@@ -26,4 +24,3 @@ export default function DashboardLayout({
         </QueryProvider>
     )
 }
-
