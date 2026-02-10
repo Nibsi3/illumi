@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
+import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon, IconDeviceMobile } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { useTheme } from "@/lib/theme-context"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -147,7 +147,6 @@ export function MarketingHeader() {
                         </div>
 
                         <div className="max-h-[calc(100vh-7rem)] overflow-auto px-4 py-3 space-y-3">
-                            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Features</div>
                             {featureDropdownItems.map((item) => (
                                 <Link
                                     key={item.name}
@@ -173,16 +172,40 @@ export function MarketingHeader() {
                             </div>
 
                             <div className="pt-3 border-t border-border space-y-3">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        toggleTheme()
-                                    }}
-                                    className="w-full flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                {/* Theme toggle switch */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Dark mode</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => toggleTheme()}
+                                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                                            theme === 'dark' ? 'bg-primary' : 'bg-muted'
+                                        }`}
+                                        aria-label="Toggle theme"
+                                    >
+                                        <span
+                                            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform flex items-center justify-center ${
+                                                theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
+                                            }`}
+                                        >
+                                            {theme === 'dark' ? (
+                                                <IconMoon className="w-3 h-3 text-primary" />
+                                            ) : (
+                                                <IconSun className="w-3 h-3 text-amber-500" />
+                                            )}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {/* Get the App button */}
+                                <Link
+                                    href="/mobile-app"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                                 >
-                                    {theme === 'dark' ? <IconSun className="h-4 w-4" /> : <IconMoon className="h-4 w-4" />}
-                                    <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
-                                </button>
+                                    <IconDeviceMobile className="h-4 w-4" />
+                                    <span>Get the App</span>
+                                </Link>
 
                                 {/* Auth buttons */}
                                 <div className="grid grid-cols-2 gap-3 pt-2">
