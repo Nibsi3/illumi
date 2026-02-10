@@ -393,95 +393,105 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                             </div>
                         </div>
                     )}
-                    {/* Header (Stayed relatively similar but polished) */}
-                    <header className="h-16 flex items-center justify-between px-4 sm:px-6 md:px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50">
-                        <div className="flex items-center gap-6 flex-1">
+                    <header className="h-16 px-4 sm:px-6 md:px-8 backdrop-blur-md bg-background/50 sticky top-0 z-50 flex items-center">
+                        {/* Mobile header: logo left + hamburger right */}
+                        <div className="flex items-center justify-between w-full md:hidden">
+                            <Link href="/overview" className="flex items-center gap-2">
+                                <Image src={theme === 'dark' ? '/logo.png' : '/logo_black.png'} alt="Logo" width={28} height={28} className="object-contain shrink-0" />
+                                <span className="text-sm font-bold">Illumi</span>
+                            </Link>
                             <button
                                 type="button"
                                 onClick={() => setMobileNavOpen(true)}
-                                className="md:hidden -ml-2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                                className="p-3 text-muted-foreground hover:text-foreground transition-colors"
                                 aria-label="Open menu"
                             >
-                                <IconMenu2 className="h-5 w-5" />
-                            </button>
-                            <button 
-                                type="button"
-                                onClick={() => setIsSearchOpen(true)}
-                                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
-                            >
-                                <IconSearch className="h-4 w-4" />
-                                <span className="text-sm font-medium hidden sm:inline">Search anything...</span>
+                                <IconMenu2 className="h-6 w-6" />
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-4">
-                            <ThemeToggle
-                                theme={theme}
-                                onToggle={toggleTheme}
-                                className="hidden sm:inline-flex"
-                            />
-                            <Link href="/settings/billing" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
-                                {subscriptionLoading ? (
-                                    "Loading..."
-                                ) : isSubscribed && daysRemaining !== null ? (
-                                    `Pro Plan · ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`
-                                ) : isSubscribed ? (
-                                    "Pro Plan · Active"
-                                ) : (
-                                    "Free Plan · Upgrade"
-                                )}
-                            </Link>
-                            <Suspense fallback={<div className="w-8 h-8" />}>
-                                <NotificationDropdown />
-                            </Suspense>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button className="outline-none focus:ring-0">
-                                        <Avatar className="h-8 w-8 border border-border hover:border-muted-foreground transition-colors cursor-pointer">
-                                            <AvatarImage src={headerLogo} />
-                                            <AvatarFallback className="bg-accent text-[10px] font-bold text-foreground border border-border">
-                                                {initials}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[240px] bg-popover border border-border text-popover-foreground p-2 shadow-2xl rounded-xl mt-2 animate-in fade-in zoom-in-95">
-                                    <DropdownMenuLabel className="px-3 py-2">
-                                        <div className="flex flex-col">
-                                            <span className="text-xs font-bold text-foreground">{userName}</span>
-                                            <span className="text-[10px] text-muted-foreground font-sans truncate">{userEmail}</span>
+                        {/* Desktop header */}
+                        <div className="hidden md:flex items-center justify-between w-full">
+                            <div className="flex items-center gap-6 flex-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors cursor-pointer max-w-md w-full bg-transparent border-0 outline-none"
+                                >
+                                    <IconSearch className="h-4 w-4" />
+                                    <span className="text-sm font-medium">Search anything...</span>
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <ThemeToggle
+                                    theme={theme}
+                                    onToggle={toggleTheme}
+                                    className="hidden sm:inline-flex"
+                                />
+                                <Link href="/settings/billing" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                                    {subscriptionLoading ? (
+                                        "Loading..."
+                                    ) : isSubscribed && daysRemaining !== null ? (
+                                        `Pro Plan · ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`
+                                    ) : isSubscribed ? (
+                                        "Pro Plan · Active"
+                                    ) : (
+                                        "Free Plan · Upgrade"
+                                    )}
+                                </Link>
+                                <Suspense fallback={<div className="w-8 h-8" />}>
+                                    <NotificationDropdown />
+                                </Suspense>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button className="outline-none focus:ring-0">
+                                            <Avatar className="h-8 w-8 border border-border hover:border-muted-foreground transition-colors cursor-pointer">
+                                                <AvatarImage src={headerLogo} />
+                                                <AvatarFallback className="bg-accent text-[10px] font-bold text-foreground border border-border">
+                                                    {initials}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-[240px] bg-popover border border-border text-popover-foreground p-2 shadow-2xl rounded-xl mt-2 animate-in fade-in zoom-in-95">
+                                        <DropdownMenuLabel className="px-3 py-2">
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-bold text-foreground">{userName}</span>
+                                                <span className="text-[10px] text-muted-foreground font-sans truncate">{userEmail}</span>
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator className="bg-border mx-2" />
+                                        <div className="py-1">
+                                            <Link href="/settings/account">
+                                                <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                    <IconUserCircle className="h-4 w-4 text-muted-foreground" />
+                                                    <span className="text-xs">Account Settings</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link href="/settings/support">
+                                                <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                    <IconMessageCircle className="h-4 w-4 text-muted-foreground" />
+                                                    <span className="text-xs">Support</span>
+                                                </DropdownMenuItem>
+                                            </Link>
+                                            <Link href="/settings/members">
+                                                <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                    <IconUsersGroup className="h-4 w-4 text-muted-foreground" />
+                                                    <span className="text-xs">Manage Team</span>
+                                                </DropdownMenuItem>
+                                            </Link>
                                         </div>
-                                    </DropdownMenuLabel>
-                                    <DropdownMenuSeparator className="bg-border mx-2" />
-                                    <div className="py-1">
-                                        <Link href="/settings/account">
-                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconUserCircle className="h-4 w-4 text-muted-foreground" />
-                                                <span className="text-xs">Account Settings</span>
+                                        <DropdownMenuSeparator className="bg-border mx-2" />
+                                        <div className="py-1">
+                                            <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 focus:text-red-500 text-muted-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
+                                                <IconLogout className="h-4 w-4" />
+                                                <span className="text-xs">Sign out</span>
                                             </DropdownMenuItem>
-                                        </Link>
-                                        <Link href="/settings/support">
-                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconMessageCircle className="h-4 w-4 text-muted-foreground" />
-                                                <span className="text-xs">Support</span>
-                                            </DropdownMenuItem>
-                                        </Link>
-                                        <Link href="/settings/members">
-                                            <DropdownMenuItem className="focus:bg-accent focus:text-accent-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                                <IconUsersGroup className="h-4 w-4 text-muted-foreground" />
-                                                <span className="text-xs">Manage Team</span>
-                                            </DropdownMenuItem>
-                                        </Link>
-                                    </div>
-                                    <DropdownMenuSeparator className="bg-border mx-2" />
-                                    <div className="py-1">
-                                        <DropdownMenuItem onClick={handleSignOut} className="focus:bg-red-500/10 focus:text-red-500 text-muted-foreground cursor-pointer px-3 py-2 rounded-lg flex items-center gap-3">
-                                            <IconLogout className="h-4 w-4" />
-                                            <span className="text-xs">Sign out</span>
-                                        </DropdownMenuItem>
-                                    </div>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                                        </div>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
                         </div>
                     </header>
 
@@ -514,6 +524,21 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                             </Link>
                         </div>
 
+                        {!user && (
+                            <div className="grid grid-cols-2 gap-3">
+                                <Link href="/login?mode=sign_in" onClick={() => setMobileNavOpen(false)}>
+                                    <Button variant="outline" className="w-full h-10">
+                                        Log in
+                                    </Button>
+                                </Link>
+                                <Link href="/login?mode=sign_up" onClick={() => setMobileNavOpen(false)}>
+                                    <Button className="w-full h-10 bg-primary text-primary-foreground hover:bg-primary/90">
+                                        Sign up
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+
                         <div className="space-y-1">
                             {links.map((link) => (
                                 <Link
@@ -533,20 +558,22 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                             ))}
                         </div>
 
-                        <div className="pt-4 border-t border-border">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    setMobileNavOpen(false)
-                                    handleSignOut()
-                                }}
-                                className="w-full justify-start"
-                            >
-                                <IconLogout className="h-4 w-4 mr-2" />
-                                Sign out
-                            </Button>
-                        </div>
+                        {user && (
+                            <div className="pt-4 border-t border-border">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                        setMobileNavOpen(false)
+                                        handleSignOut()
+                                    }}
+                                    className="w-full justify-start"
+                                >
+                                    <IconLogout className="h-4 w-4 mr-2" />
+                                    Sign out
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </SheetContent>
             </Sheet>

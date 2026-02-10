@@ -55,8 +55,12 @@ export default function LoginPage() {
         try {
             const params = new URLSearchParams(window.location.search)
             const next = params.get('next')
+            const initialMode = params.get('mode')
             if (next && next.startsWith('/')) {
                 setNextPath(next)
+            }
+            if (initialMode === 'sign_in' || initialMode === 'sign_up') {
+                setMode(initialMode)
             }
         } catch {
             // ignore
