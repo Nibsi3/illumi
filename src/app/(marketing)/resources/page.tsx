@@ -95,6 +95,18 @@ const resourceCategories = [
                 description: "Get suggestions to improve your invoice templates",
                 href: "/resources/template-analyzer",
             },
+            {
+                title: "Invoice Number Generator",
+                description: "Generate professional sequential, date-based, or random invoice numbers in bulk",
+                href: "/resources/invoice-number-generator",
+                badge: "Interactive",
+            },
+            {
+                title: "Business Name Generator",
+                description: "Generate creative SA-inspired business name ideas for your freelance brand",
+                href: "/resources/business-name-generator",
+                badge: "Interactive",
+            },
         ],
     },
     {

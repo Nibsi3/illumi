@@ -98,6 +98,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* JSON-LD Organization structured data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Illumi",
+              url: "https://www.illumi.co.za",
+              logo: "https://www.illumi.co.za/logo.png",
+              description: "Professional invoicing software for South African freelancers and small businesses. Create invoices in ZAR, track expenses, and get paid online.",
+              sameAs: [],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "customer support",
+                url: "https://www.illumi.co.za/contact",
+              },
+            }),
+          }}
+        />
         {/* Google Ads Conversion Tracking */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17895371637" />
         <script

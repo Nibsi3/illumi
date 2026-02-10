@@ -89,8 +89,13 @@ export async function GET(req: Request) {
         // Fetch keys using service role (return actual keys so users can see/edit them)
         const providerKeys: Record<string, any> = {}
         
-        if (serviceClient && settings?.connected_providers?.length) {
-            const providers = settings.connected_providers
+        // Fetch keys for all connected providers AND active_provider as safety net
+        const providersToFetch = new Set<string>([
+            ...(settings?.connected_providers || []),
+            ...(settings?.active_provider ? [settings.active_provider] : []),
+        ])
+        if (serviceClient && providersToFetch.size > 0) {
+            const providers = Array.from(providersToFetch)
             const { data: allKeys } = await serviceClient
                 .from('workspace_paygate_keys')
                 .select('provider, mode, key_name, key_value')
@@ -185,18 +190,21 @@ export async function POST(req: Request) {
         // Use service role for writing (bypasses RLS for keys table)
         const serviceClient = getServiceClient()
 
-        // Upsert settings
-        console.log('[Paygate Config POST] Saving settings:', { workspace_id, active_provider, test_mode, connected_providers })
+        // Build partial update — only include fields explicitly sent in the request
+        // to avoid overwriting Supabase with stale/default values from the client
+        const settingsPayload: Record<string, any> = {
+            workspace_id,
+            updated_at: new Date().toISOString()
+        }
+        if (active_provider !== undefined) settingsPayload.active_provider = active_provider || provider || 'payfast'
+        if (test_mode !== undefined) settingsPayload.test_mode = test_mode === false ? false : true
+        if (connected_providers !== undefined) settingsPayload.connected_providers = connected_providers || []
+
+        console.log('[Paygate Config POST] Saving settings:', settingsPayload)
         
         const { error: settingsError } = await serviceClient
             .from('workspace_paygate_settings')
-            .upsert({
-                workspace_id,
-                active_provider: active_provider || provider || 'payfast',
-                test_mode: test_mode === false ? false : (test_mode === true ? true : true),
-                connected_providers: connected_providers || [],
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'workspace_id' })
+            .upsert(settingsPayload, { onConflict: 'workspace_id' })
 
         if (settingsError) {
             console.error('[Paygate Config POST] Settings error:', settingsError)
@@ -215,18 +223,6 @@ export async function POST(req: Request) {
                 }
             }
 
-            // Backward compatible keys (used historically across providers)
-            add('test', 'merchant_id', keys.testMerchantId)
-            add('test', 'secret_key', keys.testSecretKey)
-            add('live', 'merchant_id', keys.liveMerchantId)
-            add('live', 'secret_key', keys.liveSecretKey)
-
-            // Yoco: test/live public + secret
-            add('test', 'public_key', keys.testPublicKey)
-            add('test', 'secret_key', keys.testSecretKey || keys.testSecret)
-            add('live', 'public_key', keys.livePublicKey)
-            add('live', 'secret_key', keys.liveSecretKey || keys.liveSecret)
-
             // PayFast: separate test and live merchant id + merchant key + optional passphrase
             if (provider === 'payfast') {
                 add('test', 'merchant_id', keys.testMerchantId || keys.merchantId)
@@ -237,6 +233,12 @@ export async function POST(req: Request) {
 
                 add('test', 'passphrase', keys.passphrase || keys.testPassphrase)
                 add('live', 'passphrase', keys.passphrase || keys.livePassphrase)
+            } else if (provider === 'yoco') {
+                // Yoco: test/live public + secret
+                add('test', 'public_key', keys.testPublicKey)
+                add('test', 'secret_key', keys.testSecretKey || keys.testSecret)
+                add('live', 'public_key', keys.livePublicKey)
+                add('live', 'secret_key', keys.liveSecretKey || keys.liveSecret)
             } else {
                 // Other providers that use merchant_key/passphrase per mode
                 add('test', 'merchant_key', keys.testMerchantKey)

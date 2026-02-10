@@ -131,13 +131,14 @@ export default function PayGatePage() {
         }
     }, [activeWorkspace?.id, setActivePaymentProvider, setConnectedProviders, setProviderKeys])
     
-    // Disconnect all paygates for free users
+    // Disconnect all paygates for free users — only after BOTH subscription
+    // and paygate settings are fully loaded to prevent race-condition wipe
     useEffect(() => {
-        if (!isLoading && !isPro && connectedProviders.length > 0) {
+        if (!isLoading && !isLoadingSettings && !isPro && connectedProviders.length > 0) {
             setConnectedProviders([])
             setActivePaymentProvider(null)
         }
-    }, [isPro, isLoading, connectedProviders.length, setConnectedProviders, setActivePaymentProvider])
+    }, [isPro, isLoading, isLoadingSettings, connectedProviders.length, setConnectedProviders, setActivePaymentProvider])
     const [configuringProvider, setConfiguringProvider] = useState<string | null>(null)
     const [isConnecting, setIsConnecting] = useState(false)
 
@@ -631,15 +632,17 @@ export default function PayGatePage() {
     const persistSettings = async (patch: { active_provider?: string | null; test_mode?: boolean; connected_providers?: string[] }) => {
         if (!activeWorkspace?.id) return
 
+        // Only send fields that are explicitly being changed to avoid
+        // overwriting Supabase with stale React state (root cause of keys reverting)
+        const payload: Record<string, any> = { workspace_id: activeWorkspace.id }
+        if (patch.active_provider !== undefined) payload.active_provider = patch.active_provider
+        if (patch.test_mode !== undefined) payload.test_mode = patch.test_mode
+        if (patch.connected_providers !== undefined) payload.connected_providers = patch.connected_providers
+
         const res = await fetch('/api/paygate/config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                workspace_id: activeWorkspace.id,
-                active_provider: patch.active_provider !== undefined ? patch.active_provider : activeProvider,
-                test_mode: patch.test_mode !== undefined ? patch.test_mode : isTestMode,
-                connected_providers: patch.connected_providers !== undefined ? patch.connected_providers : connectedProviders,
-            })
+            body: JSON.stringify(payload)
         })
 
         const data = await res.json().catch(() => null)

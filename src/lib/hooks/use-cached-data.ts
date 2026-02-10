@@ -52,7 +52,7 @@ export function useInvoice(id: string) {
         queryFn: async () => {
             const { data, error } = await supabase
                 .from("invoices")
-                .select("*")
+                .select("id, invoice_number, customer_id, user_id, workspace_id, status, issue_date, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, payment_provider, is_recurring, recurring_interval, from_email, sent_at, paid_at, created_at")
                 .eq("id", id)
                 .single()
             if (error) throw error
@@ -133,10 +133,11 @@ export function useRecentPayments(limit = 10) {
         queryKey: [...queryKeys.payments(workspaceId || ""), "recent", limit],
         queryFn: async () => {
             if (!workspaceId) return []
+            // payments table has no workspace_id — filter via invoices join
             const { data, error } = await supabase
                 .from("payments")
-                .select("*, invoices(invoice_number, customers(name, email))")
-                .eq("workspace_id", workspaceId)
+                .select("id, invoice_id, amount, currency, provider, status, paid_at, created_at, invoices!inner(invoice_number, workspace_id, customers(name, email))")
+                .eq("invoices.workspace_id", workspaceId)
                 .order("created_at", { ascending: false })
                 .limit(limit)
             if (error) throw error
@@ -148,7 +149,7 @@ export function useRecentPayments(limit = 10) {
 }
 
 // Settings
-export function useSettings() {
+export function useCachedSettings() {
     const { activeWorkspace } = useWorkspace()
     const workspaceId = activeWorkspace?.id
 
@@ -158,7 +159,7 @@ export function useSettings() {
             if (!workspaceId) return null
             const { data, error } = await supabase
                 .from("workspace_settings")
-                .select("*")
+                .select("id, workspace_id, currency, tax_rate, date_format, from_email, company_name, company_website, company_address, bank_name, account_name, account_number, branch_code, country")
                 .eq("workspace_id", workspaceId)
                 .single()
             if (error && error.code !== "PGRST116") throw error
