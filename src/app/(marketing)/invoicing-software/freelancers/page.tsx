@@ -28,6 +28,9 @@ export const metadata: Metadata = {
         "freelancer billing software",
         "invoice software freelancers",
     ],
+    alternates: {
+        canonical: "/invoicing-software/freelancers",
+    },
 }
 
 const benefits = [

@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "lodge billing software",
         "guesthouse invoicing",
     ],
+    alternates: {
+        canonical: "/invoicing-software/hotels",
+    },
 }
 
 const benefits = [

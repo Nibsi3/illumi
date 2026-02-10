@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "invoice software savings",
         "manual vs automated invoicing",
     ],
+    alternates: {
+        canonical: "/resources/automation-roi",
+    },
 }
 
 export default function AutomationROIPage() {

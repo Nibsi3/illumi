@@ -15,6 +15,9 @@ export const metadata: Metadata = {
         "bookkeeping tips",
         "SARS records",
     ],
+    alternates: {
+        canonical: "/blog/expense-tracking",
+    },
 }
 
 const systemSteps = [

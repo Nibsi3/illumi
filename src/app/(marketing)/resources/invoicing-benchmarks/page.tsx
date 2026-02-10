@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "late payment rates SME",
         "industry invoice data",
     ],
+    alternates: {
+        canonical: "/resources/invoicing-benchmarks",
+    },
 }
 
 const industryData = [

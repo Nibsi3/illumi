@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "client payment rankings",
         "best clients for cash flow",
     ],
+    alternates: {
+        canonical: "/resources/client-payment-rankings",
+    },
 }
 
 const fastestPaying = [

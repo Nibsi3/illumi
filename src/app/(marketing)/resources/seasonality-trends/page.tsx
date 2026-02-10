@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "SME seasonality SA",
         "business planning calendar",
     ],
+    alternates: {
+        canonical: "/resources/seasonality-trends",
+    },
 }
 
 const monthlyData = [

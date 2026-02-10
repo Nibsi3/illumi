@@ -24,6 +24,9 @@ export const metadata: Metadata = {
         "South Africa online payments",
         "card payments for invoices",
     ],
+    alternates: {
+        canonical: "/blog/online-payments",
+    },
 }
 
 const paymentStats = [

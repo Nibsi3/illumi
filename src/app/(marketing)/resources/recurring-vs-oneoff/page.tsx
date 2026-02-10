@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "retainer vs project invoicing",
         "recurring revenue benefits",
     ],
+    alternates: {
+        canonical: "/resources/recurring-vs-oneoff",
+    },
 }
 
 export default function RecurringVsOneOffPage() {

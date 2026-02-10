@@ -16,6 +16,9 @@ export const metadata: Metadata = {
         "VAT on invoices",
         "15 percent VAT",
     ],
+    alternates: {
+        canonical: "/blog/vat-setup-guide",
+    },
 }
 
 const sections = [

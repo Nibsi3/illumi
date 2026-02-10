@@ -26,6 +26,9 @@ export const metadata: Metadata = {
         description: "Complete glossary of invoicing terms and definitions for South African businesses.",
         type: "website",
     },
+    alternates: {
+        canonical: "/glossary",
+    },
 }
 
 const glossaryTerms = [

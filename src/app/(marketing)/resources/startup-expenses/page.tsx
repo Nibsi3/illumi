@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "SME budget breakdown",
         "business expense categories",
     ],
+    alternates: {
+        canonical: "/resources/startup-expenses",
+    },
 }
 
 const expenseCategories = [

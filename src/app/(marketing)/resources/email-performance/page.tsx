@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "invoice email best practices",
         "payment email optimization",
     ],
+    alternates: {
+        canonical: "/resources/email-performance",
+    },
 }
 
 const subjectLineData = [

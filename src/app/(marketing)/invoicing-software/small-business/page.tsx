@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "South African SME software",
         "business invoicing solution",
     ],
+    alternates: {
+        canonical: "/invoicing-software/small-business",
+    },
 }
 
 const benefits = [

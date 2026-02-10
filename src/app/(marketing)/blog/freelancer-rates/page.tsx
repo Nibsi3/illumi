@@ -21,6 +21,9 @@ export const metadata: Metadata = {
         "raise your rates",
         "South African freelancers",
     ],
+    alternates: {
+        canonical: "/blog/freelancer-rates",
+    },
 }
 
 const steps = [

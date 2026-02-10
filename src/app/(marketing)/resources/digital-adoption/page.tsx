@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "manual vs digital invoicing trends",
         "SME technology adoption",
     ],
+    alternates: {
+        canonical: "/resources/digital-adoption",
+    },
 }
 
 export default function DigitalAdoptionPage() {

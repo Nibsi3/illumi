@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "how to price services",
         "SME pricing strategy",
     ],
+    alternates: {
+        canonical: "/resources/pricing-benchmarks",
+    },
 }
 
 const pricingData = [

@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "individual business invoicing",
         "solo business tools",
     ],
+    alternates: {
+        canonical: "/invoicing-software/solopreneurs",
+    },
 }
 
 const benefits = [

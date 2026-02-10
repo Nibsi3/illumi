@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "average payment time by industry",
         "DSO benchmarks South Africa",
     ],
+    alternates: {
+        canonical: "/resources/payment-terms-analysis",
+    },
 }
 
 const sectorData = [

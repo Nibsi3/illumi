@@ -15,6 +15,9 @@ export const metadata: Metadata = {
         "South Africa invoices",
         "get paid faster",
     ],
+    alternates: {
+        canonical: "/blog/late-paying-clients",
+    },
 }
 
 const steps = [

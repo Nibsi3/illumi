@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "SME profitability rankings",
         "best business models South Africa",
     ],
+    alternates: {
+        canonical: "/resources/profit-margin-rankings",
+    },
 }
 
 const profitMarginRankings = [

@@ -23,6 +23,9 @@ export const metadata: Metadata = {
         "professional freelancing",
         "South Africa freelancer",
     ],
+    alternates: {
+        canonical: "/blog/client-portal",
+    },
 }
 
 const portalFeatures = [

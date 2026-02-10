@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "South African startup software",
         "new business invoicing",
     ],
+    alternates: {
+        canonical: "/invoicing-software/startups",
+    },
 }
 
 const benefits = [

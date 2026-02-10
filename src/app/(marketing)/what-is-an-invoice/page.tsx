@@ -20,6 +20,9 @@ export const metadata: Metadata = {
         "invoice vs receipt",
         "types of invoices",
     ],
+    alternates: {
+        canonical: "/what-is-an-invoice",
+    },
 }
 
 const invoiceElements = [

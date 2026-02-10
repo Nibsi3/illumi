@@ -22,6 +22,9 @@ export const metadata: Metadata = {
         "invoicing best practices",
         "SME resources",
     ],
+    alternates: {
+        canonical: "/blog",
+    },
 }
 
 const featuredPost = {

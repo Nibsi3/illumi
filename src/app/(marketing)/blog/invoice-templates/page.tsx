@@ -23,6 +23,9 @@ export const metadata: Metadata = {
         "South Africa invoice template",
         "branded invoices",
     ],
+    alternates: {
+        canonical: "/blog/invoice-templates",
+    },
 }
 
 const designPrinciples = [

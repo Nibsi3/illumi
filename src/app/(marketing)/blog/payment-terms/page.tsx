@@ -15,6 +15,9 @@ export const metadata: Metadata = {
         "late payments",
         "cash flow",
     ],
+    alternates: {
+        canonical: "/blog/payment-terms",
+    },
 }
 
 const termOptions = [

@@ -24,6 +24,9 @@ export const metadata: Metadata = {
         "cash flow tips",
         "small business invoicing South Africa",
     ],
+    alternates: {
+        canonical: "/blog/getting-paid-faster",
+    },
 }
 
 const tactics = [

@@ -15,6 +15,9 @@ export const metadata: Metadata = {
         "cash flow",
         "South Africa invoicing",
     ],
+    alternates: {
+        canonical: "/blog/invoice-mistakes",
+    },
 }
 
 const mistakes = [

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "business growth rates by sector",
         "year-on-year revenue growth",
     ],
+    alternates: {
+        canonical: "/resources/revenue-growth",
+    },
 }
 
 const growthByAge = [

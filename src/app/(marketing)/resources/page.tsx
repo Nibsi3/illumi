@@ -25,6 +25,9 @@ export const metadata: Metadata = {
         "SME financial tools",
         "South African business data",
     ],
+    alternates: {
+        canonical: "/resources",
+    },
 }
 
 const resourceCategories = [

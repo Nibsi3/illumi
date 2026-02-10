@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "restaurant billing South Africa",
         "food truck invoicing",
     ],
+    alternates: {
+        canonical: "/invoicing-software/restaurants",
+    },
 }
 
 const benefits = [

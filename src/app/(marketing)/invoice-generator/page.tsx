@@ -34,6 +34,9 @@ export const metadata: Metadata = {
         description: "Create professional invoices in minutes. Customizable templates, automatic calculations, and instant PDF download.",
         type: "website",
     },
+    alternates: {
+        canonical: "/invoice-generator",
+    },
 }
 
 const features = [

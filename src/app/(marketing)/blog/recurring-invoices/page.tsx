@@ -23,6 +23,9 @@ export const metadata: Metadata = {
         "predictable income",
         "South Africa invoicing",
     ],
+    alternates: {
+        canonical: "/blog/recurring-invoices",
+    },
 }
 
 const benefits = [

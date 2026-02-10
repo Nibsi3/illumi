@@ -30,6 +30,9 @@ export const metadata: Metadata = {
         "business invoicing software",
         "Illumi Pro",
     ],
+    alternates: {
+        canonical: "/invoicing-software/premium",
+    },
 }
 
 const premiumHighlights = [

@@ -24,6 +24,9 @@ export const metadata: Metadata = {
         "tax tips South Africa",
         "provisional tax freelancer",
     ],
+    alternates: {
+        canonical: "/blog/freelancer-tax-tips",
+    },
 }
 
 const deductions = [

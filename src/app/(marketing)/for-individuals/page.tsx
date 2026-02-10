@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "invoice as individual",
         "personal billing software",
     ],
+    alternates: {
+        canonical: "/for-individuals",
+    },
 }
 
 const features = [

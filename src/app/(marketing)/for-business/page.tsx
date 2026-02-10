@@ -14,6 +14,9 @@ export const metadata: Metadata = {
         "corporate invoicing South Africa",
         "enterprise invoicing",
     ],
+    alternates: {
+        canonical: "/for-business",
+    },
 }
 
 const features = [

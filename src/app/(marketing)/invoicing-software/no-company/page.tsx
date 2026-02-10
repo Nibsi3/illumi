@@ -28,6 +28,9 @@ export const metadata: Metadata = {
         "invoice without PTY LTD",
         "individual invoicing South Africa",
     ],
+    alternates: {
+        canonical: "/invoicing-software/no-company",
+    },
 }
 
 const benefits = [

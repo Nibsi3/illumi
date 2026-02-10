@@ -33,6 +33,9 @@ export const metadata: Metadata = {
         description: "Create professional receipts in seconds. Customizable templates and instant PDF download.",
         type: "website",
     },
+    alternates: {
+        canonical: "/receipt-maker",
+    },
 }
 
 const features = [

@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "SME financial resilience South Africa",
         "emergency business expenses",
     ],
+    alternates: {
+        canonical: "/resources/profit-shock-analysis",
+    },
 }
 
 export default function ProfitShockAnalysisPage() {

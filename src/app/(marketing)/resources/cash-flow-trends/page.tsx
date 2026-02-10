@@ -13,6 +13,9 @@ export const metadata: Metadata = {
         "income vs expenses trends",
         "small business financial data",
     ],
+    alternates: {
+        canonical: "/resources/cash-flow-trends",
+    },
 }
 
 const quarterlyData = [

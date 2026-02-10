@@ -28,6 +28,9 @@ export const metadata: Metadata = {
         "plumber invoicing",
         "electrician invoicing South Africa",
     ],
+    alternates: {
+        canonical: "/invoicing-software/contractors",
+    },
 }
 
 const benefits = [

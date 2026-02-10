@@ -19,6 +19,9 @@ export const metadata: Metadata = {
         description: "Create invoices, track expenses, and manage your business from your phone. Free for South African freelancers and small businesses.",
         type: "website",
     },
+    alternates: {
+        canonical: "/mobile-app",
+    },
 }
 
 export default function MobileAppPage() {
