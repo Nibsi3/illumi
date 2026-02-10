@@ -137,16 +137,24 @@ export async function GET(req: Request) {
             }
         }
 
-        return NextResponse.json({
-            success: true,
-            settings: settings || {
-                workspace_id: workspaceId,
-                active_provider: 'payfast',
-                test_mode: true,
-                connected_providers: []
+        return NextResponse.json(
+            {
+                success: true,
+                settings: settings || {
+                    workspace_id: workspaceId,
+                    active_provider: 'payfast',
+                    test_mode: true,
+                    connected_providers: []
+                },
+                providerKeys
             },
-            providerKeys
-        })
+            {
+                headers: {
+                    // Cache for 10 minutes, stale-while-revalidate for 20 minutes
+                    'Cache-Control': 'private, max-age=600, stale-while-revalidate=1200',
+                },
+            }
+        )
     } catch (error: any) {
         console.error(`[Paygate Config GET] FAILED at step="${step}":`, error)
         return NextResponse.json({ success: false, error: error.message, step }, { status: 500 })

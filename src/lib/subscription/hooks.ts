@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { SubscriptionTier, hasFeatureAccess, getTierLimits, isWithinLimit, TierLimits } from "./tiers"
-import { createClient } from "@/lib/supabase/client"
 import { useWorkspace } from "@/lib/workspace-context"
 
 interface Subscription {
@@ -26,7 +25,6 @@ export function useSubscription() {
     const [subscription, setSubscription] = useState<Subscription | null>(null)
     const [isSubscribed, setIsSubscribed] = useState(false)
     
-    const supabase = createClient()
     const { activeWorkspace, isOwner, userId, userEmail } = useWorkspace()
 
     useEffect(() => {
@@ -115,70 +113,19 @@ export function useSubscription() {
 
             const tFetchStart = perfEnabled ? markStart() : 0
             try {
-                // Also check forced Pro with session email as fallback
-                const tSessionStart = perfEnabled ? markStart() : 0
-                const { data: sessionData } = await supabase.auth.getSession()
-                if (perfEnabled) console.log(`subscription:auth.getSession: ${markEnd(tSessionStart)} ms`)
-                const user = sessionData?.session?.user || null
-                
-                const emailForForcedCheck = (userEmail || user?.email || '').toLowerCase()
-                if (emailForForcedCheck && forcedProEmails.includes(emailForForcedCheck)) {
-                    // Force Pro subscription for specific users
-                    setTier("pro")
-                    setIsSubscribed(true)
-                    setDaysRemaining(null) // Unlimited
-                    setIsLoading(false)
+                // Use cached API route instead of direct Supabase call to reduce egress
+                // The API route handles forced Pro emails server-side
+                const res = await fetch(`/api/subscription?workspace_id=${activeWorkspace.id}`, {
+                    credentials: 'include',
+                })
+                const json = await res.json().catch(() => null)
 
-                    // Update cache
-                    if (cacheKey) {
-                        try {
-                            localStorage.setItem(cacheKey, JSON.stringify({
-                                id: 'forced',
-                                workspace_id: activeWorkspace.id,
-                                user_id: user?.id || userId || '',
-                                userId: userId || user?.id || '',
-                                tier: 'pro',
-                                status: 'active',
-                                started_at: new Date().toISOString(),
-                                expires_at: null,
-                                updatedAt: Date.now(),
-                            }))
-                        } catch {
-                            // ignore cache errors
-                        }
-                    }
-                    return
+                if (!res.ok || !json?.success) {
+                    console.error('Error fetching subscription:', json?.error)
                 }
 
-                const { data, error } = await supabase
-                    .from('subscriptions')
-                    .select('id, workspace_id, user_id, tier, status, started_at, expires_at')
-                    .eq('workspace_id', activeWorkspace.id)
-                    .single()
-
-                // PGRST116 = no rows found, which is expected for free users
-                // 42P01 = table doesn't exist
-                // PGRST205 = table/view not found in schema cache
-                // 42501 = insufficient privilege (RLS / perms)
-                const errorCode = (error as any)?.code
-                const isExpectedError =
-                    errorCode === 'PGRST116' ||
-                    errorCode === '42P01' ||
-                    errorCode === 'PGRST205' ||
-                    errorCode === '42501'
-
-                if (error && !isExpectedError) {
-                    const safeError = {
-                        message: (error as any)?.message,
-                        details: (error as any)?.details,
-                        hint: (error as any)?.hint,
-                        code: (error as any)?.code,
-                        name: (error as any)?.name,
-                    }
-                    console.error('Error fetching subscription:', safeError)
-                }
-
-                if (data) {
+                const data = json?.subscription
+                if (data && data.tier !== 'free') {
                     setSubscription(data)
                     setTier(data.tier as SubscriptionTier)
                     setIsSubscribed(data.tier === 'pro' && data.status === 'active')
@@ -213,7 +160,7 @@ export function useSubscription() {
                         }
                     }
                 } else {
-                    // No subscription found, default to free
+                    // No subscription found or free tier, default to free
                     setTier("free")
                     setIsSubscribed(false)
                     setDaysRemaining(null)
@@ -224,8 +171,8 @@ export function useSubscription() {
                             localStorage.setItem(cacheKey, JSON.stringify({
                                 id: null,
                                 workspace_id: activeWorkspace.id,
-                                user_id: user?.id || userId || null,
-                                userId: userId || user?.id || null,
+                                user_id: userId || null,
+                                userId: userId || null,
                                 tier: 'free',
                                 status: 'trial',
                                 started_at: null,
@@ -250,7 +197,7 @@ export function useSubscription() {
         }
 
         fetchSubscription()
-    }, [activeWorkspace, supabase])
+    }, [activeWorkspace, userId, userEmail])
 
     // Pro benefits only apply if user is the workspace owner
     // Members get access to workspace features but cannot "own" Pro status

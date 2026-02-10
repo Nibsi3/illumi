@@ -75,7 +75,16 @@ export async function GET() {
         const deduped = Array.from(new Map(combined.map((w: any) => [w.id, w])).values())
             .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 
-        return NextResponse.json({ success: true, workspaces: deduped }, { status: 200 })
+        // Add cache headers - private (user-specific), 5 min browser cache, stale-while-revalidate
+        return NextResponse.json(
+            { success: true, workspaces: deduped },
+            {
+                status: 200,
+                headers: {
+                    'Cache-Control': 'private, max-age=300, stale-while-revalidate=600',
+                },
+            }
+        )
     } catch (error: any) {
         return NextResponse.json(
             { success: false, error: error?.message || "Failed to load workspaces." },
