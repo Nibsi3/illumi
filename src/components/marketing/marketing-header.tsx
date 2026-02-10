@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { IconMenu2, IconChevronDown, IconX, IconSun, IconMoon } from "@tabler/icons-react"
+import { IconMenu2, IconChevronDown, IconX } from "@tabler/icons-react"
+import { MoonStar, SunMedium } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTheme } from "@/lib/theme-context"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -175,26 +176,32 @@ export function MarketingHeader() {
                                 {/* Theme toggle switch */}
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">Dark mode</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => toggleTheme()}
-                                        className={`relative w-11 h-6 rounded-full transition-colors ${
-                                            theme === 'dark' ? 'bg-primary' : 'bg-muted'
-                                        }`}
-                                        aria-label="Toggle theme"
-                                    >
+                                    <label className="relative inline-flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={theme === 'dark'}
+                                            onChange={() => toggleTheme()}
+                                            className="sr-only"
+                                            aria-label="Toggle dark mode"
+                                        />
                                         <span
-                                            className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background border border-border shadow-sm transition-transform flex items-center justify-center ${
-                                                theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
+                                            className={`relative w-11 h-6 rounded-full transition-colors ${
+                                                theme === 'dark' ? 'bg-primary' : 'bg-muted'
                                             }`}
                                         >
-                                            {theme === 'dark' ? (
-                                                <IconMoon className="w-3.5 h-3.5 text-foreground" />
-                                            ) : (
-                                                <IconSun className="w-3.5 h-3.5 text-foreground" />
-                                            )}
+                                            <span
+                                                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-background border border-border shadow-sm transition-transform flex items-center justify-center ${
+                                                    theme === 'dark' ? 'translate-x-5' : 'translate-x-0'
+                                                }`}
+                                            >
+                                                {theme === 'dark' ? (
+                                                    <MoonStar className="w-3.5 h-3.5 text-foreground" />
+                                                ) : (
+                                                    <SunMedium className="w-3.5 h-3.5 text-amber-500" />
+                                                )}
+                                            </span>
                                         </span>
-                                    </button>
+                                    </label>
                                 </div>
 
                                 {/* Auth buttons */}
