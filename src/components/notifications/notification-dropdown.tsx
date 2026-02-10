@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { IconBell, IconX, IconReceipt, IconCash, IconAlertCircle, IconClock } from "@tabler/icons-react"
 import {
@@ -45,14 +45,35 @@ const typeColors: Record<string, string> = {
     invoice_overdue: "text-red-500",
 }
 
+const CACHE_TTL_MS = 10_000
+let notificationsCache:
+    | {
+          fetchedAt: number
+          unread: Notification[]
+          read: Notification[]
+      }
+    | null = null
+
 export function NotificationDropdown() {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<"inbox" | "archive">("inbox")
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [archived, setArchived] = useState<Notification[]>([])
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [open, setOpen] = useState(false)
+    const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = async (opts?: { preferCache?: boolean }) => {
+        const preferCache = opts?.preferCache ?? false
+
+        if (preferCache && notificationsCache && Date.now() - notificationsCache.fetchedAt < CACHE_TTL_MS) {
+            setNotifications(notificationsCache.unread)
+            setArchived(notificationsCache.read)
+            setLoading(false)
+            return
+        }
+
+        setLoading(true)
         try {
             const res = await fetch('/api/notifications?limit=20')
             const data = await res.json()
@@ -61,6 +82,11 @@ export function NotificationDropdown() {
                 const read = data.notifications.filter((n: Notification) => n.read)
                 setNotifications(unread)
                 setArchived(read)
+                notificationsCache = {
+                    fetchedAt: Date.now(),
+                    unread,
+                    read,
+                }
             }
         } catch (error) {
             console.error("Failed to fetch notifications:", error)
@@ -70,11 +96,30 @@ export function NotificationDropdown() {
     }
 
     useEffect(() => {
-        fetchNotifications()
-        // Poll for new notifications every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000)
-        return () => clearInterval(interval)
-    }, [])
+        if (!open) {
+            if (pollRef.current) {
+                clearInterval(pollRef.current)
+                pollRef.current = null
+            }
+            return
+        }
+
+        // When the dropdown opens, show cached results immediately (if fresh), then refresh.
+        fetchNotifications({ preferCache: true })
+        void fetchNotifications({ preferCache: false })
+
+        // Poll only while open.
+        pollRef.current = setInterval(() => {
+            void fetchNotifications({ preferCache: false })
+        }, 30000)
+
+        return () => {
+            if (pollRef.current) {
+                clearInterval(pollRef.current)
+                pollRef.current = null
+            }
+        }
+    }, [open])
 
     const unreadCount = notifications.length
 
@@ -150,7 +195,7 @@ export function NotificationDropdown() {
     }
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"

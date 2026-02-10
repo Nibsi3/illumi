@@ -120,7 +120,7 @@ export default function PublicInvoicePage() {
     return (
         <div className="min-h-screen bg-muted/5 font-sans pb-20">
             <div className="bg-background border-b py-4">
-                <div className="max-w-4xl mx-auto px-6 flex items-center justify-between">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
                         {senderLogo ? (
                             <img src={senderLogo} alt={senderName} className="w-8 h-8 object-contain" />
@@ -129,18 +129,18 @@ export default function PublicInvoicePage() {
                         )}
                         <span className="font-serif text-lg font-bold tracking-tight">{senderName}</span>
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <div className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2 shrink-0">
                         <ShieldCheck className="h-4 w-4 text-green-500" />
                         Secure Invoice Delivery
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto px-6 mt-12 grid gap-8 lg:grid-cols-3">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-12 grid gap-6 sm:gap-8 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-8">
                     <Card className="border-none shadow-xl overflow-hidden rounded-3xl">
                         <div className="h-2 w-full bg-primary" />
-                        <CardContent className="p-12">
+                        <CardContent className="p-6 sm:p-12">
                             <div className="flex justify-between items-start mb-16">
                                 <div>
                                     <h2 className="text-4xl font-serif font-bold tracking-tight uppercase">Invoice</h2>
@@ -152,13 +152,13 @@ export default function PublicInvoicePage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-12 mb-16">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
                                 <div>
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2">Billed To</div>
                                     <div className="text-lg font-bold">{invoice.customer?.name || 'Customer'}</div>
                                     <div className="text-muted-foreground">{invoice.customer?.email || ''}</div>
                                 </div>
-                                <div className="text-right">
+                                <div className="sm:text-right">
                                     <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2">Total Due</div>
                                     <div className="text-4xl font-serif font-bold text-primary">
                                         {formatCurrency(invoice.total, invoice.currency)}
@@ -167,21 +167,23 @@ export default function PublicInvoicePage() {
                             </div>
 
                             <div className="space-y-6">
-                                <div className="grid grid-cols-12 gap-4 pb-4 border-b text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                                <div className="hidden sm:grid grid-cols-12 gap-4 pb-4 border-b text-xs font-bold uppercase tracking-widest text-muted-foreground">
                                     <div className="col-span-7">Description</div>
                                     <div className="col-span-1 text-right">Qty</div>
                                     <div className="col-span-2 text-right">Disc %</div>
                                     <div className="col-span-2 text-right">Total</div>
                                 </div>
                                 {items.map((item, i) => (
-                                    <div key={item.id || i} className="grid grid-cols-12 gap-4 text-sm items-center">
-                                        <div className="col-span-7 font-medium">{item.description}</div>
-                                        <div className="col-span-1 text-right text-muted-foreground">{item.quantity}</div>
-                                        <div className="col-span-2 text-right text-muted-foreground">
-                                            {(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%
-                                        </div>
-                                        <div className="col-span-2 text-right font-mono">
-                                            {formatCurrency(Number(item.total) || (item.unit_price * item.quantity), invoice.currency)}
+                                    <div key={item.id || i} className="rounded-2xl border border-border/60 bg-background/40 p-4 sm:p-0 sm:border-0 sm:bg-transparent">
+                                        <div className="sm:grid sm:grid-cols-12 sm:gap-4 text-sm items-center">
+                                            <div className="sm:col-span-7 font-medium wrap-break-word">{item.description}</div>
+                                            <div className="mt-2 sm:mt-0 sm:col-span-1 sm:text-right text-muted-foreground">Qty: {item.quantity}</div>
+                                            <div className="mt-1 sm:mt-0 sm:col-span-2 sm:text-right text-muted-foreground">
+                                                Disc: {(Number(item.discount_rate) || 0).toLocaleString('en-ZA', { maximumFractionDigits: 2 })}%
+                                            </div>
+                                            <div className="mt-2 sm:mt-0 sm:col-span-2 sm:text-right font-mono">
+                                                {formatCurrency(Number(item.total) || (item.unit_price * item.quantity), invoice.currency)}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

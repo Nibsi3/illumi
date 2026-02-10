@@ -1037,7 +1037,7 @@ export default function NewInvoicePage() {
 
                 {/* SCROLLABLE EDITOR AREA */}
                 <div className="flex-1 overflow-y-auto pb-40 no-scrollbar">
-                    <div className="max-w-5xl mx-auto py-12 px-12">
+                    <div className="max-w-5xl mx-auto py-6 sm:py-12 px-4 sm:px-6 lg:px-12">
 
                         {/* Mobile section tabs */}
                         <div className="md:hidden sticky top-0 z-10 -mx-4 px-4 py-3 bg-background/95 backdrop-blur border-b border-border">
@@ -1178,7 +1178,7 @@ export default function NewInvoicePage() {
 
                                     {/* From / To Section (Cleaned up) */}
                                     <div className={cn(
-                                        "grid grid-cols-2 gap-20 mb-16",
+                                        "grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-20 mb-16",
                                         template === "Modern" && "bg-muted p-8 rounded-xl"
                                     )}>
                                         <div className="col-span-2 flex items-center justify-between mb-2">

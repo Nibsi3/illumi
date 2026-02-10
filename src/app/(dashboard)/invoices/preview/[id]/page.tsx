@@ -185,8 +185,8 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
     return (
         <div className="min-h-screen bg-background text-foreground font-sans pb-20">
             {/* Action Header */}
-            <header className="h-16 border-b border-border flex items-center justify-between px-6 sticky top-0 bg-background/80 backdrop-blur-md z-50">
-                <div className="flex items-center gap-6">
+            <header className="h-16 border-b border-border flex items-center justify-between px-4 sm:px-6 sticky top-0 bg-background/80 backdrop-blur-md z-50">
+                <div className="flex items-center gap-3 sm:gap-6 min-w-0">
                     <button
                         onClick={() => router.back()}
                         className="text-muted-foreground hover:text-foreground transition-colors"
@@ -195,7 +195,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                     </button>
                     <div className="flex flex-col">
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Preview</span>
-                        <span className="text-sm font-medium">{invoice.invoice_number}</span>
+                        <span className="text-sm font-medium truncate max-w-[40vw] sm:max-w-none">{invoice.invoice_number}</span>
                     </div>
                 </div>
 
@@ -227,7 +227,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
             </header>
 
             {/* Invoice Paper Layout */}
-            <main className="max-w-5xl mx-auto mt-12 px-6">
+            <main className="max-w-5xl mx-auto mt-4 sm:mt-12 px-4 sm:px-6">
                 {(() => {
                     const logoBg = invoiceMode
                     const logoContainerClass = 'bg-neutral-950 border-border'
@@ -256,7 +256,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
 
                     {/* From / To */}
                     <div className={cn(
-                        "grid grid-cols-2 gap-20 mb-16 pb-16 border-b",
+                        "grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-20 mb-16 pb-16 border-b",
                         logoBg === 'light' ? "border-neutral-200" : "border-neutral-700"
                     )}>
                         <div className="flex flex-col gap-4">
@@ -281,7 +281,7 @@ export default function InvoicePreviewPage({ params }: { params: Promise<{ id: s
                                 </p>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-4 text-right">
+                        <div className="flex flex-col gap-4 sm:text-right">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">To</span>
                             <div className="space-y-1 invoice-font-client">
                                 <p className="text-lg font-bold">{invoice.customer?.name || 'Customer'}</p>
