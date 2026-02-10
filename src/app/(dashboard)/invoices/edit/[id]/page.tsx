@@ -194,7 +194,7 @@ export default function EditInvoicePage() {
                 if (invoiceId) {
                     const { data: invoice, error } = await supabase
                         .from('invoices')
-                        .select('*, invoice_items(*), customers(*)')
+                        .select('id, invoice_number, template, currency, tax_rate, invoice_mode, issue_date, created_at, due_date, customer_id, is_recurring, recurring_interval, logo_url, from_email, notes, note, vat_rate, status, workspace_id, invoice_items(id, description, unit_price, quantity, discount_rate), customers(name, email, address, phone)')
                         .eq('id', invoiceId)
                         .single()
 
@@ -214,11 +214,12 @@ export default function EditInvoicePage() {
                         setFromEmail(invoice.from_email || settings.fromEmail)
                         setInvoiceNote((invoice.notes || invoice.note || "") as string)
 
-                        if (invoice.customers) {
-                            setClientName(invoice.customers.name)
-                            setClientEmail(invoice.customers.email)
-                            setClientAddress(invoice.customers.address || "")
-                            setClientPhone(invoice.customers.phone || "")
+                        const customerData = invoice.customers as any
+                        if (customerData) {
+                            setClientName(customerData.name)
+                            setClientEmail(customerData.email)
+                            setClientAddress(customerData.address || "")
+                            setClientPhone(customerData.phone || "")
                         }
 
                         if (invoice.invoice_items && invoice.invoice_items.length > 0) {

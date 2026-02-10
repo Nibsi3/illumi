@@ -151,7 +151,7 @@ export default function ProductsPage() {
           user_id: user.id,
           workspace_id: activeWorkspace.id,
         })
-        .select('*')
+        .select('id')
         .single()
 
       if (error) throw error

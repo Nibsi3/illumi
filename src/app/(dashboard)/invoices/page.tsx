@@ -463,7 +463,7 @@ export default function InvoicesPage() {
             // Fetch the original invoice with items
             const { data: original, error: fetchError } = await supabase
                 .from('invoices')
-                .select('*, invoice_items(*)')
+                .select('user_id, workspace_id, customer_id, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, payment_provider, invoice_items(description, quantity, unit_price, total, sort_order)')
                 .eq('id', invoiceId)
                 .single()
 
@@ -495,7 +495,7 @@ export default function InvoicesPage() {
                     logo_url: original.logo_url,
                     payment_provider: original.payment_provider,
                 })
-                .select()
+                .select('id')
                 .single()
 
             if (insertError || !newInvoice) throw insertError || new Error("Failed to create invoice")

@@ -29,14 +29,15 @@ export async function GET(req: Request) {
         // Fetch unpaid invoices that are sent but not yet paid
         const { data: invoices, error } = await supabase
             .from('invoices')
-            .select('*, customers(name, email), invoice_items(*)')
+            .select('id, invoice_number, total, currency, user_id, status, issue_date, due_date, from_email, send_copy_to_self, reminder_sent_at, final_notice_sent_at, workspace_id, customers(name, email), invoice_items(description, quantity, unit_price, total)')
             .in('status', ['sent', 'viewed'])
             .not('due_date', 'is', null)
 
         if (error) throw error
 
         for (const invoice of invoices || []) {
-            if (!invoice.customers?.email) continue
+            const customer = invoice.customers as any
+            if (!customer?.email) continue
 
             const issueDate = new Date(invoice.issue_date)
             const dueDate = new Date(invoice.due_date)
@@ -67,10 +68,10 @@ export async function GET(req: Request) {
                     },
                     body: JSON.stringify({
                         type: 'payment_reminder',
-                        to: invoice.customers.email,
+                        to: customer.email,
                         bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                         invoiceNumber: invoice.invoice_number,
-                        customerName: invoice.customers.name,
+                        customerName: customer.name,
                         amount: amount,
                         dueDate: dueDate.toLocaleDateString('en-ZA', {
                             day: 'numeric',
@@ -94,7 +95,7 @@ export async function GET(req: Request) {
                     userId: invoice.user_id,
                     type: 'payment_reminder',
                     title: `Payment reminder sent for ${invoice.invoice_number}`,
-                    message: `Reminder sent to ${invoice.customers.name}`,
+                    message: `Reminder sent to ${customer.name}`,
                     invoiceId: invoice.id,
                     amount: invoice.total
                 })
@@ -115,10 +116,10 @@ export async function GET(req: Request) {
                     },
                     body: JSON.stringify({
                         type: 'final_notice',
-                        to: invoice.customers.email,
+                        to: customer.email,
                         bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                         invoiceNumber: invoice.invoice_number,
-                        customerName: invoice.customers.name,
+                        customerName: customer.name,
                         amount: amount,
                         dueDate: 'Today',
                         paymentLink: paymentLink,
@@ -138,7 +139,7 @@ export async function GET(req: Request) {
                     userId: invoice.user_id,
                     type: 'final_notice',
                     title: `Final notice sent for ${invoice.invoice_number}`,
-                    message: `Final payment notice sent to ${invoice.customers.name}`,
+                    message: `Final payment notice sent to ${customer.name}`,
                     invoiceId: invoice.id,
                     amount: invoice.total
                 })
@@ -159,7 +160,7 @@ export async function GET(req: Request) {
                         userId: invoice.user_id,
                         type: 'invoice_overdue',
                         title: `Invoice ${invoice.invoice_number} is overdue`,
-                        message: `Payment from ${invoice.customers.name} is past due`,
+                        message: `Payment from ${customer.name} is past due`,
                         invoiceId: invoice.id,
                         amount: invoice.total
                     })

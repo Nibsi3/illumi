@@ -22,7 +22,7 @@ export async function POST(req: Request) {
         // Get invoice details first
         const { data: invoice } = await supabase
             .from('invoices')
-            .select('*, customers(name)')
+            .select('id, invoice_number, total, currency, user_id, customers(name)')
             .eq('id', invoiceId)
             .single()
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
                 userId: invoice.user_id,
                 type: 'payment_received',
                 title: `Payment received for ${invoice.invoice_number}`,
-                message: `${invoice.customers?.name || 'Customer'} paid their invoice`,
+                message: `${(invoice.customers as any)?.name || 'Customer'} paid their invoice`,
                 invoiceId: invoice.id,
                 amount: invoice.total
             })

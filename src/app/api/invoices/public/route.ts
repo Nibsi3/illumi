@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
         let query = service
             .from("invoices")
-            .select("*, customers(*), invoice_items(*)")
+            .select("id, invoice_number, status, issue_date, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, hide_illumi_branding, payment_provider, vat_rate, vat_amount, from_email, company_website, bank_name, account_name, account_number, branch_code, workspace_id, customers(name, email, address), invoice_items(description, quantity, unit_price, discount_rate, total)")
             .limit(1)
 
         if (isUUID(invoiceId)) {
@@ -126,9 +126,9 @@ export async function GET(request: NextRequest) {
             workspace_id: data.workspace_id,
             customers: data.customers
                 ? {
-                      name: data.customers.name,
-                      email: data.customers.email,
-                      address: data.customers.address,
+                      name: (data.customers as any).name,
+                      email: (data.customers as any).email,
+                      address: (data.customers as any).address,
                   }
                 : null,
             invoice_items: (data.invoice_items || []).map((item: any) => ({
@@ -140,7 +140,9 @@ export async function GET(request: NextRequest) {
             })),
         }
 
-        return NextResponse.json({ success: true, invoice: safeInvoice })
+        const response = NextResponse.json({ success: true, invoice: safeInvoice })
+        response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+        return response
     } catch (error: any) {
         console.error("Public invoice fetch error:", error)
         return NextResponse.json(

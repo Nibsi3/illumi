@@ -86,7 +86,7 @@ export async function GET(req: Request) {
         // Fetch recurring invoices that are active
         const { data: recurringInvoices, error } = await supabase
             .from('invoices')
-            .select('*, customers(name, email), invoice_items(*)')
+            .select('id, invoice_number, total, currency, user_id, status, issue_date, due_date, workspace_id, is_recurring, recurring_interval, recurring_end_date, recurring_end_type, recurring_end_count, recurring_day_of_week, recurring_day_of_month, recurring_week_of_month, recurring_custom_interval, recurring_custom_unit, created_at, customer_id, from_email, send_copy_to_self, subtotal, tax_rate, tax_amount, notes, sent_at, customers(name, email), invoice_items(description, quantity, unit_price, discount_rate, total, sort_order)')
             .eq('is_recurring', true)
             .in('status', ['sent', 'paid']) // Only process active recurring invoices
 
@@ -341,7 +341,7 @@ export async function GET(req: Request) {
                         is_recurring: false, // New invoice is not recurring itself
                         parent_invoice_id: invoice.id, // Track parent
                     })
-                    .select()
+                    .select('id')
                     .single()
 
                 if (insertError) {
@@ -372,7 +372,8 @@ export async function GET(req: Request) {
                 invoicesCreated++
 
                 // Send email if customer has email
-                if (invoice.customers?.email) {
+                const customer = invoice.customers as any
+                if (customer?.email) {
                     const amount = new Intl.NumberFormat('en-ZA', {
                         style: 'currency',
                         currency: invoice.currency || 'ZAR'
@@ -401,12 +402,12 @@ export async function GET(req: Request) {
                             },
                             body: JSON.stringify({
                                 type: 'invoice',
-                                to: invoice.customers.email,
+                                to: customer.email,
                                 bcc: invoice.send_copy_to_self ? (invoice.from_email || undefined) : undefined,
                                 companyName,
                                 fromEmail: 'invoice@illumi.co.za',
                                 supportEmail: invoice.from_email || 'invoice@illumi.co.za',
-                                customerName: invoice.customers.name,
+                                customerName: customer.name,
                                 invoiceNumber: newInvoiceNumber,
                                 amount: amount,
                                 currency: invoice.currency || 'ZAR',

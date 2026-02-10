@@ -475,7 +475,7 @@ export default function NewInvoicePage() {
             let { data: invoice, error: invoiceError } = await supabase
                 .from('invoices')
                 .insert(invoiceData)
-                .select()
+                .select('id')
                 .single()
 
             // Handle recurring_interval check constraint - retry with 'monthly' as fallback

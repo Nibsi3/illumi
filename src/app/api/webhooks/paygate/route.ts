@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
                 const { data: invoice } = await supabase
                     .from('invoices')
-                    .select('*, customers(name)')
+                    .select('id, invoice_number, total, currency, user_id, status, workspace_id, customers(name)')
                     .eq('id', invoiceId)
                     .single()
 
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
                         userId: invoice.user_id,
                         type: 'payment_received',
                         title: `Payment received for ${invoice.invoice_number}`,
-                        message: `${invoice.customers?.name || 'Customer'} paid via stripe`,
+                        message: `${(invoice.customers as any)?.name || 'Customer'} paid via stripe`,
                         invoiceId: invoice.id,
                         amount: invoice.total,
                     })
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
         // Get invoice details for notification
         const { data: invoice } = await supabase
             .from('invoices')
-            .select('*, customers(name)')
+            .select('id, invoice_number, total, currency, user_id, status, workspace_id, customers(name)')
             .eq('id', invoiceId)
             .single()
 
@@ -158,7 +158,7 @@ export async function POST(req: Request) {
                 userId: invoice.user_id,
                 type: 'payment_received',
                 title: `Payment received for ${invoice.invoice_number}`,
-                message: `${invoice.customers?.name || 'Customer'} paid via ${provider}`,
+                message: `${(invoice.customers as any)?.name || 'Customer'} paid via ${provider}`,
                 invoiceId: invoice.id,
                 amount: parseFloat(amount) || invoice.total
             })
