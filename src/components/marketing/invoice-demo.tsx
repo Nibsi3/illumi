@@ -252,7 +252,7 @@ function DemoScreen({ active, children }: { active: boolean; children: React.Rea
 function AnimatedCursor({ step, isClicking }: { step: number; isClicking: boolean }) {
     // Percentage-based positions that scale across all screen sizes
     const positions: Record<number, { x: string; y: string }> = {
-        1: { x: "93%", y: "16%" },                     // New Invoice button (top right header)
+        1: { x: "92%", y: "13%" },                     // New Invoice button (top right header)
         2: { x: "28%", y: "42%" },                     // Standard Invoice card (top left)
         3: { x: "28%", y: "78%" },                     // Create Invoice button
         4: { x: "50%", y: "82%" },                     // Send Now button
