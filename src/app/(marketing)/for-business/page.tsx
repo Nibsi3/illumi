@@ -71,7 +71,7 @@ export default function ForBusinessPage() {
                             manage invoicing at scale. Team collaboration, advanced reporting, and enterprise security.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Free Trial
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -123,7 +123,7 @@ export default function ForBusinessPage() {
                         Join leading South African businesses using Illumi for professional invoicing.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Start Free Trial
                             </Button>

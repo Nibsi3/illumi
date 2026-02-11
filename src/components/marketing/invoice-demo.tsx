@@ -252,13 +252,13 @@ function DemoScreen({ active, children }: { active: boolean; children: React.Rea
 function AnimatedCursor({ step, isClicking }: { step: number; isClicking: boolean }) {
     // Percentage-based positions that scale across all screen sizes
     const positions: Record<number, { x: string; y: string }> = {
-        1: { x: "85%", y: "22%" },                     // New Invoice button
-        2: { x: "38%", y: "55%" },                     // Standard Invoice card
-        3: { x: "28%", y: "75%" },                     // Create Invoice button
-        4: { x: "50%", y: "75%" },                     // Send Now button
-        5: { x: "50%", y: "50%" },                     // Email row in Gmail
-        6: { x: "50%", y: "70%" },                     // Pay Now button
-        7: { x: "50%", y: "70%" },                     // Pay button
+        1: { x: "88%", y: "18%" },                     // New Invoice button (top right header)
+        2: { x: "28%", y: "42%" },                     // Standard Invoice card (top left)
+        3: { x: "28%", y: "78%" },                     // Create Invoice button
+        4: { x: "50%", y: "82%" },                     // Send Now button
+        5: { x: "55%", y: "38%" },                     // Email row in Gmail (Illumi email)
+        6: { x: "50%", y: "75%" },                     // Pay Now button
+        7: { x: "50%", y: "75%" },                     // Pay button
         8: { x: "50%", y: "50%" },                     // Center for success
     }
 

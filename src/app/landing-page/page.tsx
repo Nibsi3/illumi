@@ -267,7 +267,7 @@ function InlineNotifications() {
                             setShownItems((prev) => [...prev, index])
                             index++
                             // After delay, show next item (which will become the new active)
-                            setTimeout(showNext, 1500)
+                            setTimeout(showNext, 600)
                         } else {
                             // Animation complete - clear active state after short delay
                             setTimeout(() => {
@@ -407,7 +407,7 @@ export default function GoogleAdsLandingPage() {
                         </Link>
                         <span className="hidden sm:inline text-sm opacity-90">Free Invoicing for South African Businesses</span>
                     </div>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <HoverBorderGradient
                             as="div"
                             containerClassName=""
@@ -460,7 +460,7 @@ export default function GoogleAdsLandingPage() {
 
                         {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-6 px-4 sm:px-0">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <HoverBorderGradient
                                     as="div"
                                     containerClassName=""
@@ -562,7 +562,7 @@ export default function GoogleAdsLandingPage() {
                             </ul>
 
                             <div className="mt-auto">
-                                <Link href="/login" className="block">
+                                <Link href="/invoices/new" className="block">
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full"
@@ -600,7 +600,7 @@ export default function GoogleAdsLandingPage() {
                             </ul>
 
                             <div className="mt-auto">
-                                <Link href="/login" className="block">
+                                <Link href="/invoices/new" className="block">
                                     <HoverBorderGradient
                                         as="div"
                                         containerClassName="w-full"
@@ -691,7 +691,7 @@ export default function GoogleAdsLandingPage() {
                         Join 2,500+ South African businesses using Illumi to create professional invoices and get paid online. Start free today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <HoverBorderGradient
                                 as="div"
                                 containerClassName=""

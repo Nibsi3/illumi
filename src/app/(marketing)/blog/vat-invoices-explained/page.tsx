@@ -248,7 +248,7 @@ export default function VatInvoicesExplainedPost() {
                             your VAT number once, and every invoice you create will be fully compliant.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Create VAT Invoice Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -292,7 +292,7 @@ export default function VatInvoicesExplainedPost() {
                         Stop worrying about compliance. Illumi handles VAT calculations and formatting 
                         automatically.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

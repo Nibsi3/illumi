@@ -177,7 +177,7 @@ export default function RecurringInvoicesPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Set Up Recurring Invoices
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -197,7 +197,7 @@ export default function RecurringInvoicesPost() {
                         Illumi's recurring invoices are free to use. Set them up once and enjoy predictable, 
                         automatic income — without lifting a finger.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Try Illumi Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

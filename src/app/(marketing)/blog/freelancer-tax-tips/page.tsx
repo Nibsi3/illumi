@@ -210,7 +210,7 @@ export default function FreelancerTaxTipsPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Start Tracking Expenses
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -230,7 +230,7 @@ export default function FreelancerTaxTipsPost() {
                         Illumi helps South African freelancers track income, expenses, and invoices in one place — 
                         making tax season painless and ensuring you claim every deduction you're entitled to.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Try Illumi Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

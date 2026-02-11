@@ -190,7 +190,7 @@ export default function VatSetupGuidePost() {
                         Illumi automatically handles VAT calculations on your invoices, so you can focus on your business 
                         instead of worrying about compliance.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Try Illumi Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

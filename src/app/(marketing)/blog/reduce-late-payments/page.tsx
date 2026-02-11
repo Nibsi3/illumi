@@ -211,7 +211,7 @@ export default function ReduceLatePaymentsPost() {
                             automatic reminders, and professional invoices — all built in. Start free today.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -254,7 +254,7 @@ export default function ReduceLatePaymentsPost() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Let Illumi handle the follow-up so you can focus on your work.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

@@ -137,7 +137,7 @@ export default function InvoiceTrackingPage() {
                             status in real-time, and never lose track of money owed to you.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Tracking Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -317,7 +317,7 @@ export default function InvoiceTrackingPage() {
                         Know exactly where every invoice stands. Sign up free and start tracking in minutes.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Create Free Account
                                 <IconArrowRight className="ml-2 h-5 w-5" />

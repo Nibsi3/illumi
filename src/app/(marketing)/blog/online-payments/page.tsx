@@ -178,7 +178,7 @@ export default function OnlinePaymentsPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Enable Online Payments
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -198,7 +198,7 @@ export default function OnlinePaymentsPost() {
                         Illumi integrates with South Africa's top payment providers. Add a payment link to your invoices 
                         and watch your average payment time drop dramatically.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Try Illumi Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

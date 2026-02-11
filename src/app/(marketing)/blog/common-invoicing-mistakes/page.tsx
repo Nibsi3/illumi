@@ -181,7 +181,7 @@ export default function CommonInvoicingMistakesPost() {
                             calculations, sequential numbering, and built-in payment links — all handled for you.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -224,7 +224,7 @@ export default function CommonInvoicingMistakesPost() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Professional invoicing doesn't have to be complicated. Illumi makes it simple.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

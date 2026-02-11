@@ -315,7 +315,7 @@ export default function IllumiVsQuickBooksPost() {
                             professionally and get paid faster — without the complexity or cost.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -341,7 +341,7 @@ export default function IllumiVsQuickBooksPost() {
                         Join 2,500+ South African businesses using Illumi to create professional invoices and get paid faster. 
                         Start free today — no credit card required.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                             <IconArrowRight className="ml-2 h-5 w-5" />

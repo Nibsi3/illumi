@@ -278,7 +278,7 @@ export default function GlossaryPage() {
                         Now that you understand invoicing terminology, create professional invoices 
                         with Illumi. Free for South African freelancers and small businesses.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

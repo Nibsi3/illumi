@@ -127,7 +127,7 @@ export default function InvoiceGeneratorPage() {
                                 Perfect for freelancers, contractors, and small businesses across South Africa.
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button size="lg" className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90">
                                         Create Free Invoice
                                         <IconArrowRight className="ml-2 h-5 w-5" />
@@ -307,7 +307,7 @@ export default function InvoiceGeneratorPage() {
                         Join thousands of South African freelancers and small businesses using Illumi 
                         to create professional invoices and get paid faster.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Free Invoice Now
                             <IconArrowRight className="ml-2 h-5 w-5" />

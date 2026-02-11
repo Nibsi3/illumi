@@ -264,7 +264,7 @@ export default function GettingPaidFasterPost() {
                         Illumi helps South African freelancers and small businesses create professional invoices, 
                         automate reminders, and accept online payments — all for free.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

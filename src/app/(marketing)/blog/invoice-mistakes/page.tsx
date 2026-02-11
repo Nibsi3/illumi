@@ -158,7 +158,7 @@ export default function InvoiceMistakesPost() {
                         Illumi's invoice templates are designed to eliminate these mistakes automatically. 
                         Professional invoices, automatic numbering, and built-in reminders — all free.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Better Invoices Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

@@ -217,7 +217,7 @@ export default function HourlyRateCalculatorPage() {
                             </div>
 
                             <div className="mt-6 pt-6 border-t border-border">
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                                         Create Invoice at This Rate
                                         <IconArrowRight className="ml-2 h-4 w-4" />

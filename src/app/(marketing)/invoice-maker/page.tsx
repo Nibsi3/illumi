@@ -96,7 +96,7 @@ export default function InvoiceMakerPage() {
                             Make beautiful, professional invoices in minutes — not hours. Illumi&apos;s free invoice maker handles the formatting, calculations, and delivery so you can focus on your work.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="text-lg px-8 py-6">
                                     Make Your First Invoice
                                     <IconArrowRight className="ml-2 w-5 h-5" />
@@ -152,7 +152,7 @@ export default function InvoiceMakerPage() {
                             <div key={uc.title} className="bg-card rounded-xl border p-8 hover:shadow-lg transition-shadow">
                                 <h3 className="text-xl font-bold mb-3">{uc.title}</h3>
                                 <p className="text-muted-foreground mb-4">{uc.description}</p>
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button variant="outline" size="sm">
                                         Create My First Invoice <IconArrowRight className="ml-1 w-4 h-4" />
                                     </Button>
@@ -182,7 +182,7 @@ export default function InvoiceMakerPage() {
                         <h3>Why South African Businesses Choose Illumi</h3>
                         <p>Unlike international invoice makers like Invoice Ninja, FreshBooks, or Conta, Illumi is built specifically for South Africa. We support ZAR as the default currency, integrate with local payment gateways like PayFast and Yoco, and ensure all invoices meet SARS requirements for VAT compliance.</p>
 
-                        <p>Our free plan is genuinely free — unlimited invoices, clients, and PDF exports. No trials, no hidden fees, no credit card required. <Link href="/login" className="text-primary font-semibold">Start making professional invoices today</Link>.</p>
+                        <p>Our free plan is genuinely free — unlimited invoices, clients, and PDF exports. No trials, no hidden fees, no credit card required. <Link href="/invoices/new" className="text-primary font-semibold">Start making professional invoices today</Link>.</p>
                     </div>
                 </div>
             </section>
@@ -196,7 +196,7 @@ export default function InvoiceMakerPage() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
                         Join thousands of businesses making professional invoices with Illumi. Free forever.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Start Making Invoices — Free
                             <IconArrowRight className="ml-2 w-5 h-5" />

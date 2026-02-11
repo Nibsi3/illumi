@@ -212,7 +212,7 @@ export default function WhatIsInvoiceManagementPost() {
                             tracking, automatic reminders, and online payment acceptance.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -256,7 +256,7 @@ export default function WhatIsInvoiceManagementPost() {
                         Stop struggling with spreadsheets. Illumi makes invoice management simple, 
                         automatic, and effective.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

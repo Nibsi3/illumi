@@ -154,7 +154,7 @@ export default function PaymentTermsExplainedPage() {
                 <div className="max-w-3xl mx-auto mt-10 bg-primary/5 rounded-xl p-8 text-center">
                     <h3 className="text-2xl font-bold mb-3">Set Up Your Payment Terms Now</h3>
                     <p className="text-muted-foreground mb-6">Create invoices with professional payment terms. Automatic reminders included.</p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg">
                             Create an Invoice — Free <IconArrowRight className="ml-2 w-5 h-5" />
                         </Button>

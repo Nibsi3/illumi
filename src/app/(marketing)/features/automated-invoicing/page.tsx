@@ -145,7 +145,7 @@ export default function AutomatedInvoicingPage() {
                             and automate payment reminders. Spend time on your business, not admin.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Automating
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -355,7 +355,7 @@ export default function AutomatedInvoicingPage() {
                         let Illumi handle the rest.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Start Free Today
                                 <IconArrowRight className="ml-2 h-5 w-5" />

@@ -139,7 +139,7 @@ export default function HowToCreateInvoicePage() {
                     <div className="bg-primary/5 rounded-xl p-8 text-center mt-10">
                         <h3 className="text-2xl font-bold mb-3">Create Your First Invoice in 60 Seconds</h3>
                         <p className="text-muted-foreground mb-6">Free professional invoicing. No spreadsheets needed.</p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg">
                                 Start Invoicing Free <IconArrowRight className="ml-2 w-5 h-5" />
                             </Button>

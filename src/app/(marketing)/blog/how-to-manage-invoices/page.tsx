@@ -223,7 +223,7 @@ export default function HowToManageInvoicesPost() {
                             free and see the difference.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -267,7 +267,7 @@ export default function HowToManageInvoicesPost() {
                         Join thousands of South African small businesses using Illumi to manage invoices 
                         and get paid faster.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

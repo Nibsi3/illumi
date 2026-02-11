@@ -152,7 +152,7 @@ export default function InvoiceSoftwareSouthAfricaPage() {
                             Track expenses, manage clients, and get paid faster — all in one platform designed for SA entrepreneurs.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Free Today
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -372,7 +372,7 @@ export default function InvoiceSoftwareSouthAfricaPage() {
                                     <span>Expense tracking</span>
                                 </li>
                             </ul>
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button variant="outline" className="w-full">Create an Invoice — Free</Button>
                             </Link>
                         </div>
@@ -405,7 +405,7 @@ export default function InvoiceSoftwareSouthAfricaPage() {
                                     <span>Priority support</span>
                                 </li>
                             </ul>
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Free Trial
                                 </Button>
@@ -469,7 +469,7 @@ export default function InvoiceSoftwareSouthAfricaPage() {
                         track payments, and get paid faster. Start free today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Create Free Account
                                 <IconArrowRight className="ml-2 h-5 w-5" />

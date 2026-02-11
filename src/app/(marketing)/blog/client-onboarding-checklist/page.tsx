@@ -127,7 +127,7 @@ export default function ClientOnboardingPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Set Up Your Client List
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -146,7 +146,7 @@ export default function ClientOnboardingPost() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Illumi lets you store client details, automate invoicing, and track payments — all in one place. Free forever.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

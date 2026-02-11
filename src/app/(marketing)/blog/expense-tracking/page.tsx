@@ -96,7 +96,7 @@ export default function ExpenseTrackingPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Track Expenses in Illumi
                                 <IconArrowRight className="ml-2 h-5 w-5" />

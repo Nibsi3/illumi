@@ -70,7 +70,7 @@ export default function ForIndividualsPage() {
                             You don't need a registered company to invoice professionally. Whether it's a side hustle, 
                             freelance gig, or personal service - create polished invoices and get paid properly.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Start Invoicing Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -118,7 +118,7 @@ export default function ForIndividualsPage() {
                     <p className="text-lg text-muted-foreground mb-8">
                         Start invoicing today. It's free, it's easy, and it makes you look professional.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Your First Invoice
                         </Button>

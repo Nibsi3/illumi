@@ -122,7 +122,7 @@ export default function InvoiceExamplesPage() {
                     <div className="bg-primary/5 rounded-xl p-8 text-center">
                         <h3 className="text-2xl font-bold mb-3">Create Your Invoice Now — Free</h3>
                         <p className="text-muted-foreground mb-6">All 8 invoice formats available as customisable templates in Illumi.</p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg">
                                 Create an Invoice — Free <IconArrowRight className="ml-2 w-5 h-5" />
                             </Button>

@@ -179,7 +179,7 @@ export default function InvoiceTemplatesPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Create Branded Invoices
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -199,7 +199,7 @@ export default function InvoiceTemplatesPost() {
                         Illumi handles the design so you can focus on your work. Beautiful, professional invoices 
                         that make clients take you seriously — completely free.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />

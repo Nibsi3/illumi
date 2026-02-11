@@ -80,7 +80,7 @@ export default function FreeInvoiceGeneratorPage() {
                         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                             Create unlimited professional invoices for free. No credit card required, no trial period, no per-invoice fees. Just sign up and start invoicing — free forever.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" className="text-lg px-8 py-6">
                                 <IconRocket className="mr-2 w-5 h-5" />
                                 Generate Your First Invoice — Free
@@ -145,7 +145,7 @@ export default function FreeInvoiceGeneratorPage() {
                             </table>
                         </div>
                         <div className="flex gap-4 justify-center mt-8">
-                            <Link href="/login"><Button size="lg">Create an Invoice — Free</Button></Link>
+                            <Link href="/invoices/new"><Button size="lg">Create an Invoice — Free</Button></Link>
                             <Link href="/pricing"><Button size="lg" variant="outline">Compare Plans</Button></Link>
                         </div>
                     </div>
@@ -185,7 +185,7 @@ export default function FreeInvoiceGeneratorPage() {
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Invoicing for Free Today</h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">No credit card. No trial. No catch. Just free, professional invoicing.</p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Create Free Account
                             <IconArrowRight className="ml-2 w-5 h-5" />

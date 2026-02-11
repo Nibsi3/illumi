@@ -210,7 +210,7 @@ export default function TaxDeductionsPost() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Illumi&apos;s expense tracker helps you categorise and store receipts so tax season is stress-free.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Tracking Expenses Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

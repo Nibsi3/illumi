@@ -173,7 +173,7 @@ export default function BillingInvoicingSoftwarePage() {
                             Built for South African freelancers and small businesses who want to get paid faster.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Free Today
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -413,7 +413,7 @@ export default function BillingInvoicingSoftwarePage() {
                                     <span>VAT invoicing</span>
                                 </li>
                             </ul>
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button variant="outline" className="w-full">Create an Invoice — Free</Button>
                             </Link>
                         </div>
@@ -441,7 +441,7 @@ export default function BillingInvoicingSoftwarePage() {
                                     <span>Advanced reporting</span>
                                 </li>
                             </ul>
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                                     Start Free Trial
                                 </Button>
@@ -482,7 +482,7 @@ export default function BillingInvoicingSoftwarePage() {
                         Start free today — no credit card required.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Create Free Account
                                 <IconArrowRight className="ml-2 h-5 w-5" />

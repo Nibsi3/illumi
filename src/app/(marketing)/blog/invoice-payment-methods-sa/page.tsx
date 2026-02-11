@@ -192,7 +192,7 @@ export default function PaymentMethodsPost() {
                     </div>
 
                     <div className="mt-10 flex flex-wrap gap-4">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Set Up Online Payments
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -212,7 +212,7 @@ export default function PaymentMethodsPost() {
                         Illumi supports PayFast, Yoco, Ozow, Stripe, and more — built in.
                         Connect your gateway and start getting paid faster.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

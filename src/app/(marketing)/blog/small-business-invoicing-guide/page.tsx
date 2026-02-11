@@ -133,7 +133,7 @@ export default function SmallBusinessInvoicingGuidePage() {
                 <div className="max-w-3xl mx-auto mt-10 bg-primary/5 rounded-xl p-8 text-center">
                     <h3 className="text-2xl font-bold mb-3">Free Invoicing for South African Businesses</h3>
                     <p className="text-muted-foreground mb-6">Illumi is built for SA small businesses. ZAR default, SARS-compliant, PayFast & Yoco integrated.</p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg">
                             Create My First Invoice <IconArrowRight className="ml-2 w-5 h-5" />
                         </Button>

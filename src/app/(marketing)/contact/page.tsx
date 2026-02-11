@@ -195,7 +195,7 @@ export default function ContactPage() {
                                 <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-muted-foreground transition-colors mt-1" />
                             </a>
                             <a
-                                href="/login"
+                                href="/invoices/new"
                                 className="group flex items-start gap-3 rounded-xl border border-border bg-muted hover:bg-white/8 transition-colors p-4"
                             >
                                 <div className="h-9 w-9 rounded-lg bg-accent flex items-center justify-center shrink-0">

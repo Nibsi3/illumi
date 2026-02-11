@@ -218,7 +218,7 @@ export default function BestInvoiceSoftwareSouthAfricaPost() {
                             despite the higher price. But for most freelancers and small businesses, dedicated 
                             invoice software like Illumi is simpler and more cost-effective.
                         </p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                 Try Illumi Free
                                 <IconArrowRight className="ml-2 h-5 w-5" />
@@ -256,7 +256,7 @@ export default function BestInvoiceSoftwareSouthAfricaPost() {
                         Join thousands of South African businesses using Illumi. Free forever, with local 
                         payment support built in.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Free Account
                             <IconArrowRight className="ml-2 h-5 w-5" />

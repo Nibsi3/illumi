@@ -118,7 +118,7 @@ export default function InvoiceCreatorPage() {
                             Stop wasting hours on spreadsheets. Illumi&apos;s invoice creator lets you build professional invoices in seconds, send them instantly, and get paid online. No installation needed.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="text-lg px-8 py-6">
                                     Start Creating Invoices
                                     <IconArrowRight className="ml-2 w-5 h-5" />
@@ -240,7 +240,7 @@ export default function InvoiceCreatorPage() {
                         <h3>Creating Invoices for South African Businesses</h3>
                         <p>South African businesses have specific invoicing requirements set by SARS. If you&apos;re VAT-registered, your tax invoices must include your VAT number, the words &quot;Tax Invoice&quot;, and clearly show the VAT amount. Illumi&apos;s invoice creator handles all of this automatically, ensuring every invoice you send is fully compliant.</p>
 
-                        <p>Whether you&apos;re a freelance designer in Cape Town, a plumber in Johannesburg, or a consulting firm in Durban, Illumi gives you the tools to invoice professionally and get paid faster. <Link href="/login" className="text-primary font-semibold">Create your free account today</Link> and send your first invoice in minutes.</p>
+                        <p>Whether you&apos;re a freelance designer in Cape Town, a plumber in Johannesburg, or a consulting firm in Durban, Illumi gives you the tools to invoice professionally and get paid faster. <Link href="/invoices/new" className="text-primary font-semibold">Create your free account today</Link> and send your first invoice in minutes.</p>
                     </div>
                 </div>
             </section>
@@ -254,7 +254,7 @@ export default function InvoiceCreatorPage() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
                         Join thousands of businesses using Illumi. Free forever — no credit card required.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Create Free Invoice Now
                             <IconArrowRight className="ml-2 w-5 h-5" />

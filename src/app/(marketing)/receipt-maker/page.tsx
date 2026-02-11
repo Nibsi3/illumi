@@ -146,7 +146,7 @@ export default function ReceiptMakerPage() {
                                 service completions, and keeping accurate records for your business.
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <Link href="/login">
+                                <Link href="/invoices/new">
                                     <Button size="lg" className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90">
                                         Create Free Receipt
                                         <IconArrowRight className="ml-2 h-5 w-5" />
@@ -391,7 +391,7 @@ export default function ReceiptMakerPage() {
                         Join thousands of South African businesses using Illumi for invoicing and receipts. 
                         Free forever, no credit card required.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90">
                             Create Free Receipt
                             <IconArrowRight className="ml-2 h-5 w-5" />

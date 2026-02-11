@@ -189,7 +189,7 @@ export default function ClientPortalPost() {
                                 <IconArrowRight className="ml-2 h-5 w-5" />
                             </Button>
                         </Link>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button variant="outline">Create an Invoice Now</Button>
                         </Link>
                     </div>
@@ -203,7 +203,7 @@ export default function ClientPortalPost() {
                         Illumi's client portal is included free. Set it up in minutes and start impressing clients 
                         with a professional, organized experience.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Create My First Invoice
                             <IconArrowRight className="ml-2 h-5 w-5" />

@@ -173,7 +173,7 @@ export default function InvoiceManagementSystemPage() {
                             and gain insights into your cash flow. Built for South African freelancers and SMEs.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Start Managing Invoices
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -433,7 +433,7 @@ export default function InvoiceManagementSystemPage() {
                         keeps everything organised so you can focus on your business.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Start Free Today
                                 <IconArrowRight className="ml-2 h-5 w-5" />

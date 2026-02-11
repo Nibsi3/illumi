@@ -208,7 +208,7 @@ export default function CashFlowTipsPost() {
                         Illumi helps you invoice faster, track expenses, and automate payment reminders — all the tools
                         you need to keep cash flowing.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Invoicing Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

@@ -101,7 +101,7 @@ export default function FreelanceInvoiceTemplatePage() {
                             Professional invoice templates designed specifically for freelancers. Bill hourly or per project, add your branding, and get paid faster. Free forever.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="text-lg px-8 py-6">
                                     Create Freelance Invoice — Free
                                     <IconArrowRight className="ml-2 w-5 h-5" />
@@ -210,7 +210,7 @@ export default function FreelanceInvoiceTemplatePage() {
 
                         <p>As an independent contractor in South Africa, you&apos;re also responsible for provisional tax payments. Keeping accurate invoicing records with Illumi makes tax season much easier — export your income data anytime.</p>
 
-                        <p><Link href="/login" className="text-primary font-semibold">Create your free freelance invoice now</Link> and join thousands of South African freelancers who trust Illumi for professional invoicing.</p>
+                        <p><Link href="/invoices/new" className="text-primary font-semibold">Create your free freelance invoice now</Link> and join thousands of South African freelancers who trust Illumi for professional invoicing.</p>
                     </div>
                 </div>
             </section>
@@ -220,7 +220,7 @@ export default function FreelanceInvoiceTemplatePage() {
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Invoice Like a Pro. Get Paid Like a Pro.</h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">Free professional invoicing for freelancers. No credit card needed.</p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Start Invoicing Free <IconArrowRight className="ml-2 w-5 h-5" />
                         </Button>

@@ -56,6 +56,7 @@ import { allClients } from "@/lib/data"
 import { useSubscription } from "@/lib/subscription/hooks"
 import { toast } from "sonner"
 import { useSettings } from "@/lib/settings-context"
+import { useTheme } from "@/lib/theme-context"
 import { useWorkspace } from "@/lib/workspace-context"
 import { motion, AnimatePresence } from "framer-motion"
 import { Calendar } from "@/components/ui/calendar"
@@ -182,7 +183,8 @@ export default function NewInvoicePage() {
     const [isDueDateOpen, setIsDueDateOpen] = useState(false)
     const [isClientModalOpen, setIsClientModalOpen] = useState(false)
 
-    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">("dark")
+    const { theme: siteTheme } = useTheme()
+    const [invoiceMode, setInvoiceMode] = useState<"light" | "dark">(siteTheme)
     const illumiLogoSrc = invoiceMode === 'light' ? '/midday-logo.png' : '/logo.png'
 
     const scrollToSection = (id: string) => {

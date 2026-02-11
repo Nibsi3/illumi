@@ -152,7 +152,7 @@ export default function VatInvoicesPage() {
                             included, professional templates, and secure record-keeping. Free for SA businesses.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto">
                                     Create VAT Invoice Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -386,7 +386,7 @@ export default function VatInvoicesPage() {
                         Set up in minutes, invoice for free.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                                 Start Free Today
                                 <IconArrowRight className="ml-2 h-5 w-5" />

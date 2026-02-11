@@ -173,7 +173,7 @@ export default function BestFreeInvoicingSoftwarePage() {
                     <div className="bg-primary/5 rounded-xl p-8 text-center mt-10">
                         <h3 className="text-2xl font-bold mb-3">Create an Invoice Now — No Limits</h3>
                         <p className="text-muted-foreground mb-6">Unlimited invoices, ZAR default, SA payment gateways. Free forever.</p>
-                        <Link href="/login">
+                        <Link href="/invoices/new">
                             <Button size="lg">
                                 Create My First Invoice <IconArrowRight className="ml-2 w-5 h-5" />
                             </Button>

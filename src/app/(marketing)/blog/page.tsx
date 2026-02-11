@@ -507,7 +507,7 @@ export default function BlogPage() {
                         Join thousands of South African entrepreneurs receiving weekly tips on invoicing, 
                         cash flow, and growing their business.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Subscribe Free
                             <IconArrowRight className="ml-2 h-5 w-5" />

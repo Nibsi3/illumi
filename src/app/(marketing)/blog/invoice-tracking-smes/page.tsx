@@ -213,7 +213,7 @@ export default function InvoiceTrackingSMEsPost() {
                             filter by any criteria, and get alerts for overdue payments. All included free.
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Link href="/login">
+                            <Link href="/invoices/new">
                                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                                     Try Illumi Free
                                     <IconArrowRight className="ml-2 h-5 w-5" />
@@ -256,7 +256,7 @@ export default function InvoiceTrackingSMEsPost() {
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Stop guessing. Start tracking. Illumi shows you exactly where every invoice stands.
                     </p>
-                    <Link href="/login">
+                    <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
                             Start Free Today
                             <IconArrowRight className="ml-2 h-5 w-5" />
