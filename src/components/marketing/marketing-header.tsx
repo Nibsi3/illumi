@@ -51,7 +51,7 @@ export function MarketingHeader() {
                         alt="Illumi Logo"
                         width={28}
                         height={28}
-                        className="w-7 h-7"
+                        className={theme === 'dark' ? 'w-7 h-7' : 'w-7 h-7 scale-75 origin-center'}
                     />
                     <span className="text-sm font-bold text-foreground">Illumi</span>
                 </Link>
