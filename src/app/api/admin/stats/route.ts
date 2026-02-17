@@ -37,10 +37,24 @@ export async function GET() {
         const service = getServiceClient()
 
         // Fetch all workspaces with owner info
-        const { data: workspaces } = await service
+        let workspaces: any[] = []
+        const { data: wsData, error: wsError } = await service
             .from("workspaces")
-            .select("id, name, owner_id, created_at")
+            .select("id, name, owner_id, created_at, trial_started_at")
             .order("created_at", { ascending: false })
+
+        if (wsError && !wsData) {
+            const { data: wsFallback, error: wsFallbackError } = await service
+                .from("workspaces")
+                .select("id, name, owner_id, created_at")
+                .order("created_at", { ascending: false })
+            if (wsFallbackError) {
+                throw wsFallbackError
+            }
+            workspaces = wsFallback || []
+        } else {
+            workspaces = wsData || []
+        }
 
         // Fetch all workspace members to get user emails
         const { data: members } = await service
@@ -115,7 +129,22 @@ export async function GET() {
         for (const ws of nonAdminWorkspaces) {
             const ownerEmail = ownerEmailMap[ws.owner_id] || "unknown"
             const sub = subsByWorkspace[ws.id]
-            const tier = sub?.tier === "pro" && sub?.status === "active" ? "pro" : "free"
+
+            const isPaidPro = sub?.tier === "pro" && sub?.status === "active"
+
+            let isTrialPro = false
+            if (!isPaidPro) {
+                const trialStartRaw = (ws as any)?.trial_started_at || ws.created_at
+                if (trialStartRaw) {
+                    const trialStart = new Date(trialStartRaw)
+                    const trialEnd = new Date(trialStart)
+                    trialEnd.setMonth(trialEnd.getMonth() + 2)
+                    const now = new Date()
+                    isTrialPro = now < trialEnd
+                }
+            }
+
+            const tier = (isPaidPro || isTrialPro) ? "pro" : "free"
 
             const wsInvoices = allInvoices.filter(inv => inv.workspace_id === ws.id)
 
