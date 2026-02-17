@@ -108,7 +108,7 @@ export default function InvoiceMakerPage() {
                                 </Button>
                             </Link>
                         </div>
-                        <p className="mt-4 text-sm text-muted-foreground">Free forever. No credit card needed.</p>
+                        <p className="mt-4 text-sm text-muted-foreground">2 months of Pro features free. No credit card needed.</p>
                     </div>
                 </div>
             </section>
@@ -194,7 +194,7 @@ export default function InvoiceMakerPage() {
                         Make Your First Invoice in Under 60 Seconds
                     </h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-                        Join thousands of businesses making professional invoices with Illumi. Free forever.
+                        Join thousands of businesses making professional invoices with Illumi. 2 months of Pro features free.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">

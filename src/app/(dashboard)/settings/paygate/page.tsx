@@ -471,7 +471,7 @@ export default function PayGatePage() {
     const handleConnect = (id: string) => {
         if (!isPro) {
             toast.error("Pro Feature", {
-                description: "Please upgrade to a Pro plan to connect payment gateways."
+                description: "Your free trial has ended. Subscribe to Pro to connect payment gateways."
             })
             return
         }
@@ -760,7 +760,7 @@ export default function PayGatePage() {
                     <h2 className="text-2xl font-bold text-foreground mb-2">Pro Feature</h2>
                     <p className="text-muted-foreground max-w-md mb-8">
                         Payment gateway integration is only available on the Pro plan. 
-                        Upgrade to accept payments directly from your invoices.
+                        Your free trial has ended — subscribe to accept payments directly from your invoices.
                     </p>
                     <HoverBorderGradient
                         as="button"
@@ -768,7 +768,7 @@ export default function PayGatePage() {
                         containerClassName=""
                         className="bg-primary text-primary-foreground font-bold h-12 px-8 w-full sm:w-auto"
                     >
-                        Upgrade to Pro — R200/mo
+                        Subscribe to Pro — R200/mo
                     </HoverBorderGradient>
                 </div>
             </div>

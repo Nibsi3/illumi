@@ -186,7 +186,7 @@ export default function InvoiceManagementSystemPage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • Unlimited invoices • No credit card required
+                            2 months Pro free • Unlimited invoices • No credit card required
                         </p>
                     </div>
                 </div>

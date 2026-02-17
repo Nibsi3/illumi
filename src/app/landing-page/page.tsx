@@ -152,7 +152,7 @@ const testimonials = [
 const faqs = [
     {
         question: "Is Illumi really free to use?",
-        answer: "Yes! Our Free plan includes unlimited invoices, client database, expense tracking, email sending, and PDF exports - free forever. No credit card required to start. You only pay if you upgrade to Pro for advanced features like PayGate integration.",
+        answer: "Yes! Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, stay on the Free plan (unlimited invoices, clients, expenses) or subscribe to Pro for R200/month.",
     },
     {
         question: "How do I accept online payments from clients?",
@@ -439,7 +439,7 @@ export default function GoogleAdsLandingPage() {
 
                         <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 max-w-2xl mx-auto px-2">
                             Create professional invoices in ZAR, send them by email, and let clients pay online with PayFast, Yoco, or Ozow. 
-                            <strong className="text-foreground"> Free forever</strong> — no credit card required.
+                            <strong className="text-foreground"> 2 months of Pro features free</strong> — no credit card required.
                         </p>
 
                         {/* Key Benefits - Get Paid Online prominently displayed */}
@@ -535,7 +535,7 @@ export default function GoogleAdsLandingPage() {
                             Simple, Transparent Pricing
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            Start free, upgrade when you need online payments and advanced features.
+                            Every account gets 2 months of Pro features free. Then R200/month to keep going.
                         </p>
                     </div>
 
@@ -549,7 +549,7 @@ export default function GoogleAdsLandingPage() {
                                     <span className="text-muted-foreground">/month</span>
                                 </div>
                                 <div className="text-sm text-primary font-medium mt-2">Best for freelancers & solo businesses starting out</div>
-                                <div className="text-xs text-muted-foreground mt-1">Free forever. No credit card required.</div>
+                                <div className="text-xs text-muted-foreground mt-1">After your Pro trial ends, stay on Free forever.</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -583,11 +583,11 @@ export default function GoogleAdsLandingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-primary-foreground/70 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl sm:text-5xl font-bold">R200</span>
-                                    <span className="text-primary-foreground/70">/month</span>
+                                    <span className="text-4xl sm:text-5xl font-bold">R0</span>
+                                    <span className="text-primary-foreground/70">for 2 months</span>
                                 </div>
-                                <div className="text-sm text-white font-medium mt-2">Best for growing businesses that want faster payments</div>
-                                <div className="text-xs text-primary-foreground/60 mt-1">Online payments & advanced features included.</div>
+                                <div className="text-sm text-white font-medium mt-2">Then R200/month — for businesses that want faster payments</div>
+                                <div className="text-xs text-primary-foreground/60 mt-1">All Pro features included free for 2 months. No credit card required.</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -606,7 +606,7 @@ export default function GoogleAdsLandingPage() {
                                         containerClassName="w-full"
                                         className="bg-background text-foreground font-semibold text-base px-6 py-3 w-full justify-center"
                                     >
-                                        Start Free, Upgrade Later
+                                        Start 2-Month Free Trial
                                     </HoverBorderGradient>
                                 </Link>
                             </div>

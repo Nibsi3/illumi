@@ -252,7 +252,7 @@ export default function InvoiceCreatorPage() {
                         Ready to Create Your First Invoice?
                     </h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-                        Join thousands of businesses using Illumi. Free forever — no credit card required.
+                        Join thousands of businesses using Illumi. 2 months of Pro features free — no credit card required.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">

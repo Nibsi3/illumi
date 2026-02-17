@@ -16,7 +16,7 @@ import {
 
 export const metadata: Metadata = {
     title: "Billing & Invoicing Software South Africa | Illumi",
-    description: "Complete billing and invoicing software for South African businesses. Create invoices, accept online payments, track expenses, and manage your finances. Free forever.",
+    description: "Complete billing and invoicing software for South African businesses. Create invoices, accept online payments, track expenses, and manage your finances. 2 months of Pro features free.",
     keywords: [
         "billing invoicing software",
         "billing software south africa",
@@ -128,7 +128,7 @@ const faqs = [
     },
     {
         question: "How much does billing and invoicing software cost?",
-        answer: "Illumi offers a free forever plan with unlimited invoices, clients, and basic features. Premium features like recurring billing and advanced reporting are available from R99/month. No hidden fees.",
+        answer: "Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, stay on the Free plan (unlimited invoices, clients, expenses) or subscribe to Pro for R200/month. No hidden fees.",
     },
 ]
 
@@ -186,7 +186,7 @@ export default function BillingInvoicingSoftwarePage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • No credit card required • Unlimited invoices
+                            2 months Pro free • No credit card required • Unlimited invoices
                         </p>
                     </div>
                 </div>

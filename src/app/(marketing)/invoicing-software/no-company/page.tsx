@@ -40,7 +40,7 @@ const benefits = [
     "Accept payments to personal account",
     "Track income for tax purposes",
     "SARS compliant invoices",
-    "Free forever",
+    "2 months Pro free",
     "Upgrade when you register a company",
 ]
 

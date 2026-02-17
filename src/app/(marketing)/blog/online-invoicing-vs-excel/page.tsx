@@ -195,7 +195,7 @@ export default function OnlineInvoicingVsExcelPost() {
                     <div className="rounded-2xl border border-primary bg-primary/5 p-8">
                         <h2 className="text-2xl font-bold mb-4">Make the Switch in Minutes</h2>
                         <p className="text-muted-foreground mb-6">
-                            Illumi is free forever for unlimited invoices. Professional templates, online 
+                            Illumi gives you 2 months of Pro features free. Professional templates, online 
                             payments, automatic reminders — everything Excel can't do. Try it today.
                         </p>
                         <div className="flex flex-wrap gap-4">

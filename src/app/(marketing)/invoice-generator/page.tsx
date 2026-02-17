@@ -117,7 +117,7 @@ export default function InvoiceGeneratorPage() {
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-muted-foreground text-sm mb-6">
                                 <IconFileInvoice className="h-4 w-4" />
-                                Free Forever
+                                2 Months Pro Free
                             </div>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
                                 Free Invoice Generator for South Africa
@@ -314,7 +314,7 @@ export default function InvoiceGeneratorPage() {
                         </Button>
                     </Link>
                     <p className="text-sm text-muted-foreground mt-4">
-                        Free forever. No credit card required.
+                        2 months of Pro features free. No credit card required.
                     </p>
                 </div>
             </section>

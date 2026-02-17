@@ -98,7 +98,7 @@ export default function PayGateFeaturePage() {
                             <Link href="/pricing">View Pro Plan</Link>
                         </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-4">Pro feature • R200/month</p>
+                    <p className="text-sm text-muted-foreground mt-4">Pro feature • 2 months free, then R200/month</p>
                 </div>
             </section>
 
@@ -258,14 +258,14 @@ export default function PayGateFeaturePage() {
                             <div className="text-center">
                                 <div className="text-sm text-muted-foreground mb-2">Pro Plan</div>
                                 <div className="text-4xl font-serif font-bold text-foreground mb-2">R200</div>
-                                <div className="text-muted-foreground mb-6">/month</div>
+                                <div className="text-muted-foreground mb-6">/month — first 2 months free</div>
                                 <Button
                                     asChild
                                     className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-12"
                                 >
-                                    <Link href="/login">Upgrade to Pro</Link>
+                                    <Link href="/login">Start Free Trial</Link>
                                 </Button>
-                                <p className="text-xs text-muted-foreground mt-4">Cancel anytime</p>
+                                <p className="text-xs text-muted-foreground mt-4">No credit card required • Cancel anytime</p>
                             </div>
                         </div>
                     </div>

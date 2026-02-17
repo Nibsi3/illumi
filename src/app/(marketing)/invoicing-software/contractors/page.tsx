@@ -197,7 +197,7 @@ export default function ContractorsPage() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Professional Invoicing, Zero Cost</h2>
                     <p className="text-lg text-muted-foreground mb-8">
-                        Free forever for contractors. Create invoices from the job site with your phone.
+                        2 months of Pro features free for contractors. Create invoices from the job site with your phone.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

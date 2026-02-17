@@ -75,7 +75,7 @@ export default function StartupsPage() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Launch Your Startup Right</h2>
                     <p className="text-lg text-muted-foreground mb-8">
-                        Professional invoicing without the enterprise price tag. Free forever on our starter plan.
+                        Professional invoicing without the enterprise price tag. 2 months of Pro features free.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

@@ -299,7 +299,7 @@ export default function MembersPage() {
                         </div>
                         <div>
                             <p className="text-sm font-bold text-foreground uppercase tracking-widest mb-1">Reached Member Limit</p>
-                            <p className="text-sm text-muted-foreground">You're currently using {members.length}/{limits.maxUsers} member seats. Upgrade to Pro for up to 10 members.</p>
+                            <p className="text-sm text-muted-foreground">You're currently using {members.length}/{limits.maxUsers} member seats. Subscribe to Pro for up to 10 members.</p>
                         </div>
                     </div>
                     <Link href="/settings/billing">

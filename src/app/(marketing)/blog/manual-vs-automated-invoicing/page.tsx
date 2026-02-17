@@ -272,7 +272,7 @@ export default function ManualVsAutomatedInvoicingPost() {
                         <h2 className="text-2xl font-bold mb-4">Ready to Automate?</h2>
                         <p className="text-muted-foreground mb-6">
                             Illumi makes the switch easy. Import your clients, create your first invoice in 
-                            minutes, and start getting paid faster. Free forever for unlimited invoices.
+                            minutes, and start getting paid faster. 2 months of Pro features free.
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link href="/invoices/new">

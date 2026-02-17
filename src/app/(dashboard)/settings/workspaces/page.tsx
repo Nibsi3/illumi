@@ -178,8 +178,8 @@ export default function WorkspacesPage() {
                             <p className="text-sm font-medium text-foreground">Workspace limit reached</p>
                             <p className="text-sm text-muted-foreground mt-1">
                                 Free accounts are limited to 1 workspace.{" "}
-                                <Link href="/upgrade" className="text-primary hover:underline">
-                                    Upgrade to Pro
+                                <Link href="/settings/billing" className="text-primary hover:underline">
+                                    Subscribe to Pro
                                 </Link>{" "}
                                 for unlimited workspaces.
                             </p>

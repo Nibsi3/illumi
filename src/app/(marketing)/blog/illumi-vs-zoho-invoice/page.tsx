@@ -108,7 +108,7 @@ const keyDifferences = [
     },
     {
         title: "Simple, Transparent Pricing",
-        description: "Zoho's pricing is tiered and usage-based, making it hard to predict costs. Illumi offers straightforward pricing: Free forever, or R200/month for Pro. No surprises.",
+        description: "Zoho's pricing is tiered and usage-based, making it hard to predict costs. Illumi offers straightforward pricing: 2 months of Pro free, then R200/month. No surprises.",
     },
     {
         title: "ZAR-First Design",
@@ -248,7 +248,7 @@ export default function IllumiVsZohoInvoicePost() {
                         <p className="text-muted-foreground leading-relaxed">
                             Zoho's pricing structure can also be confusing. With tiered plans and usage-based pricing, it's 
                             hard to know exactly what you'll pay each month. Illumi keeps it simple: a genuinely free plan 
-                            with unlimited invoices, or R200/month for Pro features including online payments.
+                            with unlimited invoices, or 2 months free then R200/month for Pro features including online payments.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">
                             Finally, there's the question of complexity. Zoho Invoice is designed to be part of a larger 

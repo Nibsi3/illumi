@@ -27,7 +27,7 @@ const softwareOptions = [
         localPayments: true,
         vatSupport: true,
         zarCurrency: true,
-        pros: ["Free forever plan", "PayFast & Yoco integration", "Built for SA", "Unlimited invoices"],
+        pros: ["2 months Pro free", "PayFast & Yoco integration", "Built for SA", "Unlimited invoices"],
         cons: ["Newer platform"],
         bestFor: "South African freelancers and small businesses",
     },
@@ -253,7 +253,7 @@ export default function BestInvoiceSoftwareSouthAfricaPost() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl font-bold mb-4">Ready to Start Invoicing?</h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Join thousands of South African businesses using Illumi. Free forever, with local 
+                        Join thousands of South African businesses using Illumi. 2 months of Pro features free, with local 
                         payment support built in.
                     </p>
                     <Link href="/invoices/new">

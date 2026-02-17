@@ -261,7 +261,7 @@ export default function FreelancersPage() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Join Thousands of SA Freelancers</h2>
                     <p className="text-lg text-muted-foreground mb-8">
-                        Free forever. No credit card required. Start invoicing in 60 seconds.
+                        2 months of Pro features free. No credit card required. Start invoicing in 60 seconds.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

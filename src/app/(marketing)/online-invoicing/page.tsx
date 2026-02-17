@@ -192,7 +192,7 @@ export default function OnlineInvoicingPage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • No credit card required • Works on all devices
+                            2 months Pro free • No credit card required • Works on all devices
                         </p>
                     </div>
                 </div>

@@ -112,7 +112,7 @@ const keyDifferences = [
     },
     {
         title: "Simple Monthly Pricing",
-        description: "Invoice Ninja pushes annual billing for the best rates. Illumi offers straightforward monthly pricing at R200/month with no lock-in contracts.",
+        description: "Invoice Ninja pushes annual billing for the best rates. Illumi offers 2 months of Pro free, then straightforward monthly pricing at R200/month with no lock-in contracts.",
     },
 ]
 

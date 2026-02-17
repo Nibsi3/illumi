@@ -33,7 +33,8 @@ export default function TermsAndConditionsPage() {
                     <section>
                         <h2 className="text-lg font-semibold text-foreground">1. Month-to-month subscription</h2>
                         <ul className="mt-3 list-disc pl-6 space-y-2">
-                            <li>Subscriptions are billed month-to-month unless otherwise stated.</li>
+                            <li>All new accounts receive a complimentary 2-month Pro trial at no cost and with no credit card required.</li>
+                            <li>After the trial period, subscriptions are billed month-to-month unless otherwise stated.</li>
                             <li>You can cancel at any time. Cancellation stops future renewals.</li>
                             <li>Access continues until the end of the current billing period.</li>
                         </ul>

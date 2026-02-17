@@ -52,11 +52,11 @@ export default function RecurringInvoicesPage() {
             <div className="flex flex-col gap-y-8 animate-in fade-in duration-500 pb-20">
                 <div className="flex flex-col items-start justify-center min-h-[60vh]">
                     <h1 className="text-4xl font-serif text-foreground tracking-tight italic">Recurring</h1>
-                    <p className="text-muted-foreground mt-2 max-w-xl">Recurring invoices are a Pro feature. Upgrade to automate your monthly billing.</p>
+                    <p className="text-muted-foreground mt-2 max-w-xl">Recurring invoices are a Pro feature. Your free trial has ended — subscribe to continue automating your monthly billing.</p>
                     <div className="mt-6">
                         <Link href="/settings/billing">
                             <HoverBorderGradient as="div" containerClassName="w-full" className="bg-primary text-primary-foreground font-bold h-11 px-6 flex items-center justify-center">
-                                Upgrade to Pro
+                                Subscribe to Pro
                             </HoverBorderGradient>
                         </Link>
                     </div>

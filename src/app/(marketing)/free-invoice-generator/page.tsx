@@ -78,7 +78,7 @@ export default function FreeInvoiceGeneratorPage() {
                             Free Invoice Generator
                         </h1>
                         <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                            Create unlimited professional invoices for free. No credit card required, no trial period, no per-invoice fees. Just sign up and start invoicing — free forever.
+                            Create unlimited professional invoices for free. No credit card required, no per-invoice fees. Every account gets 2 months of Pro features free — just sign up and start invoicing.
                         </p>
                         <Link href="/invoices/new">
                             <Button size="lg" className="text-lg px-8 py-6">
@@ -118,7 +118,7 @@ export default function FreeInvoiceGeneratorPage() {
                     <div className="max-w-3xl mx-auto">
                         <div className="text-center mb-12">
                             <h2 className="text-3xl md:text-4xl font-bold mb-4">Free Plan vs Pro Plan</h2>
-                            <p className="text-lg text-muted-foreground">Our free plan covers everything most businesses need. Upgrade to Pro only if you want online payments and advanced features.</p>
+                            <p className="text-lg text-muted-foreground">Every account gets 2 months of Pro features free. After your trial, stay on Free or subscribe to Pro for online payments and advanced features.</p>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse">
@@ -126,7 +126,7 @@ export default function FreeInvoiceGeneratorPage() {
                                     <tr className="border-b">
                                         <th className="text-left p-4 font-semibold">Feature</th>
                                         <th className="p-4 font-semibold text-green-600">Free</th>
-                                        <th className="p-4 font-semibold text-primary">Pro (R149/mo)</th>
+                                        <th className="p-4 font-semibold text-primary">Pro (2mo free, then R200/mo)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -171,8 +171,8 @@ export default function FreeInvoiceGeneratorPage() {
                             <li>Full <strong>expense tracking</strong> with receipt upload</li>
                         </ul>
 
-                        <h3>When Should You Upgrade to Pro?</h3>
-                        <p>The Pro plan (R149/month) is designed for businesses that want to accept online payments directly through their invoices. If your clients want to pay by card, EFT, or mobile money, Pro gives you integration with PayFast, Yoco, Ozow, and Stripe. You also get recurring invoices for retainer clients, custom branding (remove the Illumi watermark), and WhatsApp payment links.</p>
+                        <h3>When Should You Subscribe to Pro?</h3>
+                        <p>Every new account gets 2 months of Pro features completely free. After your trial, the Pro plan is R200/month and is designed for businesses that want to accept online payments directly through their invoices. If your clients want to pay by card, EFT, or mobile money, Pro gives you integration with PayFast, Yoco, Ozow, and Stripe. You also get recurring invoices for retainer clients, custom branding (remove the Illumi watermark), and WhatsApp payment links.</p>
 
                         <h3>Free Invoice Generator for South African Businesses</h3>
                         <p>Illumi is built by South Africans, for South Africans. Our default currency is ZAR, we support all major SA payment gateways, and our invoice format meets SARS requirements. Whether you&apos;re a sole proprietor in Pretoria or a startup in Stellenbosch, Illumi helps you invoice like a pro — for free.</p>

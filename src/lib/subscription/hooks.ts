@@ -24,6 +24,9 @@ export function useSubscription() {
     const [daysRemaining, setDaysRemaining] = useState<number | null>(null)
     const [subscription, setSubscription] = useState<Subscription | null>(null)
     const [isSubscribed, setIsSubscribed] = useState(false)
+    const [isTrial, setIsTrial] = useState(false)
+    const [trialDaysRemaining, setTrialDaysRemaining] = useState<number | null>(null)
+    const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
     
     const { activeWorkspace, isOwner, userId, userEmail } = useWorkspace()
 
@@ -128,8 +131,14 @@ export function useSubscription() {
                 if (data && data.tier !== 'free') {
                     setSubscription(data)
                     setTier(data.tier as SubscriptionTier)
-                    setIsSubscribed(data.tier === 'pro' && data.status === 'active')
+                    setIsSubscribed(data.tier === 'pro' && (data.status === 'active' || data.status === 'trial'))
                     
+                    // Track trial status
+                    const isTrialSub = Boolean(data.is_trial || data.status === 'trial')
+                    setIsTrial(isTrialSub)
+                    setTrialDaysRemaining(data.trial_days_remaining ?? null)
+                    setTrialEndsAt(isTrialSub ? (data.expires_at || null) : null)
+
                     // Calculate days remaining
                     if (data.expires_at) {
                         const expiresAt = new Date(data.expires_at)
@@ -164,6 +173,9 @@ export function useSubscription() {
                     setTier("free")
                     setIsSubscribed(false)
                     setDaysRemaining(null)
+                    setIsTrial(false)
+                    setTrialDaysRemaining(null)
+                    setTrialEndsAt(null)
 
                     // Cache free to prevent repeated re-check flicker
                     if (cacheKey) {
@@ -203,6 +215,7 @@ export function useSubscription() {
     // Members get access to workspace features but cannot "own" Pro status
     const effectiveTier: SubscriptionTier = isOwner ? tier : "free"
     const effectiveIsPro = isOwner && tier === "pro"
+    const effectiveIsTrial = isOwner && isTrial
 
     return {
         tier: effectiveTier,
@@ -212,6 +225,9 @@ export function useSubscription() {
         isSubscribed: effectiveIsPro,
         isPro: effectiveIsPro,
         isFree: !effectiveIsPro,
+        isTrial: effectiveIsTrial,
+        trialDaysRemaining: isOwner ? trialDaysRemaining : null,
+        trialEndsAt: isOwner ? trialEndsAt : null,
         limits: getTierLimits(effectiveTier),
         isOwner,
     }

@@ -134,7 +134,7 @@ export default function InvoiceTemplatePage() {
                             Professional Invoice Templates for Every Business
                         </h1>
                         <p className="text-lg text-muted-foreground mb-8">
-                            Create beautiful, professional invoices in minutes. Choose from industry-specific templates, customise with your branding, and send to clients instantly. Free forever.
+                            Create beautiful, professional invoices in minutes. Choose from industry-specific templates, customise with your branding, and send to clients instantly. 2 months of Pro features free.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link href="/invoices/new">
@@ -352,7 +352,7 @@ export default function InvoiceTemplatePage() {
                             Stop Using Spreadsheets. Start Looking Professional.
                         </h2>
                         <p className="text-lg text-muted-foreground mb-8">
-                            Join thousands of businesses using Illumi to create professional invoices, track payments, and grow their revenue. Free forever.
+                            Join thousands of businesses using Illumi to create professional invoices, track payments, and grow their revenue. 2 months of Pro features free.
                         </p>
                         <Link href="/invoices/new">
                             <Button size="lg" className="text-lg px-8 py-6">

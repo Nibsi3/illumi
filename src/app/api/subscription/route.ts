@@ -110,14 +110,73 @@ export async function GET(req: Request) {
             )
         }
 
-        // No subscription found = free tier
+        // No paid subscription found — check if workspace qualifies for 2-month free Pro trial
+        // Try with trial_started_at first, fall back to just created_at if column doesn't exist yet
+        let workspace: any = null
+        const { data: wsData, error: wsError } = await service
+            .from('workspaces')
+            .select('created_at, trial_started_at')
+            .eq('id', workspaceId)
+            .single()
+
+        if (wsError && !wsData) {
+            // Column might not exist yet — retry with just created_at
+            const { data: wsFallback } = await service
+                .from('workspaces')
+                .select('created_at')
+                .eq('id', workspaceId)
+                .single()
+            workspace = wsFallback
+        } else {
+            workspace = wsData
+        }
+
+        if (workspace) {
+            // Use trial_started_at if set (for existing users who got reset), otherwise fall back to created_at
+            const trialStart = workspace.trial_started_at || workspace.created_at
+
+            if (trialStart) {
+                const trialStartDate = new Date(trialStart)
+                const trialEnd = new Date(trialStartDate)
+                trialEnd.setMonth(trialEnd.getMonth() + 2)
+                const now = new Date()
+
+                if (now < trialEnd) {
+                    const diffMs = trialEnd.getTime() - now.getTime()
+                    const trialDaysRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+
+                    return NextResponse.json(
+                        {
+                            success: true,
+                            subscription: {
+                                tier: 'pro',
+                                status: 'trial',
+                                started_at: trialStart,
+                                expires_at: trialEnd.toISOString(),
+                                is_trial: true,
+                                trial_days_remaining: trialDaysRemaining,
+                            },
+                        },
+                        {
+                            status: 200,
+                            headers: {
+                                'Cache-Control': 'private, max-age=1800, stale-while-revalidate=3600',
+                            },
+                        }
+                    )
+                }
+            }
+        }
+
+        // Trial expired or no workspace found — free tier
         return NextResponse.json(
             {
                 success: true,
                 subscription: {
                     tier: 'free',
-                    status: 'trial',
+                    status: 'expired',
                     expires_at: null,
+                    is_trial: false,
                 },
             },
             {

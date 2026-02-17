@@ -50,7 +50,7 @@ interface BillingHistoryItem {
 function BillingContent() {
     const searchParams = useSearchParams()
     const plan = searchParams.get("plan")
-    const { isPro, daysRemaining, subscription } = useSubscription()
+    const { isPro, isTrial, trialDaysRemaining, daysRemaining, subscription } = useSubscription()
     const { billingMethods, setBillingMethods, currency } = useSettings()
     const { activeWorkspace } = useWorkspace()
     const [selectedPlan, setSelectedPlan] = useState<string | null>(plan)
@@ -153,23 +153,28 @@ function BillingContent() {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground bg-accent px-3 py-1 rounded-full">
-                                {isPro ? "Pro Plan" : "Free Plan"}
+                                {isTrial ? "Pro Trial" : isPro ? "Pro Plan" : "Free Plan"}
                             </span>
-                            {daysRemaining !== null && (
+                            {isTrial && trialDaysRemaining !== null && (
+                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500">{trialDaysRemaining} days left in trial</span>
+                            )}
+                            {!isTrial && daysRemaining !== null && (
                                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{daysRemaining} days remaining</span>
                             )}
                         </div>
                         <p className="text-3xl font-serif italic text-foreground mb-2">
-                            {isPro ? "Illumi Professional" : "Ready for Pro?"}
+                            {isTrial ? "Pro Trial — Free for 2 Months" : isPro ? "Illumi Professional" : "Your trial has ended"}
                         </p>
                         <p className="text-sm text-muted-foreground max-w-md">
-                            {isPro
-                                ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
-                                : "Upgrade to Pro for R200/mo to unlock recurring invoices, PayGate, and remove Illumi branding."}
+                            {isTrial
+                                ? "You're enjoying all Pro features free for 2 months. Subscribe before your trial ends to keep access to PayGate, recurring invoices, and more."
+                                : isPro
+                                    ? "Access to all features including recurring invoices, client portal, and up to 10 team members."
+                                    : "Subscribe to Pro for R200/mo to continue using recurring invoices, PayGate, and remove Illumi branding."}
                         </p>
 
                         <div className="mt-8 flex items-center gap-4">
-                            {isPro ? (
+                            {isPro && !isTrial ? (
                                 <Button
                                     onClick={() => {
                                         const confirmed = window.confirm(
@@ -190,7 +195,7 @@ function BillingContent() {
                             ) : null}
                         </div>
                     </div>
-                    {isPro ? (
+                    {isPro && !isTrial ? (
                         <div className="flex flex-col items-start sm:items-end gap-3">
                             <div className="flex items-center justify-center gap-2 bg-accent border border-border h-10 px-6 rounded-none">
                                 <IconCircleCheckFilled size={16} className="text-foreground" />
@@ -207,7 +212,9 @@ function BillingContent() {
                     ) : (
                         <div className="flex flex-col items-start sm:items-end gap-3">
                             <PayFastSubscribeButton />
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Secure monthly billing via PayFast</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                                {isTrial ? "Subscribe now to keep Pro after your trial" : "Secure monthly billing via PayFast"}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -361,7 +368,7 @@ function BillingContent() {
                                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded">Active</span>
                             </div>
                             <p className="text-2xl font-bold text-foreground mb-1">Pro Plan</p>
-                            <p className="text-sm text-muted-foreground">R200/month • Renews automatically</p>
+                            <p className="text-sm text-muted-foreground">{isTrial ? 'Free trial • Upgrade to keep Pro access' : 'R200/month • Renews automatically'}</p>
                         </div>
 
                         {/* Billing Info */}
@@ -385,7 +392,7 @@ function BillingContent() {
                             </div>
                             <div className="flex items-center justify-between py-2">
                                 <span className="text-sm text-muted-foreground">Amount</span>
-                                <span className="text-sm font-medium text-foreground">R200.00/mo</span>
+                                <span className="text-sm font-medium text-foreground">{isTrial ? 'Free (trial)' : 'R200.00/mo'}</span>
                             </div>
                         </div>
 
@@ -498,7 +505,7 @@ function BillingContent() {
                             )}
                         </div>
                         <p className="text-3xl font-bold text-foreground mb-1">R200</p>
-                        <p className="text-sm text-muted-foreground mb-6">per month</p>
+                        <p className="text-sm text-muted-foreground mb-6">per month — first 2 months free</p>
                         
                         <p className="text-xs text-muted-foreground mb-4">Everything in Starter, plus:</p>
                         <ul className="space-y-3 mb-6">

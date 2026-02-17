@@ -154,7 +154,7 @@ export default function ReceiptMakerPage() {
                                 </Link>
                             </div>
                             <p className="text-sm text-muted-foreground mt-4">
-                                No signup required to preview. Free forever.
+                                No signup required to preview. 2 months Pro free.
                             </p>
                         </div>
                         <div className="relative">
@@ -389,7 +389,7 @@ export default function ReceiptMakerPage() {
                     </h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                         Join thousands of South African businesses using Illumi for invoicing and receipts. 
-                        Free forever, no credit card required.
+                        2 months of Pro features free, no credit card required.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="h-14 px-8 bg-primary text-primary-foreground hover:bg-primary/90">

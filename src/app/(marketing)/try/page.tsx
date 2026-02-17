@@ -128,7 +128,7 @@ export default function TryInvoicePage() {
                             </button>
                         </div>
                         <p className="text-xs text-muted-foreground mt-4">
-                            Free forever • No credit card • Takes 10 seconds with Google
+                            2 months Pro free • No credit card • Takes 10 seconds with Google
                         </p>
                     </div>
                 </div>
@@ -435,7 +435,7 @@ export default function TryInvoicePage() {
                         Trusted by 2,500+ South African businesses
                     </p>
                     <div className="flex flex-wrap justify-center gap-6 text-xs text-muted-foreground">
-                        <span>✓ Free forever</span>
+                        <span>✓ 2 months Pro free</span>
                         <span>✓ ZAR currency</span>
                         <span>✓ VAT-compliant</span>
                         <span>✓ PayFast & Yoco payments</span>

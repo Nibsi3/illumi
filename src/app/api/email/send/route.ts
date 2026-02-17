@@ -7,7 +7,7 @@ function getResendClient() {
     return new Resend(apiKey)
 }
 
-type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice" | "marketing_demo"
+type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice" | "marketing_demo" | "pro_upgrade" | "trial_reminder"
 
 const ILLUMI_PUBLIC_LOGO = "https://www.illumi.co.za/logo.png"
 
@@ -592,6 +592,101 @@ export async function POST(req: Request) {
                 `
                 break
 
+            case "pro_upgrade":
+                emailSubject = payload.subject || "Your Illumi account has been upgraded to Pro — Free for 2 months"
+                emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f7f9; padding: 40px 16px;">
+                        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e9eaee;">
+                            <div style="background: #0a0a0a; padding: 24px; text-align: center;">
+                                <img src="${ILLUMI_PUBLIC_LOGO}" alt="Illumi" width="48" height="48" style="display: inline-block;" />
+                                <div style="color: #ffffff; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; margin-top: 12px;">Pro Plan Activated</div>
+                            </div>
+                            <div style="padding: 28px 24px 8px 24px;">
+                                <h1 style="color: #0a0a0a; font-size: 24px; margin: 0 0 16px 0;">Hi there,</h1>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    We're excited to let you know that your account has been automatically upgraded to our <strong>Pro Plan</strong>, completely free for the next 2 months, effective today.
+                                </p>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    This means you now have full access to all Pro features at no cost during this period.
+                                </p>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    There's nothing you need to do to activate it — your account has already been updated.
+                                </p>
+                                <div style="background: #f0fdf4; border: 1px solid #22c55e; border-radius: 12px; padding: 16px 20px; margin: 20px 0;">
+                                    <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #166534; font-weight: 700; margin-bottom: 10px;">At the end of the 2-month period, you'll have two options:</div>
+                                    <div style="color: #166534; font-size: 14px; line-height: 1.7;">
+                                        • Add your card details to continue enjoying the Pro Plan<br />
+                                        • Downgrade or cancel if you choose not to continue
+                                    </div>
+                                </div>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 16px 0;">
+                                    We'll send a reminder before the free period ends so you have plenty of time to decide.
+                                </p>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    We appreciate your support and look forward to you experiencing everything Pro has to offer.
+                                </p>
+                                <div style="text-align: center; margin: 24px 0 18px 0;">
+                                    <a href="https://www.illumi.co.za/settings/billing" 
+                                       style="background: #0a0a0a; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: 700; display: inline-block;">
+                                        View Your Pro Plan
+                                    </a>
+                                </div>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 16px 0 0 0;">
+                                    Best regards,<br />
+                                    <strong>Cameron</strong>
+                                </p>
+                            </div>
+                            <div style="padding: 16px 24px 22px 24px; border-top: 1px solid #e9eaee; text-align: center;">
+                                <p style="color: #9ca3af; font-size: 11px; margin: 0;">Illumi • Professional Invoicing for South African Businesses</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+                break
+
+            case "trial_reminder":
+                const trialDaysLeft = payload.description || "4"
+                emailSubject = payload.subject || `Your Illumi Pro trial ends in ${trialDaysLeft} days`
+                emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f7f9; padding: 40px 16px;">
+                        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e9eaee;">
+                            <div style="background: #0a0a0a; padding: 24px; text-align: center;">
+                                <img src="${ILLUMI_PUBLIC_LOGO}" alt="Illumi" width="48" height="48" style="display: inline-block;" />
+                                <div style="color: #ffffff; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; margin-top: 12px;">Trial Ending Soon</div>
+                            </div>
+                            <div style="padding: 28px 24px 8px 24px;">
+                                <h1 style="color: #0a0a0a; font-size: 24px; margin: 0 0 16px 0;">Hi there,</h1>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 0 0 16px 0;">
+                                    Just a heads-up — your free Pro trial on Illumi ends in <strong>${trialDaysLeft} days</strong>.
+                                </p>
+                                <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 12px; padding: 16px 20px; margin: 20px 0;">
+                                    <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #92400e; font-weight: 700; margin-bottom: 10px;">To keep your Pro features:</div>
+                                    <div style="color: #92400e; font-size: 14px; line-height: 1.7;">
+                                        Subscribe to Pro for R200/month from your billing settings. You can cancel at any time with no payment obligations.
+                                    </div>
+                                </div>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 16px 0;">
+                                    If you choose not to subscribe, your account will automatically move to the Free plan. You'll keep all your data — you just won't have access to Pro features like PayGate, recurring invoices, and custom branding.
+                                </p>
+                                <div style="text-align: center; margin: 24px 0 18px 0;">
+                                    <a href="https://www.illumi.co.za/settings/billing" 
+                                       style="background: #0a0a0a; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: 700; display: inline-block;">
+                                        Subscribe to Pro
+                                    </a>
+                                </div>
+                                <p style="color: #444; font-size: 14px; line-height: 1.7; margin: 16px 0 0 0;">
+                                    Best regards,<br />
+                                    <strong>The Illumi Team</strong>
+                                </p>
+                            </div>
+                            <div style="padding: 16px 24px 22px 24px; border-top: 1px solid #e9eaee; text-align: center;">
+                                <p style="color: #9ca3af; font-size: 11px; margin: 0;">Illumi • Professional Invoicing for South African Businesses</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+                break
+
             default:
                 return NextResponse.json(
                     { success: false, error: "Invalid email type" },
@@ -602,29 +697,35 @@ export async function POST(req: Request) {
         const INVOICE_FROM = "invoice@illumi.co.za"
         const INVITE_FROM = "invite@illumi.co.za"
         const MARKETING_FROM = "info@illumi.co.za"
+        const ADMIN_FROM = "admin@illumi.co.za"
         const isInvoiceLike = type === "invoice" || type === "payment_reminder" || type === "final_notice"
 
         // Determine the "from" address
+        const isAdminEmail = type === "pro_upgrade" || type === "trial_reminder"
         const fromAddress = (type === "support" || type === "contact")
             ? (type === "support" ? "support@illumi.co.za" : "info@illumi.co.za")
             : type === "marketing_demo"
                 ? MARKETING_FROM
-                : isInvoiceLike
-                    ? INVOICE_FROM
-                    : type === "invite"
-                        ? INVITE_FROM
-                    : "invoices@illumi.co.za"
+                : isAdminEmail
+                    ? ADMIN_FROM
+                    : isInvoiceLike
+                        ? INVOICE_FROM
+                        : type === "invite"
+                            ? INVITE_FROM
+                        : "invoices@illumi.co.za"
 
         const replyToAddress =
             (type === "support" || type === "contact")
                 ? payload.userEmail
                 : type === "marketing_demo"
                     ? MARKETING_FROM
-                    : isInvoiceLike
-                        ? INVOICE_FROM
-                        : type === "invite"
-                            ? INVITE_FROM
-                        : (payload.fromEmail || undefined)
+                    : isAdminEmail
+                        ? ADMIN_FROM
+                        : isInvoiceLike
+                            ? INVOICE_FROM
+                            : type === "invite"
+                                ? INVITE_FROM
+                            : (payload.fromEmail || undefined)
 
         const primaryTo = type === "support"
             ? "support@illumi.co.za"

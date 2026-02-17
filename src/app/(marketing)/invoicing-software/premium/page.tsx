@@ -295,7 +295,7 @@ export default function PremiumPage() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Start with Free, Upgrade When Ready</h2>
                     <p className="text-lg text-muted-foreground mb-8">
-                        Try Illumi free forever. Upgrade to Premium when you need advanced features.
+                        Get 2 months of Pro features free. Subscribe when your trial ends to keep advanced features.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4">
                         <Link href="/invoices/new">

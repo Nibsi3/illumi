@@ -130,7 +130,7 @@ export default function ProformaInvoiceTemplatePage() {
             <section className="py-16 md:py-24 bg-muted/30">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Create Your Proforma Invoice Now</h2>
-                    <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">Free forever. No credit card required.</p>
+                    <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">2 months of Pro features free. No credit card required.</p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="text-lg px-8 py-6">
                             Create My First Invoice <IconArrowRight className="ml-2 w-5 h-5" />

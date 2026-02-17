@@ -65,7 +65,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
     // Use workspace context
     const { workspaces, activeWorkspace, setActiveWorkspace, refreshWorkspaces, isOwner } = useWorkspace();
-    const { isSubscribed, daysRemaining, isPro, isLoading: subscriptionLoading } = useSubscription();
+    const { isSubscribed, daysRemaining, isPro, isTrial, trialDaysRemaining, isLoading: subscriptionLoading } = useSubscription();
     const { logo } = useSettings();
     const { theme, toggleTheme } = useTheme();
 
@@ -118,7 +118,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
         const ownedCount = (workspaces || []).filter((w: any) => w?.owner_id === user.id).length
         if (!isPro && ownedCount >= 1) {
             toast.error("Workspace limit reached", {
-                description: "Free plan is limited to 1 workspace. Upgrade to Pro to create more.",
+                description: "Free plan is limited to 1 workspace. Subscribe to Pro to create more.",
             })
             return
         }
@@ -369,7 +369,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                                     <span className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis">{activeWorkspace?.name || 'Select Workspace'}</span>
                                                     <IconChevronDown className={cn("h-3 w-3 text-muted-foreground transition-transform", showSwitcher && "rotate-180")} />
                                                 </div>
-                                                <span className="text-[10px] text-muted-foreground font-sans">Pro Plan</span>
+                                                <span className="text-[10px] text-muted-foreground font-sans">{isTrial ? 'Pro Trial' : 'Pro Plan'}</span>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
@@ -432,12 +432,14 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
                                 <Link href="/settings/billing" className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
                                     {subscriptionLoading ? (
                                         "Loading..."
+                                    ) : isTrial && trialDaysRemaining !== null ? (
+                                        `Pro Trial · ${trialDaysRemaining} day${trialDaysRemaining !== 1 ? 's' : ''} left`
                                     ) : isSubscribed && daysRemaining !== null ? (
                                         `Pro Plan · ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''} remaining`
                                     ) : isSubscribed ? (
                                         "Pro Plan · Active"
                                     ) : (
-                                        "Free Plan · Upgrade"
+                                        "Trial ended · Upgrade"
                                     )}
                                 </Link>
                                 <Suspense fallback={<div className="w-8 h-8" />}>

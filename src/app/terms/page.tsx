@@ -52,7 +52,8 @@ export default function TermsPage() {
                     <section>
                         <h2 className="text-lg font-semibold text-foreground">3. Subscription plans and billing</h2>
                         <ul className="mt-3 list-disc pl-6 space-y-2">
-                            <li>Paid plans are billed on a month-to-month basis unless otherwise stated.</li>
+                            <li>All new accounts receive a complimentary 2-month Pro trial at no cost and with no credit card required.</li>
+                            <li>After the trial period, paid plans are billed on a month-to-month basis unless otherwise stated.</li>
                             <li>You can cancel at any time. Cancellation stops future renewals.</li>
                             <li>Fees are payable in South African Rand (ZAR) unless otherwise stated.</li>
                         </ul>

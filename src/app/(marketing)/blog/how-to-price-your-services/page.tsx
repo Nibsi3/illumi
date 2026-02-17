@@ -202,7 +202,7 @@ export default function HowToPriceServicesPost() {
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-3xl font-bold mb-4">Price confidently. Invoice professionally.</h2>
                     <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                        Illumi helps South African freelancers create professional invoices that match their pricing strategy — free forever.
+                        Illumi helps South African freelancers create professional invoices that match their pricing strategy — 2 months of Pro features free.
                     </p>
                     <Link href="/invoices/new">
                         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">

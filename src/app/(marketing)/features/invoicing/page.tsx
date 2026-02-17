@@ -104,7 +104,7 @@ export default function InvoicingFeaturePage() {
                             <Link href="/pricing">View Pricing</Link>
                         </Button>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-4">Free forever • Unlimited invoices • No credit card</p>
+                    <p className="text-sm text-muted-foreground mt-4">2 months Pro free • Unlimited invoices • No credit card</p>
                 </div>
             </section>
 

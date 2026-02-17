@@ -165,7 +165,7 @@ export default function VatInvoicesPage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • SARS compliant • Automatic calculations
+                            2 months Pro free • SARS compliant • Automatic calculations
                         </p>
                     </div>
                 </div>

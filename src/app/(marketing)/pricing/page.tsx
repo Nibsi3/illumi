@@ -5,7 +5,7 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Pricing | Illumi",
-    description: "Simple pricing for South African businesses. Start free, upgrade to Pro for PayGate, recurring invoices, and advanced features.",
+    description: "Simple pricing for South African businesses. Get 2 months of Pro features free, then R200/month for PayGate, recurring invoices, and more.",
     alternates: {
         canonical: "/pricing",
     },
@@ -37,7 +37,7 @@ const proFeatures = [
 const faqs = [
     {
         question: "Is Illumi really free to use?",
-        answer: "Yes! Our Free plan includes unlimited invoices, client database, expense tracking, and email invoice sending - free forever. No credit card required.",
+        answer: "Yes! Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, you can stay on the Free plan (unlimited invoices, clients, expenses) or subscribe to Pro for R200/month.",
     },
     {
         question: "How does PayGate integration work?",
@@ -45,7 +45,7 @@ const faqs = [
     },
     {
         question: "Can I cancel my Pro subscription?",
-        answer: "Yes, cancel anytime from Settings > Billing. You'll keep Pro features until the end of your billing cycle, then revert to the Free plan.",
+        answer: "Yes, cancel anytime from Settings > Billing. You'll keep Pro features until the end of your billing cycle, then revert to the Free plan. Your first 2 months are always free.",
     },
     {
         question: "Is my data secure?",
@@ -101,7 +101,7 @@ export default function PricingPage() {
                         Free Invoicing Software for South Africa
                     </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-8">
-                        Start free, upgrade when you need PayGate integration and automated payments.
+                        Every account gets 2 months of Pro features completely free. No credit card required.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-8 h-12">
@@ -126,7 +126,7 @@ export default function PricingPage() {
                                     <span className="text-4xl font-bold text-foreground font-serif">R0</span>
                                     <span className="text-muted-foreground">/month</span>
                                 </div>
-                                <div className="text-sm text-muted-foreground mt-1">Free forever for freelancers and small businesses</div>
+                                <div className="text-sm text-muted-foreground mt-1">After your Pro trial ends, stay on Free forever</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -156,10 +156,10 @@ export default function PricingPage() {
                             <div className="mb-6">
                                 <div className="text-sm font-medium text-black/50 mb-2">Pro</div>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-black font-serif">R200</span>
-                                    <span className="text-black/50">/month</span>
+                                    <span className="text-4xl font-bold text-black font-serif">R0</span>
+                                    <span className="text-black/50">for 2 months</span>
                                 </div>
-                                <div className="text-sm text-black/40 mt-1">For businesses that want online invoice payments</div>
+                                <div className="text-sm text-black/40 mt-1">Then R200/month — for businesses that want online payments</div>
                             </div>
 
                             <ul className="space-y-3 mb-8">
@@ -175,7 +175,7 @@ export default function PricingPage() {
                                 asChild
                                 className="w-full rounded-full h-12 bg-background text-foreground hover:bg-accent dark:hover:bg-black/90"
                             >
-                                <Link href="/invoices/new">Start free trial</Link>
+                                <Link href="/invoices/new">Start 2-Month Free Trial</Link>
                             </Button>
                         </div>
                     </div>

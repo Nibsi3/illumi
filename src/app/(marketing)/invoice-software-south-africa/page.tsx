@@ -16,7 +16,7 @@ import {
 
 export const metadata: Metadata = {
     title: "Invoice Software for South African Businesses | Illumi",
-    description: "Professional invoice software built for South African businesses. Create VAT-compliant invoices in ZAR, accept online payments via PayFast & Yoco, and get paid faster. Free forever.",
+    description: "Professional invoice software built for South African businesses. Create VAT-compliant invoices in ZAR, accept online payments via PayFast & Yoco, and get paid faster. 2 months of Pro features free.",
     keywords: [
         "invoice software south africa",
         "invoicing software south africa",
@@ -105,7 +105,7 @@ const testimonials = [
 const faqs = [
     {
         question: "Is Illumi invoice software free to use?",
-        answer: "Yes, Illumi offers a free forever plan with unlimited invoices, clients, and basic features. Premium features like recurring invoices and advanced reporting are available on paid plans starting from R99/month.",
+        answer: "Yes! Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, stay on the Free plan (unlimited invoices, clients, expenses) or subscribe to Pro for R200/month.",
     },
     {
         question: "Does Illumi support VAT invoicing for SARS?",
@@ -165,7 +165,7 @@ export default function InvoiceSoftwareSouthAfricaPage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • No credit card required • Unlimited invoices
+                            2 months Pro free • No credit card required • Unlimited invoices
                         </p>
                     </div>
                 </div>

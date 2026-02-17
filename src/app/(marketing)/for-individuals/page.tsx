@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 const features = [
     {
         icon: IconPigMoney,
-        title: "100% Free Forever",
-        description: "No hidden fees, no credit card required. Invoice professionally without spending a cent.",
+        title: "2 Months Pro Free",
+        description: "No hidden fees, no credit card required. Get all Pro features free for 2 months.",
     },
     {
         icon: IconClock,
@@ -77,7 +77,7 @@ export default function ForIndividualsPage() {
                             </Button>
                         </Link>
                         <p className="text-sm text-muted-foreground mt-4">
-                            No credit card required. Free forever.
+                            No credit card required. 2 months of Pro features free.
                         </p>
                     </div>
                 </div>

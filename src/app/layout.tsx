@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Illumi | Professional Invoicing for South African Businesses",
-    description: "Create professional invoices in ZAR. Free forever for South African businesses.",
+    description: "Create professional invoices in ZAR. 2 months of Pro features free for South African businesses.",
     type: "website",
     locale: "en_ZA",
     images: [
@@ -87,7 +87,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "Illumi | Professional Invoicing for South African Businesses",
-    description: "Create professional invoices in ZAR. Free forever for South African businesses.",
+    description: "Create professional invoices in ZAR. 2 months of Pro features free for South African businesses.",
     images: ["/logo.png"],
   },
   icons: {

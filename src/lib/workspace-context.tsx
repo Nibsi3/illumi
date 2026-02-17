@@ -87,6 +87,30 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
             // Remove legacy non-user-scoped cache to prevent cross-user data leaking
             try { localStorage.removeItem('illumi_workspaces_cache') } catch { /* ignore */ }
 
+            // Detect user switch: if a different user was previously active, clear stale data
+            try {
+                const prevUserId = localStorage.getItem('illumi_active_user_id')
+                if (prevUserId && prevUserId !== user.id) {
+                    // Different user — purge all workspace/settings data from previous user
+                    localStorage.removeItem('activeWorkspaceId')
+                    localStorage.removeItem(CACHE_KEY)
+                    const keysToRemove: string[] = []
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i)
+                        if (key && (
+                            key.startsWith('illumi_workspaces_cache') ||
+                            key.startsWith('illumi_settings') ||
+                            key.startsWith('illumi_sub_') ||
+                            key === 'illumi_billing'
+                        )) {
+                            keysToRemove.push(key)
+                        }
+                    }
+                    keysToRemove.forEach(k => localStorage.removeItem(k))
+                }
+                localStorage.setItem('illumi_active_user_id', user.id)
+            } catch { /* ignore */ }
+
             if (!forceRefresh) {
                 try {
                     const cached = localStorage.getItem(CACHE_KEY)
@@ -205,12 +229,16 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                     ? deduped.find(w => w.id === savedWorkspaceId)
                     : null
 
-                if (!savedWorkspaceId || savedWorkspace) {
-                    setActiveWorkspaceState(savedWorkspace || deduped[0])
+                if (savedWorkspace) {
+                    // Saved workspace belongs to this user — restore it
+                    setActiveWorkspaceState(savedWorkspace)
                 } else {
-                    // Saved workspace isn't in the current list yet (e.g., invite just accepted and
-                    // memberships/workspaces haven't propagated). Keep the saved ID and fall back for now.
+                    // Saved workspace doesn't belong to this user or doesn't exist — clear it and use first
+                    if (savedWorkspaceId) {
+                        try { localStorage.removeItem('activeWorkspaceId') } catch { /* ignore */ }
+                    }
                     setActiveWorkspaceState(deduped[0])
+                    try { localStorage.setItem('activeWorkspaceId', deduped[0].id) } catch { /* ignore */ }
                 }
             } else {
                 localStorage.removeItem('activeWorkspaceId')
@@ -268,13 +296,37 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 } catch {
                     // ignore
                 }
+                // Clear all React Query caches to prevent stale data from previous user
+                queryClient.removeQueries()
+                // Force refresh workspaces for the new user
+                refreshWorkspaces(true)
             }
             if (event === 'SIGNED_OUT') {
                 try {
                     localStorage.removeItem(SIGNED_IN_AT_KEY)
+                    localStorage.removeItem('activeWorkspaceId')
+                    // Clear all workspace caches to prevent cross-user data leaking
+                    const keysToRemove: string[] = []
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i)
+                        if (key && (
+                            key.startsWith('illumi_workspaces_cache') ||
+                            key.startsWith('illumi_settings') ||
+                            key.startsWith('illumi_sub_') ||
+                            key === 'illumi_billing'
+                        )) {
+                            keysToRemove.push(key)
+                        }
+                    }
+                    keysToRemove.forEach(k => localStorage.removeItem(k))
                 } catch {
                     // ignore
                 }
+                // Reset in-memory state immediately
+                setWorkspaces([])
+                setActiveWorkspaceState(null)
+                setUserId(null)
+                setUserEmail(null)
             }
         })
 

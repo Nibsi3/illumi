@@ -954,7 +954,7 @@ export default function NewInvoicePage() {
                                                         containerClassName="w-full"
                                                         className="bg-primary text-primary-foreground font-bold h-8 text-xs w-full flex items-center justify-center"
                                                     >
-                                                        Upgrade to Pro
+                                                        Subscribe to Pro
                                                     </HoverBorderGradient>
                                                 </div>
                                             ) : (
@@ -1940,7 +1940,7 @@ export default function NewInvoicePage() {
                             </button>
                         </div>
                         <p className="text-xs text-muted-foreground mt-6">
-                            Free forever • No credit card • Takes 10 seconds with Google
+                            2 months Pro free • No credit card • Takes 10 seconds with Google
                         </p>
                     </div>
                 </div>

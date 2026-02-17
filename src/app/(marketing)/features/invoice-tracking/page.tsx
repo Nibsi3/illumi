@@ -150,7 +150,7 @@ export default function InvoiceTrackingPage() {
                             </Link>
                         </div>
                         <p className="text-sm text-muted-foreground mt-4">
-                            Free forever • Full tracking included • No credit card
+                            2 months Pro free • Full tracking included • No credit card
                         </p>
                     </div>
                 </div>

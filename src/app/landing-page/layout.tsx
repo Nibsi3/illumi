@@ -2,7 +2,7 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Free Invoicing Software for South Africa | Illumi",
-    description: "Create professional invoices in ZAR with VAT. Send by email, accept online payments via PayFast, Yoco, Ozow. Free forever for freelancers and small businesses. Start in 2 minutes.",
+    description: "Create professional invoices in ZAR with VAT. Send by email, accept online payments via PayFast, Yoco, Ozow. 2 months of Pro features free. Start in 2 minutes.",
     keywords: [
         "invoice software South Africa",
         "free invoicing app",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         title: "Free Invoicing Software for South Africa | Illumi",
-        description: "Create professional invoices in ZAR. Accept online payments via PayFast, Yoco, Ozow. Free forever — no credit card required.",
+        description: "Create professional invoices in ZAR. Accept online payments via PayFast, Yoco, Ozow. 2 months Pro free — no credit card required.",
         type: "website",
         locale: "en_ZA",
         siteName: "Illumi",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "Free Invoicing Software for South Africa | Illumi",
-        description: "Create professional invoices in ZAR. Accept online payments. Free forever.",
+        description: "Create professional invoices in ZAR. Accept online payments. 2 months Pro free.",
         images: ["/og-image-invoicing.png"],
     },
     robots: {
@@ -57,7 +57,7 @@ const faqSchema = {
             "name": "Is Illumi really free to use?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Yes! Our Free plan includes unlimited invoices, client database, expense tracking, email sending, and PDF exports - free forever. No credit card required to start.",
+                "text": "Yes! Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, stay on the Free plan or subscribe to Pro for R200/month.",
             },
         },
         {
@@ -93,7 +93,7 @@ const softwareApplicationSchema = {
     "name": "Illumi - Free Invoice Software for South Africa",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web",
-    "description": "Create professional invoices in ZAR for South African businesses. VAT calculation, online payments via PayFast/Yoco/Ozow, expense tracking. Free forever.",
+    "description": "Create professional invoices in ZAR for South African businesses. VAT calculation, online payments via PayFast/Yoco/Ozow, expense tracking. 2 months Pro free.",
     "offers": [
         {
             "@type": "Offer",
@@ -101,7 +101,7 @@ const softwareApplicationSchema = {
             "price": "0.00",
             "priceCurrency": "ZAR",
             "availability": "https://schema.org/InStock",
-            "description": "Unlimited invoices, client database, expense tracking, PDF exports - free forever.",
+            "description": "Unlimited invoices, client database, expense tracking, PDF exports - free plan available after trial.",
         },
         {
             "@type": "Offer",

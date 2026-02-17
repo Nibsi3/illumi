@@ -89,7 +89,7 @@ const faqs = [
     },
     {
         question: "Is Illumi really free for South African businesses?",
-        answer: "Yes! Our Free plan includes unlimited professional invoices, client database, product catalog, email sending, and PDF exports - free forever. Pro features like PayGate payments, custom branding, and recurring invoices are R200/month.",
+        answer: "Yes! Every new account gets 2 months of full Pro features completely free — no credit card required. After your trial, stay on the Free plan (unlimited invoices, clients, expenses) or subscribe to Pro for R200/month.",
     },
     {
         question: "Can I track business expenses and calculate net profit?",
@@ -122,7 +122,7 @@ const softwareApplicationSchema = {
         "price": "0.00",
         "priceCurrency": "ZAR",
         "availability": "https://schema.org/InStock",
-        "description": "Free plan with unlimited invoices. Pro plan at R200/month.",
+        "description": "2 months of Pro features free. Then R200/month for PayGate, recurring invoices, and more.",
     },
     "aggregateRating": {
         "@type": "AggregateRating",
@@ -237,7 +237,7 @@ export default function LandingPage() {
                             </div>
 
                             <p className="text-sm text-muted-foreground mb-12 font-sans">
-                                No signup required • Takes 60 seconds • Free forever
+                                No signup required • Takes 60 seconds • 2 months Pro free
                             </p>
 
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-xl">
@@ -437,7 +437,7 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
                         {/* Free */}
                         <div className="bg-card border border-border rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                            <div className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium mb-6">Free Forever</div>
+                            <div className="inline-block px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium mb-6">Free Plan</div>
                             <h3 className="text-2xl font-medium text-foreground mb-6">Make your first invoice — free</h3>
                             <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
                                 Everything you need to create and send professional invoices. No credit card required.
@@ -458,10 +458,10 @@ export default function LandingPage() {
 
                         {/* Pro */}
                         <div className="bg-card border border-primary/20 rounded-2xl p-8 lg:p-12 relative overflow-hidden">
-                                                        <div className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-6">Pro</div>
+                                                        <div className="inline-block px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium mb-6">Pro — 2 Months Free</div>
                             <h3 className="text-2xl font-medium text-foreground mb-6">Automate your payments</h3>
                             <p className="text-muted-foreground text-sm mb-8 leading-relaxed">
-                                Client payment portal with PayGate integration. Invoices update automatically when paid.
+                                Get 2 months of Pro features free. Client payment portal with PayGate integration. Invoices update automatically when paid.
                             </p>
                             <ul className="space-y-4 mb-12">
                                 {proFeatures.map((item, i) => (
@@ -606,7 +606,7 @@ export default function LandingPage() {
                 <div className="mx-auto max-w-3xl px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-medium text-foreground mb-4">Frequently Asked Questions</h2>
-                        <p className="text-sm text-muted-foreground">Add your business logo for free, or upgrade to Pro for PayGate, recurring invoices, and to remove Illumi branding.</p>
+                        <p className="text-sm text-muted-foreground">Every account gets 2 months of Pro features free. Then R200/month for PayGate, recurring invoices, and custom branding.</p>
                     </div>
 
                     <div className="space-y-4">

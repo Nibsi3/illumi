@@ -41,7 +41,7 @@ const comparisonData = [
     },
     {
         feature: "Lower cost",
-        illumi: "R200/month",
+        illumi: "2 months free, then R200/month",
         competitor: "Significantly higher",
         illumiWins: true,
     },
@@ -104,7 +104,7 @@ const keyDifferences = [
     },
     {
         title: "Dramatically Lower Pricing",
-        description: "FreshBooks starts at $19/month USD (approximately R350+) for their Lite plan. Illumi Pro is just R200/month — nearly half the cost with more relevant features for SA businesses.",
+        description: "FreshBooks starts at $19/month USD (approximately R350+) for their Lite plan. Illumi Pro starts with 2 months completely free, then just R200/month — nearly half the cost with more relevant features for SA businesses.",
     },
     {
         title: "Local Payment Gateways",
@@ -124,7 +124,7 @@ const pricingComparison = [
     },
     {
         plan: "Paid Plan",
-        illumi: "R200/month — Online payments, recurring invoices, client portal",
+        illumi: "2 months free, then R200/month — Online payments, recurring invoices, client portal",
         freshbooks: "~R350+/month — Lite plan with limited clients",
     },
     {
@@ -279,7 +279,7 @@ export default function IllumiVsFreshBooksPost() {
                         <h2 className="text-2xl font-bold mb-4">Why Illumi is the Better Choice for South African Freelancers & Small Businesses</h2>
                         <p className="text-muted-foreground leading-relaxed">
                             The pricing difference alone is compelling. FreshBooks' Lite plan costs approximately R350+ per month 
-                            (at current exchange rates), and that's their most basic paid tier. Illumi Pro is R200/month — and 
+                            (at current exchange rates), and that's their most basic paid tier. Illumi Pro starts with 2 months completely free, then just R200/month — and 
                             you can use Illumi's free plan indefinitely if you don't need online payments.
                         </p>
                         <p className="text-muted-foreground leading-relaxed">

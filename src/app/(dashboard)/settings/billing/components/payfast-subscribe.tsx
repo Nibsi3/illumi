@@ -173,7 +173,7 @@ export function PayFastSubscribeButton() {
                 onClick={ensureWorkspaceAndSubmit}
             >
                 <IconStarFilled size={18} className="mr-2" />
-                Subscribe Now — R200/mo
+                Subscribe — First 2 Months Free
             </Button>
         )
     }
@@ -243,7 +243,7 @@ export function PayFastSubscribeButton() {
                 }}
             >
                 <IconStarFilled size={18} className="mr-2" />
-                Subscribe Now — R200/mo
+                Subscribe — First 2 Months Free
             </Button>
         </form>
     )

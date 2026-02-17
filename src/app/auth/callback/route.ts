@@ -7,12 +7,16 @@ export const runtime = 'nodejs'
 export async function GET(request: NextRequest) {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
+    const token_hash = requestUrl.searchParams.get('token_hash')
+    const type = requestUrl.searchParams.get('type') as 'signup' | 'recovery' | 'invite' | 'magiclink' | 'email' | null
     const next = requestUrl.searchParams.get('next')
     const nextPath = next && next.startsWith('/') ? next : '/auth/post-login'
 
     console.log('Auth callback hit:', {
         url: request.url,
         hasCode: Boolean(code),
+        hasTokenHash: Boolean(token_hash),
+        type,
         nextPath,
     })
 
@@ -144,6 +148,68 @@ export async function GET(request: NextRequest) {
 
         const errorUrl = new URL(`${origin}/auth/auth-code-error`)
         errorUrl.searchParams.set('error', error.message)
+        return NextResponse.redirect(errorUrl, 302)
+    }
+
+    // Handle token_hash-based email confirmation (signup, recovery, magiclink, invite)
+    if (token_hash && type) {
+        console.log('Auth callback: handling token_hash verification, type:', type)
+
+        const response = new NextResponse(
+            `<!doctype html><html><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Signing in…</title></head><body style="font-family: ui-sans-serif, system-ui; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;"><div>Verifying your email…</div><script>setTimeout(function(){ window.location.assign(${JSON.stringify(`${origin}${nextPath}`)}); }, 300);</script></body></html>`,
+            {
+                status: 200,
+                headers: {
+                    'content-type': 'text/html; charset=utf-8',
+                    'cache-control': 'no-store',
+                },
+            }
+        )
+
+        const supabase = createServerClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            {
+                cookieEncoding: 'base64url',
+                cookies: {
+                    getAll() {
+                        return request.cookies.getAll()
+                    },
+                    setAll(cookiesToSet) {
+                        cookiesToSet.forEach(({ name, value, options }) => {
+                            const opts: any = { ...(options || {}) }
+                            opts.path = '/'
+                            if (isLocalHost) {
+                                opts.secure = false
+                                delete opts.domain
+                                const sameSite = (opts.sameSite ?? '').toString().toLowerCase()
+                                if (!sameSite || sameSite === 'none') {
+                                    opts.sameSite = 'lax'
+                                }
+                            }
+                            if (opts.maxAge === undefined && !opts.expires) {
+                                opts.maxAge = 60 * 60 * 24 * 7
+                            }
+                            response.headers.append('set-cookie', serializeCookie(name, value, opts))
+                        })
+                    },
+                },
+            }
+        )
+
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: type === 'signup' ? 'signup' : type === 'recovery' ? 'recovery' : type === 'invite' ? 'invite' : 'email',
+        })
+
+        if (!verifyError) {
+            console.log('Auth callback: token_hash verification successful')
+            return response
+        }
+
+        console.error('Auth callback: token_hash verification failed:', verifyError)
+        const errorUrl = new URL(`${origin}/auth/auth-code-error`)
+        errorUrl.searchParams.set('error', verifyError.message)
         return NextResponse.redirect(errorUrl, 302)
     }
 

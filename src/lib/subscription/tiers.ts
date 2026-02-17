@@ -1,7 +1,10 @@
 /**
  * Subscription Tier Definitions
  * 
- * Starter (Free Forever):
+ * All new workspaces get a FREE 2-month Pro trial.
+ * After the trial, users can subscribe to Pro or fall back to the Free plan.
+ * 
+ * Free (after trial expires):
  * - Unlimited invoices
  * - Client database
  * - Product catalog
@@ -9,8 +12,8 @@
  * - PDF Exports
  * - Basic reporting
  * 
- * Pro (R200/month):
- * - Everything in Starter
+ * Pro (2 months free, then R200/month):
+ * - Everything in Free
  * - Remove Illumi branding
  * - PayGate integration
  * - Client payment portal

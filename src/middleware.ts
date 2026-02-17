@@ -15,9 +15,9 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(wwwUrl, 301)
     }
 
-    // Some OAuth flows can land on '/' with a `code` param if redirect URLs
+    // Some OAuth flows can land on '/' with a `code` or `token_hash` param if redirect URLs
     // are misconfigured. Forward to the proper callback handler to avoid loops.
-    if (url.pathname === '/' && url.searchParams.get('code')) {
+    if (url.pathname === '/' && (url.searchParams.get('code') || url.searchParams.get('token_hash'))) {
         const redirectUrl = url.clone()
         redirectUrl.pathname = '/auth/callback'
         return NextResponse.redirect(redirectUrl)

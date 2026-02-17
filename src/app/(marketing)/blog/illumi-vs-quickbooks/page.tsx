@@ -47,7 +47,7 @@ const comparisonData = [
     },
     {
         feature: "Lower monthly cost",
-        illumi: "R200/month",
+        illumi: "2 months free, then R200/month",
         competitor: "Higher",
         illumiWins: true,
     },
