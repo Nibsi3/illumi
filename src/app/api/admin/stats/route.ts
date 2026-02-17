@@ -9,6 +9,22 @@ const ADMIN_EMAILS = [
     "anchenhohls@gmail.com",
 ]
 
+function parseDbTimestamp(value: any): Date | null {
+    if (!value) return null
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
+    if (typeof value !== 'string') {
+        try {
+            const d = new Date(value)
+            return Number.isNaN(d.getTime()) ? null : d
+        } catch {
+            return null
+        }
+    }
+    const normalized = value.includes('T') ? value : value.replace(' ', 'T')
+    const d = new Date(normalized)
+    return Number.isNaN(d.getTime()) ? null : d
+}
+
 function getServiceClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const serviceKey = (
@@ -136,11 +152,15 @@ export async function GET() {
             if (!isPaidPro) {
                 const trialStartRaw = (ws as any)?.trial_started_at || ws.created_at
                 if (trialStartRaw) {
-                    const trialStart = new Date(trialStartRaw)
+                    const trialStart = parseDbTimestamp(trialStartRaw)
+                    if (!trialStart) {
+                        isTrialPro = false
+                    } else {
                     const trialEnd = new Date(trialStart)
                     trialEnd.setMonth(trialEnd.getMonth() + 2)
                     const now = new Date()
                     isTrialPro = now < trialEnd
+                    }
                 }
             }
 

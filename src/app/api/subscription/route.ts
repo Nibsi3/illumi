@@ -2,6 +2,25 @@ import { NextResponse } from "next/server"
 import { createClient as createServiceClient } from "@supabase/supabase-js"
 import { createClient as createServerClient } from "@/lib/supabase/server"
 
+function parseDbTimestamp(value: any): Date | null {
+    if (!value) return null
+    if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
+    if (typeof value !== 'string') {
+        try {
+            const d = new Date(value)
+            return Number.isNaN(d.getTime()) ? null : d
+        } catch {
+            return null
+        }
+    }
+
+    // Supabase/Postgres often returns timestamptz like: "2026-02-17 16:11:09.814196+00"
+    // JS Date parsing can be inconsistent without a 'T'. Normalize to ISO.
+    const normalized = value.includes('T') ? value : value.replace(' ', 'T')
+    const d = new Date(normalized)
+    return Number.isNaN(d.getTime()) ? null : d
+}
+
 function getServiceClient() {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const serviceKey = (
@@ -136,7 +155,27 @@ export async function GET(req: Request) {
             const trialStart = workspace.trial_started_at || workspace.created_at
 
             if (trialStart) {
-                const trialStartDate = new Date(trialStart)
+                const trialStartDate = parseDbTimestamp(trialStart)
+                if (!trialStartDate) {
+                    console.error('Invalid trialStart timestamp:', trialStart)
+                    return NextResponse.json(
+                        {
+                            success: true,
+                            subscription: {
+                                tier: 'free',
+                                status: 'expired',
+                                expires_at: null,
+                                is_trial: false,
+                            },
+                        },
+                        {
+                            status: 200,
+                            headers: {
+                                'Cache-Control': 'private, max-age=1800, stale-while-revalidate=3600',
+                            },
+                        }
+                    )
+                }
                 const trialEnd = new Date(trialStartDate)
                 trialEnd.setMonth(trialEnd.getMonth() + 2)
                 const now = new Date()
