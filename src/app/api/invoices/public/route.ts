@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
         let query = service
             .from("invoices")
-            .select("id, invoice_number, status, issue_date, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, hide_illumi_branding, payment_provider, from_email, company_website, bank_name, account_name, account_number, branch_code, workspace_id, customers(name, email, address), invoice_items(description, quantity, unit_price, discount_rate, total)")
+            .select("*, customers(name, email, address), invoice_items(*)")
             .limit(1)
 
         if (isUUID(invoiceId)) {
@@ -45,7 +45,26 @@ export async function GET(request: NextRequest) {
             query = query.eq("invoice_number", invoiceId)
         }
 
-        const { data, error } = await query.single()
+        let { data, error } = await query.single()
+
+        // If the join query fails (e.g. missing columns in related tables), retry without joins
+        if (error && error.code !== 'PGRST116') {
+            console.warn("Public invoice join query failed, retrying without joins:", { invoiceId, code: error.code, message: error.message })
+            let fallbackQuery = service
+                .from("invoices")
+                .select("*")
+                .limit(1)
+
+            if (isUUID(invoiceId)) {
+                fallbackQuery = fallbackQuery.eq("id", invoiceId)
+            } else {
+                fallbackQuery = fallbackQuery.eq("invoice_number", invoiceId)
+            }
+
+            const fallback = await fallbackQuery.single()
+            data = fallback.data ? { ...fallback.data, customers: null, invoice_items: [] } : null
+            error = fallback.error
+        }
 
         if (error || !data) {
             console.error("Public invoice lookup failed:", { invoiceId, error })
