@@ -7,7 +7,7 @@ function getResendClient() {
     return new Resend(apiKey)
 }
 
-type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice" | "marketing_demo" | "pro_upgrade" | "trial_reminder"
+type EmailType = "invite" | "support" | "contact" | "invoice" | "payment_reminder" | "final_notice" | "marketing_demo" | "pro_upgrade" | "trial_reminder" | "trial_started_announcement"
 
 const ILLUMI_PUBLIC_LOGO = "https://www.illumi.co.za/logo.png"
 
@@ -265,6 +265,52 @@ export async function POST(req: Request) {
                             </div>
                             <div style="padding: 16px 24px 22px 24px; border-top: 1px solid #e9eaee; text-align: center;">
                                 <p style="color: #9ca3af; font-size: 11px; margin: 0;">If you didn't expect this invitation, you can safely ignore this email.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+                break
+
+            case "trial_started_announcement":
+                emailSubject = payload.subject || "Your Illumi Pro trial has started — Free for 2 months"
+                emailHtml = `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f6f7f9; padding: 40px 16px;">
+                        <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e9eaee;">
+                            <div style="background: #0a0a0a; padding: 28px 24px; text-align: center;">
+                                <img src="${ILLUMI_PUBLIC_LOGO}" alt="Illumi" width="44" height="44" style="display: inline-block;" />
+                                <div style="color: #ffffff; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 800; margin-top: 14px;">Pro Trial Started</div>
+                            </div>
+                            <div style="padding: 28px 24px 10px 24px;">
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0 0 14px 0;">
+                                    We’re excited to let you know that your account has been automatically upgraded to our Pro Plan, completely free for the next 2 months, effective today.
+                                </p>
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0 0 14px 0;">
+                                    This means you now have full access to all Pro features at no cost during this period.
+                                </p>
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0 0 14px 0;">
+                                    There’s nothing you need to do to activate it — your account has already been updated.
+                                </p>
+                                <div style="background: #f6f7f9; border: 1px solid #e9eaee; border-radius: 12px; padding: 14px 16px; margin: 18px 0 18px 0;">
+                                    <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #6b7280; font-weight: 800;">What happens next</div>
+                                    <div style="margin-top: 10px; color: #111827; font-size: 14px; line-height: 1.8;">
+                                        At the end of the 2-month period, you’ll have two options:<br />
+                                        • Add your card details to continue enjoying the Pro Plan<br />
+                                        • Downgrade or cancel if you choose not to continue
+                                    </div>
+                                </div>
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0 0 18px 0;">
+                                    We’ll send a reminder before the free period ends so you have plenty of time to decide.
+                                </p>
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0 0 18px 0;">
+                                    We appreciate your support and look forward to you experiencing everything Pro has to offer.
+                                </p>
+                                <p style="color: #111827; font-size: 14px; line-height: 1.8; margin: 0;">
+                                    Best regards,<br />
+                                    Cameron
+                                </p>
+                            </div>
+                            <div style="padding: 16px 24px 22px 24px; border-top: 1px solid #e9eaee; text-align: center;">
+                                <p style="color: #9ca3af; font-size: 11px; margin: 0;">You’re receiving this email because your Illumi account is eligible for the Pro trial.</p>
                             </div>
                         </div>
                     </div>
