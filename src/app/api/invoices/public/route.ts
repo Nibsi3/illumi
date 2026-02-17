@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
         let query = service
             .from("invoices")
-            .select("id, invoice_number, status, issue_date, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, hide_illumi_branding, payment_provider, vat_rate, vat_amount, from_email, company_website, bank_name, account_name, account_number, branch_code, workspace_id, customers(name, email, address), invoice_items(description, quantity, unit_price, discount_rate, total)")
+            .select("id, invoice_number, status, issue_date, due_date, currency, subtotal, tax_rate, tax_amount, total, notes, template, invoice_mode, logo_url, hide_illumi_branding, payment_provider, from_email, company_website, bank_name, account_name, account_number, branch_code, workspace_id, customers(name, email, address), invoice_items(description, quantity, unit_price, discount_rate, total)")
             .limit(1)
 
         if (isUUID(invoiceId)) {
@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
         const { data, error } = await query.single()
 
         if (error || !data) {
+            console.error("Public invoice lookup failed:", { invoiceId, error })
             return NextResponse.json(
                 { success: false, error: "Invoice not found" },
                 { status: 404 }
@@ -115,8 +116,8 @@ export async function GET(request: NextRequest) {
             hide_illumi_branding: Boolean(data.hide_illumi_branding && allowHideIllumiBranding),
             is_pro_workspace: Boolean(allowHideIllumiBranding),
             payment_provider: data.payment_provider || null,
-            vat_rate: data.vat_rate,
-            vat_amount: data.vat_amount,
+            vat_rate: data.tax_rate,
+            vat_amount: data.tax_amount,
             from_email: data.from_email,
             company_website: data.company_website,
             bank_name: data.bank_name,
