@@ -5,6 +5,12 @@ import { NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
     const url = request.nextUrl
 
+    // Never run auth/session redirects for API routes.
+    // API endpoints must handle auth themselves and should always return JSON, not an HTML redirect.
+    if (url.pathname.startsWith('/api/')) {
+        return NextResponse.next()
+    }
+
     // ── Non-www → www 301 redirect (fixes 96 'Discovered - not indexed' in GSC) ──
     const host = request.headers.get('host') || ''
     if (
@@ -61,6 +67,8 @@ export async function middleware(request: NextRequest) {
         '/percentage-calculator',
         '/sales-tax-calculator',
         '/try',
+        '/pay',
+        '/view',
     ]
 
     const isMarketingPath = marketingPrefixes.some((p) => (p === '/' ? url.pathname === '/' : url.pathname.startsWith(p)))

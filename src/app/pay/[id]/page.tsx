@@ -24,10 +24,21 @@ export default function PayInvoicePage() {
             try {
                 // Use the public API route to fetch invoice data securely
                 const res = await fetch(`/api/invoices/public?id=${encodeURIComponent(invoiceId)}`)
+                const contentType = res.headers.get('content-type') || ''
+
+                if (!contentType.toLowerCase().includes('application/json')) {
+                    const text = await res.text().catch(() => '')
+                    throw new Error(
+                        res.status === 401
+                            ? 'Unauthorized'
+                            : `Unexpected response (${res.status}). ${text ? 'Please try again.' : ''}`
+                    )
+                }
+
                 const json = await res.json()
 
                 if (!res.ok || !json.success) {
-                    throw new Error(json.error || "Invoice not found")
+                    throw new Error(json?.error || "Invoice not found")
                 }
 
                 setInvoice(json.invoice)
