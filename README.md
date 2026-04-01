@@ -1,8 +1,17 @@
 # illumi
 
+![status](https://img.shields.io/badge/status-active-16a34a)
+![stack](https://img.shields.io/badge/stack-next.js%20%7C%20supabase%20%7C%20stripe-111827)
+![type](https://img.shields.io/badge/type-saas_platform-2563eb)
+
 ![illumi preview](public/assets/features_invoice.png)
 
-Full-stack SaaS-style web product with marketing pages, authenticated dashboards, billing hooks, document views, and API-backed workflows.
+Billing and operations platform that combines marketing pages, authenticated workspaces, and API-driven workflows in one deployable app.
+
+## Snapshot
+- **Core value:** reduce manual invoicing/admin overhead with workflow automation.
+- **Architecture:** route-grouped Next.js app with a clean split between public and dashboard surfaces.
+- **Integrations:** Supabase, Stripe, Resend, and S3-backed document/media handling.
 
 ## What it does
 - Public marketing and conversion pages with product documentation.
