@@ -1,5 +1,7 @@
 # illumi
 
+![illumi preview](public/assets/features_invoice.png)
+
 Full-stack SaaS-style web product with marketing pages, authenticated dashboards, billing hooks, document views, and API-backed workflows.
 
 ## What it does
