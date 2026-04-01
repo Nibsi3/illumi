@@ -1,33 +1,41 @@
 # illumi
 
-## Overview
-This repository contains active product code and implementation details for the **illumi** project.
+Full-stack SaaS-style web product with marketing pages, authenticated dashboards, billing hooks, document views, and API-backed workflows.
 
-## Highlights
-- Clean project structure with separated app/data/config concerns.
-- Production-oriented setup with environment-driven configuration.
-- Ready for extension with tests, CI checks, and deployment workflows.
+## What it does
+- Public marketing and conversion pages with product documentation.
+- Authenticated dashboard experience for logged-in users.
+- API route layer for product operations and integrations.
+- Payment and email integration surfaces (`stripe`, `resend`) with Supabase-backed data flows.
 
-## Tech Stack
-- Node.js
-- TypeScript
-- React
-- Next.js
+## Stack
+- Next.js 16 + React 19 + TypeScript
+- Supabase (SSR + client SDK), Postgres (`pg`)
+- Stripe, Resend, AWS S3 SDK
+- TanStack Query, Radix UI, TipTap, Ant Design
 
-## Run Locally
-1. Clone the repository and move into the project folder.
-2. Install dependencies (`npm install`, `pnpm install`, or the package manager used by the project).
-3. Create a local `.env` file if environment variables are required.
-4. Start the development server and verify the main flow works end-to-end.
+## Local development
+```bash
+npm install
+npm run dev
+```
 
-## Repository Layout
-- `.windsurf/`
-- `public/`
-- `scripts/`
-- `src/`
-- `supabase/`
+The app runs on `http://localhost:3001`.
 
-## Security Notes
-- Keep credentials in environment variables, never in tracked files.
-- Rotate and replace any key immediately if exposure is suspected.
-- Use least-privilege tokens for third-party integrations.
+Build/start:
+```bash
+npm run build
+npm run start
+```
+
+## Repository structure
+- `src/app/(marketing)` and `src/app/(dashboard)` route groups
+- `src/app/api/` API handlers
+- `src/components/` UI and feature components
+- `scripts/` build and deployment helpers
+- `supabase/` database-related assets
+
+## Practical next improvements
+- Add contract tests for API routes touching payments/storage.
+- Add database migration runbook for safer production rollouts.
+- Add dashboard latency profiling on high-traffic pages.
